@@ -1,0 +1,22 @@
+{
+    "ambient_solar": {
+        "src": "https://assets.mixkit.co/sfx/preview/mixkit-deep-space-wind-1163.mp3",
+        "loop": true,
+        "volume": 0.4
+    },
+    "ambient_eclipse": {
+        "src": "https://assets.mixkit.co/sfx/preview/mixkit-heartbeat-rhythm-loop-553.mp3",
+        "loop": true,
+        "volume": 0.5
+    },
+    "sfx_terminal": {
+        "src": "https://assets.mixkit.co/sfx/preview/mixkit-mechanical-typewriter-single-hit-1382.mp3",
+        "loop": false,
+        "volume": 0.3
+    },
+    "sfx_alert": {
+        "src": "https://assets.mixkit.co/sfx/preview/mixkit-security-facility-breach-alarm-994.mp3",
+        "loop": false,
+        "volume": 0.2
+    }
+}

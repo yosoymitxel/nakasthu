@@ -1,0 +1,12 @@
+{
+  "name": "proyecto-nakasthu-tests",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run __tests__"
+  },
+  "devDependencies": {
+    "vitest": "^1.0.0",
+    "happy-dom": "^12.0.0"
+  }
+}

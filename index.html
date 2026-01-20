@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es" class="bg-[#050505]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROYECTO NAKASTHU // MANAGEMENT TERMINAL</title>
+    <link rel="icon" href="data:,">
+    
+    <!-- Fonts: JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nakasthu: {
+                            black: '#050505',
+                            carbon: '#0a0a0a',
+                            panel: '#111111',
+                            amber: '#FF8C00',
+                            cyan: '#00FFFF',
+                            red: '#FF0000',
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glitch': 'glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite',
+                        'scanline': 'scanline 8s linear infinite',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'float': 'float 6s ease-in-out infinite',
+                        'neural-scan': 'neural-scan 4s linear infinite',
+                        'loading-bar': 'loading-bar 2s ease-in-out infinite',
+                        'glitch-line': 'glitch-line 2s linear infinite',
+                        'glitch-line-delayed': 'glitch-line 2.5s linear infinite 0.5s',
+                        'scan-line': 'scan-line 4s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        'neural-scan': {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(500%)' },
+                        },
+                        'loading-bar': {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(100%)' },
+                        },
+                        'glitch-line': {
+                            '0%': { transform: 'translateX(-100%)', opacity: '0' },
+                            '50%': { opacity: '0.5' },
+                            '100%': { transform: 'translateX(100%)', opacity: '0' },
+                        },
+                        'scan-line': {
+                            '0%': { top: '0' },
+                            '100%': { top: '100%' }
+                        },
+                        glitch: {
+                            '0%': { transform: 'translate(0)' },
+                            '20%': { transform: 'translate(-2px, 2px)' },
+                            '40%': { transform: 'translate(-2px, -2px)' },
+                            '60%': { transform: 'translate(2px, 2px)' },
+                            '80%': { transform: 'translate(2px, -2px)' },
+                            '100%': { transform: 'translate(0)' }
+                        },
+                        scanline: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(100%)' }
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+
+    
+    <style>
+        :root {
+            --color-bg-main: #1a1b1e; /* Gris carbón profundo */
+            --color-bg-panel: #25262b; /* Gris acero */
+            --color-border: #c2410c; /* Naranja quemado */
+            --color-text-primary: #fdba74; /* Naranja melocotón */
+            --color-text-dim: #9ca3af; /* Gris claro */
+            
+            --color-black: #050505; /* Legacy fallback */
+            --color-amber: #FF8C00; /* Legacy fallback */
+            --color-cyan: #00FFFF; /* Legacy fallback */
+        }
+
+        body { 
+            background-color: var(--color-bg-main); 
+            color: var(--color-text-dim); 
+            overflow: hidden;
+            font-family: 'JetBrains Mono', monospace;
+            cursor: crosshair;
+        }
+
+        /* CRT Effects */
+        .crt-overlay {
+            pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            background: 
+                /* Scanlines - Lighter */
+                linear-gradient(
+                    to bottom,
+                    rgba(18, 16, 16, 0) 50%,
+                    rgba(0, 0, 0, 0.1) 50%
+                ),
+                /* Vignette - Lighter */
+                radial-gradient(
+                    circle at center,
+                    transparent 60%,
+                    rgba(0, 0, 0, 0.3) 100%
+                );
+            background-size: 100% 4px, 100% 100%;
+            opacity: 0.8;
+        }
+
+        .industrial-border {
+            border: 1px solid #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+
+        .industrial-border::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            width: 10px;
+            height: 10px;
+            border-bottom: 2px solid var(--color-amber);
+            border-right: 2px solid var(--color-amber);
+        }
+
+        .text-glow-amber { text-shadow: 0 0 10px rgba(255, 140, 0, 0.5); }
+        .text-glow-cyan { text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
+        .text-glow-red { text-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+
+        .clip-corner-tl {
+            clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px);
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #000;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #10b98155;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+
+        .crt-scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 140, 0, 0.05);
+            opacity: 0.4;
+            animation: scanline 6s linear infinite;
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        /* Text Selection */
+        ::selection {
+            background: var(--color-amber);
+            color: var(--color-black);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #111; border-left: 1px solid #222; }
+        ::-webkit-scrollbar-thumb { background: #333; border: 1px solid #000; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--color-amber); }
+
+        /* Text Glow Utilities */
+        .text-glow-amber {
+            text-shadow: 0 0 5px rgba(255, 140, 0, 0.5);
+        }
+        .text-glow-cyan {
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+        .text-glow-red {
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+        
+        /* Industrial Border */
+        .industrial-border {
+            border: 1px solid #333;
+            position: relative;
+        }
+        .industrial-border::after {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px;
+            width: 10px; height: 10px;
+            border-top: 2px solid var(--color-amber);
+            border-left: 2px solid var(--color-amber);
+        }
+        .industrial-border::before {
+            content: '';
+            position: absolute;
+            bottom: -1px; right: -1px;
+            width: 10px; height: 10px;
+            border-bottom: 2px solid var(--color-amber);
+            border-right: 2px solid var(--color-amber);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    
+    <!-- App Entry Point -->
+    <script type="module">
+        import { html } from './src/ui/utils/html.js';
+        import App from './src/ui/components/App.js';
+        import './src/core/Boot.js'; // Initialize all Systems
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(html`<${App} />`);
+    </script>
+</body>
+</html>

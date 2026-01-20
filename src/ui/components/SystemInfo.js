@@ -1,0 +1,99 @@
+/**
+ * SYSTEMINFO.JS (MOD-10)
+ * Librería de comandos autocompletables para ZHYR_OS.
+ */
+import { html } from '../utils/html.js';
+import { bus } from '../../core/Bus.js';
+
+export const SystemInfo = () => {
+    const commands = [
+        { cmd: '/status', desc: 'Estado de los sistemas' },
+        { cmd: '/scan ', desc: 'Inicia análisis [tipo]' },
+        { cmd: '/interrogate', desc: 'Enlace neural con sujeto' },
+        { cmd: '/repair', desc: 'Gana estabilidad con energía' }
+    ];
+
+    const openManual = () => {
+        bus.emit('OPEN_MODAL', {
+            title: 'MANUAL DE USUARIO - BASTIÓN NAKASTHU',
+            content: html`
+                <div className="space-y-4">
+                    <section>
+                        <h3 className="text-zinc-300 font-bold underline">OBJETIVO OPERATIVO</h3>
+                        <p>Mantener la integridad del Bastión procesando o autorizando a los sujetos que emergen del portal. La energía es vital para el funcionamiento; la estabilidad es vital para su cordura.</p>
+                    </section>
+                    <section>
+                        <h3 className="text-zinc-300 font-bold underline">PROTOCOLOS</h3>
+                        <ul className="list-disc list-inside">
+                            <li><span className="text-emerald-500">AUTORIZAR:</span> Permite el paso. Consume energía pero puede aumentar la estabilidad si el sujeto es puro.</li>
+                            <li><span className="text-red-500">SACRIFICAR:</span> Procesa al sujeto como biomasa. Genera energía. Sacrificar inocentes daña gravemente la estabilidad.</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3 className="text-zinc-300 font-bold underline">EVENTOS DE ECLIPSE</h3>
+                        <p>Cuando el ciclo orbital alcanza el cenit, se produce un Eclipse. Los sensores fallan y la corrupción se acelera. Mantenga la calma y observe los patrones de resonancia.</p>
+                    </section>
+                </div>
+            `
+        });
+    };
+
+    const openLore = () => {
+        bus.emit('OPEN_MODAL', {
+            title: 'ARCHIVOS DE LORE - REGISTRO ZHYR',
+            content: html`
+                <div className="space-y-4 italic opacity-80">
+                    <p>"...y así, el cielo se tornó de zinc y las almas fueron pesadas en la balanza de la biomasa. Nakasthu no es una prisión, es el último filtro antes del vacío."</p>
+                    <p>Los Zhyr no son dioses, son ingenieros de la realidad. Nosotros somos sus herramientas. El Bastión ha resistido 14 eras solares, pero el Eclipse de la 15ª parece... diferente.</p>
+                    <p>No escuche los susurros de los sujetos. Son solo ecos de frecuencias residuales.</p>
+                </div>
+            `
+        });
+    };
+
+    const handleClick = (cmd) => {
+        if (window.__TERMINAL_INPUT__) {
+            window.__TERMINAL_INPUT__.setInput(cmd);
+            window.__TERMINAL_INPUT__.focus();
+        }
+    };
+
+    return html`
+        <div className="flex flex-col h-full p-3 bg-transparent font-mono overflow-hidden">
+            <header className="border-b-[0.5px] border-zinc-900/50 pb-2 mb-3 flex justify-between items-center">
+                <h2 className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.3em]">
+                    QUICK_REF / v1.0
+                </h2>
+                <div className="w-1.5 h-1.5 bg-emerald-900/20"></div>
+            </header>
+            
+            <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-3">
+                <div className="flex flex-col gap-2">
+                    ${commands.map(item => html`
+                        <button 
+                            key=${item.cmd}
+                            onClick=${() => handleClick(item.cmd)}
+                            className="group flex flex-col items-start text-left transition-all duration-200 border-l-[0.5px] border-zinc-900 hover:border-emerald-900/30 pl-2"
+                        >
+                            <span className="text-[10px] text-emerald-800 group-hover:text-emerald-600 font-bold tracking-tight transition-colors">
+                                ${item.cmd}
+                            </span>
+                            <span className="text-[8px] text-zinc-700 group-hover:text-zinc-500 uppercase leading-none mt-0.5">
+                                ${item.desc}
+                            </span>
+                        </button>
+                    `)}
+                </div>
+               
+            </div>
+
+            <footer className="mt-auto pt-3 border-t-[0.5px] border-zinc-900/50 flex justify-between items-center opacity-20">
+                <div className="flex gap-0.5">
+                    <div className="w-1 h-2 bg-zinc-900"></div>
+                    <div className="w-1 h-2 bg-zinc-900"></div>
+                </div>
+                <span className="text-[7px] uppercase tracking-widest font-black">Ref_Active</span>
+            </footer>
+        </div>
+    `;
+};
