@@ -13,12 +13,14 @@ export const handleSacrifice = () => {
     const subject = state.currentEntity;
     if (!subject || state.gameStatus !== 'PLAYING') return;
 
-    // BLOQUEO: Solo permitir tras escaneo biométrico
-    const hasBiometric = subject.scannedTypes && subject.scannedTypes.includes('BIOMETRIC');
-    if (!hasBiometric) {
-        bus.emit('DIALOGUE_EMITTED', {
-            sender: 'SISTEMA',
-            text: '[BLOQUEO] IMPOSIBLE PROCEDER: ENLACE BIOMÉTRICO NO ESTABLECIDO.',
+    // BLOQUEO: Solo permitir tras escaneo específico (excepto en tutorial paso 3)
+    const isTutorialOverride = state.tutorialStep === 3;
+    const requiredType = state.requiredScan || 'BIOMETRIC';
+    const hasRequiredScan = subject.scannedTypes && subject.scannedTypes.includes(requiredType);
+    
+    if (!hasRequiredScan && !isTutorialOverride) {
+        bus.emit('TERMINAL_PRINT', {
+            text: `[BLOQUEO] IMPOSIBLE PROCEDER: ENLACE ${requiredType} NO ESTABLECIDO.`,
             type: 'SYSTEM'
         });
         return;
@@ -31,32 +33,38 @@ export const handleSacrifice = () => {
     // Notificar pico visual para el layout (VFX perimetral)
     bus.emit('SACRIFICE_PEAK');
     
-    // Consecuencias de Veracidad
-    if (subject.isCorrupt) {
-        // Limpieza exitosa
-        state.energy = Math.min(100, state.energy + 30);
-        state.stability = Math.min(100, state.stability + 5);
-        state.stats.corruptsDetected++;
-        bus.emit('DIALOGUE_EMITTED', {
-            sender: 'SISTEMA',
-            text: '[LOG] CORRUPCIÓN DETECTADA Y ELIMINADA. +30 ENERGÍA | +5 ESTABILIDAD.',
-            type: 'SYSTEM'
-        });
-        bus.emit('TRIGGER_FLASH', { color: 'rgba(16, 185, 129, 0.3)', duration: 150 });
+    if (!state.isTutorialActive) {
+        // Consecuencias de Veracidad
+        if (subject.isCorrupt) {
+            // Limpieza exitosa
+            state.energy = Math.min(100, state.energy + 80);
+            state.stability = Math.min(100, state.stability + 15);
+            state.stats.corruptsDetected++;
+            bus.emit('TERMINAL_PRINT', {
+                text: '[LOG] CORRUPCIÓN DETECTADA Y ELIMINADA. +80 ENERGÍA | +15 ESTABILIDAD.',
+                type: 'SYSTEM'
+            });
+            bus.emit('TRIGGER_FLASH', { color: 'rgba(16, 185, 129, 0.3)', duration: 150 });
+        } else {
+            // Error crítico: Sacrificio de inocente
+            state.energy = Math.min(100, state.energy + 60);
+            state.stability = Math.max(0, state.stability - 25);
+            state.stats.innocentsSacrificed++;
+            state.judgmentErrors++;
+            bus.emit('TERMINAL_PRINT', {
+                text: '[CRITICAL ERROR] SUJETO INOCENTE PROCESADO. +60 ENERGÍA | -25 ESTABILIDAD.',
+                type: 'SYSTEM'
+            });
+            // Feedback visual de error crítico
+            bus.emit('CRITICAL_ERROR_FEEDBACK');
+            bus.emit('TRIGGER_FLASH', { color: 'rgba(220, 38, 38, 0.5)', duration: 200 });
+        }
     } else {
-        // Error crítico: Sacrificio de inocente
-        state.energy = Math.min(100, state.energy + 30);
-        state.stability = Math.max(0, state.stability - 25);
-        state.stats.innocentsSacrificed++;
-        state.judgmentErrors++;
-        bus.emit('DIALOGUE_EMITTED', {
-            sender: 'SISTEMA',
-            text: '[CRITICAL ERROR] SUJETO INOCENTE PROCESADO. +30 ENERGÍA | -25 ESTABILIDAD.',
-            type: 'SYSTEM'
+        // En el tutorial solo notificamos el acto
+        bus.emit('TERMINAL_PRINT', {
+            text: `[TUTORIAL] PROCESO COMPLETADO. RECURSOS CONSERVADOS POR PROTOCOLO DE INDUCCIÓN.`,
+            type: 'INFO'
         });
-        // Feedback visual de error crítico
-        bus.emit('CRITICAL_ERROR_FEEDBACK');
-        bus.emit('TRIGGER_FLASH', { color: 'rgba(220, 38, 38, 0.5)', duration: 200 });
     }
     
     state.processedCount++;
@@ -88,12 +96,14 @@ export const handleAuthorize = () => {
     const subject = state.currentEntity;
     if (!subject || state.gameStatus !== 'PLAYING') return;
 
-    // BLOQUEO: Solo permitir tras escaneo biométrico
-    const hasBiometric = subject.scannedTypes && subject.scannedTypes.includes('BIOMETRIC');
-    if (!hasBiometric) {
-        bus.emit('DIALOGUE_EMITTED', {
-            sender: 'SISTEMA',
-            text: '[BLOQUEO] IMPOSIBLE PROCEDER: ENLACE BIOMÉTRICO NO ESTABLECIDO.',
+    // BLOQUEO: Solo permitir tras escaneo específico (excepto en tutorial paso 3)
+    const isTutorialOverride = state.tutorialStep === 3;
+    const requiredType = state.requiredScan || 'BIOMETRIC';
+    const hasRequiredScan = subject.scannedTypes && subject.scannedTypes.includes(requiredType);
+
+    if (!hasRequiredScan && !isTutorialOverride) {
+        bus.emit('TERMINAL_PRINT', {
+            text: `[BLOQUEO] IMPOSIBLE PROCEDER: ENLACE ${requiredType} NO ESTABLECIDO.`,
             type: 'SYSTEM'
         });
         return;
@@ -103,30 +113,36 @@ export const handleAuthorize = () => {
 
     state.startBatch();
     
-    if (subject.isCorrupt) {
-        // Brecha de seguridad: Autorizar corrupto
-        state.stability = Math.max(0, state.stability - 30);
-        state.stats.corruptsAuthorized++;
-        state.judgmentErrors++;
-        bus.emit('DIALOGUE_EMITTED', {
-            sender: 'SISTEMA',
-            text: '[ALERTA] BRECHA DE SEGURIDAD DETECTADA: ENTIDAD CORRUPTA AUTORIZADA. -30 ESTABILIDAD.',
-            type: 'SYSTEM'
-        });
-        // Feedback visual de error crítico
-        bus.emit('CRITICAL_ERROR_FEEDBACK');
-        bus.emit('TRIGGER_FLASH', { color: 'rgba(220, 38, 38, 0.5)', duration: 200 });
+    if (!state.isTutorialActive) {
+        if (subject.isCorrupt) {
+            // Brecha de seguridad: Autorizar corrupto
+            state.stability = Math.max(0, state.stability - 30);
+            state.stats.corruptsAuthorized++;
+            state.judgmentErrors++;
+            bus.emit('TERMINAL_PRINT', {
+                text: '[ALERTA] BRECHA DE SEGURIDAD DETECTADA: ENTIDAD CORRUPTA AUTORIZADA. -30 ESTABILIDAD.',
+                type: 'SYSTEM'
+            });
+            // Feedback visual de error crítico
+            bus.emit('CRITICAL_ERROR_FEEDBACK');
+            bus.emit('TRIGGER_FLASH', { color: 'rgba(220, 38, 38, 0.5)', duration: 200 });
+        } else {
+            // Autorización correcta
+            state.energy = Math.max(0, state.energy - 1);
+            state.stability = Math.min(100, state.stability + 20);
+            state.stats.innocentsAuthorized++;
+            bus.emit('TERMINAL_PRINT', {
+                text: '[INFO] SUJETO LIMPIO AUTORIZADO. -1 ENERGÍA | +20 ESTABILIDAD.',
+                type: 'SYSTEM'
+            });
+            bus.emit('TRIGGER_FLASH', { color: 'rgba(59, 130, 246, 0.3)', duration: 150 });
+        }
     } else {
-        // Autorización correcta
-        state.energy = Math.max(0, state.energy - 10);
-        state.stability = Math.min(100, state.stability + 10);
-        state.stats.innocentsAuthorized++;
-        bus.emit('DIALOGUE_EMITTED', {
-            sender: 'SISTEMA',
-            text: '[INFO] SUJETO LIMPIO AUTORIZADO. -10 ENERGÍA | +10 ESTABILIDAD.',
-            type: 'SYSTEM'
+        // En el tutorial solo notificamos el acto
+        bus.emit('TERMINAL_PRINT', {
+            text: `[TUTORIAL] AUTORIZACIÓN COMPLETADA. PROTOCOLO DE INDUCCIÓN: SIN CAMBIOS EN VITALES.`,
+            type: 'INFO'
         });
-        bus.emit('TRIGGER_FLASH', { color: 'rgba(59, 130, 246, 0.3)', duration: 150 });
     }
     
     // Feedback visual específico para MOD-04
@@ -177,20 +193,29 @@ const checkGameStatus = () => {
 
 /**
  * Actualiza la sincronía de resonancia.
+ * Centralizado para ser llamado desde GameLoop y UI (Oscilloscope).
  */
 export const updateResonance = () => {
-    if (state.gameStatus !== 'PLAYING') return state.resonanceSync;
+    // En el tutorial permitimos que funcione siempre para poder avanzar
+    if (state.gameStatus !== 'PLAYING' && !state.isTutorialActive) return state.resonanceSync;
 
     const freqDiff = Math.abs(state.targetFrequency - state.localFrequency);
     
-    // Cálculo de sync simplificado: 100 - (abs(Target - Player) * factor)
-    // Factor de 1.6 para rango 0.1-60Hz (60 * 1.6 = 96)
-    const syncPercent = Math.max(0, Math.floor(100 - (freqDiff * 1.6)));
+    // Cálculo de sync: 100 - abs(diff)
+    // Usamos el mismo cálculo que el GameLoop para consistencia
+    const syncPercent = Math.max(0, Math.floor(100 - freqDiff));
     
     state.resonanceSync = syncPercent;
     
-    if (syncPercent < 85) {
-        state.stability = Math.max(0, state.stability - 0.05);
+    // Solo drenar estabilidad si no estamos en el tutorial (pasos 1-3)
+    const isTutorialStep = state.tutorialStep > 0 && state.tutorialStep < 4;
+    
+    if (!isTutorialStep) {
+        if (syncPercent < 40) {
+            state.stability = Math.max(0, state.stability - 0.5);
+        } else if (syncPercent > 90) {
+            state.stability = Math.min(100, state.stability + 0.2);
+        }
     }
     
     bus.emit('RESONANCE_UPDATE', { 
@@ -205,9 +230,16 @@ export const updateResonance = () => {
 };
 
 /**
- * Cambia la frecuencia y fase objetivo de forma aleatoria.
+ * Cambia la frecuencia y fase objetivo de forma aleatoria,
+ * y rota el requisito de escaneo para el siguiente sujeto.
  */
 export const randomizeTargetFrequency = () => {
     state.targetFrequency = 0.1 + Math.random() * 59.9; // Rango 0.1 - 60.0Hz
     state.targetPhase = Math.random() * Math.PI * 2;
+
+    // Rotar requisito de escaneo entre los 5 tipos disponibles
+    const scanKeys = ['THERMAL', 'NEURAL', 'NAKARA', 'BIOMETRIC', 'RESONANCE'];
+    state.requiredScan = scanKeys[Math.floor(Math.random() * scanKeys.length)];
+    
+    console.log(`%c[MECHANICS] Siguiente requisito de bloqueo: ${state.requiredScan}`, "color: #06b6d4;");
 };

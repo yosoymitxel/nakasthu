@@ -4,7 +4,7 @@
  * Espacio masivo dividido en COMS_LOG, ACTION_MATRIX y SENTENCE buttons.
  */
 import { html } from '../utils/html.js';
-import { interrogate } from '../../systems/DialogueEngine.js';
+import { dialogueEngine } from '../../systems/DialogueEngine.js';
 import { handleSacrifice, handleAuthorize } from '../../systems/MechanicsEngine.js';
 import { bus } from '../../core/Bus.js';
 import { state } from '../../core/State.js';
@@ -18,10 +18,17 @@ export const Operations = () => {
     const processedCount = useGameState('processedCount');
     const quota = useGameState('quota');
     const judgmentErrors = useGameState('judgmentErrors');
+    const activeDialogue = useGameState('activeDialogue');
+    const tutorialStep = useGameState('tutorialStep');
 
     const [messages, setMessages] = useState([]);
     const [isTyping, setIsTyping] = useState(false);
-    const [isBiometricComplete, setIsBiometricComplete] = useState(false);
+    const requiredScan = useGameState('requiredScan');
+    const currentEntity = useGameState('currentEntity');
+    
+    // Verificar si el escaneo requerido ha sido completado
+    const isScanComplete = currentEntity?.scannedTypes?.includes(requiredScan);
+    
     const scrollRef = useRef(null);
     const messagesEndRef = useRef(null);
 
@@ -45,19 +52,42 @@ export const Operations = () => {
 
         const onBiometricComplete = () => {
             setIsBiometricComplete(true);
-            setMessages(prev => [...prev, {
-                sender: 'SISTEMA',
+            // Redirigir a Terminal
+            bus.emit('TERMINAL_PRINT', {
                 text: 'ENLACE BIOMÉTRICO ESTABLECIDO. PROTOCOLO DE SENTENCIA HABILITADO.',
                 type: 'SYSTEM'
-            }]);
+            });
         };
 
         const onScanComplete = (data) => {
-            setMessages(prev => [...prev, {
-                sender: 'SISTEMA',
+            // Redirigir a Terminal
+            bus.emit('TERMINAL_PRINT', {
                 text: `[REPORTE BIOSCAN] ${data.type.name} FINALIZADO. DATOS ENVIADOS A ANALYTICS.`,
                 type: 'SYSTEM'
+            });
+        };
+
+        const onDialogueStarted = (dialogue) => {
+            setMessages(prev => [...prev, {
+                sender: 'SUJETO',
+                text: dialogue.text,
+                type: 'SUBJECT'
             }]);
+        };
+
+        const onDialogueConsequence = (data) => {
+            // Solo mostrar la elección del operador en COMMS
+            setMessages(prev => [...prev, {
+                sender: 'OPERADOR',
+                text: `> ${data.originalOption}`,
+                type: 'OPERATOR'
+            }]);
+
+            // La respuesta del sistema va a la TERMINAL
+            bus.emit('TERMINAL_PRINT', {
+                text: data.text,
+                type: 'SYSTEM'
+            });
         };
 
         const onSessionTerminated = () => {
@@ -69,6 +99,8 @@ export const Operations = () => {
         bus.on('SCAN_COMPLETED', onScanComplete);
         bus.on('SESSION_TERMINATED', onSessionTerminated);
         bus.on('BIOMETRICO_COMPLETO', onBiometricComplete);
+        bus.on('DIALOGUE_STARTED', onDialogueStarted);
+        bus.on('DIALOGUE_CONSEQUENCE', onDialogueConsequence);
 
         return () => {
             bus.off('DIALOGUE_EMITTED', onDialogue);
@@ -76,6 +108,8 @@ export const Operations = () => {
             bus.off('SCAN_COMPLETED', onScanComplete);
             bus.off('SESSION_TERMINATED', onSessionTerminated);
             bus.off('BIOMETRICO_COMPLETO', onBiometricComplete);
+            bus.off('DIALOGUE_STARTED', onDialogueStarted);
+            bus.off('DIALOGUE_CONSEQUENCE', onDialogueConsequence);
         };
     }, []);
 
@@ -84,149 +118,162 @@ export const Operations = () => {
     }, [messages]);
 
     const handleDialogueAction = (actionName) => {
-        if (isTyping) return;
+        if (isTyping || activeDialogue) return;
         
-        // Coste de energía: 5
-        if (state.energy < 5) {
+        // Coste base de iniciar interrogatorio: 5 (Omitir en tutorial)
+        if (state.energy < 5 && !state.isTutorialActive) {
             bus.emit('DIALOGUE_EMITTED', {
                 sender: 'SISTEMA',
-                text: `[CRÍTICO] Energía insuficiente para ${actionName}.`,
+                text: `[CRÍTICO] Energía insuficiente para iniciar enlace.`,
                 type: 'SYSTEM'
             });
             return;
         }
 
-        state.energy -= 5;
-        
-        if (actionName === 'INTERROGAR') {
-            interrogate();
-        } else {
-            bus.emit('TERMINAL_PRINT', { text: `PROTOCOLO DE ${actionName} NO DISPONIBLE.` });
-            // Aunque no esté disponible, consumimos la energía como castigo/coste de intento
-            setMessages(prev => [...prev, {
-                sender: 'SISTEMA',
-                text: `[INTENTO] PROTOCOLO DE ${actionName} INICIADO. FALLO EN ENLACE.`,
-                type: 'SYSTEM'
-            }]);
-        }
+        dialogueEngine.triggerRandomDialogue();
+    };
+
+    const handleOptionSelect = (index) => {
+        if (isTyping) return;
+        dialogueEngine.selectOption(index);
     };
 
     const handleAction = (type) => {
-        if (isTyping || !isBiometricComplete) return;
+        const isTutorialOverride = tutorialStep === 3;
+        if (isTyping || (!isBiometricComplete && !isTutorialOverride)) return;
         if (type === 'SACRIFICE') handleSacrifice();
         if (type === 'AUTHORIZE') handleAuthorize();
     };
 
     return html`
         <div className="flex flex-col h-full w-full bg-transparent font-mono overflow-hidden">
-            <div className="h-[40%] w-full flex border-b border-zinc-900/50">
-                <div className="w-1/3 h-full border-r-[0.5px] border-zinc-900/50 relative overflow-hidden flex flex-col">
+            <!-- SECCIÓN SUPERIOR: VISUALIZADORES -->
+            <div className="flex-none h-[140px] w-full flex border-b border-zinc-800">
+                <div className="w-1/3 h-full border-r-[0.5px] border-zinc-800 relative overflow-hidden flex flex-col">
                     <${PortalScene} />
-                    <div className="absolute bottom-1 left-2 text-[6px] text-zinc-600 tracking-widest uppercase font-bold pointer-events-none">ORBITAL</div>
+                    <div className="absolute bottom-1 left-2 text-[12px] text-zinc-400 tracking-widest uppercase font-bold pointer-events-none">ORBITAL</div>
                 </div>
 
-                <div className="w-1/3 h-full border-r-[0.5px] border-zinc-900/50 relative overflow-hidden flex flex-col">
+                <div className="w-1/3 h-full border-r-[0.5px] border-zinc-800 relative overflow-hidden flex flex-col">
                     <${SubjectVisual} />
-                    <div className="absolute bottom-1 left-2 text-[6px] text-zinc-600 tracking-widest uppercase font-bold pointer-events-none">FEED</div>
+                    <div className="absolute bottom-1 left-2 text-[12px] text-zinc-400 tracking-widest uppercase font-bold pointer-events-none">LIVE_FEED</div>
                 </div>
 
                 <div className="w-1/3 h-full flex flex-col justify-around px-3 py-2 bg-black/10">
                     <div className="flex flex-col items-center">
-                        <span className="text-[7px] text-zinc-600 uppercase tracking-widest font-bold mb-1">QUOTA_RECOVERY</span>
+                        <span className="text-[12px] text-zinc-400 uppercase tracking-widest font-bold mb-1">QUOTA_RECOVERY</span>
                         <span className="text-2xl font-black text-emerald-600/70 font-mono">
                             ${processedCount} / ${quota}
                         </span>
                     </div>
-                    <div className="w-full bg-zinc-950 h-3 relative overflow-hidden border border-zinc-900/30">
+                    <div className="w-full bg-zinc-950 h-3 relative overflow-hidden border border-zinc-800/30">
                         <div 
                             className="h-full bg-emerald-600/40 transition-all duration-1000"
                             style=${{ width: `${Math.min((processedCount / quota) * 100, 100)}%` }}
                         ></div>
                     </div>
                     <div className="flex justify-center">
-                        <span className="text-[8px] text-red-900/60 font-bold font-mono uppercase">
+                        <span className="text-[12px] text-red-900/60 font-bold font-mono uppercase">
                             ERR: ${judgmentErrors}
                         </span>
                     </div>
                 </div>
             </div>
 
-            <div className="h-[40%] flex border-b border-zinc-900/50 overflow-hidden">
-                <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar bg-black/5">
-                    ${messages.map((msg, i) => html`
-                        <div key=${i} className=${`flex flex-col animate-fade-in ${msg.type === 'SYSTEM' ? 'border-l-2 border-zinc-800 pl-3' : ''}`}>
-                            <div className="flex justify-between items-center mb-1">
-                                <span className=${`text-[8px] font-bold tracking-widest uppercase ${
-                                    msg.type === 'SYSTEM' ? 'text-zinc-600' : 
-                                    msg.type === 'SUBJECT' ? 'text-cyan-600/60' : 
-                                    'text-emerald-600/60'
-                                }`}>
-                                    ${msg.sender}
-                                </span>
-                                <span className="text-[7px] text-zinc-800 font-mono">${msg.timestamp || ''}</span>
-                            </div>
-                            <p className=${`text-[11px] leading-relaxed ${
-                                msg.type === 'SYSTEM' ? 'text-zinc-500 italic' : 
-                                msg.type === 'SUBJECT' ? 'text-zinc-300' : 
-                                'text-emerald-500/80'
+            <!-- SECCIÓN CENTRAL: CHAT / LOG -->
+            <div className="flex-grow overflow-y-auto p-4 space-y-3 custom-scrollbar bg-black/5 min-h-0 max-h-[200px]">
+                ${messages.map((msg, i) => html`
+                    <div key=${i} className=${`flex flex-col animate-fade-in ${msg.type === 'SYSTEM' ? 'border-l-2 border-zinc-800 pl-3' : ''}`}>
+                        <div className="flex justify-between items-center mb-1">
+                            <span className=${`text-[12px] font-bold tracking-widest uppercase ${
+                                msg.type === 'SYSTEM' ? 'text-zinc-400' : 
+                                msg.type === 'SUBJECT' ? 'text-cyan-600/60' : 
+                                'text-emerald-600/60'
                             }`}>
-                                ${msg.text}
-                            </p>
+                                ${msg.sender}
+                            </span>
+                            <span className="text-[12px] text-zinc-500 font-mono">${msg.timestamp || ''}</span>
                         </div>
-                    `)}
-                    <div ref=${messagesEndRef} />
-                </div>
-
-                <div className="w-24 border-l border-zinc-900/50 bg-black/40 flex flex-col p-1 gap-1">
-                    <button 
-                        onClick=${() => handleDialogueAction('INTERROGAR')}
-                        disabled=${isTyping}
-                        className="flex-1 border border-cyan-900/30 bg-cyan-950/10 hover:bg-cyan-900/20 text-cyan-600 text-[8px] transition-all uppercase tracking-tighter font-bold"
-                    >
-                        INTERROGAR
-                    </button>
-                    <button 
-                        onClick=${() => handleDialogueAction('SONDEAR')}
-                        disabled=${isTyping}
-                        className="flex-1 border border-zinc-900/30 bg-black/20 text-zinc-700 text-[8px] transition-all uppercase tracking-tighter font-bold"
-                    >
-                        SONDEAR
-                    </button>
-                    <button 
-                        onClick=${() => handleDialogueAction('PRESIONAR')}
-                        disabled=${isTyping}
-                        className="flex-1 border border-zinc-900/30 bg-black/20 text-zinc-700 text-[8px] transition-all uppercase tracking-tighter font-bold"
-                    >
-                        PRESIONAR
-                    </button>
-                    <button 
-                        onClick=${() => handleDialogueAction('CALIBRAR')}
-                        disabled=${isTyping}
-                        className="flex-1 border border-zinc-900/30 bg-black/20 text-zinc-700 text-[8px] transition-all uppercase tracking-tighter font-bold"
-                    >
-                        CALIBRAR
-                    </button>
-                </div>
+                        <p className=${`text-[12px] leading-relaxed ${
+                            msg.type === 'SYSTEM' ? 'text-zinc-400 italic' : 
+                            msg.type === 'SUBJECT' ? 'text-zinc-300' : 
+                            'text-emerald-500/80'
+                        }`}>
+                            ${msg.text}
+                        </p>
+                    </div>
+                `)}
+                <div ref=${messagesEndRef} />
             </div>
 
-            <div className="flex-1 min-h-[80px] p-4 bg-black/60 flex items-center justify-center gap-6">
-                <button 
-                    onClick=${() => handleAction('SACRIFICE')}
-                    disabled=${isTyping || !isBiometricComplete}
-                    className=${`flex-1 max-w-[180px] h-full relative group border-[0.5px] transition-all uppercase tracking-[0.3em] font-black text-[11px] ${isBiometricComplete ? 'border-red-900/30 bg-red-950/5 hover:bg-red-900/10 text-red-700/80' : 'border-zinc-900/20 bg-black/10 text-zinc-800 cursor-not-allowed'}`}
-                >
-                    SACRIFICAR
-                </button>
-                
-                <div className="w-[0.5px] h-6 bg-zinc-900/30"></div>
+            <!-- SECCIÓN INFERIOR: ACTION MATRIX -->
+            <div className="flex-none border-t border-zinc-800 bg-black/40">
+                <!-- DIALOGUE OPTIONS -->
+                <div className="h-20 flex p-1 gap-1 border-b border-zinc-800/30">
+                    ${activeDialogue ? activeDialogue.options.map((opt, idx) => html`
+                        <button 
+                            key=${idx}
+                            onClick=${() => handleOptionSelect(idx)}
+                            disabled=${isTyping}
+                            className="flex-1 border border-cyan-900/30 bg-cyan-950/10 hover:bg-cyan-900/20 text-cyan-600 text-[12px] transition-all uppercase tracking-tighter font-bold p-1 leading-tight"
+                        >
+                            ${opt.text}
+                            <div className="text-[12px] text-zinc-400 mt-1">
+                                COST: ${opt.energyCost} | STB: ${opt.stabilityImpact}
+                            </div>
+                        </button>
+                    `) : html`
+                        <${React.Fragment}>
+                            <button 
+                                onClick=${() => handleDialogueAction('INTERROGAR')}
+                                disabled=${isTyping}
+                                className="flex-1 border border-cyan-900/30 bg-cyan-950/10 hover:bg-cyan-900/20 text-cyan-600 text-[12px] transition-all uppercase tracking-tighter font-bold"
+                            >
+                                INICIAR ENLACE NEURAL [INTERROGAR]
+                            </button>
+                            <div className="flex-grow flex items-center justify-center p-2 text-center">
+                                <span className="text-[12px] text-zinc-500 uppercase italic">Sujeto en espera de interacción...</span>
+                            </div>
+                        <//>
+                    `}
+                </div>
 
-                <button 
-                    onClick=${() => handleAction('AUTHORIZE')}
-                    disabled=${isTyping || !isBiometricComplete}
-                    className=${`flex-1 max-w-[180px] h-full relative group border-[0.5px] transition-all uppercase tracking-[0.3em] font-black text-[11px] ${isBiometricComplete ? 'border-emerald-900/30 bg-emerald-950/5 hover:bg-emerald-900/10 text-emerald-700/80' : 'border-zinc-900/20 bg-black/10 text-zinc-800 cursor-not-allowed'}`}
-                >
-                    AUTORIZAR
-                </button>
+                <!-- SENTENCE BUTTONS -->
+                <div className="h-20 p-4 flex flex-col items-center justify-center bg-black/60 relative">
+                    ${(!isScanComplete && tutorialStep !== 3) && html`
+                        <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center z-30 group/lock">
+                            <span className="text-[10px] text-red-500/60 font-mono tracking-[0.2em] uppercase animate-pulse">
+                                [PROTOCOLO DE SENTENCIA BLOQUEADO: REQUIERE ESCANEO ${requiredScan}]
+                            </span>
+                        </div>
+                    `}
+                    
+                    <div className="flex items-center justify-center gap-6 w-full h-full">
+                        <button 
+                            onClick=${() => handleAction('SACRIFICE')}
+                            disabled=${isTyping || (!isScanComplete && tutorialStep !== 3)}
+                            className=${`flex-1 max-w-[180px] h-full relative group border-[0.5px] transition-all uppercase tracking-[0.3em] font-black text-[12px] 
+                                ${(isScanComplete || tutorialStep === 3) 
+                                    ? 'border-red-900/50 text-red-700/80 hover:bg-red-900/20 hover:border-red-600/50' 
+                                    : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
+                        >
+                            SACRIFICAR
+                        </button>
+                        
+                        <div className="w-[0.5px] h-6 bg-zinc-900/30"></div>
+
+                        <button 
+                            onClick=${() => handleAction('AUTHORIZE')}
+                            disabled=${isTyping || (!isScanComplete && tutorialStep !== 3)}
+                            className=${`flex-1 max-w-[180px] h-full relative group border-[0.5px] transition-all uppercase tracking-[0.3em] font-black text-[12px] 
+                                ${(isScanComplete || tutorialStep === 3) 
+                                    ? 'border-emerald-900/50 text-emerald-700/80 hover:bg-emerald-900/20 hover:border-emerald-600/50' 
+                                    : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
+                        >
+                            AUTORIZAR
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     `;

@@ -10,6 +10,19 @@ import { useGameState } from '../hooks/useGameState.js';
 
 export const ControlPanel = () => {
     const isPaused = useGameState('isPaused');
+    const isTutorialActive = useGameState('isTutorialActive');
+
+    const handleSkipTutorial = () => {
+        state.startBatch();
+        state.isTutorialActive = false;
+        state.tutorialStep = 0;
+        state.endBatch();
+        
+        bus.emit('TERMINAL_PRINT', {
+            text: '>>> PROTOCOLO DE INDUCCIÓN ABORTADO. CONTROL MANUAL RESTABLECIDO.',
+            type: 'SYSTEM'
+        });
+    };
 
     const handleManual = () => {
         bus.emit('OPEN_MODAL', {
@@ -43,6 +56,16 @@ export const ControlPanel = () => {
                 >
                     ${isPaused ? '▶' : '||'}
                 </button>
+
+                ${isTutorialActive && html`
+                    <button 
+                        onClick=${handleSkipTutorial}
+                        className="w-8 h-8 border border-red-900/50 bg-red-950/20 text-red-600 flex items-center justify-center text-[10px] font-bold hover:bg-red-600/20 transition-all animate-pulse"
+                        title="SALTAR INDUCCIÓN"
+                    >
+                        SKIP
+                    </button>
+                `}
             </div>
 
             <div className="text-[10px] text-zinc-600 font-bold uppercase tracking-[0.2em]">Centro de Control</div>

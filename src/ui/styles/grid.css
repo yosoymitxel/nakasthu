@@ -1,0 +1,125 @@
+/* 
+ * NAKASTHU STRUCTURAL GRID
+ * 12x6 Strict Grid Template
+ * Rule 1: This CSS must remain untouched by React logic.
+ */
+
+.main-layout-grid {
+    display: grid;
+    width: 100vw;
+    height: 100vh;
+    padding: 4px;
+    gap: 4px;
+    background-color: #1a1a1c;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    grid-template-areas:
+        "L_TOP    L_TOP    C_HEADER C_HEADER C_HEADER C_HEADER C_HEADER C_HEADER C_HEADER R_TOP    R_TOP    R_TOP"
+        "L_UPPER  L_UPPER  C_MAIN   C_MAIN   C_MAIN   C_MAIN   C_MAIN   C_MAIN   C_MAIN   R_UPPER  R_UPPER  R_UPPER"
+        "L_UPPER  L_UPPER  C_MAIN   C_MAIN   C_MAIN   C_MAIN   C_MAIN   C_MAIN   C_MAIN   R_MIDDLE R_MIDDLE R_MIDDLE"
+        "L_LOWER  L_LOWER  C_MAIN   C_MAIN   C_MAIN   C_MAIN   C_MAIN   C_MAIN   C_MAIN   R_MIDDLE R_MIDDLE R_MIDDLE"
+        "L_LOWER  L_LOWER  C_FOOTER C_FOOTER C_FOOTER C_FOOTER C_FOOTER C_FOOTER C_FOOTER R_BOTTOM R_BOTTOM R_BOTTOM"
+        "L_BOTTOM L_BOTTOM C_FOOTER C_FOOTER C_FOOTER C_FOOTER C_FOOTER C_FOOTER C_FOOTER R_BOTTOM R_BOTTOM R_BOTTOM";
+}
+
+/* Passive Module Containers */
+.mod-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.mod-L_UPPER { grid-area: L_UPPER; }
+.mod-L_LOWER { grid-area: L_LOWER; }
+.mod-C_HEADER { grid-area: C_HEADER; }
+.mod-C_MAIN { grid-area: C_MAIN; }
+.mod-C_FOOTER { grid-area: C_FOOTER; }
+.mod-R_MIDDLE { grid-area: R_MIDDLE; }
+.mod-R_BOTTOM { grid-area: R_BOTTOM; }
+.mod-R_TOP { grid-area: R_TOP; }
+.mod-R_UPPER { grid-area: R_UPPER; }
+.mod-L_TOP { grid-area: L_TOP; }
+.mod-L_BOTTOM { grid-area: L_BOTTOM; }
+
+/* Global forced styles from Layout.js */
+body { 
+    background-color: #1a1a1c !important; 
+    cursor: default !important;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.vignette-damage {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 150;
+    opacity: var(--vignette-opacity, 0);
+    transition: opacity 1.5s ease-in-out;
+    background: radial-gradient(circle, transparent 40%, rgba(153, 27, 27, 0.4) 100%);
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8);
+}
+
+.vignette-damage.active-alarm {
+    animation: pulse-biomass 4s ease-in-out infinite;
+}
+
+@keyframes pulse-biomass {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.02); }
+}
+
+.noise-texture {
+    position: absolute;
+    inset: 0;
+    opacity: 0.05;
+    background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+    mix-blend-mode: overlay;
+}
+
+.death-screen, .start-menu {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.5s ease-in-out;
+}
+
+.death-screen.active, .start-menu.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 600;
+    backdrop-filter: blur(4px);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #09090b;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #27272a;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #3f3f46;
+}

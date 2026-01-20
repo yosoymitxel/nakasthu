@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="bg-[#050505]">
+<html lang="es" class="bg-[#1a1a1c]">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +13,7 @@
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="src/ui/styles/grid.css">
     <script>
         tailwind.config = {
             theme: {
@@ -34,6 +35,7 @@
                         'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'glitch': 'glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite',
                         'scanline': 'scanline 8s linear infinite',
+                        'scanline-h': 'scanline-h 4s linear infinite',
                         'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
                         'float': 'float 6s ease-in-out infinite',
                         'neural-scan': 'neural-scan 4s linear infinite',
@@ -76,6 +78,10 @@
                             '0%': { transform: 'translateY(-100%)' },
                             '100%': { transform: 'translateY(100%)' }
                         },
+                        'scanline-h': {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(500%)' }
+                        },
                         shake: {
                             '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
                             '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
@@ -92,20 +98,25 @@
     
     <style>
         :root {
-            --color-bg-main: #1a1b1e; /* Gris carbón profundo */
-            --color-bg-panel: #25262b; /* Gris acero */
-            --color-border: #c2410c; /* Naranja quemado */
-            --color-text-primary: #fdba74; /* Naranja melocotón */
-            --color-text-dim: #9ca3af; /* Gris claro */
+            --color-bg-main: #1a1a1c; /* Gris industrial muy oscuro */
+            --color-bg-panel: rgba(24, 24, 27, 0.4); /* bg-zinc-900/40 */
+            --color-border: #27272a; /* zinc-800 */
+            --color-text-primary: #d4d4d8; /* zinc-300 */
+            --color-text-dim: #a1a1aa; /* zinc-400 */
             
-            --color-black: #050505; /* Legacy fallback */
-            --color-amber: #FF8C00; /* Legacy fallback */
-            --color-cyan: #00FFFF; /* Legacy fallback */
+            --color-black: #1a1a1c;
+            --color-amber: #f59e0b;
+            --color-cyan: #06b6d4;
+            --color-emerald: #10b981;
+        }
+
+        * {
+            font-size: 12px;
         }
 
         body { 
             background-color: var(--color-bg-main); 
-            color: var(--color-text-dim); 
+            color: var(--color-text-primary); 
             overflow: hidden;
             font-family: 'JetBrains Mono', monospace;
             cursor: crosshair;
@@ -162,17 +173,23 @@
             clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px);
         }
         
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #09090b; border-left: 1px solid #18181b; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border: 1px solid #09090b; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
         .custom-scrollbar::-webkit-scrollbar {
-            width: 3px;
+            width: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #000;
+            background: #09090b;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #10b98155;
+            background: #27272a;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #10b981;
+            background: #3f3f46;
         }
 
         .crt-scanline {
@@ -193,12 +210,6 @@
             background: var(--color-amber);
             color: var(--color-black);
         }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #111; border-left: 1px solid #222; }
-        ::-webkit-scrollbar-thumb { background: #333; border: 1px solid #000; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--color-amber); }
 
         /* Text Glow Utilities */
         .text-glow-amber {

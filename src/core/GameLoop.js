@@ -5,6 +5,7 @@
  */
 import { state } from './State.js';
 import { bus } from './Bus.js';
+import { updateResonance } from '../systems/MechanicsEngine.js';
 
 class GameLoop {
     constructor() {
@@ -30,6 +31,9 @@ class GameLoop {
     }
 
     checkSystemFailure() {
+        // En el tutorial no se puede perder por recursos
+        if (state.isTutorialActive) return;
+
         if (state.energy <= 0 || state.stability <= 0) {
             state.gameStatus = 'GAME_OVER';
             console.log("%c[SYSTEM FAILURE] El bastión ha sido brechado.", "color: #ff0000; font-weight: bold;");
@@ -50,6 +54,28 @@ class GameLoop {
         if (state.gameStatus !== 'PLAYING') {
             state.endBatch();
             return;
+        }
+
+        // --- Lógica de Resonancia (Siempre activa para el tutorial) ---
+        updateResonance();
+
+        // --- Si el tutorial está activo, solo actualizamos resonancia y salimos ---
+        if (state.isTutorialActive || (state.tutorialStep > 0 && state.tutorialStep < 4)) {
+            state.endBatch();
+            return;
+        }
+
+        // --- Lógica de Juego Normal (Drenaje de vitales, Eclipse, etc.) ---
+        
+        // Notificación de energía crítica (Fase 18)
+        if (state.energy < 20 && !this.lastEnergyWarning) {
+            bus.emit('TERMINAL_PRINT', {
+                text: '>>> WARNING: CRITICAL_POWER_LEVEL - SISTEMAS DE SOPORTE AL LÍMITE.',
+                type: 'SYSTEM'
+            });
+            this.lastEnergyWarning = true;
+        } else if (state.energy >= 20) {
+            this.lastEnergyWarning = false;
         }
 
         // 1. Ciclo de tiempo y ECLIPSE
@@ -81,30 +107,22 @@ class GameLoop {
             }
         }
 
-        // 2. Vitales
-        const energyDrain = state.mode === 'ECLIPSE' ? 0.5 : 0.2;
+        // 2. Vitales (Rebalanceo: 1 punto cada 10 segundos = 0.1 por tick)
+        // CONGELAR durante el tutorial (Fase 18)
+        if (state.tutorialStep > 0 && state.tutorialStep < 4) {
+            state.endBatch();
+            return;
+        }
+
+        const energyDrain = state.mode === 'ECLIPSE' ? 0.02 : 0.01;
         state.energy = Math.max(0, state.energy - energyDrain);
         
         if (!state.purgeActive) {
-            state.oxygen = Math.max(0, state.oxygen - 0.1);
+            state.oxygen = Math.max(0, state.oxygen - 0.05);
         }
 
-        // 3. Resonancia y Estabilidad (Lógica Unificada Fase 16)
-        // RE-VINCULACIÓN DE RESONANCIA: Sync = 100 - abs(TargetFreq - PlayerFreq)
-        const freqDiff = Math.abs(state.targetFrequency - state.localFrequency);
-        const syncPercent = Math.max(0, 100 - freqDiff); 
-        state.resonanceSync = syncPercent;
-
-        if (syncPercent < 40) {
-            // Penalización crítica (Ajustada Fase 17)
-            state.stability = Math.max(0, state.stability - 0.5);
-        } else if (syncPercent > 90) {
-            // Recuperación
-            state.stability = Math.min(100, state.stability + 0.2);
-        }
-
-        if (syncPercent < 85) {
-            console.log(`[RESONANCE] Sync: ${syncPercent.toFixed(1)}% | Stability: ${state.stability.toFixed(1)}`);
+        if (state.resonanceSync < 85) {
+            console.log(`[RESONANCE] Sync: ${state.resonanceSync.toFixed(1)}% | Stability: ${state.stability.toFixed(1)}`);
         }
 
         // Finalizar ráfaga y emitir UN SOLO evento de cambio

@@ -31,8 +31,8 @@ export const SubjectVisual = () => {
         return html`
             <div className="flex flex-col items-center justify-center h-full text-red-500 font-mono p-4 text-center border border-red-900/50 bg-red-950/20 overflow-hidden relative">
                 <div className="text-2xl mb-2">⚠</div>
-                <div className="text-[10px] font-bold tracking-widest uppercase mb-1">VISUALIZER OFFLINE</div>
-                <div className="text-[8px] opacity-70">NEURAL LINK SEVERED</div>
+                <div className="text-[12px] font-bold tracking-widest uppercase mb-1">VISUALIZER OFFLINE</div>
+                <div className="text-[12px] opacity-70">NEURAL LINK SEVERED</div>
                 <!-- Efecto de estática -->
                 <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]"></div>
             </div>
@@ -40,7 +40,7 @@ export const SubjectVisual = () => {
     }
 
     if (!subject) return html`
-        <div className="flex items-center justify-center h-full italic text-zinc-800 text-[10px]">
+        <div className="flex items-center justify-center h-full italic text-zinc-400 text-[12px]">
             CÁMARA VACÍA
         </div>
     `;
@@ -59,14 +59,14 @@ export const SubjectVisual = () => {
             ${isPaused && html`
                 <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40">
                     <div className="border border-cyan-500/20 px-2 py-1 bg-black/60">
-                        <span className="text-[8px] text-cyan-500 tracking-[0.4em] animate-pulse">PAUSA</span>
+                        <span className="text-[12px] text-cyan-500 tracking-[0.4em] animate-pulse">PAUSA</span>
                     </div>
                 </div>
             `}
 
             <!-- Silueta o Representación Visual (Maximizado 80%) -->
             <div className=${`
-                relative w-[85%] h-[85%] border border-zinc-800/50 flex items-center justify-center overflow-hidden transition-all duration-500
+                relative w-[85%] h-[85%] border border-zinc-800 flex items-center justify-center overflow-hidden transition-all duration-500
                 ${isCorrupted ? 'hue-rotate-90 border-red-500/50 scale-105' : ''}
                 ${isPaused ? 'transition-none' : ''}
             `}>
@@ -77,7 +77,7 @@ export const SubjectVisual = () => {
                     ${visual.glitch === 'VOID' ? 'grayscale opacity-50' : ''}
                 `}>
                     <!-- Placeholder de silueta (Maximizado text-7xl) -->
-                    <span className=${`text-7xl select-none transition-colors ${isCorrupted ? 'text-red-600' : 'text-zinc-700 opacity-30'}`}>
+                    <span className=${`text-7xl select-none transition-colors ${isCorrupted ? 'text-red-600' : 'text-zinc-400 opacity-30'}`}>
                         ${type === 'EIDOLON' ? '◈' : '👤'}
                     </span>
                     
@@ -89,16 +89,16 @@ export const SubjectVisual = () => {
 
                 <!-- HUD del sujeto -->
                 <div className="absolute top-0 left-0 p-1 bg-black/80 border-r border-b border-zinc-800">
-                    <span className="text-[7px] font-mono text-cyan-500 font-bold">${id}</span>
+                    <span className="text-[12px] font-mono text-cyan-500 font-bold">${id}</span>
                 </div>
             </div>
 
             <!-- Etiquetas de Estado -->
             <div className="mt-2 flex flex-col items-center gap-1">
-                <span className="text-[8px] tracking-[0.3em] text-zinc-500 uppercase">${type}</span>
+                <span className="text-[12px] tracking-[0.3em] text-zinc-400 uppercase">${type}</span>
                 <div className="flex gap-1">
                     <div className=${`w-1 h-1 rounded-full ${visual.glitch === 'NONE' ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                    <span className="text-[6px] text-zinc-700 font-mono">SYNC: ${subject.scannedData.neuralSync}%</span>
+                    <span className="text-[12px] text-zinc-400 font-mono">SYNC: ${subject.scannedData.neuralSync}%</span>
                 </div>
             </div>
         </div>

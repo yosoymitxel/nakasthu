@@ -60,11 +60,11 @@ export const SystemInfo = () => {
 
     return html`
         <div className="flex flex-col h-full p-3 bg-transparent font-mono overflow-hidden">
-            <header className="border-b-[0.5px] border-zinc-900/50 pb-2 mb-3 flex justify-between items-center">
-                <h2 className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.3em]">
+            <header className="border-b-[0.5px] border-zinc-800 pb-2 mb-3 flex justify-between items-center">
+                <h2 className="text-[12px] font-black text-zinc-400 uppercase tracking-[0.3em]">
                     QUICK_REF / v1.0
                 </h2>
-                <div className="w-1.5 h-1.5 bg-emerald-900/20"></div>
+                <div className="w-2 h-2 bg-emerald-900/40"></div>
             </header>
             
             <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-3">
@@ -73,12 +73,12 @@ export const SystemInfo = () => {
                         <button 
                             key=${item.cmd}
                             onClick=${() => handleClick(item.cmd)}
-                            className="group flex flex-col items-start text-left transition-all duration-200 border-l-[0.5px] border-zinc-900 hover:border-emerald-900/30 pl-2"
+                            className="group flex flex-col items-start text-left transition-all duration-200 border-l-[1px] border-zinc-800 hover:border-emerald-500/50 pl-3 py-1 hover:bg-zinc-900/30"
                         >
-                            <span className="text-[10px] text-emerald-800 group-hover:text-emerald-600 font-bold tracking-tight transition-colors">
+                            <span className="text-[12px] text-emerald-500 group-hover:text-emerald-400 font-bold tracking-tight transition-colors">
                                 ${item.cmd}
                             </span>
-                            <span className="text-[8px] text-zinc-700 group-hover:text-zinc-500 uppercase leading-none mt-0.5">
+                            <span className="text-[12px] text-zinc-400 group-hover:text-zinc-300 uppercase leading-none mt-1 opacity-70">
                                 ${item.desc}
                             </span>
                         </button>
@@ -87,12 +87,12 @@ export const SystemInfo = () => {
                
             </div>
 
-            <footer className="mt-auto pt-3 border-t-[0.5px] border-zinc-900/50 flex justify-between items-center opacity-20">
-                <div className="flex gap-0.5">
-                    <div className="w-1 h-2 bg-zinc-900"></div>
-                    <div className="w-1 h-2 bg-zinc-900"></div>
+            <footer className="mt-auto pt-3 border-t-[0.5px] border-zinc-800 flex justify-between items-center opacity-40">
+                <div className="flex gap-1">
+                    <div className="w-1.5 h-3 bg-zinc-800"></div>
+                    <div className="w-1.5 h-3 bg-zinc-800"></div>
                 </div>
-                <span className="text-[7px] uppercase tracking-widest font-black">Ref_Active</span>
+                <span className="text-[12px] uppercase tracking-widest font-bold text-zinc-500">Ref_Active</span>
             </footer>
         </div>
     `;

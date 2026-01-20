@@ -5,7 +5,7 @@
 import { state } from '../core/State.js';
 import { bus } from '../core/Bus.js';
 import { executeScan, SCAN_TYPES } from './Scanner.js';
-import { interrogate } from './DialogueEngine.js';
+import { dialogueEngine } from './DialogueEngine.js';
 
 let lastCommand = null;
 
@@ -24,26 +24,46 @@ export const processCommand = (input) => {
         const scanStatus = state.activeScan 
             ? ` | SCAN: ${state.activeScan.name} (${state.activeScan.progress.toFixed(0)}%)` 
             : " | SCAN: IDLE";
-        return `SYS_INFO: E:${Math.floor(state.energy)} S:${Math.floor(state.stability)}${scanStatus}`;
+        
+        return {
+            text: `SYS_INFO: E:${Math.floor(state.energy)} S:${Math.floor(state.stability)}${scanStatus}`,
+            type: state.energy < 20 ? 'CRITICAL' : 'SYSTEM',
+            links: [
+                { label: 'REPAIR', event: 'TERMINAL_INPUT', data: '/repair' },
+                { label: 'SCAN_THERMAL', event: 'TERMINAL_INPUT', data: '/scan thermal' }
+            ]
+        };
     }
 
     if (cmd === '/interrogate') {
-        const response = interrogate();
-        if (typeof response === 'string' && response.startsWith('ERROR')) {
-            return response;
+        if (state.activeDialogue) {
+            return { text: "ERROR: ENLACE NEURAL YA ACTIVO.", type: 'error' };
         }
-        return `ENLACE NEURAL ESTABLECIDO. REVISAR MÓDULO COMS (MOD-05).`;
+        
+        if (state.energy < 5) {
+            return { text: "ERROR: ENERGÍA INSUFICIENTE PARA ENLACE NEURAL (5 REQUERIDA).", type: 'error' };
+        }
+
+        state.energy -= 5;
+        dialogueEngine.triggerRandomDialogue();
+        return { 
+            text: `ENLACE NEURAL ESTABLECIDO. REVISAR MÓDULO COMS (MOD-05). | -5 ENERGY`,
+            type: 'success'
+        };
     }
     
     if (cmd === '/repair') {
-        if (state.energy > 30) {
+        if (state.energy >= 20) {
             state.startBatch();
             state.stability = Math.min(100, state.stability + 10);
-            state.energy = Math.max(0, state.energy - 25);
+            state.energy = Math.max(0, state.energy - 20);
             state.endBatch();
-            return "PROTOCOL REPAIR: SUCCESS. +10 STABILITY | -25 ENERGY";
+            return { 
+                text: "PROTOCOL REPAIR: SUCCESS. +10 STABILITY | -20 ENERGY",
+                type: 'success'
+            };
         } else {
-            return "ERROR: INSUFFICIENT ENERGY (REQUIRED: 30)";
+            return { text: "ERROR: INSUFFICIENT ENERGY (REQUIRED: 20)", type: 'error' };
         }
     }
 
@@ -53,16 +73,14 @@ export const processCommand = (input) => {
         state.moduleLock = { bioscan: true, subject: true };
         state.endBatch();
 
-        bus.emit('DIALOGUE_EMITTED', {
-            sender: 'SISTEMA',
+        bus.emit('TERMINAL_PRINT', {
             text: '[CRITICAL] SOBRECARGA ACTIVADA: RESTAURANDO ESTABILIDAD. MÓDULOS BIOSCAN/VISUALIZER DESACTIVADOS POR 15S.',
             type: 'SYSTEM'
         });
 
         setTimeout(() => {
             state.moduleLock = { bioscan: false, subject: false };
-            bus.emit('DIALOGUE_EMITTED', {
-                sender: 'SISTEMA',
+            bus.emit('TERMINAL_PRINT', {
                 text: '[INFO] REINICIO DE MÓDULOS COMPLETADO. BIOSCAN/VISUALIZER ONLINE.',
                 type: 'SYSTEM'
             });
@@ -73,32 +91,49 @@ export const processCommand = (input) => {
 
     if (cmd === '/scan') {
         if (!args[1]) {
-            return "USO: /scan [thermal|neural|nakara|biometric|resonance]";
+            return {
+                text: "USO: /scan [thermal|neural|nakara|biometric|resonance]",
+                type: 'INFO',
+                links: [
+                    { label: 'THERMAL', event: 'TERMINAL_INPUT', data: '/scan thermal' },
+                    { label: 'BIOMETRIC', event: 'TERMINAL_INPUT', data: '/scan biometric' }
+                ]
+            };
         }
 
         const typeId = args[1].toUpperCase();
         const scanType = SCAN_TYPES[typeId];
 
         if (!scanType) {
-            return `ERROR: TIPO DE ESCANEO '${args[1]}' NO RECONOCIDO.`;
+            return { text: `ERROR: TIPO DE ESCANEO '${args[1]}' NO RECONOCIDO.`, type: 'error' };
         }
 
         if (state.activeScan) {
-            return "ERROR: ESCANEO EN CURSO. ESPERE A QUE FINALICE.";
+            return { text: "ERROR: ESCANEO EN CURSO. ESPERE A QUE FINALICE.", type: 'error' };
         }
 
         if (state.energy < scanType.cost) {
-            return `ERROR: ENERGÍA INSUFICIENTE (${scanType.cost} REQUERIDA).`;
+            return { text: `ERROR: ENERGÍA INSUFICIENTE (${scanType.cost} REQUERIDA).`, type: 'error' };
         }
 
         // Ejecutar escaneo de forma asíncrona (no bloqueamos la terminal)
         executeScan(scanType.id);
-        return `INICIANDO PROTOCOLO ${scanType.name}...`;
+        return { text: `INICIANDO PROTOCOLO ${scanType.name}...`, type: 'SYSTEM' };
     }
     
     if (cmd === '/help') {
-        return "COMANDOS: /status, /repair, /scan [tipo], /clear";
+        return {
+            text: "COMANDOS DISPONIBLES EN ZHYR_OS:",
+            type: 'INFO',
+            links: [
+                { label: 'STATUS', event: 'TERMINAL_INPUT', data: '/status', highlight: ['L_HEADER'] },
+                { label: 'INTERROGATE', event: 'TERMINAL_INPUT', data: '/interrogate', highlight: ['C_MAIN'] },
+                { label: 'REPAIR', event: 'TERMINAL_INPUT', data: '/repair', highlight: ['C_FOOTER'] },
+                { label: 'SCAN', event: 'TERMINAL_INPUT', data: '/scan ', highlight: ['L_UPPER'] },
+                { label: 'CLEAR', event: 'TERMINAL_INPUT', data: '/clear' }
+            ]
+        };
     }
     
-    return `ERROR: COMANDO '${cmd}' NO RECONOCIDO.`;
+    return { text: `ERROR: COMANDO '${cmd}' NO RECONOCIDO.`, type: 'error' };
 };

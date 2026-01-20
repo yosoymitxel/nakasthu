@@ -19,6 +19,7 @@ export const Oscilloscope = () => {
     const resonanceSync = useGameState('resonanceSync');
     const stability = useGameState('stability');
     const isPaused = useGameState('isPaused');
+    const isTutorialActive = useGameState('isTutorialActive');
 
     // Estado local para sliders suaves
     const [sliderFreq, setSliderFreq] = React.useState(localFreq);
@@ -33,17 +34,36 @@ export const Oscilloscope = () => {
         setSliderPhase(localPhase);
     }, [localPhase]);
 
-    const valuesRef = useRef({ targetFreq, targetPhase, localFreq: sliderFreq, localPhase: sliderPhase, stability, resonanceSync, isPaused });
+    const valuesRef = useRef({ 
+        targetFreq, 
+        targetPhase, 
+        localFreq: sliderFreq, 
+        localPhase: sliderPhase, 
+        stability, 
+        resonanceSync, 
+        isPaused,
+        isTutorialActive
+    });
 
     useEffect(() => {
-        valuesRef.current = { targetFreq, targetPhase, localFreq: sliderFreq, localPhase: sliderPhase, stability, resonanceSync, isPaused };
-    }, [targetFreq, targetPhase, sliderFreq, sliderPhase, stability, resonanceSync, isPaused]);
+        valuesRef.current = { 
+            targetFreq, 
+            targetPhase, 
+            localFreq: sliderFreq, 
+            localPhase: sliderPhase, 
+            stability, 
+            resonanceSync, 
+            isPaused,
+            isTutorialActive
+        };
+    }, [targetFreq, targetPhase, sliderFreq, sliderPhase, stability, resonanceSync, isPaused, isTutorialActive]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         let animationFrameId;
-        let time = 0;
+        let timeA = 0; // Tiempo para onda Sujeto
+        let timeB = 0; // Tiempo para onda Jugador
 
         const resizeCanvas = () => {
             const rect = canvas.getBoundingClientRect();
@@ -58,7 +78,16 @@ export const Oscilloscope = () => {
         window.addEventListener('resize', resizeCanvas);
 
         const render = () => {
-            const { targetFreq, targetPhase, localFreq, localPhase, stability, resonanceSync, isPaused } = valuesRef.current;
+            const { 
+                targetFreq, 
+                targetPhase, 
+                localFreq, 
+                localPhase, 
+                stability, 
+                resonanceSync, 
+                isPaused,
+                isTutorialActive 
+            } = valuesRef.current;
             
             const width = canvas.width / window.devicePixelRatio;
             const height = canvas.height / window.devicePixelRatio;
@@ -68,7 +97,13 @@ export const Oscilloscope = () => {
             
             // Incrementar tiempo para animación si no está pausado
             if (!isPaused) {
-                time += 0.05;
+                if (isTutorialActive) {
+                    timeA += 0.005; // Sujeto muy lento en tutorial
+                    timeB += 0.12;  // Jugador muy rápido en tutorial
+                } else {
+                    timeA += 0.05;
+                    timeB += 0.05;
+                }
             }
             
             // Glitch basado en estabilidad (0-100)
@@ -92,7 +127,7 @@ export const Oscilloscope = () => {
             for (let x = 0; x < width; x++) {
                 const glitch = isPaused ? 0 : (Math.random() - 0.5) * 5 * Math.pow(glitchIntensity, 2);
                 // Escalar frecuencia para visualización y añadir tiempo
-                const y = midY + Math.sin(x * (targetFreq * 0.02) + targetPhase + time) * 25 + glitch;
+                const y = midY + Math.sin(x * (targetFreq * 0.02) + targetPhase + timeA) * 25 + glitch;
                 if (x === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             }
@@ -109,7 +144,7 @@ export const Oscilloscope = () => {
             for (let x = 0; x < width; x++) {
                 const glitch = isPaused ? 0 : (Math.random() - 0.5) * 10 * Math.pow(glitchIntensity, 2);
                 // Escalar frecuencia para visualización y añadir tiempo
-                const y = midY + Math.sin(x * (localFreq * 0.02) + localPhase + time) * 25 + glitch;
+                const y = midY + Math.sin(x * (localFreq * 0.02) + localPhase + timeB) * 25 + glitch;
                 if (x === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             }
@@ -131,6 +166,7 @@ export const Oscilloscope = () => {
         if (isNaN(val)) return;
         setSliderFreq(val);
         engineState.localFrequency = val;
+        updateResonance(); // Actualización inmediata
     };
 
     const handlePhaseChange = (e) => {
@@ -138,35 +174,36 @@ export const Oscilloscope = () => {
         if (isNaN(val)) return;
         setSliderPhase(val);
         engineState.localPhase = val;
+        updateResonance(); // Actualización inmediata
     };
 
     return html`
         <div className="flex h-50 w-full bg-transparent overflow-hidden p-3 gap-4">
             <!-- Columna del Osciloscopio -->
-            <div className="flex-1 relative border-[0.5px] border-zinc-900/50 bg-black/20">
+            <div className="flex-1 relative border-[0.5px] border-zinc-800 bg-black/20">
                 <canvas ref=${canvasRef} className="w-full h-50 opacity-80" />
                 
                 <!-- Overlay de Datos -->
                 <div className="absolute top-2 left-2 flex flex-col gap-1 pointer-events-none">
                     <div className="flex items-center gap-2">
                         <div className="w-1 h-3 bg-cyan-600/30"></div>
-                        <span className="text-[8px] text-cyan-600/40 font-black tracking-widest uppercase">Subject_Signal</span>
+                        <span className="text-[12px] text-cyan-600/40 font-black tracking-widest uppercase">Subject_Signal</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <div className=${`w-1 h-3 ${resonanceSync > 90 ? 'bg-cyan-600/60' : 'bg-amber-600/40'}`}></div>
-                        <span className=${`text-[8px] font-black tracking-widest uppercase ${resonanceSync > 90 ? 'text-cyan-600/60' : 'text-amber-600/60'}`}>
-                            Sync_Match: ${resonanceSync.toFixed(0)}%
+                        <span className=${`text-[12px] font-black tracking-widest uppercase ${resonanceSync > 90 ? 'text-cyan-600/60' : 'text-amber-600/60'}`}>
+                            Sync_Match: ${Math.floor(resonanceSync)}%
                         </span>
                     </div>
                 </div>
             </div>
 
             <!-- Columna de Sliders de Sintonización -->
-            <div className="w-48 flex flex-col justify-center gap-6 border-l-[0.5px] border-zinc-900/30 pl-4">
+            <div className="w-48 flex flex-col justify-center gap-6 border-l-[0.5px] border-zinc-800 pl-4">
                 <div className="flex flex-col gap-2">
                     <div className="flex justify-between items-center">
-                        <span className="text-[7px] text-zinc-600 font-bold uppercase tracking-widest">Frequency_Mod</span>
-                        <span className="text-[9px] text-zinc-700 font-mono">${sliderFreq.toFixed(1)}Hz</span>
+                        <span className="text-[12px] text-zinc-400 font-bold uppercase tracking-widest">Frequency_Mod</span>
+                        <span className="text-[12px] text-zinc-400 font-mono">${sliderFreq.toFixed(1)}Hz</span>
                     </div>
                     <input 
                         type="range" 
@@ -181,8 +218,8 @@ export const Oscilloscope = () => {
 
                 <div className="flex flex-col gap-2">
                     <div className="flex justify-between items-center">
-                        <span className="text-[7px] text-zinc-600 font-bold uppercase tracking-widest">Phase_Shift</span>
-                        <span className="text-[9px] text-zinc-700 font-mono">${sliderPhase.toFixed(2)}</span>
+                        <span className="text-[12px] text-zinc-400 font-bold uppercase tracking-widest">Phase_Shift</span>
+                        <span className="text-[12px] text-zinc-400 font-mono">${sliderPhase.toFixed(2)}</span>
                     </div>
                     <input 
                         type="range" 

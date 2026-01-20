@@ -40,6 +40,7 @@ const initialState = {
     quota: 10,
     judgmentErrors: 0,
     loreArchive: [], // Lista de información recolectada (Fase 15)
+    activeDialogue: null, // Diálogo activo actual
     stats: {
         innocentsSacrificed: 0,
         corruptsDetected: 0,
@@ -47,7 +48,11 @@ const initialState = {
         innocentsAuthorized: 0
     },
     gameStatus: 'START_MENU', // 'START_MENU' | 'PLAYING' | 'PAUSED' | 'GAME_OVER'
-    isPaused: false
+    isPaused: false,
+    isTutorialActive: false,
+    tutorialStep: 0, // 0: No tutorial, 1-4: Pasos del tutorial
+    hasSeenTutorial: localStorage.getItem('nakasthu_tutorial_seen') === 'true',
+    requiredScan: 'BIOMETRIC' // Tipo de escaneo requerido para decisiones (rotativo)
 };
 
 // Objeto base que contiene los métodos de batching y acciones de entidad
@@ -69,9 +74,11 @@ const stateManager = {
     // Reinicio total del sistema (Fase 11)
     resetState() {
         this.startBatch();
+        const tutorialSeen = this.hasSeenTutorial; // Preservar estado del tutorial
         Object.keys(initialState).forEach(key => {
             this[key] = initialState[key];
         });
+        this.hasSeenTutorial = tutorialSeen;
         this.nextSubject();
         this.endBatch();
         console.log("%c[STATE] Sistema reiniciado satisfactoriamente.", "color: #10b981;");

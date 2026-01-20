@@ -6,16 +6,23 @@ import { gameLoop } from './GameLoop.js';
 import { state } from './State.js';
 import { audio } from './Audio.js';
 import { loreSystem } from '../systems/LoreSystem.js';
+import { dialogueEngine } from '../systems/DialogueEngine.js';
+import { tutorialController } from '../systems/TutorialController.js';
 
 console.log("%c NAKASTHU // CORE BOOT SEQUENCE STARTED ", "background: #111; color: #FF8C00; font-weight: bold;");
 
 // Inicializar sistemas asíncronos
 audio.init();
-// El loreSystem se auto-inicializa al importar, pero aseguramos su carga
-const _lore = loreSystem;
+
+// Asegurar que los sistemas singletons se instancien y escuchen eventos
+const systems = {
+    lore: loreSystem,
+    dialogue: dialogueEngine,
+    tutorial: tutorialController
+};
 
 // Exponer state para depuración
 window.state = state;
+window.__SYSTEMS__ = systems;
+// El GameLoop es gestionado por el hook useGameLoop en la capa de UI.
 
-// Iniciar el ciclo de juego
-gameLoop.start();

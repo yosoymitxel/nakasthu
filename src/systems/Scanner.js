@@ -7,11 +7,11 @@ import { state } from '../core/State.js';
 import { bus } from '../core/Bus.js';
 
 export const SCAN_TYPES = {
-    THERMAL: { id: 'THERMAL', name: 'TÉRMICO', cost: 5, duration: 2000 },
-    NEURAL: { id: 'NEURAL', name: 'NEURAL', cost: 10, duration: 4000 },
-    NAKARA: { id: 'NAKARA', name: 'SONDA NAKARA', cost: 15, duration: 6000 },
-    BIOMETRIC: { id: 'BIOMETRIC', name: 'BIO-MÉTRICO', cost: 5, duration: 2500 },
-    RESONANCE: { id: 'RESONANCE', name: 'RESONANCIA', cost: 10, duration: 5000 }
+    THERMAL: { id: 'THERMAL', name: 'TÉRMICO', cost: 0.5, duration: 2000 },
+    NEURAL: { id: 'NEURAL', name: 'NEURAL', cost: 1, duration: 4000 },
+    NAKARA: { id: 'NAKARA', name: 'SONDA NAKARA', cost: 2, duration: 6000 },
+    BIOMETRIC: { id: 'BIOMETRIC', name: 'BIO-MÉTRICO', cost: 0.5, duration: 2500 },
+    RESONANCE: { id: 'RESONANCE', name: 'RESONANCIA', cost: 1, duration: 5000 }
 };
 
 /**
@@ -29,8 +29,10 @@ export const executeScan = async (typeId) => {
         return false;
     }
 
-    // Consumir energía
-    state.energy = Math.max(0, state.energy - scan.cost);
+    // Consumir energía (Solo si no estamos en el tutorial)
+    if (!state.isTutorialActive) {
+        state.energy = Math.max(0, state.energy - scan.cost);
+    }
     
     // Calcular duración ajustada por sincronía de resonancia (MOD-06)
     const syncBonus = (state.resonanceSync / 100) * 0.5;
@@ -65,6 +67,11 @@ export const executeScan = async (typeId) => {
                     result: 'DATA_EXTRACTED',
                     subject: state.currentEntity,
                     timestamp: Date.now()
+                });
+
+                bus.emit('TERMINAL_PRINT', {
+                    text: `[REPORTE] ESCANEO ${scan.name} FINALIZADO PARA SUJETO ${state.currentEntity?.id || '?'}.`,
+                    type: 'SYSTEM'
                 });
 
                 // REGLA: Si el escaneo es BIOMÉTRICO, emitir señal para habilitar decisiones
