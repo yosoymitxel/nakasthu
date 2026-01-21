@@ -13,7 +13,7 @@ export const Analytics = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [lines, setLines] = useState([]);
     const [corruptionProb, setCorruptionProb] = useState(null);
-    
+
     const currentEntity = useGameState('currentEntity');
     const stability = useGameState('stability');
     const mode = useGameState('mode');
@@ -43,20 +43,20 @@ export const Analytics = () => {
                 const { scannedData } = currentEntity;
                 let detail = "";
                 let newProb = null;
-                switch(data.type.id) {
-                    case 'BIOMETRIC': 
-                        detail = `TEMP: ${Math.floor(scannedData.temperature)}°C`; 
+                switch (data.type.id) {
+                    case 'BIOMETRIC':
+                        detail = `TEMP: ${Math.floor(scannedData.temperature)}°C`;
                         newProb = analyzeSubject('BIOMETRIC', currentEntity, mode);
                         break;
-                    case 'NEURAL': 
-                        detail = `SYNC: ${Math.floor(scannedData.neuralSync)}%`; 
+                    case 'NEURAL':
+                        detail = `SYNC: ${Math.floor(scannedData.neuralSync)}%`;
                         newProb = analyzeSubject('NEURAL', currentEntity, mode);
                         break;
                     default: detail = `DATA_RECOVERY: SUCCESS`;
                 }
-                
+
                 if (newProb !== null) setCorruptionProb(newProb);
-                
+
                 const dataString = `> SCAN: ${data.type.name} | RESULT: [${detail}] | PROB: ${newProb || '??'}%`;
                 setLines(prev => [dataString, ...prev]);
 
@@ -76,13 +76,19 @@ export const Analytics = () => {
             setCorruptionProb(null);
         };
 
+        const onDialogueStarted = () => {
+            setLines(prev => [`> ENLACE_NEURAL_ACTIVO`, `> INTERROGAR: MONITORIZANDO_RESPUESTAS_VOCALES`, ...prev]);
+        };
+
         bus.on('SCAN_STARTED', onScanStart);
         bus.on('SCAN_COMPLETED', onScanComplete);
         bus.on('NEW_SUBJECT_DETECTED', onNewSubject);
+        bus.on('DIALOGUE_STARTED', onDialogueStarted);
         return () => {
             bus.off('SCAN_STARTED', onScanStart);
             bus.off('SCAN_COMPLETED', onScanComplete);
             bus.off('NEW_SUBJECT_DETECTED', onNewSubject);
+            bus.off('DIALOGUE_STARTED', onDialogueStarted);
         };
     }, [currentEntity, mode]);
 
@@ -106,8 +112,16 @@ export const Analytics = () => {
 
             <!-- Log de Datos Recuperados -->
             <div className="flex-1 flex flex-col gap-1 overflow-y-auto custom-scrollbar pr-2">
-                <div className="text-[12px] text-zinc-500 uppercase tracking-widest mb-2 border-b border-zinc-800 pb-1 font-bold">Análisis_Trazas_Log</div>
-                ${lines.length === 0 ? html`
+                <div className="text-[12px] text-zinc-500 uppercase tracking-widest mb-2 border-b border-zinc-800 pb-1 font-bold flex justify-between">
+                    <span>Análisis_Trazas_Log</span>
+                    ${focusMode && html`<span className="text-cyan-600 animate-pulse text-[10px]">NEURAL_TRACE_ACTIVE</span>`}
+                </div>
+                ${focusMode && html`
+                    <div className="text-[12px] text-cyan-500/80 italic uppercase tracking-widest mb-2 animate-pulse">
+                        > ANALIZANDO_PATRON_VOCAL... [${Math.floor(Date.now() / 1000) % 2 === 0 ? '|||' : '... '}]
+                    </div>
+                `}
+                ${lines.length === 0 && !focusMode ? html`
                     <div className="text-[12px] text-zinc-600 italic uppercase tracking-widest mt-2">
                         Esperando_Datos...
                     </div>

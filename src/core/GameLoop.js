@@ -15,7 +15,7 @@ class GameLoop {
 
     start() {
         if (this.interval) return;
-        
+
         // Inicializar primer sujeto
         if (!state.currentEntity) {
             state.nextSubject();
@@ -37,14 +37,14 @@ class GameLoop {
         if (state.energy <= 0 || state.stability <= 0) {
             state.gameStatus = 'GAME_OVER';
             console.log("%c[SYSTEM FAILURE] El bastión ha sido brechado.", "color: #ff0000; font-weight: bold;");
-            bus.emit('SYSTEM_FAILURE', { 
-                reason: state.energy <= 0 ? 'ENERGY_DEPLETED' : 'STABILITY_COLLAPSED' 
+            bus.emit('SYSTEM_FAILURE', {
+                reason: state.energy <= 0 ? 'ENERGY_DEPLETED' : 'STABILITY_COLLAPSED'
             });
         }
     }
 
     tick() {
-        if (state.gameStatus !== 'PLAYING' || state.isPaused) return;
+        if (state.gameStatus !== 'PLAYING' || state.isPaused || state.focusMode) return;
 
         // Iniciar ráfaga de actualizaciones (Batch)
         state.startBatch();
@@ -66,7 +66,7 @@ class GameLoop {
         }
 
         // --- Lógica de Juego Normal (Drenaje de vitales, Eclipse, etc.) ---
-        
+
         // Notificación de energía crítica (Fase 18)
         if (state.energy < 20 && !this.lastEnergyWarning) {
             bus.emit('TERMINAL_PRINT', {
@@ -80,11 +80,11 @@ class GameLoop {
 
         // 1. Ciclo de tiempo y ECLIPSE
         const orbitalStep = state.mode === 'ECLIPSE' ? 2 : 1; // 2% en eclipse, 1% en solar (ajustable)
-        
+
         if (state.mode === 'ECLIPSE') {
             state.eclipseTimer--;
             state.orbitalCycle = Math.min(100, state.orbitalCycle + orbitalStep);
-            
+
             if (state.eclipseTimer <= 0 || state.orbitalCycle >= 100) {
                 state.mode = 'NORMAL';
                 state.phase = 'SOLAR';
@@ -94,9 +94,9 @@ class GameLoop {
             }
         } else {
             // Avance constante del 1% (o según velocidad de dificultad)
-            state.worldTime += 1; 
+            state.worldTime += 1;
             state.orbitalCycle = Math.min(100, state.worldTime);
-            
+
             if (state.worldTime >= 100) {
                 state.mode = 'ECLIPSE';
                 state.phase = 'ECLIPSE';
@@ -116,7 +116,7 @@ class GameLoop {
 
         const energyDrain = state.mode === 'ECLIPSE' ? 0.02 : 0.01;
         state.energy = Math.max(0, state.energy - energyDrain);
-        
+
         if (!state.purgeActive) {
             state.oxygen = Math.max(0, state.oxygen - 0.05);
         }

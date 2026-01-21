@@ -64,6 +64,8 @@ const initialState = {
     isPaused: false,
     isTutorialActive: false,
     tutorialStep: 0, // 0: No tutorial, 1-4: Pasos del tutorial
+    focusMode: false, // Bloquea el resto de la UI durante diálogos profundos
+    unlockedCommands: ['HELP', 'CLEAR', 'STATUS'], // Comandos iniciales
     hasSeenTutorial: localStorage.getItem('nakasthu_tutorial_seen') === 'true',
     requiredScan: 'BIOMETRIC' // Tipo de escaneo requerido para decisiones (rotativo)
 };

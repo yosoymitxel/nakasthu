@@ -13,18 +13,18 @@ export const processCommand = (input) => {
     const args = input.trim().split(' ');
     const cmdInput = input.trim().toLowerCase();
     const cmd = args[0].toLowerCase();
-    
+
     // Validación: No procesar comandos duplicados consecutivos (MOD-09 Protection)
     if (cmdInput === lastCommand) {
         return "ERROR: COMANDO REPETIDO DETECTADO. FLUJO BLOQUEADO.";
     }
     lastCommand = cmdInput;
-    
+
     if (cmd === '/status') {
-        const scanStatus = state.activeScan 
-            ? ` | SCAN: ${state.activeScan.name} (${state.activeScan.progress.toFixed(0)}%)` 
+        const scanStatus = state.activeScan
+            ? ` | SCAN: ${state.activeScan.name} (${state.activeScan.progress.toFixed(0)}%)`
             : " | SCAN: IDLE";
-        
+
         return {
             text: `SYS_INFO: E:${Math.floor(state.energy)} S:${Math.floor(state.stability)}${scanStatus}`,
             type: state.energy < 20 ? 'CRITICAL' : 'SYSTEM',
@@ -39,26 +39,26 @@ export const processCommand = (input) => {
         if (state.activeDialogue) {
             return { text: "ERROR: ENLACE NEURAL YA ACTIVO.", type: 'error' };
         }
-        
+
         if (state.energy < 5) {
             return { text: "ERROR: ENERGÍA INSUFICIENTE PARA ENLACE NEURAL (5 REQUERIDA).", type: 'error' };
         }
 
         state.energy -= 5;
         dialogueEngine.triggerRandomDialogue();
-        return { 
+        return {
             text: `ENLACE NEURAL ESTABLECIDO. REVISAR MÓDULO COMS (MOD-05). | -5 ENERGY`,
             type: 'success'
         };
     }
-    
+
     if (cmd === '/repair') {
         if (state.energy >= 20) {
             state.startBatch();
             state.stability = Math.min(100, state.stability + 10);
             state.energy = Math.max(0, state.energy - 20);
             state.endBatch();
-            return { 
+            return {
                 text: "PROTOCOL REPAIR: SUCCESS. +10 STABILITY | -20 ENERGY",
                 type: 'success'
             };
@@ -120,20 +120,47 @@ export const processCommand = (input) => {
         executeScan(scanType.id);
         return { text: `INICIANDO PROTOCOLO ${scanType.name}...`, type: 'SYSTEM' };
     }
-    
+
     if (cmd === '/help') {
+        const available = state.unlockedCommands || [];
         return {
-            text: "COMANDOS DISPONIBLES EN ZHYR_OS:",
+            text: "COMANDOS AUTORIZADOS EN ZHYR_OS:",
             type: 'INFO',
             links: [
-                { label: 'STATUS', event: 'TERMINAL_INPUT', data: '/status', highlight: ['L_HEADER'] },
-                { label: 'INTERROGATE', event: 'TERMINAL_INPUT', data: '/interrogate', highlight: ['C_MAIN'] },
-                { label: 'REPAIR', event: 'TERMINAL_INPUT', data: '/repair', highlight: ['C_FOOTER'] },
-                { label: 'SCAN', event: 'TERMINAL_INPUT', data: '/scan ', highlight: ['L_UPPER'] },
+                { label: 'STATUS', event: 'TERMINAL_INPUT', data: '/status' },
+                { label: 'INTERROGATE', event: 'TERMINAL_INPUT', data: '/interrogate' },
+                ...available.map(c => ({ label: c, event: 'TERMINAL_INPUT', data: `/${c.toLowerCase()}` })),
+                { label: 'REPAIR', event: 'TERMINAL_INPUT', data: '/repair' },
+                { label: 'SCAN', event: 'TERMINAL_INPUT', data: '/scan ' },
                 { label: 'CLEAR', event: 'TERMINAL_INPUT', data: '/clear' }
             ]
         };
     }
-    
-    return { text: `ERROR: COMANDO '${cmd}' NO RECONOCIDO.`, type: 'error' };
+
+    // Comandos de Lore Desbloqueables
+    if (cmd === '/logs') {
+        if (!state.unlockedCommands.includes('LOGS')) return { text: "ERROR: ACCESO DENEGADO. CREDENCIALES INSUFICIENTES.", type: 'error' };
+        return {
+            text: "[ARCHIVO KRON-42] Orval reportó 1/3 de bajas. La realidad es que el Monolito seleccionó a los 'aptos'. Leina intentó advertir sobre la asimilación neural.",
+            type: 'INFO'
+        };
+    }
+
+    if (cmd === '/zh-archive') {
+        if (!state.unlockedCommands.includes('ZH_ARCHIVE')) return { text: "ERROR: ACCESO DENEGADO.", type: 'error' };
+        return {
+            text: "[ZH_HISTORY] Zhyr: Planeta de clase X-9. Descubierto por la Orden. El Monolito no es nativo. Los símbolos en su superficie son un mapa de la red neural humana.",
+            type: 'INFO'
+        };
+    }
+
+    if (cmd === '/kamin-intel') {
+        if (!state.unlockedCommands.includes('KAMIN_INTEL')) return { text: "ERROR: ACCESO DENEGADO.", type: 'error' };
+        return {
+            text: "[INTEL_KAMIN] El Mensajero afirma haber cruzado. Informes de infiltrados sugieren que sus seguidores están grabando símbolos en su piel. El Bastión se está convirtiendo en un templo.",
+            type: 'INFO'
+        };
+    }
+
+    return { text: `ERROR: COMANDO '${cmd}' NO RECONOCIDO O NO AUTORIZADO.`, type: 'error' };
 };

@@ -17,7 +17,7 @@ class DialogueEngine {
         try {
             // Intentar cargar desde el entorno de navegador o node (test)
             let data;
-            
+
             // Verificación robusta del entorno
             const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
             const isTest = typeof process !== 'undefined' && process.env && process.env.VITEST;
@@ -33,7 +33,7 @@ class DialogueEngine {
                 const content = await fs.readFile(filePath, 'utf-8');
                 data = JSON.parse(content);
             }
-            
+
             this.dialogues = data.dialogues;
             console.log('[DIALOGUE] Base de datos cargada:', this.dialogues.length);
         } catch (error) {
@@ -46,11 +46,12 @@ class DialogueEngine {
      */
     triggerRandomDialogue() {
         if (this.dialogues.length === 0) return;
-        
+
         const randomIndex = Math.floor(Math.random() * this.dialogues.length);
         this.currentDialogue = this.dialogues[randomIndex];
-        
+
         // Actualizar estado para React
+        state.focusMode = true;
         state.activeDialogue = {
             id: this.currentDialogue.id,
             text: this.currentDialogue.text,
@@ -67,15 +68,27 @@ class DialogueEngine {
         if (!this.currentDialogue || !this.currentDialogue.options[optionIndex]) return;
 
         const option = this.currentDialogue.options[optionIndex];
-        
+
         // Aplicar consecuencias al estado global (Omitir en tutorial)
         if (!state.isTutorialActive) {
             state.energy = Math.max(0, state.energy - (option.energyCost || 0));
             state.stability = Math.min(100, Math.max(0, state.stability + (option.stabilityImpact || 0)));
         }
-        
+
         if (option.loreUnlock) {
             bus.emit('LORE_UNLOCKED', option.loreUnlock);
+
+            // Si el desbloqueo contiene un comando (ej: CMD_LOGS), añadir a unlockedCommands
+            if (option.loreUnlock.startsWith('CMD_')) {
+                const command = option.loreUnlock.replace('CMD_', '');
+                if (!state.unlockedCommands.includes(command)) {
+                    state.unlockedCommands = [...state.unlockedCommands, command];
+                    bus.emit('TERMINAL_PRINT', {
+                        text: `> NUEVO COMANDO AUTORIZADO: ${command}`,
+                        type: 'INFO'
+                    });
+                }
+            }
         }
 
         bus.emit('DIALOGUE_CONSEQUENCE', {
@@ -86,6 +99,7 @@ class DialogueEngine {
         // Limpiar diálogo actual en estado
         this.currentDialogue = null;
         state.activeDialogue = null;
+        state.focusMode = false;
     }
 }
 

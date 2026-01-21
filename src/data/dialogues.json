@@ -2,14 +2,14 @@
     "dialogues": [
         {
             "id": "DLG_01",
-            "text": "¿Dónde estoy? No... no puedo ver nada. Por favor, sácame de aquí.",
+            "text": "¿Dónde estoy? No... no puedo ver nada. Por favor, sácame de aquí. Mi familia... Sector 4...",
             "options": [
                 {
                     "text": "Proceder con Escaneo",
                     "energyCost": 5,
                     "loreUnlock": "LORE_01",
                     "stabilityImpact": -2,
-                    "consequence": "Sujeto analizado. Resultados en pantalla."
+                    "consequence": "Sujeto analizado. Resultados en pantalla. Menciona el Sector 4 como zona de 'Reasignación'."
                 },
                 {
                     "text": "Administrar Sedante",
@@ -21,50 +21,83 @@
                 {
                     "text": "Interrogatorio Agresivo",
                     "energyCost": 2,
-                    "loreUnlock": "LORE_02",
+                    "loreUnlock": "CMD_LOGS",
                     "stabilityImpact": -10,
-                    "consequence": "Sujeto en shock. Datos extraídos a la fuerza."
-                },
-                {
-                    "text": "Ignorar Súplicas",
-                    "energyCost": 0,
-                    "loreUnlock": null,
-                    "stabilityImpact": 0,
-                    "consequence": "Silencio en la cámara."
+                    "consequence": "Sujeto en shock. Registro KRON-42 extraído. Acceso a LOGS habilitado en terminal."
                 }
             ]
         },
         {
             "id": "DLG_02",
-            "text": "Veo códigos en mis sueños. Millones de líneas de sangre. Nakasthu nos consume.",
+            "text": "Veo códigos en mis sueños. Millones de líneas de sangre. Nakasthu nos consume. No somos humanos, somos combustible para la Piedra.",
             "options": [
                 {
                     "text": "Sincronizar Enlace",
                     "energyCost": 15,
                     "loreUnlock": "LORE_03",
                     "stabilityImpact": -5,
-                    "consequence": "Visión compartida. Datos corruptos recibidos."
+                    "consequence": "Visión compartida: Un tercio de la humanidad desvaneciéndose en Zhyr."
+                },
+                {
+                    "text": "Extraer Biomuestra",
+                    "energyCost": 5,
+                    "loreUnlock": "CMD_ZH_ARCHIVE",
+                    "stabilityImpact": -2,
+                    "consequence": "Muestra de Nakasthu pura detectada. Archivo ZH_ARCHIVE desbloqueado."
                 },
                 {
                     "text": "Purgar Memoria",
                     "energyCost": 20,
                     "loreUnlock": null,
                     "stabilityImpact": 10,
-                    "consequence": "Grito ahogado. Memoria del sujeto borrada."
+                    "consequence": "Grito ahogado. Memoria del sujeto borrada. Estabilidad restaurada."
+                }
+            ]
+        },
+        {
+            "id": "DLG_03",
+            "text": "Kamin tiene razón. El portal es un espejo. Refleja nuestra arrogancia. Kael, Alexia... ellos fueron los primeros en ser juzgados por Zhyr.",
+            "options": [
+                {
+                    "text": "Investigar a Exploradores",
+                    "energyCost": 8,
+                    "loreUnlock": "LORE_XPL",
+                    "stabilityImpact": -5,
+                    "consequence": "Datos recuperados sobre la misión original en Zhyr. Alexia fue la primera en cruzar."
                 },
                 {
-                    "text": "Extraer Biomuestra",
-                    "energyCost": 5,
-                    "loreUnlock": "LORE_04",
-                    "stabilityImpact": -2,
-                    "consequence": "Muestra obtenida. ADN no identificado."
+                    "text": "Bloqueo Cognitivo",
+                    "energyCost": 10,
+                    "loreUnlock": null,
+                    "stabilityImpact": 5,
+                    "consequence": "Sujeto devuelto al silencio operativo."
                 },
                 {
-                    "text": "Terminar Sujeto",
+                    "text": "Vínculo de Fe",
+                    "energyCost": 15,
+                    "loreUnlock": "CMD_KAMIN_INTEL",
+                    "stabilityImpact": -10,
+                    "consequence": "Acceso a sermones interceptados de Kamin. Inteligencia actualizada."
+                }
+            ]
+        },
+        {
+            "id": "DLG_04",
+            "text": "Orval Drexler no quiere salvarnos. Quiere el poder del Monolito. Eidolon está fallando porque no puede procesar la verdad: no hay retorno.",
+            "options": [
+                {
+                    "text": "Análisis de Eidolon",
+                    "energyCost": 20,
+                    "loreUnlock": "LORE_EID",
+                    "stabilityImpact": -15,
+                    "consequence": "Error de sistema: La lógica de la Piedra desafía la computación de Eidolon."
+                },
+                {
+                    "text": "Silenciar Traición",
                     "energyCost": 2,
                     "loreUnlock": null,
-                    "stabilityImpact": -20,
-                    "consequence": "Cámara de contención vacía."
+                    "stabilityImpact": 5,
+                    "consequence": "Sujeto silenciado por protocolo de seguridad de Talok."
                 }
             ]
         }

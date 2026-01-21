@@ -73,6 +73,9 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
     const storyPath = useGameState('storyPath');
     const themeColor = LABELS_CONFIG[storyPath]?.themeColor || 'cyan';
 
+    const focusMode = useGameState('focusMode');
+    const isShielded = focusMode && area !== 'C_MAIN' && area !== 'C_HEADER' && area !== 'L_LOWER';
+
     const highlightStyle = highlighted ? {
         boxShadow: `0 0 20px rgba(${themeColor === 'cyan' ? '6, 182, 212' : '147, 51, 234'}, 0.4)`,
         zIndex: 50
@@ -83,9 +86,10 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
             style=${highlightStyle}
             className=${`
                 mod-container mod-${area} 
-                border border-zinc-800/50 transition-all duration-500
-                ${locked ? 'opacity-20 pointer-events-none grayscale' : 'opacity-100'}
+                border border-zinc-800/50 transition-all duration-[1200ms] ease-in-out
+                ${(locked || isShielded) ? 'opacity-20 pointer-events-none grayscale' : 'opacity-100'}
                 ${highlighted ? `border-${themeColor}-500/60 ring-1 ring-${themeColor}-500/30 bg-${themeColor}-950/5 animate-pulse-slow` : 'bg-transparent'}
+                ${isShielded ? 'scale-[0.98]' : 'scale-100'}
                 ${className}
             `}
         >
@@ -101,12 +105,43 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
             <div className=${`absolute inset-0 pointer-events-none shadow-[inset_0_0_15px_rgba(0,0,0,0.5)] z-20`}></div>
             
             <!-- Indicador de Bloqueo -->
-            ${locked && html`
+            ${locked && !isShielded && html`
                 <div className="absolute inset-0 flex items-center justify-center z-40 bg-black/40 backdrop-blur-[1px]">
                     <div className="transform -rotate-12 border border-red-900/50 bg-black/80 px-4 py-1">
                         <span className="text-[10px] text-red-500 font-black tracking-[0.2em] uppercase">
                             Locked_Access
                         </span>
+                    </div>
+                </div>
+            `}
+
+            <!-- Indicador de Blindaje (Focus Mode) -->
+            ${isShielded && html`
+                <div className="absolute inset-0 flex items-center justify-center z-40 bg-black/80 backdrop-blur-md animate-fade-in duration-700">
+                    <div className="flex flex-col items-center gap-4 animate-flicker">
+                        <div className="w-16 h-[1px] bg-cyan-900/40"></div>
+                        <div className="flex flex-col items-center">
+                            <span className="text-[9px] text-cyan-800 font-bold tracking-[0.5em] uppercase mb-1">
+                                SISTEMA_EN_FOCO
+                            </span>
+                            <span className="text-[7px] text-cyan-900/60 font-mono tracking-[0.2em] uppercase">
+                                Blindaje Neural Activo
+                            </span>
+                        </div>
+                        <div className="w-16 h-[1px] bg-cyan-900/40"></div>
+                        
+                        <!-- Mini Scanline animada interna del bloque -->
+                        <div className="absolute inset-0 pointer-events-none opacity-10 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(6,182,212,0.1)_50%)] bg-[length:100%_2px]"></div>
+                    </div>
+                </div>
+            `}
+
+            <!-- Indicador de Sincronización (Analytics en Focus Mode) -->
+            ${focusMode && area === 'L_LOWER' && html`
+                <div className="absolute top-0 right-0 p-2 z-40 pointer-events-none animate-pulse-slow">
+                    <div className="flex items-center gap-2 border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 backdrop-blur-sm">
+                        <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_5px_rgba(34,211,238,0.8)]"></div>
+                        <span className="text-[8px] text-cyan-400 font-bold uppercase tracking-widest">Neural_Monitor</span>
                     </div>
                 </div>
             `}
