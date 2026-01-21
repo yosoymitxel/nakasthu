@@ -7,12 +7,15 @@ import { html } from '../utils/html.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { state } from '../../core/State.js';
 import { bus } from '../../core/Bus.js';
+import { InvisibleUtilityBar } from './MainLayout.js';
 
 export const HeaderNucleo = () => {
     const energy = useGameState('energy');
     const stability = useGameState('stability');
     const orbitalCycle = useGameState('orbitalCycle');
     const isPaused = useGameState('isPaused');
+    const gameData = useGameState('gameData');
+    const currentStep = useGameState('currentStep');
 
     const [activeHighlights, setActiveHighlights] = React.useState({
         energy: false,
@@ -23,7 +26,7 @@ export const HeaderNucleo = () => {
     const handleEnergyClick = () => {
         const newState = !activeHighlights.energy;
         setActiveHighlights(prev => ({ ...prev, energy: newState }));
-        
+
         if (newState) {
             bus.emit('HIGHLIGHT_MODULE', { areas: ['L_UPPER', 'R_MIDDLE'], color: '#f59e0b' });
         } else {
@@ -119,6 +122,13 @@ export const HeaderNucleo = () => {
                     </div>
                 </div>
             </div>
+
+            <!-- MENU INVISIBLE (Utilidad de Sujetos) -->
+            ${currentStep >= 4 && html`
+                <div className="px-4 mt-2 border-t border-zinc-800/30 pt-2">
+                    <${InvisibleUtilityBar} value=${gameData.utilidadOculta || 0} max=${100} />
+                </div>
+            `}
         </div>
     `;
 };

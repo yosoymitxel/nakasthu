@@ -1,18 +1,23 @@
 /**
  * PANEL.JS
- * Componente base para los módulos de la interfaz.
+ * Componente base para los contenidos de los módulos.
+ * El "Embudo" Nivel 1.5: El Puente entre Bloque y Componente.
  * Estética: Industrial, Dark Sci-Fi.
  */
 import { html } from '../utils/html.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { bus } from '../../core/Bus.js';
 
-export const Panel = ({ title, children, className = "", contentClassName = "", areaId = null, locked = false, isTutorialHighlight = false, allowReadWhileLocked = false }) => {
-    const phase = useGameState('phase');
-    const [highlight, setHighlight] = React.useState(null); // { color, type }
-    const [showTooltip, setShowTooltip] = React.useState(false);
-    const isEclipse = phase === 'ECLIPSE';
-    const isInteractive = className.includes('interactive-panel');
+const { useState, useEffect, memo } = React;
+
+export const Panel = memo(({ title, children, className = "", contentClassName = "", areaId = null }) => {
+    const storyPath = useGameState('storyPath');
+    const [showTooltip, setShowTooltip] = useState(false);
+
+    // Tema basado en la ruta narrativa
+    const isReligious = storyPath === 1;
+    const themeColor = isReligious ? 'purple' : 'cyan';
+    const accentColor = isReligious ? 'text-purple-400' : 'text-amber-500';
 
     const tooltips = {
         'L_TOP': "Identificador de sesión y logo corporativo.",
@@ -28,76 +33,49 @@ export const Panel = ({ title, children, className = "", contentClassName = "", 
         'R_BOTTOM': "Referencia rápida de comandos de sistema."
     };
 
-    React.useEffect(() => {
-        if (!areaId) return;
-
-        const onHighlight = (data) => {
-            if (data.areas && data.areas.includes(areaId)) {
-                setHighlight({ color: data.color, type: data.type || 'pulse' });
-                if (data.duration) {
-                    setTimeout(() => setHighlight(null), data.duration);
-                }
-            } else if (data.areas === null || (data.clear && data.clear.includes(areaId))) {
-                setHighlight(null);
-            }
-        };
-
-        bus.on('HIGHLIGHT_MODULE', onHighlight);
-        return () => bus.off('HIGHLIGHT_MODULE', onHighlight);
-    }, [areaId]);
-
-    const highlightStyle = isTutorialHighlight ? {
-        outline: '2px solid #06b6d4',
-        boxShadow: '0 0 15px rgba(6, 182, 212, 0.3)',
-        zIndex: 10
-    } : (highlight ? {
-        outline: `2px solid ${highlight.color}`,
-        outlineOffset: '-2px',
-        zIndex: 10
-    } : {});
-
     return html`
-        <div 
-            style=${highlightStyle}
-            className=${`
-                relative bg-zinc-900/40 border border-zinc-800 transition-all duration-300
-                flex flex-col overflow-hidden group
-                ${highlight?.type === 'pulse' ? 'animate-pulse-fast' : ''}
-                ${isInteractive ? 'hover:bg-zinc-800/20 cursor-pointer' : ''}
-                ${isEclipse ? 'shadow-[0_0_15px_rgba(6,182,212,0.02)]' : 'shadow-[0_0_15px_rgba(217,119,6,0.02)]'}
-                ${className} 
-                ${locked && !allowReadWhileLocked ? 'opacity-20 pointer-events-none grayscale' : ''} 
-                ${locked && allowReadWhileLocked ? 'opacity-80 grayscale-[0.2] pointer-events-none border-zinc-800' : ''} 
-                ${isTutorialHighlight ? 'animate-pulse border-cyan-500/50 z-50 bg-cyan-950/10' : ''}
-            `}
-        >
+        <div className=${`relative flex flex-col h-full w-full overflow-hidden ${className}`}>
+            
+            <!-- Header del Panel -->
             <div 
                 onMouseEnter=${() => setShowTooltip(true)}
                 onMouseLeave=${() => setShowTooltip(false)}
-                className=${`px-2 py-1 flex justify-between items-center border-b border-zinc-800 transition-colors duration-700 relative z-20 ${isEclipse ? 'bg-cyan-950/10' : 'bg-zinc-900/60'}`}
+                className=${`
+                    px-2 py-1 flex justify-between items-center bg-black/40 border-b border-zinc-800/40 relative z-10
+                    ${isReligious ? 'border-purple-900/20' : ''}
+                `}
             >
-                <span className=${`text-[14px] font-bold uppercase tracking-[0.3em] transition-colors duration-700 ${isEclipse ? 'text-cyan-400' : 'text-amber-500'}`}>
-                    ${title}
-                </span>
-                <div className=${`w-1.5 h-1.5 ${isEclipse ? 'bg-cyan-500/60 shadow-[0_0_5px_rgba(6,182,212,0.5)]' : 'bg-amber-600/30'}`}></div>
+                <div className="flex items-center gap-2">
+                    <div className=${`w-1.5 h-1.5 rounded-full ${isReligious ? 'bg-purple-500' : 'bg-amber-600'} opacity-40`}></div>
+                    <span className=${`text-[11px] font-bold uppercase tracking-[0.2em] font-mono ${accentColor}`}>
+                        ${title}
+                    </span>
+                </div>
                 
-                <!-- Tooltip Contextual -->
+                <!-- Indicador de señal -->
+                <div className="flex gap-0.5">
+                    ${[1, 2, 3].map(i => html`
+                        <div key=${i} className=${`w-1 h-3 ${isReligious ? 'bg-purple-900/30' : 'bg-zinc-800'}`}></div>
+                    `)}
+                </div>
+
+                <!-- Tooltip Contextual (Level 3 Info) -->
                 ${showTooltip && areaId && tooltips[areaId] && html`
-                    <div className="absolute top-full left-0 w-full bg-zinc-950 border border-zinc-800 p-2 z-50 shadow-2xl animate-in fade-in slide-in-from-top-1 duration-200">
-                        <p className="text-[12px] text-zinc-300 font-mono leading-tight italic">
-                            ${tooltips[areaId]}
+                    <div className="absolute top-full left-0 w-full bg-black/95 border border-zinc-800 p-2 z-50 shadow-2xl animate-in fade-in slide-in-from-top-1 duration-200">
+                        <p className="text-[10px] text-zinc-400 font-mono leading-tight italic">
+                            [DOC] ${tooltips[areaId]}
                         </p>
                     </div>
                 `}
             </div>
 
-            <div className=${`flex-1 p-2 relative ${contentClassName}`}>
+            <!-- Contenido del Panel (Aquí van los Componentes Nivel 1) -->
+            <div className=${`flex-1 relative scroll-container ${contentClassName}`}>
                 ${children}
-                
-                <!-- Esquinas decorativas finas -->
-                <div className=${`absolute top-0 left-0 w-2 h-2 border-t border-l ${isEclipse ? 'border-cyan-500/40' : 'border-amber-600/20'}`}></div>
-                <div className=${`absolute bottom-0 right-0 w-2 h-2 border-b border-r ${isEclipse ? 'border-cyan-500/40' : 'border-amber-600/20'}`}></div>
             </div>
         </div>
     `;
-};
+});
+
+Panel.displayName = 'Panel';
+

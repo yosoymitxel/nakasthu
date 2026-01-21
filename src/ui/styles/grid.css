@@ -30,21 +30,53 @@
     position: relative;
 }
 
-.mod-L_UPPER { grid-area: L_UPPER; }
-.mod-L_LOWER { grid-area: L_LOWER; }
-.mod-C_HEADER { grid-area: C_HEADER; }
-.mod-C_MAIN { grid-area: C_MAIN; }
-.mod-C_FOOTER { grid-area: C_FOOTER; }
-.mod-R_MIDDLE { grid-area: R_MIDDLE; }
-.mod-R_BOTTOM { grid-area: R_BOTTOM; }
-.mod-R_TOP { grid-area: R_TOP; }
-.mod-R_UPPER { grid-area: R_UPPER; }
-.mod-L_TOP { grid-area: L_TOP; }
-.mod-L_BOTTOM { grid-area: L_BOTTOM; }
+.mod-L_UPPER {
+    grid-area: L_UPPER;
+}
+
+.mod-L_LOWER {
+    grid-area: L_LOWER;
+}
+
+.mod-C_HEADER {
+    grid-area: C_HEADER;
+}
+
+.mod-C_MAIN {
+    grid-area: C_MAIN;
+}
+
+.mod-C_FOOTER {
+    grid-area: C_FOOTER;
+}
+
+.mod-R_MIDDLE {
+    grid-area: R_MIDDLE;
+}
+
+.mod-R_BOTTOM {
+    grid-area: R_BOTTOM;
+}
+
+.mod-R_TOP {
+    grid-area: R_TOP;
+}
+
+.mod-R_UPPER {
+    grid-area: R_UPPER;
+}
+
+.mod-L_TOP {
+    grid-area: L_TOP;
+}
+
+.mod-L_BOTTOM {
+    grid-area: L_BOTTOM;
+}
 
 /* Global forced styles from Layout.js */
-body { 
-    background-color: #1a1a1c !important; 
+body {
+    background-color: #1a1a1c !important;
     cursor: default !important;
     margin: 0;
     padding: 0;
@@ -67,8 +99,17 @@ body {
 }
 
 @keyframes pulse-biomass {
-    0%, 100% { opacity: 0.6; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.02); }
+
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.02);
+    }
 }
 
 .noise-texture {
@@ -79,7 +120,8 @@ body {
     mix-blend-mode: overlay;
 }
 
-.death-screen, .start-menu {
+.death-screen,
+.start-menu {
     position: fixed;
     inset: 0;
     background: #000;
@@ -92,7 +134,8 @@ body {
     transition: opacity 1.5s ease-in-out;
 }
 
-.death-screen.active, .start-menu.active {
+.death-screen.active,
+.start-menu.active {
     opacity: 1;
     pointer-events: all;
 }
@@ -100,7 +143,7 @@ body {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0, 0, 0, 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -108,18 +151,69 @@ body {
     backdrop-filter: blur(4px);
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
+/* 
+ * UTILITY ANIMATIONS 
+ */
+@keyframes pulse-slow {
+
+    0%,
+    100% {
+        opacity: 0.8;
+    }
+
+    50% {
+        opacity: 1;
+        border-color: currentColor;
+    }
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: #09090b;
+.animate-pulse-slow {
+    animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #27272a;
+/* Theme Utilities for ModuleWrapper */
+.border-cyan-500\/60 {
+    border-color: rgba(6, 182, 212, 0.6);
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #3f3f46;
+.border-purple-500\/60 {
+    border-color: rgba(147, 51, 234, 0.6);
+}
+
+.bg-cyan-950\/5 {
+    background-color: rgba(8, 51, 68, 0.05);
+}
+
+.bg-purple-950\/5 {
+    background-color: rgba(59, 7, 100, 0.05);
+}
+
+.ring-cyan-500\/30 {
+    box-shadow: 0 0 0 1px rgba(6, 182, 212, 0.3);
+}
+
+.ring-purple-500\/30 {
+    box-shadow: 0 0 0 1px rgba(147, 51, 234, 0.3);
+}
+
+/* Custom Scrollbar for Panels */
+.scroll-container {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.scroll-container::-webkit-scrollbar {
+    width: 2px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.1);
 }

@@ -18,6 +18,20 @@ const initialState = {
     currentRoom: 0,
     currentEntity: null,
     purgeActive: false,
+    // Sistema de Secuencia Narrativa (12 pasos)
+    currentStep: 1,          // Paso actual de la historia (1-12)
+    storyPath: 0,            // 0: Ruta Técnico/Operador, 1: Ruta Religioso/Líder
+    tutorialChoiceMade: false, // Si el jugador ya decidió sobre el tutorial
+    tutorialStep: 0,         // Paso del tutorial (0: inactivo)
+    gameData: {              // Variables del nivel actual
+        score: 0,
+        energia: 100,
+        cuota: 10,
+        utilidadOculta: 0,   // Contador invisible de utilidad de sujetos
+        techniciansRecruited: 0,
+        devotsRecruited: 0,
+        influenceGathered: 0
+    },
     // Resonancia
     targetFrequency: 0.1 + Math.random() * 59.9,
     targetPhase: Math.random() * Math.PI * 2,
@@ -95,7 +109,7 @@ export const state = new Proxy(stateManager, {
 
         if (target[property] !== processedValue) {
             target[property] = processedValue;
-            
+
             // Solo emitir eventos si no estamos en medio de un batch
             if (!isBatching) {
                 bus.emit('STATE_CHANGE', { ...target });

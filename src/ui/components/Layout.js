@@ -11,6 +11,13 @@ import { SidebarRight } from './SidebarRight.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { state } from '../../core/State.js';
 import { bus } from '../../core/Bus.js';
+import { gameSequencer, STEPS_CONFIG } from '../../systems/GameSequencer.js';
+
+// Importar Pantallas
+import { CinematicScreen } from '../screens/cinematic/CinematicScreen.js';
+import { MechanicScreen } from '../screens/mechanic/MechanicScreen.js';
+import { GameplayScreen } from '../screens/gameplay/GameplayScreen.js';
+import { GameModal, useGameModal } from './GameModal.js';
 
 const { useState, useEffect } = React;
 
@@ -35,21 +42,34 @@ export const Layout = () => {
     const [hasSeenWelcome, setHasSeenWelcome] = useState(false);
     const [deathReason, setDeathReason] = useState(null);
 
+    // Sistema de Pasos Narrativos
+    const currentStep = useGameState('currentStep');
+    const stepConfig = STEPS_CONFIG[currentStep];
+    const gameModalState = useGameModal();
+
+    // Sincronizar Sequencer al montar
+    useEffect(() => {
+        gameSequencer.init();
+    }, []);
+
     // Lógica de bloqueo de tutorial
     const getModuleTutorialStatus = (areaId) => {
-        if (!tutorialStep || tutorialStep === 0) return { locked: false, highlighted: false };
+        const isTutorialActive = useGameState('isTutorialActive');
+        const tutorialStep = useGameState('tutorialStep');
+
+        if (!isTutorialActive || tutorialStep === 0) return { locked: false, highlighted: false };
 
         // El cabezal de estado nunca se bloquea
         if (areaId === 'C_HEADER') return { locked: false, highlighted: false };
 
         switch (tutorialStep) {
-            case 1: // Escaneo
+            case 1: // Escaneo - Resaltar BioScan
                 if (areaId === 'L_UPPER') return { locked: false, highlighted: true };
                 return { locked: true, highlighted: false };
-            case 2: // Resonancia
+            case 2: // Resonancia - Resaltar Oscilloscope
                 if (areaId === 'C_FOOTER') return { locked: false, highlighted: true };
                 return { locked: true, highlighted: false };
-            case 3: // Decisión
+            case 3: // Decisión - Resaltar Operations
                 if (areaId === 'C_MAIN') return { locked: false, highlighted: true };
                 return { locked: true, highlighted: false };
             default:
@@ -57,53 +77,21 @@ export const Layout = () => {
         }
     };
 
-    // Modal de Bienvenida (Game Designer Request)
+    // Modal de Bienvenida (Omitido ahora por sistema de pasos, pero guardamos la lógica si se requiere)
+    /*
     useEffect(() => {
-        if (gameStatus === 'PLAYING' && !hasSeenWelcome) {
-            setModal({
-                title: 'PROTOCOLO DE INDUCCIÓN - OPERADOR',
-                content: html`
-                    <div className="space-y-4 text-[14px]">
-                        <p className="font-bold text-amber-500">BIENVENIDO, OPERADOR.</p>
-                        <p>Tu misión es procesar <span className="text-zinc-100">${quota} sujetos</span> antes de que el eclipse orbital alcance el cenit.</p>
-                        <ul className="space-y-2 list-none border-l border-zinc-800 pl-4">
-                            <li><span className="text-cyan-400">● BIOSCAN:</span> Utilízalo para extraer datos críticos del sujeto.</li>
-                            <li><span className="text-emerald-400">● RESONANCIA:</span> Mantén la frecuencia alineada para evitar el colapso de integridad neural.</li>
-                            <li><span className="text-amber-400">● COMMS:</span> Decide el destino (Autorizar/Sacrificar) en la consola de comandos.</li>
-                        </ul>
-                        <p className="text-zinc-500 italic text-[12px]">"Nakasthu no es una prisión, es el último filtro antes del vacío."</p>
-                    </div>
-                `,
-                footer: html`
-                    <div className="flex gap-2 w-full">
-                        <button 
-                            onClick=${() => setModal(null)}
-                            className="flex-1 py-2 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:bg-zinc-800 transition-all uppercase text-[12px] tracking-widest"
-                        >
-                            INICIAR INDUCCIÓN
-                        </button>
-                        <button 
-                            onClick=${() => {
-                                setModal(null);
-                                state.tutorialStep = 0;
-                            }}
-                            className="flex-1 py-2 bg-zinc-950 border border-red-900/30 text-red-900/60 hover:text-red-600 transition-all uppercase text-[10px] tracking-tighter"
-                        >
-                            SALTAR TUTORIAL [RIESGO]
-                        </button>
-                    </div>
-                `
-            });
-            setHasSeenWelcome(true);
+        if (gameStatus === 'PLAYING' && !hasSeenWelcome && currentStep === 1) {
+            // ... bienvenida original
         }
     }, [gameStatus, hasSeenWelcome, quota]);
+    */
 
     // Listener para feedback de impacto
     useEffect(() => {
         const onFlash = (data) => {
             setFlash({ color: data.color || 'white', duration: data.duration || 300 });
             setTimeout(() => setFlash(null), data.duration || 300);
-            
+
             // Activar alarma si el flash es rojo (indicativo de error/sacrificio)
             if (data.color === '#ef4444' || data.color === 'red') {
                 setAlarm(true);
@@ -116,8 +104,15 @@ export const Layout = () => {
             setTimeout(() => setSacrificePeak(false), 1500);
         };
 
-        const onOpenModal = (data) => setModal(data);
-        
+        const onOpenModal = (data) => {
+            console.log('%c[LAYOUT] OPEN_MODAL received', 'color: #06b6d4;', data);
+            setModal(data);
+        };
+        const onCloseModal = () => {
+            console.log('%c[LAYOUT] MODAL_CLOSE_INTERNAL received', 'color: #06b6d4;');
+            setModal(null);
+        };
+
         const onSystemFailure = (data) => {
             setDeathReason(data.reason === 'ENERGY_DEPLETED' ? 'ERROR CRÍTICO: Agotamiento de Energía' : 'SUJETO DESCONTROLADO: Inestabilidad Neural');
         };
@@ -125,11 +120,13 @@ export const Layout = () => {
         bus.on('TRIGGER_FLASH', onFlash);
         bus.on('SACRIFICE_PEAK', onSacrificePeak);
         bus.on('OPEN_MODAL', onOpenModal);
+        bus.on('MODAL_CLOSE_INTERNAL', onCloseModal);
         bus.on('SYSTEM_FAILURE', onSystemFailure);
         return () => {
             bus.off('TRIGGER_FLASH', onFlash);
             bus.off('SACRIFICE_PEAK', onSacrificePeak);
             bus.off('OPEN_MODAL', onOpenModal);
+            bus.off('MODAL_CLOSE_INTERNAL', onCloseModal);
             bus.off('SYSTEM_FAILURE', onSystemFailure);
         };
     }, []);
@@ -166,7 +163,7 @@ export const Layout = () => {
 
     // Estilo dinámico del borde del contenedor
     const gridStyle = {
-        borderColor: isEclipse ? 'rgba(6, 182, 212, 0.5)' : 'rgba(120, 53, 15, 0.3)', 
+        borderColor: isEclipse ? 'rgba(6, 182, 212, 0.5)' : 'rgba(120, 53, 15, 0.3)',
         boxShadow: alarm ? 'inset 0 0 40px rgba(255, 0, 0, 0.4)' : (isEclipse ? '0 0 30px rgba(6, 182, 212, 0.15)' : '0 0 15px rgba(120, 53, 15, 0.05)'),
         filter: isEclipse ? 'hue-rotate(180deg) contrast(1.1)' : isCriticalEnergy ? 'hue-rotate(-20deg) contrast(1.2)' : 'none'
     };
@@ -178,10 +175,10 @@ export const Layout = () => {
             <div 
                 className=${`vignette-damage ${alarm || sacrificePeak ? 'active-alarm' : ''}`}
                 style=${{
-                    zIndex: 50,
-                    '--vignette-opacity': sacrificePeak ? 1.0 : (alarm ? 0.8 : (isEclipse ? orbitalCycle / 100 : 0)),
-                    boxShadow: `inset 0 0 120px rgba(${alarm || isEclipse || sacrificePeak ? '153, 27, 27' : '0, 0, 0'}, ${sacrificePeak ? 0.8 : (alarm ? 0.6 : (isEclipse ? 0.4 : 0))})`
-                }}
+            zIndex: 50,
+            '--vignette-opacity': sacrificePeak ? 1.0 : (alarm ? 0.8 : (isEclipse ? orbitalCycle / 100 : 0)),
+            boxShadow: `inset 0 0 120px rgba(${alarm || isEclipse || sacrificePeak ? '153, 27, 27' : '0, 0, 0'}, ${sacrificePeak ? 0.8 : (alarm ? 0.6 : (isEclipse ? 0.4 : 0))})`
+        }}
             >
                 <div className="noise-texture"></div>
             </div>
@@ -229,9 +226,9 @@ export const Layout = () => {
                     </div>
                     <button 
                         onClick=${() => {
-                            setDeathReason(null);
-                            state.resetState();
-                        }}
+            setDeathReason(null);
+            state.resetState();
+        }}
                         className="px-10 py-4 border border-red-900/50 text-red-500 font-mono text-sm hover:bg-red-900/20 transition-all uppercase tracking-[0.4em] font-bold"
                     >
                         Reiniciar Protocolo Zhyr
@@ -239,13 +236,21 @@ export const Layout = () => {
                 </div>
             </div>
 
-            <!-- Main Grid Structure (12x6 Estricto) -->
+            <!-- Renderizado Dinámico de Pantallas según Paso Narrativo -->
             <div className=${`transition-all duration-[2000ms] ${isGameOver || isStartMenu ? 'opacity-0 pointer-events-none' : ''}`}>
-                <${MainLayout}>
-                    <${SidebarLeft} getModuleTutorialStatus=${getModuleTutorialStatus} />
-                    <${CenterCore} getModuleTutorialStatus=${getModuleTutorialStatus} />
-                    <${SidebarRight} getModuleTutorialStatus=${getModuleTutorialStatus} />
-                <//>
+                ${(() => {
+            if (!stepConfig) return null;
+
+            switch (stepConfig.type) {
+                case 'cinematic':
+                    return html`<${CinematicScreen} config=${stepConfig} />`;
+                case 'mechanic':
+                    return html`<${MechanicScreen} config=${stepConfig} />`;
+                case 'gameplay':
+                default:
+                    return html`<${GameplayScreen} getModuleTutorialStatus=${getModuleTutorialStatus} />`;
+            }
+        })()}
             </div>
 
             <!-- Modal de Pausa -->
@@ -264,7 +269,20 @@ export const Layout = () => {
                 </div>
             `}
 
-            <!-- Sistema de Modales -->
+            <!-- Nuevo Sistema de Modales Narrativos -->
+            <${GameModal} 
+                visible=${gameModalState.visible}
+                mode=${gameModalState.mode}
+                title=${gameModalState.title}
+                content=${gameModalState.content}
+                stats=${state}
+                onContinue=${() => {
+            // Si el modal se cierra y estamos en un paso que requiere avanzar
+            // El botón del modal ya emite MODAL_CLOSE
+        }}
+            />
+
+            <!-- Sistema de Modales Antiguo (Compatibilidad) -->
             ${modal && html`
                 <div className="modal-overlay" onClick=${() => setModal(null)}>
                     <div className="bg-[#1a1a1c] border border-zinc-800 p-6 w-[500px] shadow-2xl relative" onClick=${e => e.stopPropagation()}>
@@ -294,10 +312,10 @@ export const Layout = () => {
             ${flash && html`
                 <div 
                     className="fixed inset-0 z-[300] pointer-events-none transition-opacity duration-75"
-                    style=${{ 
-                        backgroundColor: flash.color,
-                        opacity: 0.3
-                    }}
+                    style=${{
+                backgroundColor: flash.color,
+                opacity: 0.3
+            }}
                 />
             `}
         </div>

@@ -9,6 +9,8 @@ import { handleSacrifice, handleAuthorize } from '../../systems/MechanicsEngine.
 import { bus } from '../../core/Bus.js';
 import { state } from '../../core/State.js';
 import { useGameState } from '../hooks/useGameState.js';
+import { useStoryLabels } from './MainLayout.js';
+import { gameSequencer } from '../../systems/GameSequencer.js';
 import { PortalScene } from './PortalScene.js';
 import { SubjectVisual } from './SubjectVisual.js';
 
@@ -23,12 +25,19 @@ export const Operations = () => {
 
     const [messages, setMessages] = useState([]);
     const [isTyping, setIsTyping] = useState(false);
+    const [kaminOverride, setKaminOverride] = useState(false);
     const requiredScan = useGameState('requiredScan');
     const currentEntity = useGameState('currentEntity');
-    
+    const currentStep = useGameState('currentStep');
+    const storyLabels = useStoryLabels();
+
+    // Detectar si el sujeto actual es Kamin (Override en Paso 6)
+    const isKaminSubject = currentEntity?.id === 'KAMIN' ||
+        currentEntity?.name?.toLowerCase().includes('kamin');
+
     // Verificar si el escaneo requerido ha sido completado
     const isScanComplete = currentEntity?.scannedTypes?.includes(requiredScan);
-    
+
     const scrollRef = useRef(null);
     const messagesEndRef = useRef(null);
 
@@ -45,18 +54,21 @@ export const Operations = () => {
             }
         };
 
-        const onNewSubject = () => {
+        const onNewSubject = (entity) => {
             setMessages([{ sender: 'SISTEMA', text: 'NUEVO SUJETO DETECTADO EN CÁMARA.', type: 'SYSTEM' }]);
-            setIsBiometricComplete(false); // Reset para nuevo sujeto
-        };
 
-        const onBiometricComplete = () => {
-            setIsBiometricComplete(true);
-            // Redirigir a Terminal
-            bus.emit('TERMINAL_PRINT', {
-                text: 'ENLACE BIOMÉTRICO ESTABLECIDO. PROTOCOLO DE SENTENCIA HABILITADO.',
-                type: 'SYSTEM'
-            });
+            // Detectar Override de Kamin (Paso 6)
+            if (entity?.id === 'KAMIN' || entity?.name?.toLowerCase().includes('kamin')) {
+                setKaminOverride(true);
+                setTimeout(() => {
+                    setMessages(prev => [...prev, {
+                        sender: 'SISTEMA',
+                        text: '>>> ALERTA: ANOMALÍA EN PROTOCOLO DE DECISIÓN. OVERRIDE DETECTADO.',
+                        type: 'SYSTEM'
+                    }]);
+                    bus.emit('TRIGGER_FLASH', { color: '#9333ea', duration: 150 });
+                }, 500);
+            }
         };
 
         const onScanComplete = (data) => {
@@ -98,7 +110,6 @@ export const Operations = () => {
         bus.on('NEW_SUBJECT_DETECTED', onNewSubject);
         bus.on('SCAN_COMPLETED', onScanComplete);
         bus.on('SESSION_TERMINATED', onSessionTerminated);
-        bus.on('BIOMETRICO_COMPLETO', onBiometricComplete);
         bus.on('DIALOGUE_STARTED', onDialogueStarted);
         bus.on('DIALOGUE_CONSEQUENCE', onDialogueConsequence);
 
@@ -107,7 +118,6 @@ export const Operations = () => {
             bus.off('NEW_SUBJECT_DETECTED', onNewSubject);
             bus.off('SCAN_COMPLETED', onScanComplete);
             bus.off('SESSION_TERMINATED', onSessionTerminated);
-            bus.off('BIOMETRICO_COMPLETO', onBiometricComplete);
             bus.off('DIALOGUE_STARTED', onDialogueStarted);
             bus.off('DIALOGUE_CONSEQUENCE', onDialogueConsequence);
         };
@@ -119,7 +129,7 @@ export const Operations = () => {
 
     const handleDialogueAction = (actionName) => {
         if (isTyping || activeDialogue) return;
-        
+
         // Coste base de iniciar interrogatorio: 5 (Omitir en tutorial)
         if (state.energy < 5 && !state.isTutorialActive) {
             bus.emit('DIALOGUE_EMITTED', {
@@ -140,9 +150,42 @@ export const Operations = () => {
 
     const handleAction = (type) => {
         const isTutorialOverride = tutorialStep === 3;
-        if (isTyping || (!isBiometricComplete && !isTutorialOverride)) return;
+
+        // Protección: No actuar si no hay sujeto
+        if (!currentEntity) {
+            bus.emit('DIALOGUE_EMITTED', {
+                sender: 'SISTEMA',
+                text: 'ERROR: NO HAY SUJETO EN CÁMARA PARA PROCESAR.',
+                type: 'SYSTEM'
+            });
+            return;
+        }
+
+        if (isTyping || (!isScanComplete && !isTutorialOverride)) return;
+
+        // Override de Kamin: Solo permitir AUTHORIZE
+        if (kaminOverride && type === 'SACRIFICE') {
+            bus.emit('DIALOGUE_EMITTED', {
+                sender: 'SISTEMA',
+                text: 'CRITICAL_ERROR: OVERRIDE BY EIDOLON - ACCIÓN BLOQUEADA',
+                type: 'SYSTEM'
+            });
+            bus.emit('TRIGGER_FLASH', { color: '#9333ea', duration: 100 });
+            return;
+        }
+
         if (type === 'SACRIFICE') handleSacrifice();
-        if (type === 'AUTHORIZE') handleAuthorize();
+        if (type === 'AUTHORIZE') {
+            // Si es Kamin, disparar cambio de acto
+            if (kaminOverride) {
+                bus.emit('TRIGGER_FLASH', { color: '#9333ea', duration: 500 });
+                bus.emit('ACT_CHANGE', { newAct: 1 });
+                state.storyPath = 1;
+                setKaminOverride(false);
+                gameSequencer.nextStep(); // Avanzar al paso 7 (Cambio de Acto)
+            }
+            handleAuthorize();
+        }
     };
 
     return html`
@@ -185,20 +228,18 @@ export const Operations = () => {
                 ${messages.map((msg, i) => html`
                     <div key=${i} className=${`flex flex-col animate-fade-in ${msg.type === 'SYSTEM' ? 'border-l-2 border-zinc-800 pl-3' : ''}`}>
                         <div className="flex justify-between items-center mb-1">
-                            <span className=${`text-[12px] font-bold tracking-widest uppercase ${
-                                msg.type === 'SYSTEM' ? 'text-zinc-400' : 
-                                msg.type === 'SUBJECT' ? 'text-cyan-600/60' : 
-                                'text-emerald-600/60'
-                            }`}>
+                            <span className=${`text-[12px] font-bold tracking-widest uppercase ${msg.type === 'SYSTEM' ? 'text-zinc-400' :
+            msg.type === 'SUBJECT' ? 'text-cyan-600/60' :
+                'text-emerald-600/60'
+        }`}>
                                 ${msg.sender}
                             </span>
                             <span className="text-[12px] text-zinc-500 font-mono">${msg.timestamp || ''}</span>
                         </div>
-                        <p className=${`text-[12px] leading-relaxed ${
-                            msg.type === 'SYSTEM' ? 'text-zinc-400 italic' : 
-                            msg.type === 'SUBJECT' ? 'text-zinc-300' : 
-                            'text-emerald-500/80'
-                        }`}>
+                        <p className=${`text-[12px] leading-relaxed ${msg.type === 'SYSTEM' ? 'text-zinc-400 italic' :
+            msg.type === 'SUBJECT' ? 'text-zinc-300' :
+                'text-emerald-500/80'
+        }`}>
                             ${msg.text}
                         </p>
                     </div>
@@ -251,13 +292,17 @@ export const Operations = () => {
                     <div className="flex items-center justify-center gap-6 w-full h-full">
                         <button 
                             onClick=${() => handleAction('SACRIFICE')}
-                            disabled=${isTyping || (!isScanComplete && tutorialStep !== 3)}
+                            disabled=${isTyping || (!isScanComplete && tutorialStep !== 3) || kaminOverride}
                             className=${`flex-1 max-w-[180px] h-full relative group border-[0.5px] transition-all uppercase tracking-[0.3em] font-black text-[12px] 
-                                ${(isScanComplete || tutorialStep === 3) 
-                                    ? 'border-red-900/50 text-red-700/80 hover:bg-red-900/20 hover:border-red-600/50' 
-                                    : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
+                                ${kaminOverride
+            ? 'border-purple-900/50 text-purple-500/60 animate-pulse cursor-not-allowed'
+            : (isScanComplete || tutorialStep === 3)
+                ? 'border-red-900/50 text-red-700/80 hover:bg-red-900/20 hover:border-red-600/50'
+                : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
                         >
-                            SACRIFICAR
+                            ${kaminOverride
+            ? 'CRITICAL_ERROR: OVERRIDE BY EIDOLON'
+            : storyLabels.rejectLabel.toUpperCase()}
                         </button>
                         
                         <div className="w-[0.5px] h-6 bg-zinc-900/30"></div>
@@ -266,11 +311,13 @@ export const Operations = () => {
                             onClick=${() => handleAction('AUTHORIZE')}
                             disabled=${isTyping || (!isScanComplete && tutorialStep !== 3)}
                             className=${`flex-1 max-w-[180px] h-full relative group border-[0.5px] transition-all uppercase tracking-[0.3em] font-black text-[12px] 
-                                ${(isScanComplete || tutorialStep === 3) 
-                                    ? 'border-emerald-900/50 text-emerald-700/80 hover:bg-emerald-900/20 hover:border-emerald-600/50' 
-                                    : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
+                                ${kaminOverride
+            ? 'border-purple-500/70 text-purple-400 bg-purple-900/20 hover:bg-purple-900/40 animate-pulse'
+            : (isScanComplete || tutorialStep === 3)
+                ? 'border-emerald-900/50 text-emerald-700/80 hover:bg-emerald-900/20 hover:border-emerald-600/50'
+                : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
                         >
-                            AUTORIZAR
+                            ${storyLabels.action3.toUpperCase()}
                         </button>
                     </div>
                 </div>

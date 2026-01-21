@@ -13,55 +13,42 @@ import { SystemInfo } from './SystemInfo.js';
 export const SidebarRight = ({ getModuleTutorialStatus }) => {
     return html`
         <${React.Fragment}>
-            <${ModuleWrapper} area="R_TOP">
-                <${Panel} 
-                    title="CONTROL" 
-                    areaId="R_TOP" 
-                    className="w-full h-full overflow-hidden" 
-                    contentClassName="!p-0"
-                    locked=${getModuleTutorialStatus('R_TOP').locked}
-                    isTutorialHighlight=${getModuleTutorialStatus('R_TOP').highlighted}
-                    allowReadWhileLocked=${false}
-                >
+            <${ModuleWrapper} 
+                area="R_TOP"
+                locked=${getModuleTutorialStatus('R_TOP').locked}
+                highlighted=${getModuleTutorialStatus('R_TOP').highlighted}
+            >
+                <${Panel} title="CONTROL" areaId="R_TOP" className="w-full h-full overflow-hidden" contentClassName="!p-0">
                     <${ControlPanel} />
                 <//>
             <//>
 
-            <${ModuleWrapper} area="R_UPPER">
-                <${Panel} 
-                    title="LORE_ARCHIVE" 
-                    areaId="R_UPPER" 
-                    className="w-full h-full overflow-hidden" 
-                    contentClassName="!p-0"
-                    locked=${getModuleTutorialStatus('R_UPPER').locked}
-                    isTutorialHighlight=${getModuleTutorialStatus('R_UPPER').highlighted}
-                >
+            <${ModuleWrapper} 
+                area="R_UPPER"
+                locked=${getModuleTutorialStatus('R_UPPER').locked}
+                highlighted=${getModuleTutorialStatus('R_UPPER').highlighted}
+            >
+                <${Panel} title="LORE_ARCHIVE" areaId="R_UPPER" className="w-full h-full overflow-hidden" contentClassName="!p-0">
                     <${LoreArchive} />
                 <//>
             <//>
 
-            <${ModuleWrapper} area="R_MIDDLE">
-                <${Panel} 
-                    title="MOD-06: ZHYR_OS" 
-                    areaId="R_MIDDLE" 
-                    className="w-full h-full overflow-hidden"
-                    locked=${getModuleTutorialStatus('R_MIDDLE').locked}
-                    isTutorialHighlight=${getModuleTutorialStatus('R_MIDDLE').highlighted}
-                    allowReadWhileLocked=${true}
-                >
+            <${ModuleWrapper} 
+                area="R_MIDDLE"
+                locked=${getModuleTutorialStatus('R_MIDDLE').locked}
+                highlighted=${getModuleTutorialStatus('R_MIDDLE').highlighted}
+            >
+                <${Panel} title="MOD-06: ZHYR_OS" areaId="R_MIDDLE" className="w-full h-full overflow-hidden">
                     <${Terminal} />
                 <//>
             <//>
 
-            <${ModuleWrapper} area="R_BOTTOM">
-                <${Panel} 
-                    title="MOD-07: QUICK_REF" 
-                    areaId="R_BOTTOM" 
-                    className="w-full h-full overflow-hidden interactive-panel"
-                    locked=${getModuleTutorialStatus('R_BOTTOM').locked}
-                    isTutorialHighlight=${getModuleTutorialStatus('R_BOTTOM').highlighted}
-                    allowReadWhileLocked=${false}
-                >
+            <${ModuleWrapper} 
+                area="R_BOTTOM"
+                locked=${getModuleTutorialStatus('R_BOTTOM').locked}
+                highlighted=${getModuleTutorialStatus('R_BOTTOM').highlighted}
+            >
+                <${Panel} title="MOD-07: QUICK_REF" areaId="R_BOTTOM" className="w-full h-full overflow-hidden">
                     <${SystemInfo} />
                 <//>
             <//>
