@@ -22,6 +22,7 @@ export const Operations = () => {
     const judgmentErrors = useGameState('judgmentErrors');
     const activeDialogue = useGameState('activeDialogue');
     const tutorialStep = useGameState('tutorialStep');
+    const isTutorialActive = useGameState('isTutorialActive');
 
     const [messages, setMessages] = useState([]);
     const [isTyping, setIsTyping] = useState(false);
@@ -149,7 +150,7 @@ export const Operations = () => {
     };
 
     const handleAction = (type) => {
-        const isTutorialOverride = tutorialStep === 3;
+        const isTutorialOverride = isTutorialActive && tutorialStep === 5;
 
         // Protección: No actuar si no hay sujeto
         if (!currentEntity) {
@@ -161,7 +162,16 @@ export const Operations = () => {
             return;
         }
 
-        if (isTyping || (!isScanComplete && !isTutorialOverride)) return;
+        if (isTutorialActive) {
+            console.log(`[OPERATIONS] handleAction - tutorialStep: ${tutorialStep}, isScanComplete: ${isScanComplete}, override: ${isTutorialOverride}`);
+        }
+
+        if (isTyping || (!isScanComplete && !isTutorialOverride)) {
+            if (isTutorialActive && !isTutorialOverride) {
+                console.warn(`[OPERATIONS] Action blocked by tutorial step: ${tutorialStep} (expected 5)`);
+            }
+            return;
+        }
 
         // Override de Kamin: Solo permitir AUTHORIZE
         if (kaminOverride && type === 'SACRIFICE') {
@@ -281,22 +291,24 @@ export const Operations = () => {
 
                 <!-- SENTENCE BUTTONS -->
                 <div className="h-20 p-4 flex flex-col items-center justify-center bg-black/60 relative">
-                    ${(!isScanComplete && tutorialStep !== 3) && html`
+                    ${(isTutorialActive && tutorialStep !== 5) || (!isTutorialActive && !isScanComplete) ? html`
                         <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center z-30 group/lock">
-                            <span className="text-[10px] text-red-500/60 font-mono tracking-[0.2em] uppercase animate-pulse">
-                                [PROTOCOLO DE SENTENCIA BLOQUEADO: REQUIERE ESCANEO ${requiredScan}]
+                            <span className="text-[10px] text-red-500/60 font-mono tracking-[0.2em] uppercase animate-pulse text-center px-4">
+                                ${isTutorialActive
+                ? '[PROTOCOLO DE SENTENCIA BLOQUEADO: SIGA LAS INSTRUCCIONES DEL TUTORIAL]'
+                : `[PROTOCOLO DE SENTENCIA BLOQUEADO: REQUIERE ESCANEO ${requiredScan}]`}
                             </span>
                         </div>
-                    `}
+                    ` : null}
                     
                     <div className="flex items-center justify-center gap-6 w-full h-full">
                         <button 
                             onClick=${() => handleAction('SACRIFICE')}
-                            disabled=${isTyping || (!isScanComplete && tutorialStep !== 3) || kaminOverride}
+                            disabled=${isTyping || kaminOverride || (isTutorialActive && tutorialStep !== 5) || (!isTutorialActive && !isScanComplete)}
                             className=${`flex-1 max-w-[180px] h-full relative group border-[0.5px] transition-all uppercase tracking-[0.3em] font-black text-[12px] 
                                 ${kaminOverride
             ? 'border-purple-900/50 text-purple-500/60 animate-pulse cursor-not-allowed'
-            : (isScanComplete || tutorialStep === 3)
+            : ((isTutorialActive && tutorialStep === 5) || (!isTutorialActive && isScanComplete))
                 ? 'border-red-900/50 text-red-700/80 hover:bg-red-900/20 hover:border-red-600/50'
                 : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
                         >
@@ -309,11 +321,11 @@ export const Operations = () => {
 
                         <button 
                             onClick=${() => handleAction('AUTHORIZE')}
-                            disabled=${isTyping || (!isScanComplete && tutorialStep !== 3)}
+                            disabled=${isTyping || (isTutorialActive && tutorialStep !== 5) || (!isTutorialActive && !isScanComplete)}
                             className=${`flex-1 max-w-[180px] h-full relative group border-[0.5px] transition-all uppercase tracking-[0.3em] font-black text-[12px] 
                                 ${kaminOverride
             ? 'border-purple-500/70 text-purple-400 bg-purple-900/20 hover:bg-purple-900/40 animate-pulse'
-            : (isScanComplete || tutorialStep === 3)
+            : ((isTutorialActive && tutorialStep === 5) || (!isTutorialActive && isScanComplete))
                 ? 'border-emerald-900/50 text-emerald-700/80 hover:bg-emerald-900/20 hover:border-emerald-600/50'
                 : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
                         >

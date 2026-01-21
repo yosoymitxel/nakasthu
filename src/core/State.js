@@ -22,7 +22,6 @@ const initialState = {
     currentStep: 1,          // Paso actual de la historia (1-12)
     storyPath: 0,            // 0: Ruta Técnico/Operador, 1: Ruta Religioso/Líder
     tutorialChoiceMade: false, // Si el jugador ya decidió sobre el tutorial
-    tutorialStep: 0,         // Paso del tutorial (0: inactivo)
     gameData: {              // Variables del nivel actual
         score: 0,
         energia: 100,

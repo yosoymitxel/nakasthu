@@ -12,6 +12,8 @@ export const BioScan = () => {
     const activeScan = useGameState('activeScan');
     const resonanceSync = useGameState('resonanceSync');
     const moduleLock = useGameState('moduleLock');
+    const tutorialStep = useGameState('tutorialStep');
+    const isTutorialActive = useGameState('isTutorialActive');
 
     const isLocked = moduleLock && moduleLock.bioscan;
 
@@ -47,19 +49,19 @@ export const BioScan = () => {
 
             <div className="flex-1 flex flex-col gap-2 overflow-y-auto pr-1 custom-scrollbar">
                 ${Object.values(SCAN_TYPES).map((type, idx) => {
-                    const isActive = activeScan && activeScan.id === type.id;
-                    const canAfford = energy >= type.cost;
-                    const progress = isActive ? activeScan.progress : 0;
+        const isActive = activeScan && activeScan.id === type.id;
+        const canAfford = energy >= type.cost;
+        const progress = isActive ? activeScan.progress : 0;
 
-                    return html`
+        return html`
                         <button 
                             key=${`scan-${type.id}`}
                             onClick=${() => startScan(type)}
-                            disabled=${activeScan || !canAfford}
+                            disabled=${activeScan || !canAfford || (isTutorialActive && tutorialStep === 2 && type.id !== 'THERMAL')}
                             className=${`
                                 relative overflow-hidden border-[0.5px] p-3 text-left transition-all duration-200 group
                                 ${isActive ? 'border-cyan-600/50 bg-cyan-950/10' : 'border-zinc-800/30 hover:border-amber-900/40 bg-black/20'}
-                                ${!canAfford && !activeScan ? 'border-red-900/20 opacity-40 cursor-not-allowed' : (activeScan && !isActive ? 'opacity-40' : 'cursor-pointer')}
+                                ${(activeScan || !canAfford || (isTutorialActive && tutorialStep === 2 && type.id !== 'THERMAL')) && !isActive ? 'border-red-900/20 opacity-40 cursor-not-allowed' : (activeScan && !isActive ? 'opacity-40' : 'cursor-pointer')}
                             `}
                         >
                             <!-- Progress Bar Background -->
@@ -92,7 +94,7 @@ export const BioScan = () => {
                             </div>
                         </button>
                     `;
-                })}
+    })}
             </div>
 
             <footer className="mt-auto pt-2 border-t-[0.5px] border-zinc-800 flex justify-between items-center text-[12px] font-mono text-zinc-400 uppercase tracking-widest">

@@ -63,7 +63,8 @@ export const GameModal = memo(({
     stats = null,
     onContinue = null,
     onRestart = null,
-    visible = false
+    visible = false,
+    isTutorial = false
 }) => {
     const [animatedText, setAnimatedText] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -90,13 +91,49 @@ export const GameModal = memo(({
                 setIsTyping(false);
                 clearInterval(typeInterval);
             }
-        }, 25);
+        }, isTutorial ? 15 : 25); // Más rápido en el tutorial
 
         return () => {
             clearInterval(typeInterval);
             setIsTyping(false);
         };
-    }, [visible, content]);
+    }, [visible, content, isTutorial]);
+
+    // Procesar texto para convertir [[MOD-XX]] en enlaces clickeables
+    const processContent = (text) => {
+        if (!text) return '';
+
+        const parts = text.split(/(\[\[MOD-\d+\]\])/g);
+        return parts.map((part, i) => {
+            const match = part.match(/\[\[MOD-(\d+)\]\]/);
+            if (match) {
+                const modId = match[0].replace('[[', '').replace(']]', '');
+                // Mapeo amigable de MOD IDs a nombres de área
+                const modMap = {
+                    'MOD-01': 'L_UPPER',   // BioScan
+                    'MOD-02': 'L_LOWER',   // Analytics
+                    'MOD-03': 'C_HEADER',  // Core Status
+                    'MOD-04': 'C_MAIN',    // Operations
+                    'MOD-05': 'C_FOOTER'   // Oscilloscope
+                };
+                const areaId = modMap[modId] || 'C_HEADER';
+
+                return html`
+                    <button 
+                        key=${`mod-link-${i}`}
+                        onClick=${(e) => {
+                        e.stopPropagation();
+                        bus.emit('HIGHLIGHT_MODULE', { area: areaId });
+                    }}
+                        className="text-amber-500 font-bold hover:text-amber-400 underline decoration-amber-500/30 underline-offset-4 transition-colors px-1 bg-amber-500/5 rounded"
+                    >
+                        ${modId}
+                    </button>
+                `;
+            }
+            return part;
+        });
+    };
 
     // Calcular rango de desempeño
     const getRank = (stats) => {
@@ -116,13 +153,12 @@ export const GameModal = memo(({
         return null;
     }
 
-    console.log(`%c[GAMEMODAL] Rendering visible modal: ${title}`, 'color: #f59e0b;');
     const rank = getRank(stats);
 
     return html`
-        <div className="game-modal-overlay fixed inset-0 z-[800] bg-black/90 flex items-center justify-center p-4">
+        <div className=${`game-modal-overlay fixed inset-0 z-[800] flex items-center justify-center p-4 transition-all duration-500 ${isTutorial ? 'bg-black/30' : 'bg-black/90'}`}>
             <!-- Contenedor principal con borde ámbar -->
-            <div className="game-modal relative w-full max-w-lg bg-[#0a0a0a] border border-amber-900/40 shadow-2xl">
+            <div className=${`game-modal relative w-full max-w-lg border border-amber-900/40 shadow-2xl transition-all duration-300 ${isTutorial ? 'bg-[#0a0a0a]/60 backdrop-blur-md ring-1 ring-amber-500/10' : 'bg-[#0a0a0a]/95'}`}>
                 
                 <!-- Esquinas decorativas -->
                 <div className="absolute -top-px -left-px w-4 h-4 border-t-2 border-l-2 border-amber-500/60" />
@@ -135,7 +171,7 @@ export const GameModal = memo(({
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <span className="text-amber-500 text-[10px] tracking-[0.4em] uppercase font-black">
-                                ${mode === 'Briefing' ? '◆ BRIEFING_INIT' : '◆ SUMMARY_REPORT'}
+                                ${isTutorial ? '◆ TUTORIAL_GUIDE' : (mode === 'Briefing' ? '◆ BRIEFING_INIT' : '◆ SUMMARY_REPORT')}
                             </span>
                         </div>
                         <span className="text-zinc-700 text-xs font-mono">
@@ -152,15 +188,18 @@ export const GameModal = memo(({
                     ${mode === 'Briefing' ? html`
                         <${React.Fragment}>
                             <div className="text-zinc-400 font-mono text-sm leading-relaxed min-h-[80px]">
-                                ${animatedText}
+                                ${processContent(animatedText)}
                                 ${isTyping && html`<span className="animate-pulse">▌</span>`}
                             </div>
                             
-                            <div className="mt-6 pt-4 border-t border-zinc-800/50">
-                                <p className="text-zinc-600 text-xs italic leading-relaxed">
-                                    ${fragment}
-                                </p>
-                            </div>
+                            <!-- No mostrar fragmentos en el tutorial -->
+                            ${!isTutorial && html`
+                                <div className="mt-6 pt-4 border-t border-zinc-800/50">
+                                    <p className="text-zinc-600 text-xs italic leading-relaxed">
+                                        ${fragment}
+                                    </p>
+                                </div>
+                            `}
                         <//>
                     ` : html`
                         <${React.Fragment}>
@@ -213,6 +252,9 @@ export const GameModal = memo(({
                         <button 
                             onClick=${() => {
                 if (onContinue) onContinue();
+                if (isTutorial) {
+                    bus.emit('TUTORIAL_CONTINUE', {});
+                }
                 bus.emit('MODAL_CLOSE', {});
             }}
                             disabled=${isTyping}
@@ -224,7 +266,7 @@ export const GameModal = memo(({
                 : 'border-amber-500/50 text-amber-400 hover:bg-amber-500/10 hover:border-amber-400'}
                             `}
                         >
-                            ${isTyping ? 'RECIBIENDO TRANSMISIÓN...' : 'INICIAR OPERACIONES'}
+                            ${isTyping ? 'RECIBIENDO TRANSMISIÓN...' : (isTutorial ? 'RECIBIDO' : 'INICIAR OPERACIONES')}
                         </button>
                     ` : html`
                         <div className="flex gap-3">
@@ -276,7 +318,8 @@ export const useGameModal = () => {
         mode: 'Briefing',
         title: '',
         content: '',
-        stats: null
+        stats: null,
+        isTutorial: false
     });
 
     useEffect(() => {
@@ -287,7 +330,8 @@ export const useGameModal = () => {
                 mode: data.mode || 'Briefing',
                 title: data.title || '',
                 content: data.content || '',
-                stats: data.stats || null
+                stats: data.stats || null,
+                isTutorial: data.isTutorial || false
             });
         };
 

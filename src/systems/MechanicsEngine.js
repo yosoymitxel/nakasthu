@@ -13,11 +13,11 @@ export const handleSacrifice = () => {
     const subject = state.currentEntity;
     if (!subject || state.gameStatus !== 'PLAYING') return;
 
-    // BLOQUEO: Solo permitir tras escaneo específico (excepto en tutorial paso 3)
-    const isTutorialOverride = state.tutorialStep === 3;
+    // BLOQUEO: Solo permitir tras escaneo específico (excepto en tutorial paso del juicio)
+    const isTutorialOverride = state.isTutorialActive && state.tutorialStep === 5;
     const requiredType = state.requiredScan || 'BIOMETRIC';
     const hasRequiredScan = subject.scannedTypes && subject.scannedTypes.includes(requiredType);
-    
+
     if (!hasRequiredScan && !isTutorialOverride) {
         bus.emit('TERMINAL_PRINT', {
             text: `[BLOQUEO] IMPOSIBLE PROCEDER: ENLACE ${requiredType} NO ESTABLECIDO.`,
@@ -29,10 +29,10 @@ export const handleSacrifice = () => {
     console.log(`%c[MECHANICS] Procesando biomasa del sujeto ${subject.id}...`, "color: #ff0000; font-weight: bold;");
 
     state.startBatch();
-    
+
     // Notificar pico visual para el layout (VFX perimetral)
     bus.emit('SACRIFICE_PEAK');
-    
+
     if (!state.isTutorialActive) {
         // Consecuencias de Veracidad
         if (subject.isCorrupt) {
@@ -66,10 +66,10 @@ export const handleSacrifice = () => {
             type: 'INFO'
         });
     }
-    
+
     state.processedCount++;
     checkGameStatus();
-    
+
     state.endBatch();
 
     // Notificar fin de sesión para limpiar terminal/coms
@@ -96,8 +96,8 @@ export const handleAuthorize = () => {
     const subject = state.currentEntity;
     if (!subject || state.gameStatus !== 'PLAYING') return;
 
-    // BLOQUEO: Solo permitir tras escaneo específico (excepto en tutorial paso 3)
-    const isTutorialOverride = state.tutorialStep === 3;
+    // BLOQUEO: Solo permitir tras escaneo específico (excepto en tutorial paso del juicio)
+    const isTutorialOverride = state.isTutorialActive && state.tutorialStep === 5;
     const requiredType = state.requiredScan || 'BIOMETRIC';
     const hasRequiredScan = subject.scannedTypes && subject.scannedTypes.includes(requiredType);
 
@@ -112,7 +112,7 @@ export const handleAuthorize = () => {
     console.log(`%c[MECHANICS] Autorizando sujeto ${subject.id}. Protocolo de fe actualizado.`, "color: #00ff00;");
 
     state.startBatch();
-    
+
     if (!state.isTutorialActive) {
         if (subject.isCorrupt) {
             // Brecha de seguridad: Autorizar corrupto
@@ -144,13 +144,13 @@ export const handleAuthorize = () => {
             type: 'INFO'
         });
     }
-    
+
     // Feedback visual específico para MOD-04
     bus.emit('AUTHORIZE_EFFECT');
-    
+
     state.processedCount++;
     checkGameStatus();
-    
+
     state.endBatch();
 
     // Notificar fin de sesión para limpiar terminal/coms
@@ -183,7 +183,7 @@ const checkGameStatus = () => {
         // En Fase 15 podríamos tener un estado VICTORY o simplemente fin de turno
         state.gameStatus = 'GAME_OVER'; // O un nuevo estado de victoria si se requiere
         console.log("%c[SYSTEM] CUOTA CUMPLIDA. EVALUANDO DESEMPEÑO...", "color: #00ff00; font-weight: bold;");
-        
+
         // Feedback en Terminal (MOD-09)
         bus.emit('TERMINAL_PRINT', {
             text: 'TURNO FINALIZADO. REPORTE ENVIADO AL ALTO MANDO ZHYR.'
@@ -200,16 +200,17 @@ export const updateResonance = () => {
     if (state.gameStatus !== 'PLAYING' && !state.isTutorialActive) return state.resonanceSync;
 
     const freqDiff = Math.abs(state.targetFrequency - state.localFrequency);
-    
+
     // Cálculo de sync: 100 - abs(diff)
     // Usamos el mismo cálculo que el GameLoop para consistencia
     const syncPercent = Math.max(0, Math.floor(100 - freqDiff));
-    
+
     state.resonanceSync = syncPercent;
-    
+
     // Solo drenar estabilidad si no estamos en el tutorial (pasos 1-3)
-    const isTutorialStep = state.tutorialStep > 0 && state.tutorialStep < 4;
-    
+    // Solo drenar estabilidad si no estamos en el tutorial activo (pasos de instrucción)
+    const isTutorialStep = state.isTutorialActive && state.tutorialStep > 0 && state.tutorialStep < 7;
+
     if (!isTutorialStep) {
         if (syncPercent < 40) {
             state.stability = Math.max(0, state.stability - 0.5);
@@ -217,15 +218,15 @@ export const updateResonance = () => {
             state.stability = Math.min(100, state.stability + 0.2);
         }
     }
-    
-    bus.emit('RESONANCE_UPDATE', { 
+
+    bus.emit('RESONANCE_UPDATE', {
         sync: syncPercent,
         stability: state.stability,
         target: state.targetFrequency,
         local: state.localFrequency,
         phase: state.localPhase
     });
-    
+
     return syncPercent;
 };
 
@@ -240,6 +241,6 @@ export const randomizeTargetFrequency = () => {
     // Rotar requisito de escaneo entre los 5 tipos disponibles
     const scanKeys = ['THERMAL', 'NEURAL', 'NAKARA', 'BIOMETRIC', 'RESONANCE'];
     state.requiredScan = scanKeys[Math.floor(Math.random() * scanKeys.length)];
-    
+
     console.log(`%c[MECHANICS] Siguiente requisito de bloqueo: ${state.requiredScan}`, "color: #06b6d4;");
 };

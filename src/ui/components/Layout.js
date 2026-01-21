@@ -57,20 +57,26 @@ export const Layout = () => {
         const isTutorialActive = useGameState('isTutorialActive');
         const tutorialStep = useGameState('tutorialStep');
 
-        if (!isTutorialActive || tutorialStep === 0) return { locked: false, highlighted: false };
-
-        // El cabezal de estado nunca se bloquea
-        if (areaId === 'C_HEADER') return { locked: false, highlighted: false };
+        // Si no hay tutorial, todo desbloqueado
+        if (!isTutorialActive) return { locked: false, highlighted: false };
 
         switch (tutorialStep) {
-            case 1: // Escaneo - Resaltar BioScan
+            case 1: // Bienvenida - Todo bloqueado (excepto C_HEADER)
+                return { locked: true, highlighted: false };
+            case 2: // Escaneo - Resaltar BioScan
                 if (areaId === 'L_UPPER') return { locked: false, highlighted: true };
                 return { locked: true, highlighted: false };
-            case 2: // Resonancia - Resaltar Oscilloscope
+            case 3: // Análisis - Resaltar Analytics
+                if (areaId === 'L_LOWER') return { locked: false, highlighted: true };
+                return { locked: true, highlighted: false };
+            case 4: // Resonancia - Resaltar Oscilloscope
                 if (areaId === 'C_FOOTER') return { locked: false, highlighted: true };
                 return { locked: true, highlighted: false };
-            case 3: // Decisión - Resaltar Operations
+            case 5: // Decisión - Resaltar Operations
                 if (areaId === 'C_MAIN') return { locked: false, highlighted: true };
+                return { locked: true, highlighted: false };
+            case 6: // Recursos - Resaltar Cabezal
+                if (areaId === 'C_HEADER') return { locked: false, highlighted: true };
                 return { locked: true, highlighted: false };
             default:
                 return { locked: false, highlighted: false };
@@ -104,14 +110,8 @@ export const Layout = () => {
             setTimeout(() => setSacrificePeak(false), 1500);
         };
 
-        const onOpenModal = (data) => {
-            console.log('%c[LAYOUT] OPEN_MODAL received', 'color: #06b6d4;', data);
-            setModal(data);
-        };
-        const onCloseModal = () => {
-            console.log('%c[LAYOUT] MODAL_CLOSE_INTERNAL received', 'color: #06b6d4;');
-            setModal(null);
-        };
+        const onOpenModal = (data) => setModal(data);
+        const onCloseModal = () => setModal(null);
 
         const onSystemFailure = (data) => {
             setDeathReason(data.reason === 'ENERGY_DEPLETED' ? 'ERROR CRÍTICO: Agotamiento de Energía' : 'SUJETO DESCONTROLADO: Inestabilidad Neural');
@@ -275,10 +275,10 @@ export const Layout = () => {
                 mode=${gameModalState.mode}
                 title=${gameModalState.title}
                 content=${gameModalState.content}
+                isTutorial=${gameModalState.isTutorial}
                 stats=${state}
                 onContinue=${() => {
-            // Si el modal se cierra y estamos en un paso que requiere avanzar
-            // El botón del modal ya emite MODAL_CLOSE
+            // El botón del modal ya emite MODAL_CLOSE y TUTORIAL_CONTINUE
         }}
             />
 
