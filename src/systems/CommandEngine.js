@@ -67,6 +67,14 @@ export const processCommand = (input) => {
         }
     }
 
+    if (cmd === '/lore') {
+        state.gameStatus = 'LORE_ARCHIVE';
+        return {
+            text: "ACCEDIENDO AL ARCHIVO DE LORE... CONEXIÓN ESTABLECIDA.",
+            type: 'success'
+        };
+    }
+
     if (cmd === '/overload') {
         state.startBatch();
         state.stability = Math.min(100, state.stability + 50);

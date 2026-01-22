@@ -1,9 +1,10 @@
 /**
- * SYSTEMINFO.JS (MOD-10)
- * Librería de comandos autocompletables para ZHYR_OS.
+ * SYSTEMINFO.JS (MOD-07)
+ * Panel de ayuda rápida y referencia de comandos.
  */
 import { html } from '../utils/html.js';
 import { bus } from '../../core/Bus.js';
+import { state } from '../../core/State.js';
 
 export const SystemInfo = () => {
     const commands = [
@@ -39,16 +40,7 @@ export const SystemInfo = () => {
     };
 
     const openLore = () => {
-        bus.emit('OPEN_MODAL', {
-            title: 'ARCHIVOS DE LORE - REGISTRO ZHYR',
-            content: html`
-                <div className="space-y-4 italic opacity-80">
-                    <p>"...y así, el cielo se tornó de zinc y las almas fueron pesadas en la balanza de la biomasa. Nakasthu no es una prisión, es el último filtro antes del vacío."</p>
-                    <p>Los Zhyr no son dioses, son ingenieros de la realidad. Nosotros somos sus herramientas. El Bastión ha resistido 14 eras solares, pero el Eclipse de la 15ª parece... diferente.</p>
-                    <p>No escuche los susurros de los sujetos. Son solo ecos de frecuencias residuales.</p>
-                </div>
-            `
-        });
+        state.gameStatus = 'LORE_ARCHIVE';
     };
 
     const handleClick = (cmd) => {
@@ -83,6 +75,26 @@ export const SystemInfo = () => {
                             </span>
                         </button>
                     `)}
+                </div>
+
+                <div className="pt-4 border-t-[0.5px] border-zinc-800/50 flex flex-col gap-3">
+                    <h3 className="text-[10px] text-zinc-600 uppercase font-black tracking-widest">Documentación</h3>
+                    <div className="grid grid-cols-1 gap-2">
+                        <button 
+                            onClick=${openManual}
+                            className="flex items-center gap-3 px-3 py-2 bg-zinc-900/40 border border-zinc-800 hover:border-zinc-700 transition-all text-left group"
+                        >
+                            <div className="w-1.5 h-1.5 bg-zinc-700 group-hover:bg-zinc-400"></div>
+                            <span className="text-[11px] text-zinc-500 group-hover:text-zinc-300 uppercase tracking-wider font-bold">Manual de Usuario</span>
+                        </button>
+                        <button 
+                            onClick=${openLore}
+                            className="flex items-center gap-3 px-3 py-2 bg-cyan-950/5 border border-cyan-900/20 hover:border-cyan-500/30 transition-all text-left group"
+                        >
+                            <div className="w-1.5 h-1.5 bg-cyan-900/40 group-hover:bg-cyan-500/60 animate-pulse"></div>
+                            <span className="text-[11px] text-cyan-900/60 group-hover:text-cyan-400/80 uppercase tracking-wider font-bold">Archivo de Lore</span>
+                        </button>
+                    </div>
                 </div>
                
             </div>

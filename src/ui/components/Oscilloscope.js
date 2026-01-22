@@ -1,5 +1,5 @@
 /**
- * OSCILLOSCOPE.JS (MOD-06)
+ * OSCILLOSCOPE.JS (MOD-05)
  * Visualización de ondas de resonancia.
  */
 import { html } from '../utils/html.js';

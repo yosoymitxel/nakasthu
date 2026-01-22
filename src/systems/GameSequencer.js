@@ -120,15 +120,6 @@ export const STEPS_CONFIG = {
 class GameSequencer {
     constructor() {
         this.currentStep = 1;
-        this.gameData = {
-            score: 0,
-            energia: 100,
-            cuota: 10,
-            utilidadOculta: 0,
-            techniciansRecruited: 0,
-            devotsRecruited: 0,
-            influenceGathered: 0
-        };
         this.storyPath = 0; // 0: Técnico, 1: Religioso
     }
 
@@ -138,10 +129,6 @@ class GameSequencer {
     init() {
         this.currentStep = state.currentStep || 1;
         this.storyPath = state.storyPath || 0;
-
-        if (state.gameData) {
-            this.gameData = { ...this.gameData, ...state.gameData };
-        }
 
         console.log('%c[SEQUENCER] Sistema narrativo inicializado en paso ' + this.currentStep, 'color: #9333ea; font-weight: bold;');
         bus.emit('STEP_CHANGE', this.getCurrentStepData());
@@ -156,7 +143,13 @@ class GameSequencer {
             step: this.currentStep,
             config,
             storyPath: this.storyPath,
-            gameData: { ...this.gameData }
+            stats: {
+                processedCount: state.processedCount,
+                judgmentErrors: state.judgmentErrors,
+                techniciansRecruited: state.techniciansRecruited,
+                devotsRecruited: state.devotsRecruited,
+                influenceGathered: state.influenceGathered
+            }
         };
     }
 
@@ -166,6 +159,7 @@ class GameSequencer {
     nextStep() {
         if (this.currentStep >= 12) {
             console.log('%c[SEQUENCER] Secuencia completada. Fin del juego.', 'color: #ef4444;');
+            state.gameStatus = 'GAME_OVER';
             bus.emit('GAME_COMPLETE', { finalStep: 12 });
             return false;
         }
@@ -261,55 +255,53 @@ class GameSequencer {
     resetLevel() {
         const currentConfig = STEPS_CONFIG[this.currentStep];
 
-        // Reiniciar datos del nivel a sus valores iniciales
-        this.gameData = {
-            score: 0,
-            energia: 100,
-            cuota: currentConfig.subjectCount || 10,
-            utilidadOculta: 0,
-            techniciansRecruited: 0,
-            devotsRecruited: 0,
-            influenceGathered: 0
-        };
-
         // Sincronizar con State
         state.startBatch();
-        state.gameData = { ...this.gameData };
         state.energy = 100;
         state.stability = 100;
         state.processedCount = 0;
-        state.judgmentErrors = 0; // También reiniciar errores de juicio
+        state.judgmentErrors = 0;
+        state.techniciansRecruited = 0;
+        state.devotsRecruited = 0;
+        state.influenceGathered = 0;
+        state.utilidadOculta = 0;
+        state.quota = currentConfig.subjectCount || 10;
         state.nextSubject();      // Forzar nuevo sujeto para evitar el mismo
         state.endBatch();
 
         console.log('%c[SEQUENCER] Nivel reiniciado. Limpieza profunda completada.', 'color: #f59e0b;');
-        bus.emit('LEVEL_RESET', { step: this.currentStep, gameData: this.gameData });
+        bus.emit('LEVEL_RESET', { step: this.currentStep });
     }
 
     /**
      * Registra el resultado de procesar un sujeto
      */
-    recordSubjectResult(result) {
-        const { accepted, subjectType, influence } = result;
+    registerSubjectResult(subject, action) {
+        const { utility, influence, type } = subject;
 
-        if (accepted) {
-            if (subjectType === 'technician') {
-                this.gameData.techniciansRecruited++;
-                this.gameData.utilidadOculta += 10;
-            } else if (subjectType === 'devot') {
-                this.gameData.devotsRecruited++;
-                this.gameData.utilidadOculta -= 5; // Balance narrativo
+        state.startBatch();
+        if (action === 'authorize') {
+            if (type === 'técnico') {
+                state.techniciansRecruited++;
+                state.utilidadOculta += 10;
+            } else if (type === 'devoto') {
+                state.devotsRecruited++;
+                state.utilidadOculta -= 5; // Balance narrativo
             }
 
             if (influence) {
-                this.gameData.influenceGathered += influence;
+                state.influenceGathered += influence;
             }
         }
+        state.endBatch();
 
-        // Actualizar State
-        state.gameData = { ...this.gameData };
-
-        bus.emit('SUBJECT_PROCESSED', { gameData: this.gameData });
+        bus.emit('SUBJECT_PROCESSED', { 
+            stats: {
+                techniciansRecruited: state.techniciansRecruited,
+                devotsRecruited: state.devotsRecruited,
+                influenceGathered: state.influenceGathered
+            }
+        });
     }
 
     /**
@@ -325,15 +317,15 @@ class GameSequencer {
 
         // Verificar técnicos requeridos (Paso 4)
         if (meta.requiredTechnicians) {
-            if (this.gameData.techniciansRecruited < meta.requiredTechnicians) {
+            if (state.techniciansRecruited < meta.requiredTechnicians) {
                 results.success = false;
-                results.messages.push(`Técnicos insuficientes: ${this.gameData.techniciansRecruited}/${meta.requiredTechnicians}`);
+                results.messages.push(`Técnicos insuficientes: ${state.techniciansRecruited}/${meta.requiredTechnicians}`);
             }
         }
 
         // Verificar influencia requerida (Paso 8)
         if (meta.requiredInfluence) {
-            if (this.gameData.influenceGathered < meta.requiredInfluence) {
+            if (state.influenceGathered < meta.requiredInfluence) {
                 results.success = false;
                 results.messages.push('Influencia insuficiente. Sabotaje inminente.');
                 bus.emit('SABOTAGE_TRIGGERED', {});
@@ -347,8 +339,8 @@ class GameSequencer {
      * Calcula la recomendación del sistema para el Juicio Final
      */
     calculateJudgmentRecommendation() {
-        const techScore = (this.gameData.techniciansRecruited / 16) * 100; // Max ~16 técnicos
-        const faithScore = (this.gameData.devotsRecruited / 20) * 100; // Max ~20 devotos
+        const techScore = (state.techniciansRecruited / 16) * 100; // Max ~16 técnicos
+        const faithScore = (state.devotsRecruited / 20) * 100; // Max ~20 devotos
 
         const weightedTech = techScore * 0.7;
         const weightedFaith = faithScore * 0.3;
@@ -369,13 +361,21 @@ class GameSequencer {
         const endingText = endings[faction];
 
         state.startBatch();
-        state.gameStatus = 'GAME_OVER';
+        // Ya no seteamos GAME_OVER aquí, lo hará nextStep() tras el epílogo
         state.endBatch();
 
         bus.emit('GAME_ENDING', {
             faction,
             text: endingText,
-            stats: { ...this.gameData }
+            stats: { 
+                techniciansRecruited: state.techniciansRecruited,
+                devotsRecruited: state.devotsRecruited,
+                influenceGathered: state.influenceGathered,
+                processed: state.processedCount,
+                errors: state.judgmentErrors,
+                energy: state.energy,
+                ...state.stats
+            }
         });
     }
 }

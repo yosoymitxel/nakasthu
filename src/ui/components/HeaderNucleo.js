@@ -14,8 +14,15 @@ export const HeaderNucleo = () => {
     const stability = useGameState('stability');
     const orbitalCycle = useGameState('orbitalCycle');
     const isPaused = useGameState('isPaused');
-    const gameData = useGameState('gameData');
     const currentStep = useGameState('currentStep');
+    const utilidadOculta = useGameState('utilidadOculta');
+
+    // MENU INVISIBLE (Utilidad de Sujetos)
+    const invisibleMenu = (currentStep >= 4) ? html`
+        <div className="px-4 mt-2 border-t border-zinc-800/30 pt-2">
+            <${InvisibleUtilityBar} value=${utilidadOculta || 0} max=${100} />
+        </div>
+    ` : null;
 
     const [activeHighlights, setActiveHighlights] = React.useState({
         energy: false,
@@ -124,11 +131,7 @@ export const HeaderNucleo = () => {
             </div>
 
             <!-- MENU INVISIBLE (Utilidad de Sujetos) -->
-            ${currentStep >= 4 && html`
-                <div className="px-4 mt-2 border-t border-zinc-800/30 pt-2">
-                    <${InvisibleUtilityBar} value=${gameData.utilidadOculta || 0} max=${100} />
-                </div>
-            `}
+            ${invisibleMenu}
         </div>
     `;
 };

@@ -22,15 +22,6 @@ const initialState = {
     currentStep: 1,          // Paso actual de la historia (1-12)
     storyPath: 0,            // 0: Ruta Técnico/Operador, 1: Ruta Religioso/Líder
     tutorialChoiceMade: false, // Si el jugador ya decidió sobre el tutorial
-    gameData: {              // Variables del nivel actual
-        score: 0,
-        energia: 100,
-        cuota: 10,
-        utilidadOculta: 0,   // Contador invisible de utilidad de sujetos
-        techniciansRecruited: 0,
-        devotsRecruited: 0,
-        influenceGathered: 0
-    },
     // Resonancia
     targetFrequency: 0.1 + Math.random() * 59.9,
     targetPhase: Math.random() * Math.PI * 2,
@@ -52,6 +43,10 @@ const initialState = {
     processedCount: 0,
     quota: 10,
     judgmentErrors: 0,
+    techniciansRecruited: 0,
+    devotsRecruited: 0,
+    influenceGathered: 0,
+    utilidadOculta: 0,
     loreArchive: [], // Lista de información recolectada (Fase 15)
     activeDialogue: null, // Diálogo activo actual
     stats: {
@@ -60,7 +55,8 @@ const initialState = {
         corruptsAuthorized: 0,
         innocentsAuthorized: 0
     },
-    gameStatus: 'START_MENU', // 'START_MENU' | 'PLAYING' | 'PAUSED' | 'GAME_OVER'
+    gameStatus: 'START_MENU', // 'START_MENU' | 'PLAYING' | 'PAUSED' | 'GAME_OVER' | 'LORE_ARCHIVE'
+    previousGameStatus: 'START_MENU',
     isPaused: false,
     isModalOpen: false, // Bloquea el tick del motor si hay un modal activo
     isTutorialActive: false,
@@ -103,6 +99,11 @@ const stateManager = {
 
 export const state = new Proxy(stateManager, {
     set(target, property, value) {
+        // Guardar estado previo antes de cambiar gameStatus
+        if (property === 'gameStatus' && value !== target.gameStatus) {
+            target.previousGameStatus = target.gameStatus;
+        }
+
         // Regla: Energía, Estabilidad y Ciclo Orbital NUNCA retornan decimales (Fase 18)
         let processedValue = value;
         if (['energy', 'stability', 'orbitalCycle'].includes(property) && typeof value === 'number') {

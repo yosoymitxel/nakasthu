@@ -17,7 +17,7 @@ export const SidebarLeft = ({ getModuleTutorialStatus }) => {
                 locked=${getModuleTutorialStatus('L_TOP').locked}
                 highlighted=${getModuleTutorialStatus('L_TOP').highlighted}
             >
-                <${Panel} title="SYS_INIT" areaId="L_TOP" className="w-full h-full overflow-hidden">
+                <${Panel} title="MOD-00: SYS_INIT" areaId="L_TOP" className="w-full h-full overflow-hidden">
                     <${Logo} />
                 <//>
             <//>
@@ -48,7 +48,7 @@ export const SidebarLeft = ({ getModuleTutorialStatus }) => {
                 highlighted=${getModuleTutorialStatus('L_BOTTOM').highlighted}
                 className="bg-black/20"
             >
-                <${Panel} title="RESERVE_LINK" areaId="L_BOTTOM" className="w-full h-full overflow-hidden" contentClassName="!p-0">
+                <${Panel} title="MOD-10: RESERVE_LINK" areaId="L_BOTTOM" className="w-full h-full overflow-hidden" contentClassName="!p-0">
                     <div className="h-full w-full flex items-center justify-center">
                         <span className="text-[10px] text-zinc-700 tracking-widest uppercase italic animate-pulse">
                             Sin datos de respaldo...

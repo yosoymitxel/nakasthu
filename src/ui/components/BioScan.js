@@ -1,7 +1,6 @@
 /**
  * BIOSCAN.JS (MOD-01)
- * Terminal de control para escaneos de sujetos.
- * Restauración Crítica - v4.02
+ * Bloque 2: Escaneo Biométrico.
  */
 import { html } from '../utils/html.js';
 import { executeScan, SCAN_TYPES } from '../../systems/Scanner.js';

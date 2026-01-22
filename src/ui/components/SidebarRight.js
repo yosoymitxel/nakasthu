@@ -18,7 +18,7 @@ export const SidebarRight = ({ getModuleTutorialStatus }) => {
                 locked=${getModuleTutorialStatus('R_TOP').locked}
                 highlighted=${getModuleTutorialStatus('R_TOP').highlighted}
             >
-                <${Panel} title="CONTROL" areaId="R_TOP" className="w-full h-full overflow-hidden" contentClassName="!p-0">
+                <${Panel} title="MOD-08: CONTROL" areaId="R_TOP" className="w-full h-full overflow-hidden" contentClassName="!p-0">
                     <${ControlPanel} />
                 <//>
             <//>
@@ -28,7 +28,7 @@ export const SidebarRight = ({ getModuleTutorialStatus }) => {
                 locked=${getModuleTutorialStatus('R_UPPER').locked}
                 highlighted=${getModuleTutorialStatus('R_UPPER').highlighted}
             >
-                <${Panel} title="LORE_ARCHIVE" areaId="R_UPPER" className="w-full h-full overflow-hidden" contentClassName="!p-0">
+                <${Panel} title="MOD-09: LORE_ARCHIVE" areaId="R_UPPER" className="w-full h-full overflow-hidden" contentClassName="!p-0">
                     <${LoreArchive} />
                 <//>
             <//>

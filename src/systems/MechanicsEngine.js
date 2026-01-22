@@ -180,8 +180,14 @@ const checkGameStatus = () => {
         state.gameStatus = 'GAME_OVER';
         bus.emit('SYSTEM_FAILURE', { 
             reason: 'STABILITY_COLLAPSED',
-            details: 'Sincronía neural perdida. Demasiadas brechas de seguridad o sacrificios injustificados han colapsado el bastión.',
-            stats: { ...state.stats, processed: state.processedCount }
+            details: 'La sincronía neural con el bastión se ha roto. El exceso de errores de juicio o la autorización de entidades corruptas ha saturado los filtros de biomasa.',
+            stats: { 
+                ...state.stats, 
+                processed: state.processedCount,
+                errors: state.judgmentErrors,
+                techniciansRecruited: state.techniciansRecruited,
+                devotsRecruited: state.devotsRecruited
+            }
         });
         console.log("%c[SYSTEM] BASTIÓN COLAPSADO. CONEXIÓN PERDIDA.", "color: #ff0000; font-weight: bold;");
         return;
@@ -191,8 +197,14 @@ const checkGameStatus = () => {
         state.gameStatus = 'GAME_OVER';
         bus.emit('SYSTEM_FAILURE', { 
             reason: 'ENERGY_DEPLETED',
-            details: 'Agotamiento de energía crítico. El sistema no tiene potencia suficiente para mantener el enlace neural.',
-            stats: { ...state.stats, processed: state.processedCount }
+            details: 'Agotamiento de energía crítico. El sistema ha entrado en modo de hibernación forzada para preservar el núcleo. La biomasa residual ha sido purgada.',
+            stats: { 
+                ...state.stats, 
+                processed: state.processedCount,
+                errors: state.judgmentErrors,
+                techniciansRecruited: state.techniciansRecruited,
+                devotsRecruited: state.devotsRecruited
+            }
         });
         console.log("%c[SYSTEM] ENERGÍA AGOTADA. SISTEMA APAGADO.", "color: #ff0000; font-weight: bold;");
         return;

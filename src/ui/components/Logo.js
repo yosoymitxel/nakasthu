@@ -1,5 +1,5 @@
 /**
- * LOGO.JS
+ * LOGO.JS (MOD-00)
  * Bloque 1.1: Logo del Juego.
  */
 import { html } from '../utils/html.js';

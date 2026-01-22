@@ -17,6 +17,7 @@ import { gameSequencer, STEPS_CONFIG } from '../../systems/GameSequencer.js';
 import { CinematicScreen } from '../screens/cinematic/CinematicScreen.js';
 import { MechanicScreen } from '../screens/mechanic/MechanicScreen.js';
 import { GameplayScreen } from '../screens/gameplay/GameplayScreen.js';
+import { LoreScreen } from '../screens/lore/LoreScreen.js';
 import { GameModal, useGameModal } from './GameModal.js';
 
 const { useState, useEffect } = React;
@@ -32,6 +33,8 @@ export const Layout = () => {
     const processedCount = useGameState('processedCount');
     const quota = useGameState('quota');
     const judgmentErrors = useGameState('judgmentErrors');
+    const techniciansRecruited = useGameState('techniciansRecruited');
+    const devotsRecruited = useGameState('devotsRecruited');
     const tutorialStep = useGameState('tutorialStep');
 
     const [flash, setFlash] = useState(null); // { color, duration }
@@ -49,9 +52,11 @@ export const Layout = () => {
     const stepConfig = STEPS_CONFIG[currentStep];
     const gameModalState = useGameModal();
 
-    // Sincronizar Sequencer al montar
+    // Sincronizar Sequencer al montar (Solo si ya estamos en una partida)
     useEffect(() => {
-        gameSequencer.init();
+        if (gameStatus !== 'START_MENU') {
+            gameSequencer.init();
+        }
     }, []);
 
     // Lógica de bloqueo de tutorial
@@ -120,7 +125,13 @@ export const Layout = () => {
 
         const onSystemFailure = (data) => {
             setDeathReason(data.reason === 'ENERGY_DEPLETED' ? 'ERROR CRÍTICO: Agotamiento de Energía' : 'SUJETO DESCONTROLADO: Inestabilidad Neural');
-            setDeathDetails(data.details);
+            setDeathDetails(data.details || data.text);
+            setDeathStats(data.stats);
+        };
+
+        const onGameEnding = (data) => {
+            setDeathReason(`FINAL ALCANZADO: ${data.faction === 'orden' ? 'ORDEN' : 'TRASCENDENCIA'}`);
+            setDeathDetails(data.text);
             setDeathStats(data.stats);
         };
 
@@ -129,12 +140,14 @@ export const Layout = () => {
         bus.on('OPEN_MODAL', onOpenModal);
         bus.on('MODAL_CLOSE_INTERNAL', onCloseModal);
         bus.on('SYSTEM_FAILURE', onSystemFailure);
+        bus.on('GAME_ENDING', onGameEnding);
         return () => {
             bus.off('TRIGGER_FLASH', onFlash);
             bus.off('SACRIFICE_PEAK', onSacrificePeak);
             bus.off('OPEN_MODAL', onOpenModal);
             bus.off('MODAL_CLOSE_INTERNAL', onCloseModal);
             bus.off('SYSTEM_FAILURE', onSystemFailure);
+            bus.off('GAME_ENDING', onGameEnding);
         };
     }, []);
 
@@ -143,15 +156,27 @@ export const Layout = () => {
     const isCriticalStability = stability < 15;
     const isGameOver = gameStatus === 'GAME_OVER';
     const isStartMenu = gameStatus === 'START_MENU';
+    const isLoreArchive = gameStatus === 'LORE_ARCHIVE';
     const isPaused = state.isPaused;
 
-    // Listener para pausa (Escape key)
+    // Listener para pausa y Lore (Escape key)
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (e.key === 'Escape' && gameStatus === 'PLAYING') {
-                const newPauseState = !state.isPaused;
-                state.isPaused = newPauseState;
-                bus.emit('GAME_PAUSE', { paused: newPauseState });
+            if (e.key === 'Escape') {
+                if (gameStatus === 'LORE_ARCHIVE') {
+                    state.gameStatus = 'PLAYING';
+                    return;
+                }
+                
+                if (gameStatus === 'PLAYING') {
+                    const newPauseState = !state.isPaused;
+                    state.isPaused = newPauseState;
+                    bus.emit('GAME_PAUSE', { paused: newPauseState });
+                }
+            }
+
+            if (e.key.toLowerCase() === 'l' && gameStatus === 'PLAYING' && !state.isPaused && !state.focusMode) {
+                state.gameStatus = 'LORE_ARCHIVE';
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -160,10 +185,19 @@ export const Layout = () => {
 
     // Lógica de cálculo de rango
     const getRank = () => {
-        if (isGameOver || judgmentErrors > 5) return { label: 'F', color: 'text-red-600', desc: 'FRACASO ABSOLUTO' };
-        if (judgmentErrors === 0 && energy > 80) return { label: 'S', color: 'text-amber-400', desc: 'EJECUCIÓN PERFECTA' };
-        if (judgmentErrors <= 2) return { label: 'A', color: 'text-emerald-400', desc: 'DESEMPEÑO SOBRESALIENTE' };
-        if (judgmentErrors <= 5) return { label: 'C', color: 'text-yellow-600', desc: 'DESEMPEÑO ACEPTABLE' };
+        // Priorizar estadísticas del final si existen
+        const errors = deathStats?.errors !== undefined ? deathStats.errors : judgmentErrors;
+        const currentEnergy = deathStats?.energy !== undefined ? deathStats.energy : energy;
+
+        // Si hay errores críticos o falló el sistema, es F
+        const isSystemFailure = deathReason && (deathReason.includes('ERROR CRÍTICO') || deathReason.includes('SUJETO DESCONTROLADO'));
+        
+        if (isSystemFailure || errors > 5) return { label: 'F', color: 'text-red-600', desc: 'FRACASO ABSOLUTO' };
+        
+        // Si llegamos a un final normal, evaluar desempeño
+        if (errors === 0 && currentEnergy > 80) return { label: 'S', color: 'text-amber-400', desc: 'EJECUCIÓN PERFECTA' };
+        if (errors <= 2) return { label: 'A', color: 'text-emerald-400', desc: 'DESEMPEÑO SOBRESALIENTE' };
+        if (errors <= 5) return { label: 'C', color: 'text-yellow-600', desc: 'DESEMPEÑO ACEPTABLE' };
         return { label: 'D', color: 'text-zinc-500', desc: 'RIESGO OPERATIVO' };
     };
 
@@ -211,11 +245,23 @@ export const Layout = () => {
                     
                     <div className="flex flex-col gap-4 w-64">
                         <button 
-                            onClick=${() => state.gameStatus = 'PLAYING'}
+                            onClick=${() => {
+                                if (currentStep === 1) {
+                                    bus.emit('GAME_START');
+                                }
+                                state.gameStatus = 'PLAYING';
+                            }}
                             className="group relative border border-cyan-500/40 bg-cyan-950/20 px-8 py-3 hover:bg-cyan-500/30 transition-all"
                         >
                             <span className="text-cyan-400 font-mono text-sm tracking-widest uppercase">Iniciar Turno</span>
                             <div className="absolute inset-0 border border-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity animate-pulse"></div>
+                        </button>
+
+                        <button 
+                            onClick=${() => state.gameStatus = 'LORE_ARCHIVE'}
+                            className="border border-zinc-800 bg-zinc-900/60 px-8 py-2 text-zinc-400 font-mono text-xs hover:text-zinc-200 hover:border-cyan-500/30 transition-all uppercase tracking-widest"
+                        >
+                            Archivo de Lore
                         </button>
                         
                         <button 
@@ -228,16 +274,19 @@ export const Layout = () => {
                 </div>
             </div>
 
-            <!-- Protocolo de Colapso (Muerte) -->
+            <!-- Archivo de Lore Pantalla Completa -->
+            ${isLoreArchive && html`<${LoreScreen} />`}
+
+            <!-- Protocolo de Colapso (Muerte / Final) -->
             <div className=${`death-screen ${isGameOver ? 'active' : ''}`}>
                 <div className="flex flex-col items-center space-y-8 max-w-4xl text-center px-4 overflow-y-auto max-h-screen py-12 custom-scrollbar">
-                    <h1 className="text-red-600 font-mono text-4xl tracking-[0.3em] uppercase font-black">
-                        BASTIÓN COMPROMETIDO
+                    <h1 className=${`font-mono text-4xl tracking-[0.3em] uppercase font-black ${deathReason && deathReason.includes('FINAL') ? 'text-cyan-500' : 'text-red-600'}`}>
+                        ${deathReason && deathReason.includes('FINAL') ? 'PROTOCOLOS COMPLETADOS' : 'BASTIÓN COMPROMETIDO'}
                     </h1>
                     
                     <div className="space-y-6 w-full max-w-2xl">
-                        <div className="p-4 border border-red-900/30 bg-red-950/10">
-                            <p className="text-red-500 font-bold text-xl tracking-widest animate-pulse mb-2">
+                        <div className=${`p-4 border bg-zinc-950/40 ${deathReason && deathReason.includes('FINAL') ? 'border-cyan-900/30' : 'border-red-900/30'}`}>
+                            <p className=${`font-bold text-xl tracking-widest animate-pulse mb-2 ${deathReason && deathReason.includes('FINAL') ? 'text-cyan-400' : 'text-red-500'}`}>
                                 ${deathReason || 'CONEXIÓN CORTADA'}
                             </p>
                             <p className="text-zinc-400 text-[14px] leading-relaxed italic">
@@ -246,22 +295,30 @@ export const Layout = () => {
                         </div>
 
                         ${deathStats && html`
-                            <div className="grid grid-cols-2 gap-4 py-6 border-y border-zinc-800/50">
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 py-6 border-y border-zinc-800/50">
                                 <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
                                     <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Sujetos Procesados</span>
-                                    <span className="text-2xl font-black text-zinc-200">${deathStats.processed}</span>
+                                    <span className="text-2xl font-black text-zinc-200">${deathStats.processed || processedCount}</span>
                                 </div>
                                 <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
                                     <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Errores de Juicio</span>
-                                    <span className="text-2xl font-black text-red-500">${judgmentErrors}</span>
+                                    <span className="text-2xl font-black text-red-500">${deathStats.errors !== undefined ? deathStats.errors : judgmentErrors}</span>
+                                </div>
+                                <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
+                                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Técnicos Reclutados</span>
+                                    <span className="text-xl font-bold text-cyan-400">${deathStats.techniciansRecruited || techniciansRecruited}</span>
+                                </div>
+                                <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
+                                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Devotos Admitidos</span>
+                                    <span className="text-xl font-bold text-purple-400">${deathStats.devotsRecruited || devotsRecruited}</span>
                                 </div>
                                 <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
                                     <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Inocentes Sacrificados</span>
-                                    <span className="text-xl font-bold text-zinc-400">${deathStats.innocentsSacrificed}</span>
+                                    <span className="text-xl font-bold text-zinc-400">${deathStats.innocentsSacrificed || stats.innocentsSacrificed}</span>
                                 </div>
                                 <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
                                     <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Corruptos Autorizados</span>
-                                    <span className="text-xl font-bold text-zinc-400">${deathStats.corruptsAuthorized}</span>
+                                    <span className="text-xl font-bold text-zinc-400">${deathStats.corruptsAuthorized || stats.corruptsAuthorized}</span>
                                 </div>
                             </div>
                         `}
@@ -302,8 +359,8 @@ export const Layout = () => {
             </div>
 
             <!-- Renderizado Dinámico de Pantallas según Paso Narrativo -->
-            <div className=${`transition-all duration-[2000ms] ${isGameOver || isStartMenu ? 'opacity-0 pointer-events-none' : ''}`}>
-                ${(() => {
+            <div className=${`transition-all duration-[2000ms] ${isGameOver || isStartMenu || isLoreArchive ? 'opacity-0 pointer-events-none' : ''}`}>
+                ${(!isGameOver && !isStartMenu && !isLoreArchive) && (() => {
             if (!stepConfig) return null;
 
             switch (stepConfig.type) {

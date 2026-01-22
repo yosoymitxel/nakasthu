@@ -1,5 +1,5 @@
 /**
- * TERMINAL.JS (MOD-09)
+ * TERMINAL.JS (MOD-06)
  * Consola de comandos ZHYR_OS para intervención directa.
  */
 import { html } from '../utils/html.js';

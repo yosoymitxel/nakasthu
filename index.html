@@ -45,8 +45,14 @@
                         'scan-line': 'scan-line 4s linear infinite',
                         'vibrate-subtle': 'vibrate-subtle 0.15s linear infinite',
                         'pulse-border-critical': 'pulse-border-critical 2s ease-in-out infinite',
+                        'fade-in': 'fade-in 0.5s ease-out forwards',
+                        'spin-slow': 'spin 10s linear infinite',
                     },
                     keyframes: {
+                        'fade-in': {
+                            '0%': { opacity: '0', transform: 'scale(0.98)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        },
                         'vibrate-subtle': {
                             '0%, 100%': { transform: 'translate(0)' },
                             '25%': { transform: 'translate(-0.5px, 0.5px)' },

@@ -1,7 +1,6 @@
 /**
- * CONTROLPANEL.JS
+ * CONTROLPANEL.JS (MOD-08)
  * Bloque 8: Panel de Control.
- * Botones de Manual y Pausa.
  */
 import { html } from '../utils/html.js';
 import { state } from '../../core/State.js';
