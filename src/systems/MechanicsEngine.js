@@ -5,6 +5,7 @@
  */
 import { state } from '../core/State.js';
 import { bus } from '../core/Bus.js';
+import { gameSequencer } from './GameSequencer.js';
 
 /**
  * Procesa el sacrificio del sujeto actual para recuperar energía.
@@ -29,6 +30,7 @@ export const handleSacrifice = () => {
     console.log(`%c[MECHANICS] Procesando biomasa del sujeto ${subject.id}...`, "color: #ff0000; font-weight: bold;");
 
     state.startBatch();
+    state.focusMode = false; // Desactivar modo focus al cambiar de sujeto
 
     // Notificar pico visual para el layout (VFX perimetral)
     bus.emit('SACRIFICE_PEAK');
@@ -44,7 +46,7 @@ export const handleSacrifice = () => {
                 text: '[LOG] CORRUPCIÓN DETECTADA Y ELIMINADA. +80 ENERGÍA | +15 ESTABILIDAD.',
                 type: 'SYSTEM'
             });
-            bus.emit('TRIGGER_FLASH', { color: 'rgba(16, 185, 129, 0.3)', duration: 150 });
+            bus.emit('TRIGGER_FLASH', { color: 'rgba(16, 185, 129, 0.3)', duration: 150, target: 'MOD04' });
         } else {
             // Error crítico: Sacrificio de inocente
             state.energy = Math.min(100, state.energy + 60);
@@ -57,7 +59,7 @@ export const handleSacrifice = () => {
             });
             // Feedback visual de error crítico
             bus.emit('CRITICAL_ERROR_FEEDBACK');
-            bus.emit('TRIGGER_FLASH', { color: 'rgba(220, 38, 38, 0.5)', duration: 200 });
+            bus.emit('TRIGGER_FLASH', { color: 'rgba(220, 38, 38, 0.5)', duration: 200, target: 'MOD04' });
         }
     } else {
         // En el tutorial solo notificamos el acto
@@ -112,6 +114,7 @@ export const handleAuthorize = () => {
     console.log(`%c[MECHANICS] Autorizando sujeto ${subject.id}. Protocolo de fe actualizado.`, "color: #00ff00;");
 
     state.startBatch();
+    state.focusMode = false; // Desactivar modo focus al cambiar de sujeto
 
     if (!state.isTutorialActive) {
         if (subject.isCorrupt) {
@@ -125,7 +128,7 @@ export const handleAuthorize = () => {
             });
             // Feedback visual de error crítico
             bus.emit('CRITICAL_ERROR_FEEDBACK');
-            bus.emit('TRIGGER_FLASH', { color: 'rgba(220, 38, 38, 0.5)', duration: 200 });
+            bus.emit('TRIGGER_FLASH', { color: 'rgba(220, 38, 38, 0.5)', duration: 200, target: 'MOD04' });
         } else {
             // Autorización correcta
             state.energy = Math.max(0, state.energy - 1);
@@ -135,7 +138,7 @@ export const handleAuthorize = () => {
                 text: '[INFO] SUJETO LIMPIO AUTORIZADO. -1 ENERGÍA | +20 ESTABILIDAD.',
                 type: 'SYSTEM'
             });
-            bus.emit('TRIGGER_FLASH', { color: 'rgba(59, 130, 246, 0.3)', duration: 150 });
+            bus.emit('TRIGGER_FLASH', { color: 'rgba(59, 130, 246, 0.3)', duration: 150, target: 'MOD04' });
         }
     } else {
         // En el tutorial solo notificamos el acto
@@ -175,19 +178,52 @@ export const handleAuthorize = () => {
 const checkGameStatus = () => {
     if (state.stability <= 0) {
         state.gameStatus = 'GAME_OVER';
+        bus.emit('SYSTEM_FAILURE', { 
+            reason: 'STABILITY_COLLAPSED',
+            details: 'Sincronía neural perdida. Demasiadas brechas de seguridad o sacrificios injustificados han colapsado el bastión.',
+            stats: { ...state.stats, processed: state.processedCount }
+        });
         console.log("%c[SYSTEM] BASTIÓN COLAPSADO. CONEXIÓN PERDIDA.", "color: #ff0000; font-weight: bold;");
         return;
     }
 
-    if (state.processedCount >= state.quota) {
-        // En Fase 15 podríamos tener un estado VICTORY o simplemente fin de turno
-        state.gameStatus = 'GAME_OVER'; // O un nuevo estado de victoria si se requiere
-        console.log("%c[SYSTEM] CUOTA CUMPLIDA. EVALUANDO DESEMPEÑO...", "color: #00ff00; font-weight: bold;");
-
-        // Feedback en Terminal (MOD-09)
-        bus.emit('TERMINAL_PRINT', {
-            text: 'TURNO FINALIZADO. REPORTE ENVIADO AL ALTO MANDO ZHYR.'
+    if (state.energy <= 0) {
+        state.gameStatus = 'GAME_OVER';
+        bus.emit('SYSTEM_FAILURE', { 
+            reason: 'ENERGY_DEPLETED',
+            details: 'Agotamiento de energía crítico. El sistema no tiene potencia suficiente para mantener el enlace neural.',
+            stats: { ...state.stats, processed: state.processedCount }
         });
+        console.log("%c[SYSTEM] ENERGÍA AGOTADA. SISTEMA APAGADO.", "color: #ff0000; font-weight: bold;");
+        return;
+    }
+
+    if (state.processedCount >= state.quota) {
+        console.log("%c[SYSTEM] CUOTA CUMPLIDA. EVALUANDO DESEMPEÑO...", "color: #00ff00; font-weight: bold;");
+        
+        // Verificar metas del paso actual antes de avanzar
+        const metaResults = gameSequencer.checkStepMeta();
+        
+        if (metaResults.success) {
+            bus.emit('TERMINAL_PRINT', {
+                text: '[SISTEMA] OBJETIVOS DE FASE CUMPLIDOS. PREPARANDO TRANSICIÓN...'
+            });
+            
+            // Avanzar al siguiente paso narrativo
+            setTimeout(() => {
+                gameSequencer.nextStep();
+            }, 1000);
+        } else {
+            // Fracaso por no cumplir metas secundarias (ej: técnicos insuficientes)
+            state.gameStatus = 'GAME_OVER';
+            const failureReason = metaResults.messages.join(' | ');
+            bus.emit('SYSTEM_FAILURE', { reason: `ERROR DE PROTOCOLO: ${failureReason}` });
+            
+            bus.emit('TERMINAL_PRINT', {
+                text: `[FALLO CRÍTICO] OBJETIVOS NO ALCANZADOS: ${failureReason}`,
+                type: 'SYSTEM'
+            });
+        }
     }
 };
 

@@ -1,8 +1,13 @@
 import { defineConfig } from 'vitest/config';
+import path from 'path';
 
 export default defineConfig({
   test: {
     environment: 'happy-dom',
     globals: true,
+    alias: {
+      'https://unpkg.com/htm?module': path.resolve(__dirname, './__tests__/mocks/html.js'),
+      '../ui/utils/html.js': path.resolve(__dirname, './__tests__/mocks/html.js'),
+    },
   },
 });

@@ -13,6 +13,7 @@ import { useStoryLabels } from './MainLayout.js';
 import { gameSequencer } from '../../systems/GameSequencer.js';
 import { PortalScene } from './PortalScene.js';
 import { SubjectVisual } from './SubjectVisual.js';
+import { SCAN_TYPES } from '../../systems/Scanner.js';
 
 const { useState, useEffect, useRef } = React;
 
@@ -42,6 +43,19 @@ export const Operations = () => {
     const scrollRef = useRef(null);
     const messagesEndRef = useRef(null);
 
+    const [flash, setFlash] = useState(null);
+
+    useEffect(() => {
+        const onFlash = (data) => {
+            if (data.target === 'MOD04') {
+                setFlash(data);
+                setTimeout(() => setFlash(null), data.duration || 300);
+            }
+        };
+        bus.on('TRIGGER_FLASH', onFlash);
+        return () => bus.off('TRIGGER_FLASH', onFlash);
+    }, []);
+
     useEffect(() => {
         const onDialogue = (data) => {
             if (data.type === 'SYSTEM') {
@@ -67,17 +81,13 @@ export const Operations = () => {
                         text: '>>> ALERTA: ANOMALÍA EN PROTOCOLO DE DECISIÓN. OVERRIDE DETECTADO.',
                         type: 'SYSTEM'
                     }]);
-                    bus.emit('TRIGGER_FLASH', { color: '#9333ea', duration: 150 });
+                    bus.emit('TRIGGER_FLASH', { color: '#9333ea', duration: 150, target: 'MOD04' });
                 }, 500);
             }
         };
 
         const onScanComplete = (data) => {
-            // Redirigir a Terminal
-            bus.emit('TERMINAL_PRINT', {
-                text: `[REPORTE BIOSCAN] ${data.type.name} FINALIZADO. DATOS ENVIADOS A ANALYTICS.`,
-                type: 'SYSTEM'
-            });
+            // Notificar al sistema que el escaneo ha terminado
         };
 
         const onDialogueStarted = (dialogue) => {
@@ -88,19 +98,36 @@ export const Operations = () => {
             }]);
         };
 
-        const onDialogueConsequence = (data) => {
-            // Solo mostrar la elección del operador en COMMS
+        const onDialogueOptionSelected = (data) => {
+            // Mostrar la elección del operador en COMMS
             setMessages(prev => [...prev, {
                 sender: 'OPERADOR',
-                text: `> ${data.originalOption}`,
+                text: `> ${data.option}`,
                 type: 'OPERATOR'
             }]);
 
-            // La respuesta del sistema va a la TERMINAL
-            bus.emit('TERMINAL_PRINT', {
-                text: data.text,
+            // Mostrar la respuesta del sujeto en COMMS después de un breve retraso
+            setIsTyping(true);
+            setTimeout(() => {
+                setMessages(prev => [...prev, {
+                    sender: 'SUJETO',
+                    text: data.consequence,
+                    type: 'SUBJECT'
+                }]);
+                setIsTyping(false);
+                bus.emit('TERMINAL_PRINT', {
+                    text: `[SISTEMA] Respuesta analizada y registrada.`,
+                    type: 'SYSTEM'
+                });
+            }, 800);
+        };
+
+        const onDialogueEnded = () => {
+            setMessages(prev => [...prev, {
+                sender: 'SISTEMA',
+                text: 'ENLACE NEURAL CERRADO.',
                 type: 'SYSTEM'
-            });
+            }]);
         };
 
         const onSessionTerminated = () => {
@@ -112,7 +139,8 @@ export const Operations = () => {
         bus.on('SCAN_COMPLETED', onScanComplete);
         bus.on('SESSION_TERMINATED', onSessionTerminated);
         bus.on('DIALOGUE_STARTED', onDialogueStarted);
-        bus.on('DIALOGUE_CONSEQUENCE', onDialogueConsequence);
+        bus.on('DIALOGUE_OPTION_SELECTED', onDialogueOptionSelected);
+        bus.on('DIALOGUE_ENDED', onDialogueEnded);
 
         return () => {
             bus.off('DIALOGUE_EMITTED', onDialogue);
@@ -120,7 +148,8 @@ export const Operations = () => {
             bus.off('SCAN_COMPLETED', onScanComplete);
             bus.off('SESSION_TERMINATED', onSessionTerminated);
             bus.off('DIALOGUE_STARTED', onDialogueStarted);
-            bus.off('DIALOGUE_CONSEQUENCE', onDialogueConsequence);
+            bus.off('DIALOGUE_OPTION_SELECTED', onDialogueOptionSelected);
+            bus.off('DIALOGUE_ENDED', onDialogueEnded);
         };
     }, []);
 
@@ -144,8 +173,14 @@ export const Operations = () => {
         dialogueEngine.triggerRandomDialogue();
     };
 
+    const handleEndDialogue = () => {
+        dialogueEngine.closeDialogue();
+    };
+
     const handleOptionSelect = (index) => {
         if (isTyping) return;
+        const option = activeDialogue?.options[index];
+        if (option?.used) return; // No permitir repetir la misma pregunta
         dialogueEngine.selectOption(index);
     };
 
@@ -180,26 +215,33 @@ export const Operations = () => {
                 text: 'CRITICAL_ERROR: OVERRIDE BY EIDOLON - ACCIÓN BLOQUEADA',
                 type: 'SYSTEM'
             });
-            bus.emit('TRIGGER_FLASH', { color: '#9333ea', duration: 100 });
+            bus.emit('TRIGGER_FLASH', { color: '#9333ea', duration: 100, target: 'MOD04' });
             return;
         }
 
         if (type === 'SACRIFICE') handleSacrifice();
         if (type === 'AUTHORIZE') {
-            // Si es Kamin, disparar cambio de acto
+            // Si es Kamin, disparar efectos visuales y preparar transición
             if (kaminOverride) {
-                bus.emit('TRIGGER_FLASH', { color: '#9333ea', duration: 500 });
-                bus.emit('ACT_CHANGE', { newAct: 1 });
-                state.storyPath = 1;
+                bus.emit('TRIGGER_FLASH', { color: '#9333ea', duration: 500, target: 'MOD04' });
+                state.storyPath = 1; // Forzar ruta religiosa
                 setKaminOverride(false);
-                gameSequencer.nextStep(); // Avanzar al paso 7 (Cambio de Acto)
             }
             handleAuthorize();
         }
     };
 
     return html`
-        <div className="flex flex-col h-full w-full bg-transparent font-mono overflow-hidden">
+        <div className=${`flex flex-col h-full w-full bg-transparent font-mono overflow-hidden relative transition-all duration-300`}>
+            
+            <!-- Local Flash Overlay -->
+            ${flash && html`
+                <div 
+                    className="absolute inset-0 z-50 pointer-events-none animate-pulse-fast"
+                    style=${{ backgroundColor: flash.color, opacity: 0.3 }}
+                ></div>
+            `}
+
             <!-- SECCIÓN SUPERIOR: VISUALIZADORES -->
             <div className="flex-none h-[140px] w-full flex border-b border-zinc-800">
                 <div className="w-1/3 h-full border-r-[0.5px] border-zinc-800 relative overflow-hidden flex flex-col">
@@ -254,26 +296,48 @@ export const Operations = () => {
                         </p>
                     </div>
                 `)}
+                ${isTyping && html`
+                    <div className="flex items-center gap-2 text-zinc-600 animate-pulse text-[10px] ml-3">
+                        <span className="w-1.5 h-1.5 bg-zinc-600 rounded-full animate-bounce"></span>
+                        RECIBIENDO TRANSMISIÓN...
+                    </div>
+                `}
                 <div ref=${messagesEndRef} />
             </div>
 
             <!-- SECCIÓN INFERIOR: ACTION MATRIX -->
             <div className="flex-none border-t border-zinc-800 bg-black/40">
                 <!-- DIALOGUE OPTIONS -->
-                <div className="h-20 flex p-1 gap-1 border-b border-zinc-800/30">
-                    ${activeDialogue ? activeDialogue.options.map((opt, idx) => html`
-                        <button 
-                            key=${idx}
-                            onClick=${() => handleOptionSelect(idx)}
-                            disabled=${isTyping}
-                            className="flex-1 border border-cyan-900/30 bg-cyan-950/10 hover:bg-cyan-900/20 text-cyan-600 text-[12px] transition-all uppercase tracking-tighter font-bold p-1 leading-tight"
-                        >
-                            ${opt.text}
-                            <div className="text-[12px] text-zinc-400 mt-1">
-                                COST: ${opt.energyCost} | STB: ${opt.stabilityImpact}
+                <div className="h-24 flex p-1 gap-1 border-b border-zinc-800/30">
+                    ${activeDialogue ? html`
+                        <div className="flex w-full gap-1">
+                            <div className="flex-[4] flex gap-1">
+                                ${activeDialogue.options.map((opt, idx) => html`
+                                    <button 
+                                        key=${idx}
+                                        onClick=${() => handleOptionSelect(idx)}
+                                        disabled=${isTyping || opt.used}
+                                        className=${`flex-1 border text-[11px] transition-all uppercase tracking-tighter font-bold p-1 leading-tight flex flex-col justify-center items-center text-center
+                                            ${opt.used 
+                                                ? 'border-zinc-800 bg-zinc-900/10 text-zinc-700 cursor-not-allowed opacity-50' 
+                                                : 'border-cyan-900/30 bg-cyan-950/10 hover:bg-cyan-900/20 text-cyan-600'}`}
+                                    >
+                                        <span className="line-clamp-2">${opt.text}</span>
+                                        <div className="text-[9px] text-zinc-500 mt-1">
+                                            E: ${opt.energyCost} | S: ${opt.stabilityImpact}
+                                        </div>
+                                    </button>
+                                `)}
                             </div>
-                        </button>
-                    `) : html`
+                            <button 
+                                onClick=${handleEndDialogue}
+                                disabled=${isTyping}
+                                className="flex-1 border border-red-900/30 bg-red-950/10 hover:bg-red-900/20 text-red-700 text-[10px] transition-all uppercase tracking-tighter font-black p-1 leading-tight"
+                            >
+                                TERMINAR INTERROGATORIO
+                            </button>
+                        </div>
+                    ` : html`
                         <${React.Fragment}>
                             <button 
                                 onClick=${() => handleDialogueAction('INTERROGAR')}
@@ -292,11 +356,16 @@ export const Operations = () => {
                 <!-- SENTENCE BUTTONS -->
                 <div className="h-20 p-4 flex flex-col items-center justify-center bg-black/60 relative">
                     ${(isTutorialActive && tutorialStep !== 5) || (!isTutorialActive && !isScanComplete) ? html`
-                        <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center z-30 group/lock">
-                            <span className="text-[10px] text-red-500/60 font-mono tracking-[0.2em] uppercase animate-pulse text-center px-4">
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center z-30 group/lock border-y border-red-900/20">
+                            <span className="text-[10px] text-red-500/80 font-mono tracking-[0.2em] uppercase animate-pulse text-center px-4 mb-1">
                                 ${isTutorialActive
-                ? '[PROTOCOLO DE SENTENCIA BLOQUEADO: SIGA LAS INSTRUCCIONES DEL TUTORIAL]'
-                : `[PROTOCOLO DE SENTENCIA BLOQUEADO: REQUIERE ESCANEO ${requiredScan}]`}
+                ? 'PROTOCOLO DE SENTENCIA BLOQUEADO'
+                : 'AUTORIZACIÓN PENDIENTE DE VALIDACIÓN BIOMÉTRICA'}
+                            </span>
+                            <span className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest">
+                                ${isTutorialActive
+                ? '[SIGA LAS INSTRUCCIONES DEL TUTORIAL]'
+                : `[SE REQUIERE ESCANEO: ${SCAN_TYPES[requiredScan]?.name || requiredScan}]`}
                             </span>
                         </div>
                     ` : null}

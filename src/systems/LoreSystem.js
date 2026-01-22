@@ -7,7 +7,35 @@ import { state } from '../core/State.js';
 
 class LoreSystem {
     constructor() {
+        this.loreDatabase = {};
         this.init();
+        this.loadLoreDatabase();
+    }
+
+    async loadLoreDatabase() {
+        try {
+            const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+            const isTest = typeof process !== 'undefined' && process.env && process.env.VITEST;
+
+            let data;
+            const pathUrl = './src/data/lore_database.json';
+
+            if (isBrowser && !isTest) {
+                const response = await fetch(pathUrl);
+                data = await response.json();
+            } else {
+                const fs = await import('fs/promises');
+                const path = await import('path');
+                const fullPath = path.join(process.cwd(), 'src', 'data', 'lore_database.json');
+                const content = await fs.readFile(fullPath, 'utf-8');
+                data = JSON.parse(content);
+            }
+
+            this.loreDatabase = data.entries || {};
+            console.log("%c[LORE] Base de datos de conocimiento cargada.", "color: #8b5cf6;");
+        } catch (error) {
+            console.error("[LORE] Error cargando base de datos de lore:", error);
+        }
     }
 
     init() {
@@ -33,6 +61,7 @@ class LoreSystem {
 
         const loreData = {
             loreId: loreId,
+            text: this.loreDatabase[loreId] || `ENTRADA DE LORE DESBLOQUEADA: ${loreId}`,
             timestamp: Date.now(),
             source: 'NEURAL_LINK',
             type: 'ENIGMA'

@@ -3,6 +3,7 @@
  * Componente raíz de la UI.
  */
 import { Layout } from './Layout.js';
+import { ErrorBoundary } from './ErrorBoundary.js';
 import { html } from '../utils/html.js';
 import { useGameLoop } from '../hooks/useGameLoop.js';
 import { gameLoop } from '../../core/GameLoop.js';
@@ -12,9 +13,11 @@ const App = () => {
     useGameLoop(gameLoop);
 
     return html`
-        <div className="app-container">
-            <${Layout} />
-        </div>
+        <${ErrorBoundary}>
+            <div className="app-container">
+                <${Layout} />
+            </div>
+        </${ErrorBoundary}>
     `;
 };
 

@@ -12,10 +12,11 @@ const { useEffect } = React;
 export const useGameLoop = (gameLoopInstance) => {
     const gameStatus = useGameState('gameStatus');
     const isPaused = useGameState('isPaused');
+    const isModalOpen = useGameState('isModalOpen');
     const isTutorialActive = useGameState('isTutorialActive');
 
     useEffect(() => {
-        if (gameStatus === 'PLAYING' && !isPaused && !isTutorialActive) {
+        if (gameStatus === 'PLAYING' && !isPaused && !isModalOpen && !isTutorialActive) {
             gameLoopInstance.start();
         } else {
             // El stop del motor es preventivo, la lógica de tick 
@@ -24,9 +25,9 @@ export const useGameLoop = (gameLoopInstance) => {
         }
 
         return () => gameLoopInstance.stop();
-    }, [gameStatus, isPaused, isTutorialActive, gameLoopInstance]);
+    }, [gameStatus, isPaused, isModalOpen, isTutorialActive, gameLoopInstance]);
 
     return {
-        isActive: gameStatus === 'PLAYING' && !isPaused && !isTutorialActive
+        isActive: gameStatus === 'PLAYING' && !isPaused && !isModalOpen && !isTutorialActive
     };
 };

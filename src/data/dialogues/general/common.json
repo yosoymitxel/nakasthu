@@ -1,0 +1,49 @@
+{
+    "dialogues": [
+        {
+            "id": "DLG_COMM_ATMOS_01",
+            "minStep": 1,
+            "maxStep": 12,
+            "text": "El sujeto exhala un vaho que se congela instantáneamente en el aire de la cámara, a pesar de que la temperatura es de 22°C. '¿Sientes ese sabor metálico? Es el sabor de los soles gemelos'.",
+            "options": [
+                {
+                    "text": "¿Cómo es posible que tu temperatura interna esté cayendo por debajo de los niveles biológicos sin entrar en shock hipovolémico?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "loreUnlock": "LORE_ZHYR_TEMP",
+                    "consequence": " 'Mi cuerpo recuerda el frío de la noche en el cañón de Zhyr. El shock es una reacción humana; yo ya no soy solo humano, operador'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_COMM_ATMOS_02",
+            "minStep": 1,
+            "maxStep": 12,
+            "text": "El escáner detecta una vibración de 14Hz proveniente del esternón del sujeto. No es un latido, es una frecuencia de radio antigua que emite estática constante. 'Escucha... es la Tierra gritando mientras se desgarra'.",
+            "options": [
+                {
+                    "text": "Estoy intentando aislar la señal de 14Hz. ¿Es una transmisión de la Orden o algo más profundo?",
+                    "energyCost": 0.4,
+                    "stabilityImpact": -2,
+                    "loreUnlock": "LORE_EARTH_SCREAM",
+                    "consequence": "La señal se aclara por un second. Oyes una voz lejana y distorsionada: '...la arena está en los conductos de ventilación de Itzinol... no hay salida...'"
+                }
+            ]
+        },
+        {
+            "id": "DLG_COMM_ATMOS_03",
+            "minStep": 1,
+            "maxStep": 12,
+            "text": "El sujeto te mira directamente a través del sensor de la cámara. Sus ojos parecen ser dos agujeros que dan al vacío absoluto. '¿Sabes por qué NAKASTHU te eligió a ti? Porque eres el único que no aparta la mirada cuando el abismo parpadea'.",
+            "options": [
+                {
+                    "text": "NAKASTHU me eligió por mi eficiencia en el procesamiento de reasignaciones. Nada más.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 20,
+                    "loreUnlock": "LORE_PROTOCOL_SLAVE",
+                    "consequence": " 'Eficiencia... qué palabra tan ruidosa. Te eligió porque tu alma tiene la misma grieta que el cielo de Zhyr. Solo era cuestión de tiempo que nos encontráramos'."
+                }
+            ]
+        }
+    ]
+}

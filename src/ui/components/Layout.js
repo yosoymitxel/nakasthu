@@ -41,6 +41,8 @@ export const Layout = () => {
 
     const [hasSeenWelcome, setHasSeenWelcome] = useState(false);
     const [deathReason, setDeathReason] = useState(null);
+    const [deathDetails, setDeathDetails] = useState(null);
+    const [deathStats, setDeathStats] = useState(null);
 
     // Sistema de Pasos Narrativos
     const currentStep = useGameState('currentStep');
@@ -95,6 +97,9 @@ export const Layout = () => {
     // Listener para feedback de impacto
     useEffect(() => {
         const onFlash = (data) => {
+            // Solo procesar flashes globales o sin target específico
+            if (data.target && data.target !== 'GLOBAL') return;
+
             setFlash({ color: data.color || 'white', duration: data.duration || 300 });
             setTimeout(() => setFlash(null), data.duration || 300);
 
@@ -115,6 +120,8 @@ export const Layout = () => {
 
         const onSystemFailure = (data) => {
             setDeathReason(data.reason === 'ENERGY_DEPLETED' ? 'ERROR CRÍTICO: Agotamiento de Energía' : 'SUJETO DESCONTROLADO: Inestabilidad Neural');
+            setDeathDetails(data.details);
+            setDeathStats(data.stats);
         };
 
         bus.on('TRIGGER_FLASH', onFlash);
@@ -132,7 +139,8 @@ export const Layout = () => {
     }, []);
 
     const isEclipse = phase === 'ECLIPSE';
-    const isCriticalEnergy = energy < 10;
+    const isCriticalEnergy = energy < 15;
+    const isCriticalStability = stability < 15;
     const isGameOver = gameStatus === 'GAME_OVER';
     const isStartMenu = gameStatus === 'START_MENU';
     const isPaused = state.isPaused;
@@ -168,9 +176,19 @@ export const Layout = () => {
         filter: isEclipse ? 'hue-rotate(180deg) contrast(1.1)' : isCriticalEnergy ? 'hue-rotate(-20deg) contrast(1.2)' : 'none'
     };
 
+    // Clases dinámicas para alertas críticas
+    const criticalClass = (isCriticalEnergy || isCriticalStability) ? 'animate-vibrate-subtle' : '';
+    const energyAlertClass = isCriticalEnergy ? 'shadow-[inset_0_0_100px_rgba(245,158,11,0.4)]' : '';
+    const stabilityAlertClass = isCriticalStability ? 'shadow-[inset_0_0_100px_rgba(220,38,38,0.4)]' : '';
+
     return html`
-        <div className=${`relative min-h-screen bg-[#1a1a1c] text-zinc-300 overflow-hidden cursor-default select-none font-mono transition-all duration-[1000ms] ${isPaused ? 'grayscale' : ''}`}>
+        <div className=${`relative min-h-screen bg-[#1a1a1c] text-zinc-300 overflow-hidden cursor-default select-none font-mono transition-all duration-[1000ms] ${isPaused ? 'grayscale' : ''} ${criticalClass}`}>
             
+            <!-- Bordes de Emergencia (Degradado y Vibración) -->
+            ${(isCriticalEnergy || isCriticalStability) && html`
+                <div className=${`absolute inset-0 pointer-events-none z-[100] border-transparent transition-all duration-1000 animate-pulse-border-critical ${isCriticalEnergy ? 'border-amber-600/30 ' + energyAlertClass : 'border-red-600/30 ' + stabilityAlertClass}`}></div>
+            `}
+
             <!-- VFX Perimetral Progresivo -->
             <div 
                 className=${`vignette-damage ${alarm || sacrificePeak ? 'active-alarm' : ''}`}
@@ -212,27 +230,74 @@ export const Layout = () => {
 
             <!-- Protocolo de Colapso (Muerte) -->
             <div className=${`death-screen ${isGameOver ? 'active' : ''}`}>
-                <div className="flex flex-col items-center space-y-8 max-w-2xl text-center px-4">
-                    <h1 className="text-red-600 font-mono text-3xl tracking-[0.2em] uppercase font-black">
+                <div className="flex flex-col items-center space-y-8 max-w-4xl text-center px-4 overflow-y-auto max-h-screen py-12 custom-scrollbar">
+                    <h1 className="text-red-600 font-mono text-4xl tracking-[0.3em] uppercase font-black">
                         BASTIÓN COMPROMETIDO
                     </h1>
-                    <div className="space-y-4">
-                        <p className="text-red-500 font-bold text-xl tracking-widest animate-pulse">
-                            ${deathReason || 'CONEXIÓN CORTADA'}
-                        </p>
-                        <p className="text-zinc-500 text-[14px] leading-relaxed">
-                            La integridad del sistema ha fallado irremediablemente. La biomasa residual ha sido purgada y el enlace neural se ha desvanecido en el vacío.
-                        </p>
+                    
+                    <div className="space-y-6 w-full max-w-2xl">
+                        <div className="p-4 border border-red-900/30 bg-red-950/10">
+                            <p className="text-red-500 font-bold text-xl tracking-widest animate-pulse mb-2">
+                                ${deathReason || 'CONEXIÓN CORTADA'}
+                            </p>
+                            <p className="text-zinc-400 text-[14px] leading-relaxed italic">
+                                ${deathDetails || 'La integridad del sistema ha fallado irremediablemente. La biomasa residual ha sido purgada.'}
+                            </p>
+                        </div>
+
+                        ${deathStats && html`
+                            <div className="grid grid-cols-2 gap-4 py-6 border-y border-zinc-800/50">
+                                <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
+                                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Sujetos Procesados</span>
+                                    <span className="text-2xl font-black text-zinc-200">${deathStats.processed}</span>
+                                </div>
+                                <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
+                                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Errores de Juicio</span>
+                                    <span className="text-2xl font-black text-red-500">${judgmentErrors}</span>
+                                </div>
+                                <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
+                                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Inocentes Sacrificados</span>
+                                    <span className="text-xl font-bold text-zinc-400">${deathStats.innocentsSacrificed}</span>
+                                </div>
+                                <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
+                                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Corruptos Autorizados</span>
+                                    <span className="text-xl font-bold text-zinc-400">${deathStats.corruptsAuthorized}</span>
+                                </div>
+                            </div>
+                        `}
+
+                        <div className="text-center space-y-2">
+                            <div className=${`text-3xl font-black tracking-widest ${rank.color}`}>RANGO: ${rank.label}</div>
+                            <div className="text-[10px] text-zinc-600 uppercase tracking-[0.4em]">${rank.desc}</div>
+                        </div>
                     </div>
-                    <button 
-                        onClick=${() => {
-            setDeathReason(null);
-            state.resetState();
-        }}
-                        className="px-10 py-4 border border-red-900/50 text-red-500 font-mono text-sm hover:bg-red-900/20 transition-all uppercase tracking-[0.4em] font-bold"
-                    >
-                        Reiniciar Protocolo Zhyr
-                    </button>
+
+                    <div className="flex gap-6 mt-4">
+                        <button 
+                            onClick=${() => {
+                                setDeathReason(null);
+                                setDeathDetails(null);
+                                setDeathStats(null);
+                                gameSequencer.resetLevel();
+                                state.gameStatus = 'PLAYING';
+                            }}
+                            className="group relative px-10 py-4 border border-red-600/50 text-red-400 font-mono text-sm hover:bg-red-900/20 transition-all uppercase tracking-[0.2em] font-bold"
+                        >
+                            <span className="relative z-10">Reiniciar Nivel</span>
+                            <div className="absolute inset-0 bg-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        </button>
+                        <button 
+                            onClick=${() => {
+                                setDeathReason(null);
+                                setDeathDetails(null);
+                                setDeathStats(null);
+                                state.resetState();
+                            }}
+                            className="px-10 py-4 border border-zinc-800 text-zinc-500 font-mono text-sm hover:bg-zinc-900/40 transition-all uppercase tracking-[0.2em]"
+                        >
+                            Ir al Inicio
+                        </button>
+                    </div>
                 </div>
             </div>
 

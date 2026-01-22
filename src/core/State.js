@@ -62,6 +62,7 @@ const initialState = {
     },
     gameStatus: 'START_MENU', // 'START_MENU' | 'PLAYING' | 'PAUSED' | 'GAME_OVER'
     isPaused: false,
+    isModalOpen: false, // Bloquea el tick del motor si hay un modal activo
     isTutorialActive: false,
     tutorialStep: 0, // 0: No tutorial, 1-4: Pasos del tutorial
     focusMode: false, // Bloquea el resto de la UI durante diálogos profundos

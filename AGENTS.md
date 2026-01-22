@@ -41,3 +41,7 @@ This project enforces a strict separation between **Game Logic (Vanilla JS)** an
 - **Code First:** Provide functional code immediately.
 - **No Fluff:** Do not explain standard React concepts. Focus on the *specific implementation* of this architecture.
 - **One-Liners:** For terminal commands, provide single-line executables.
+
+### 6. TESTING & DEBUGGING
+- **Engine:** Use `__tests__` for debugging the features.
+- **UI:** React DevTools.

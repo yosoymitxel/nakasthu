@@ -14,14 +14,27 @@ export const SubjectVisual = () => {
     const moduleLock = useGameState('moduleLock');
 
     const [authFlash, setAuthFlash] = useState(false);
+    const [localFlash, setLocalFlash] = useState(null);
 
     useEffect(() => {
         const onAuth = () => {
             setAuthFlash(true);
             setTimeout(() => setAuthFlash(false), 300);
         };
+
+        const onFlash = (data) => {
+            if (data.target === 'MOD-04') {
+                setLocalFlash({ color: data.color, duration: data.duration });
+                setTimeout(() => setLocalFlash(null), data.duration || 300);
+            }
+        };
+
         bus.on('AUTHORIZE_EFFECT', onAuth);
-        return () => bus.off('AUTHORIZE_EFFECT', onAuth);
+        bus.on('TRIGGER_FLASH', onFlash);
+        return () => {
+            bus.off('AUTHORIZE_EFFECT', onAuth);
+            bus.off('TRIGGER_FLASH', onFlash);
+        };
     }, []);
 
     const isLocked = moduleLock && moduleLock.subject;
@@ -51,7 +64,10 @@ export const SubjectVisual = () => {
     const isCorrupted = type === 'EIDOLON' && stability < 40;
 
     return html`
-        <div className=${`relative h-full w-full overflow-hidden flex flex-col items-center justify-center transition-colors ${authFlash ? 'bg-[#064e3b] duration-75' : 'bg-transparent duration-[2000ms]'} ${isPaused ? 'filter grayscale blur-[1px]' : ''}`}>
+        <div 
+            className=${`relative h-full w-full overflow-hidden flex flex-col items-center justify-center transition-colors ${authFlash ? 'bg-[#064e3b] duration-75' : 'bg-transparent duration-[2000ms]'} ${isPaused ? 'filter grayscale blur-[1px]' : ''}`}
+            style=${localFlash ? { backgroundColor: localFlash.color, transitionDuration: '75ms' } : {}}
+        >
             <!-- Scanlines / Grid overlay -->
             <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] pointer-events-none z-10"></div>
             

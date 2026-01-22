@@ -22,16 +22,25 @@ export const executeScan = async (typeId) => {
     const scan = SCAN_TYPES[typeId];
     if (!scan || state.activeScan) return false;
 
+    // Calcular coste extra por repetición
+    const scanCount = state.currentEntity?.scanHistory?.[typeId] || 0;
+    const repetitionPenalty = 1 + (scanCount * 0.5); // +50% por cada repetición
+    const finalCost = scan.cost * repetitionPenalty;
+
     // Verificar energía
-    if (state.energy < scan.cost) {
-        console.warn(`[SCANNER] Energía insuficiente para ${scan.name}`);
-        bus.emit('LOW_POWER', { required: scan.cost, current: state.energy });
+    if (state.energy < finalCost) {
+        console.warn(`[SCANNER] Energía insuficiente para ${scan.name} (Requerido: ${finalCost.toFixed(1)})`);
+        bus.emit('LOW_POWER', { required: finalCost, current: state.energy });
         return false;
     }
 
     // Consumir energía (Solo si no estamos en el tutorial)
     if (!state.isTutorialActive) {
-        state.energy = Math.max(0, state.energy - scan.cost);
+        state.energy = Math.floor(Math.max(0, state.energy - finalCost));
+        bus.emit('TERMINAL_PRINT', {
+            text: `[RECURSOS] ESCANEO ${scan.name} INICIADO. COSTO: ${finalCost.toFixed(1)} ENERGÍA.`,
+            type: 'SYSTEM'
+        });
     }
     
     // Calcular duración ajustada por sincronía de resonancia (MOD-06)
@@ -69,25 +78,28 @@ export const executeScan = async (typeId) => {
                     timestamp: Date.now()
                 });
 
-                bus.emit('TERMINAL_PRINT', {
-                    text: `[REPORTE] ESCANEO ${scan.name} FINALIZADO PARA SUJETO ${state.currentEntity?.id || '?'}.`,
-                    type: 'SYSTEM'
-                });
-
                 // REGLA: Si el escaneo es BIOMÉTRICO, emitir señal para habilitar decisiones
                 if (scan.id === 'BIOMETRIC') {
                     bus.emit('BIOMETRICO_COMPLETO', { subjectId: state.currentEntity?.id });
                 }
 
-                // Registrar el tipo de escaneo en el sujeto
+                // Registrar el tipo de escaneo y el historial en el sujeto
                 if (state.currentEntity) {
                     const currentScans = state.currentEntity.scannedTypes || [];
-                    if (!currentScans.includes(scan.id)) {
-                        state.currentEntity = {
-                            ...state.currentEntity,
-                            scannedTypes: [...currentScans, scan.id]
-                        };
-                    }
+                    const scanHistory = state.currentEntity.scanHistory || {};
+                    
+                    const newScans = !currentScans.includes(scan.id) 
+                        ? [...currentScans, scan.id] 
+                        : currentScans;
+                        
+                    state.currentEntity = {
+                        ...state.currentEntity,
+                        scannedTypes: newScans,
+                        scanHistory: {
+                            ...scanHistory,
+                            [scan.id]: (scanHistory[scan.id] || 0) + 1
+                        }
+                    };
                 }
 
                 // Limpiar estado

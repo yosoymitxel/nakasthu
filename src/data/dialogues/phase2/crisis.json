@@ -1,0 +1,94 @@
+{
+    "dialogues": [
+        {
+            "id": "DLG_P2_ORVAL_COLD",
+            "minStep": 3,
+            "maxStep": 6,
+            "text": "Una transmisión de alta seguridad desde Talok. Orval Drexler te observa desde una pantalla holográfica. 'Operador, el caos es un combustible útil, pero la disciplina es el motor. No se distraiga con los susurros de los desaparecidos'.",
+            "options": [
+                {
+                    "text": "Señor, las manifestaciones en Dispay están fuera de control.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 15,
+                    "consequence": "'Deje que griten. Cuando el hambre y el miedo superen a la rabia, vendrán a nosotros rogando por el orden que solo el Bastión puede proporcionar'.",
+                    "next": [
+                        {
+                            "text": "¿Es cierto que Talok quiere reclamar el monolito para sí misma?",
+                            "energyCost": 0.3,
+                            "stabilityImpact": -5,
+                            "corruptionImpact": 20,
+                            "loreUnlock": "LORE_TALOK_AMBITION",
+                            "consequence": "'Talok no quiere la piedra, operador. Talok quiere el control del Renacimiento. Si el monolito es el diafragma, nosotros seremos la lente que enfoque su luz'."
+                        }
+                    ]
+                },
+                {
+                    "text": "¿Qué sabe sobre la desaparición de Erick Nebot?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": 1,
+                    "corruptionImpact": 5,
+                    "consequence": "'Nebot era un hombre de visión limitada. Su ausencia en Kanatsia es una oportunidad para que el comité temporal alinee la distribución con nuestros objetivos'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P2_SERIN_LOGIC",
+            "minStep": 4,
+            "maxStep": 7,
+            "text": "Serin Voke, consejera de Talok. Su mirada es incisiva y sus palabras medidas. 'He analizado los patrones de desaparición, operador. No hay azar. Hay una selección basada en la resonancia neural'.",
+            "options": [
+                {
+                    "text": "¿Selección? ¿Insinúa que el monolito está 'cosechando' mentes?",
+                    "energyCost": 0.3,
+                    "stabilityImpact": -4,
+                    "corruptionImpact": 12,
+                    "loreUnlock": "LORE_NEURAL_RESONANCE",
+                    "consequence": "'Exacto. Zhyr busca armonía, y nosotros somos ruido. Aquellos que desaparecen son los que mejor sintonizan con la frecuencia del monolito. Es una traducción masiva de biomasa a datos'.",
+                    "next": [
+                        {
+                            "text": "¿Cómo podemos protegernos de esa 'traducción'?",
+                            "energyCost": 0.4,
+                            "stabilityImpact": -6,
+                            "corruptionImpact": 18,
+                            "consequence": "'No podemos. Solo podemos... dirigirla. El Bastión es nuestra única herramienta para filtrar quién es apto para el Renacimiento y quién debe ser purgado'."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "DLG_P2_CRIS_DREXLER",
+            "minStep": 3,
+            "maxStep": 7,
+            "text": "Una científica de Itzinol con la mirada afilada. Su identificación de la Orden ha sido tachada violentamente. 'Drexler cree que el monolito es un arma para Talok. Qué ironía. No es un arma, es un espejo'.",
+            "options": [
+                {
+                    "text": "¿Por qué dices que el monolito es un 'espejo'?",
+                    "energyCost": 0.3,
+                    "stabilityImpact": 4,
+                    "loreUnlock": "LORE_MONOLITH_MIRROR",
+                    "consequence": " 'Porque lo que ves en su superficie no es tu reflejo, sino lo que Zhyr quiere que seas. Yo vi mis pulmones convertidos en arena antes de que Alexia desapareciera'.",
+                    "next": [
+                        {
+                            "text": "¿Alexia vio lo mismo que tú en el espejo?",
+                            "energyCost": 0.4,
+                            "stabilityImpact": -3,
+                            "loreUnlock": "LORE_ALEXIA_VISION",
+                            "consequence": " 'No. Ella vio el futuro. Vio el Gran Desvío antes de que ocurriera. Por eso no gritó cuando la piedra la reclamó. Ella ya se había ido mentalmente'.",
+                            "next": [
+                                {
+                                    "text": "Si ella vio el futuro, ¿qué nos espera tras el portal?",
+                                    "energyCost": 0.6,
+                                    "stabilityImpact": -8,
+                                    "loreUnlock": "LORE_PORTAL_FUTURE",
+                                    "consequence": "Se ríe de forma histérica. 'No hay un \"nosotros\" tras el portal, operador. Solo hay... datos. Fragmentos de conciencia flotando en un mar de estática roja. Es hermoso'."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

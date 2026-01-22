@@ -325,6 +325,7 @@ export const useGameModal = () => {
     useEffect(() => {
         const handleShow = (data) => {
             console.log('%c[GAMEMODAL] MODAL_SHOW received', 'color: #f59e0b; font-weight: bold;', data);
+            state.isModalOpen = true; // Pausar motor
             setModalState({
                 visible: true,
                 mode: data.mode || 'Briefing',
@@ -336,6 +337,7 @@ export const useGameModal = () => {
         };
 
         const handleClose = () => {
+            state.isModalOpen = false; // Reanudar motor
             setModalState(prev => ({ ...prev, visible: false }));
         };
 

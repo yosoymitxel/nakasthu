@@ -43,8 +43,20 @@
                         'glitch-line': 'glitch-line 2s linear infinite',
                         'glitch-line-delayed': 'glitch-line 2.5s linear infinite 0.5s',
                         'scan-line': 'scan-line 4s linear infinite',
+                        'vibrate-subtle': 'vibrate-subtle 0.15s linear infinite',
+                        'pulse-border-critical': 'pulse-border-critical 2s ease-in-out infinite',
                     },
                     keyframes: {
+                        'vibrate-subtle': {
+                            '0%, 100%': { transform: 'translate(0)' },
+                            '25%': { transform: 'translate(-0.5px, 0.5px)' },
+                            '50%': { transform: 'translate(0.5px, -0.5px)' },
+                            '75%': { transform: 'translate(-0.5px, -0.5px)' },
+                        },
+                        'pulse-border-critical': {
+                            '0%, 100%': { opacity: '0.2', borderWidth: '4px' },
+                            '50%': { opacity: '0.6', borderWidth: '8px' },
+                        },
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
                             '50%': { transform: 'translateY(-20px)' },

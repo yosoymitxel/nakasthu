@@ -11,18 +11,27 @@ const { useState, useEffect } = React;
 
 export const Analytics = () => {
     const [isProcessing, setIsProcessing] = useState(false);
-    const [lines, setLines] = useState([]);
+    const [lines, setLines] = useState([]); // Array de { text, color }
     const [corruptionProb, setCorruptionProb] = useState(null);
+    const [prevProb, setPrevProb] = useState(null);
 
     const currentEntity = useGameState('currentEntity');
     const stability = useGameState('stability');
     const mode = useGameState('mode');
+    const focusMode = useGameState('focusMode');
 
     const isUnstable = stability < 40;
 
     const analyzeSubject = (scanType, entity, currentMode) => {
         if (!entity) return null;
-        let precision = scanType === 'NEURAL' ? 0.9 : 0.5;
+        let precision = 0.5;
+        switch (scanType) {
+            case 'NEURAL': precision = 0.9; break;
+            case 'NAKARA': precision = 0.95; break;
+            case 'RESONANCE': precision = 0.7; break;
+            case 'THERMAL': precision = 0.6; break;
+            case 'BIOMETRIC': precision = 0.5; break;
+        }
         const eclipseInterference = currentMode === 'ECLIPSE' ? 0.2 : 0;
         precision = Math.max(0.1, precision - eclipseInterference);
         const showTruth = Math.random() < precision;
@@ -34,7 +43,7 @@ export const Analytics = () => {
     useEffect(() => {
         const onScanStart = (data) => {
             setIsProcessing(true);
-            setLines(prev => [`> INICIANDO_ANALÍTICA: ${data.type.name}`, ...prev]);
+            setLines(prev => [{ text: `> INICIANDO_ANALÍTICA: ${data.type.name}`, color: 'text-zinc-500' }, ...prev]);
         };
 
         const onScanComplete = (data) => {
@@ -46,19 +55,36 @@ export const Analytics = () => {
                 switch (data.type.id) {
                     case 'BIOMETRIC':
                         detail = `TEMP: ${Math.floor(scannedData.temperature)}°C`;
-                        newProb = analyzeSubject('BIOMETRIC', currentEntity, mode);
                         break;
                     case 'NEURAL':
                         detail = `SYNC: ${Math.floor(scannedData.neuralSync)}%`;
-                        newProb = analyzeSubject('NEURAL', currentEntity, mode);
+                        break;
+                    case 'THERMAL':
+                        detail = `HEAT_SIG: ${Math.floor(scannedData.heatSignature || 0)}λ`;
+                        break;
+                    case 'NAKARA':
+                        detail = `VOID_DEPTH: ${Math.floor(scannedData.voidDepth || 0)}m`;
+                        break;
+                    case 'RESONANCE':
+                        detail = `FREQ: ${state.localFrequency.toFixed(2)}Hz`;
                         break;
                     default: detail = `DATA_RECOVERY: SUCCESS`;
                 }
+                
+                newProb = analyzeSubject(data.type.id, currentEntity, mode);
 
-                if (newProb !== null) setCorruptionProb(newProb);
+                let trendColor = "text-zinc-400";
+                if (newProb !== null) {
+                    if (newProb > 70) trendColor = "text-red-400";
+                    else if (newProb > 35) trendColor = "text-orange-400";
+                    else trendColor = "text-cyan-400";
+                    
+                    setPrevProb(corruptionProb);
+                    setCorruptionProb(newProb);
+                }
 
                 const dataString = `> SCAN: ${data.type.name} | RESULT: [${detail}] | PROB: ${newProb || '??'}%`;
-                setLines(prev => [dataString, ...prev]);
+                setLines(prev => [{ text: dataString, color: trendColor }, ...prev]);
 
                 // ENVIAR A LORE (MOD-09)
                 bus.emit('LORE_DATA_EMITTED', {
@@ -67,17 +93,22 @@ export const Analytics = () => {
                     timestamp: Date.now()
                 });
             } else {
-                setLines(prev => [`> ERROR: ENTIDAD_NO_VALIDA`, ...prev]);
+                setLines(prev => [{ text: `> ERROR: ENTIDAD_NO_VALIDA`, color: 'text-red-500' }, ...prev]);
             }
         };
 
         const onNewSubject = () => {
             setLines([]);
             setCorruptionProb(null);
+            setPrevProb(null);
         };
 
         const onDialogueStarted = () => {
-            setLines(prev => [`> ENLACE_NEURAL_ACTIVO`, `> INTERROGAR: MONITORIZANDO_RESPUESTAS_VOCALES`, ...prev]);
+            setLines(prev => [
+                { text: `> INTERROGAR: MONITORIZANDO_RESPUESTAS_VOCALES`, color: 'text-cyan-600' },
+                { text: `> ENLACE_NEURAL_ACTIVO`, color: 'text-cyan-500' }, 
+                ...prev
+            ]);
         };
 
         bus.on('SCAN_STARTED', onScanStart);
@@ -98,13 +129,27 @@ export const Analytics = () => {
             <div className="mb-4">
                 <div className="flex justify-between items-end mb-1">
                     <span className="text-[12px] text-zinc-400 uppercase tracking-[0.2em] font-bold">Probabilidad_Corrupción</span>
-                    <span className=${`text-[24px] font-black leading-none ${corruptionProb === null ? 'text-zinc-800' : (corruptionProb > 70 ? 'text-red-500' : 'text-cyan-400')}`}>
-                        ${corruptionProb === null ? '--%' : `${corruptionProb}%`}
-                    </span>
+                    <div className="flex items-center gap-2">
+                        ${prevProb !== null && corruptionProb !== null && html`
+                            <span className=${`text-[10px] font-bold ${corruptionProb > prevProb ? 'text-red-500' : (corruptionProb < prevProb ? 'text-emerald-500' : 'text-zinc-500')}`}>
+                                ${corruptionProb > prevProb ? '▲' : (corruptionProb < prevProb ? '▼' : '=')}
+                            </span>
+                        `}
+                        <span className=${`text-[24px] font-black leading-none ${
+                            corruptionProb === null ? 'text-zinc-800' : 
+                            corruptionProb > 70 ? 'text-red-500' : 
+                            corruptionProb > 35 ? 'text-orange-400' : 'text-cyan-400'
+                        }`}>
+                            ${corruptionProb === null ? '--%' : `${corruptionProb}%`}
+                        </span>
+                    </div>
                 </div>
                 <div className="h-[4px] w-full bg-zinc-900 relative overflow-hidden">
                     <div 
-                        className=${`h-full transition-all duration-[1500ms] ${corruptionProb > 70 ? 'bg-red-500/60' : 'bg-cyan-400/60'}`}
+                        className=${`h-full transition-all duration-[1500ms] ${
+                            corruptionProb > 70 ? 'bg-red-500/60' : 
+                            corruptionProb > 35 ? 'bg-orange-400/60' : 'bg-cyan-400/60'
+                        }`}
                         style=${{ width: `${corruptionProb || 0}%` }}
                     ></div>
                 </div>
@@ -126,8 +171,8 @@ export const Analytics = () => {
                         Esperando_Datos...
                     </div>
                 ` : lines.map((line, i) => html`
-                    <div key=${i} className="text-[12px] text-zinc-400 border-l border-zinc-800 pl-3 leading-tight py-1">
-                        ${line}
+                    <div key=${i} className=${`text-[12px] border-l border-zinc-800 pl-3 leading-tight py-1 ${line.color || 'text-zinc-400'}`}>
+                        ${line.text}
                     </div>
                 `)}
             </div>

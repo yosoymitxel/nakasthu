@@ -261,12 +261,15 @@ class GameSequencer {
     resetLevel() {
         const currentConfig = STEPS_CONFIG[this.currentStep];
 
-        // Reiniciar solo datos del nivel, no progreso narrativo
+        // Reiniciar datos del nivel a sus valores iniciales
         this.gameData = {
-            ...this.gameData,
             score: 0,
             energia: 100,
-            cuota: currentConfig.subjectCount || 10
+            cuota: currentConfig.subjectCount || 10,
+            utilidadOculta: 0,
+            techniciansRecruited: 0,
+            devotsRecruited: 0,
+            influenceGathered: 0
         };
 
         // Sincronizar con State
@@ -275,9 +278,11 @@ class GameSequencer {
         state.energy = 100;
         state.stability = 100;
         state.processedCount = 0;
+        state.judgmentErrors = 0; // También reiniciar errores de juicio
+        state.nextSubject();      // Forzar nuevo sujeto para evitar el mismo
         state.endBatch();
 
-        console.log('%c[SEQUENCER] Nivel reiniciado. Variables reseteadas.', 'color: #f59e0b;');
+        console.log('%c[SEQUENCER] Nivel reiniciado. Limpieza profunda completada.', 'color: #f59e0b;');
         bus.emit('LEVEL_RESET', { step: this.currentStep, gameData: this.gameData });
     }
 

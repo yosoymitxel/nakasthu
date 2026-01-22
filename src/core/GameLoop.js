@@ -36,15 +36,22 @@ class GameLoop {
 
         if (state.energy <= 0 || state.stability <= 0) {
             state.gameStatus = 'GAME_OVER';
+            const reason = state.energy <= 0 ? 'ENERGY_DEPLETED' : 'STABILITY_COLLAPSED';
+            const details = reason === 'ENERGY_DEPLETED' 
+                ? 'Agotamiento de energía crítico. El sistema no tiene potencia suficiente para mantener el enlace neural.'
+                : 'Sincronía neural perdida. Demasiadas brechas de seguridad o sacrificios injustificados han colapsado el bastión.';
+            
             console.log("%c[SYSTEM FAILURE] El bastión ha sido brechado.", "color: #ff0000; font-weight: bold;");
             bus.emit('SYSTEM_FAILURE', {
-                reason: state.energy <= 0 ? 'ENERGY_DEPLETED' : 'STABILITY_COLLAPSED'
+                reason,
+                details,
+                stats: { ...state.stats, processed: state.processedCount }
             });
         }
     }
 
     tick() {
-        if (state.gameStatus !== 'PLAYING' || state.isPaused || state.focusMode) return;
+        if (state.gameStatus !== 'PLAYING' || state.isPaused || state.isModalOpen || state.focusMode) return;
 
         // Iniciar ráfaga de actualizaciones (Batch)
         state.startBatch();
@@ -76,6 +83,17 @@ class GameLoop {
             this.lastEnergyWarning = true;
         } else if (state.energy >= 20) {
             this.lastEnergyWarning = false;
+        }
+
+        // Notificación de estabilidad crítica
+        if (state.stability < 20 && !this.lastStabilityWarning) {
+            bus.emit('TERMINAL_PRINT', {
+                text: '>>> ALERTA: INESTABILIDAD NEURAL CRÍTICA - BASTIÓN COMPROMETIDO.',
+                type: 'SYSTEM'
+            });
+            this.lastStabilityWarning = true;
+        } else if (state.stability >= 20) {
+            this.lastStabilityWarning = false;
         }
 
         // 1. Ciclo de tiempo y ECLIPSE
