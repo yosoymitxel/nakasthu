@@ -32,9 +32,36 @@ class LoreSystem {
             }
 
             this.loreDatabase = data.entries || {};
+            
+            // Sincronizar entradas existentes en el archivo que puedan tener texto de fallback
+            this.refreshArchiveTexts();
+
             console.log("%c[LORE] Base de datos de conocimiento cargada.", "color: #8b5cf6;");
         } catch (error) {
             console.error("[LORE] Error cargando base de datos de lore:", error);
+        }
+    }
+
+    refreshArchiveTexts() {
+        if (!state.loreArchive || state.loreArchive.length === 0) return;
+
+        let modified = false;
+        const newArchive = state.loreArchive.map(entry => {
+            if (entry.loreId && this.loreDatabase[entry.loreId]) {
+                const currentText = entry.text;
+                const dbText = this.loreDatabase[entry.loreId];
+                
+                // Si el texto actual es el de fallback o está vacío, lo actualizamos
+                if (!currentText || currentText.startsWith('ENTRADA DE LORE DESBLOQUEADA:') || currentText === 'Contenido cifrado...') {
+                    modified = true;
+                    return { ...entry, text: dbText };
+                }
+            }
+            return entry;
+        });
+
+        if (modified) {
+            state.loreArchive = newArchive;
         }
     }
 
@@ -50,11 +77,13 @@ class LoreSystem {
         console.log("%c[LORE] Sistema de archivo MOD-09 operativo.", "color: #8b5cf6; font-weight: bold;");
     }
 
-    /**
-     * Desbloquea una entrada de lore específica por su ID.
-     */
-    unlockLoreById(loreId) {
+    async unlockLoreById(loreId) {
         if (!loreId) return;
+
+        // Asegurar que la base de datos esté cargada
+        if (Object.keys(this.loreDatabase).length === 0) {
+            await this.loadLoreDatabase();
+        }
 
         // Evitar duplicados
         if (state.loreArchive.some(entry => entry.loreId === loreId)) return;

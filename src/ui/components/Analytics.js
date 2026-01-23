@@ -22,6 +22,20 @@ export const Analytics = () => {
 
     const isUnstable = stability < 40;
 
+    // Sincronizar el promedio de corrupción cada vez que cambia el historial
+    useEffect(() => {
+        if (currentEntity && currentEntity.scannedData && currentEntity.scannedData.corruptionHistory) {
+            const history = currentEntity.scannedData.corruptionHistory;
+            if (history.length > 0) {
+                const average = Math.floor(history.reduce((a, b) => a + b, 0) / history.length);
+                if (average !== corruptionProb) {
+                    setPrevProb(corruptionProb);
+                    setCorruptionProb(average);
+                }
+            }
+        }
+    }, [currentEntity?.scannedData?.corruptionHistory?.length]);
+
     const analyzeSubject = (scanType, entity, currentMode) => {
         if (!entity) return null;
         let precision = 0.5;
@@ -78,9 +92,14 @@ export const Analytics = () => {
                     if (newProb > 70) trendColor = "text-red-400";
                     else if (newProb > 35) trendColor = "text-orange-400";
                     else trendColor = "text-cyan-400";
-                    
-                    setPrevProb(corruptionProb);
-                    setCorruptionProb(newProb);
+
+                    // Actualizar el historial de indicios en el estado global
+                    if (currentEntity.scannedData) {
+                        if (!currentEntity.scannedData.corruptionHistory) {
+                            currentEntity.scannedData.corruptionHistory = [];
+                        }
+                        currentEntity.scannedData.corruptionHistory.push(newProb);
+                    }
                 }
 
                 const dataString = `> SCAN: ${data.type.name} | RESULT: [${detail}] | PROB: ${newProb || '??'}%`;

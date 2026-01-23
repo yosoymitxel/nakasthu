@@ -14,7 +14,10 @@ describe('New Mechanics Validations (new_mechanics.test.js)', () => {
         state.currentEntity = {
             id: 'TEST-001',
             type: 'HUMAN',
-            corruption: 20,
+            scannedData: {
+                corruption: 20,
+                corruptionHistory: []
+            },
             isCorrupt: false,
             scanHistory: {},
             scannedTypes: []
@@ -56,7 +59,7 @@ describe('New Mechanics Validations (new_mechanics.test.js)', () => {
     });
 
     it('Sistema de Diálogo: la corrupción del NPC debe verse afectada por las opciones elegidas', () => {
-        const initialCorruption = state.currentEntity.corruption;
+        const initialCorruption = state.currentEntity.scannedData.corruption;
         dialogueEngine.currentDialogue = {
             id: 'test-d',
             text: 'Test',
@@ -69,7 +72,7 @@ describe('New Mechanics Validations (new_mechanics.test.js)', () => {
         
         dialogueEngine.selectOption(0);
         
-        expect(state.currentEntity.corruption).toBe(initialCorruption + 15);
+        expect(state.currentEntity.scannedData.corruption).toBe(initialCorruption + 15);
     });
 
     it('Sistema de Diálogo: debe manejar correctamente el ramificado (next)', () => {
@@ -135,21 +138,19 @@ describe('New Mechanics Validations (new_mechanics.test.js)', () => {
         expect(dialogueEngine.currentDialogue.id).toBe('D1');
     });
 
-    it('Reinicio de Nivel Completo: debe limpiar variables de gameData y errores de juicio', () => {
-        state.gameData = {
-            utilidadOculta: 100,
-            techniciansRecruited: 5,
-            devotsRecruited: 3,
-            influenceGathered: 50
-        };
+    it('Reinicio de Nivel Completo: debe limpiar variables de estado y errores de juicio', () => {
+        state.utilidadOculta = 100;
+        state.techniciansRecruited = 5;
+        state.devotsRecruited = 3;
+        state.influenceGathered = 50;
         state.judgmentErrors = 10;
         state.processedCount = 5;
         state.energy = 20;
 
         gameSequencer.resetLevel();
 
-        expect(state.gameData.utilidadOculta).toBe(0);
-        expect(state.gameData.techniciansRecruited).toBe(0);
+        expect(state.utilidadOculta).toBe(0);
+        expect(state.techniciansRecruited).toBe(0);
         expect(state.judgmentErrors).toBe(0);
         expect(state.processedCount).toBe(0);
         expect(state.energy).toBe(100);

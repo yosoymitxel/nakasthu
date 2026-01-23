@@ -127,7 +127,7 @@ class GameLoop {
                 state.eclipseTimer = 60; // 60 ticks de duración
                 state.orbitalCycle = 0; // Reiniciar para el nuevo ciclo
                 state.worldTime = 0;
-                console.log("%c[CRITICAL] Iniciando ciclo de ECLIPSE. Interferencia orbital detectada.", "color: #ef4444; font-weight: bold;");
+                console.log("%c[CRITICAL] Iniciando ciclo de ECLIPSE. Interferencia orbital detectada.", "color: #9333ea; font-weight: bold;");
             }
         }
 

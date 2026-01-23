@@ -19,6 +19,7 @@ import { MechanicScreen } from '../screens/mechanic/MechanicScreen.js';
 import { GameplayScreen } from '../screens/gameplay/GameplayScreen.js';
 import { LoreScreen } from '../screens/lore/LoreScreen.js';
 import { GameModal, useGameModal } from './GameModal.js';
+import { toggleFullScreen, isFullScreen } from '../utils/fullscreen.js';
 
 const { useState, useEffect } = React;
 
@@ -39,13 +40,21 @@ export const Layout = () => {
 
     const [flash, setFlash] = useState(null); // { color, duration }
     const [alarm, setAlarm] = useState(false);
-    const [sacrificePeak, setSacrificePeak] = useState(false);
+    const [decisionPeak, setDecisionPeak] = useState(null); // 'SACRIFICE' | 'AUTHORIZE' | null
     const [modal, setModal] = useState(null); // { title, content }
 
     const [hasSeenWelcome, setHasSeenWelcome] = useState(false);
     const [deathReason, setDeathReason] = useState(null);
     const [deathDetails, setDeathDetails] = useState(null);
     const [deathStats, setDeathStats] = useState(null);
+    const [isFS, setIsFS] = useState(isFullScreen());
+
+    // Listener para pantalla completa
+    useEffect(() => {
+        const onFSChange = () => setIsFS(isFullScreen());
+        document.addEventListener('fullscreenchange', onFSChange);
+        return () => document.removeEventListener('fullscreenchange', onFSChange);
+    }, []);
 
     // Sistema de Pasos Narrativos
     const currentStep = useGameState('currentStep');
@@ -116,8 +125,13 @@ export const Layout = () => {
         };
 
         const onSacrificePeak = () => {
-            setSacrificePeak(true);
-            setTimeout(() => setSacrificePeak(false), 1500);
+            setDecisionPeak('SACRIFICE');
+            setTimeout(() => setDecisionPeak(null), 1500);
+        };
+
+        const onAuthorizePeak = () => {
+            setDecisionPeak('AUTHORIZE');
+            setTimeout(() => setDecisionPeak(null), 1500);
         };
 
         const onOpenModal = (data) => setModal(data);
@@ -137,6 +151,7 @@ export const Layout = () => {
 
         bus.on('TRIGGER_FLASH', onFlash);
         bus.on('SACRIFICE_PEAK', onSacrificePeak);
+        bus.on('AUTHORIZE_EFFECT', onAuthorizePeak);
         bus.on('OPEN_MODAL', onOpenModal);
         bus.on('MODAL_CLOSE_INTERNAL', onCloseModal);
         bus.on('SYSTEM_FAILURE', onSystemFailure);
@@ -144,6 +159,7 @@ export const Layout = () => {
         return () => {
             bus.off('TRIGGER_FLASH', onFlash);
             bus.off('SACRIFICE_PEAK', onSacrificePeak);
+            bus.off('AUTHORIZE_EFFECT', onAuthorizePeak);
             bus.off('OPEN_MODAL', onOpenModal);
             bus.off('MODAL_CLOSE_INTERNAL', onCloseModal);
             bus.off('SYSTEM_FAILURE', onSystemFailure);
@@ -205,9 +221,9 @@ export const Layout = () => {
 
     // Estilo dinámico del borde del contenedor
     const gridStyle = {
-        borderColor: isEclipse ? 'rgba(6, 182, 212, 0.5)' : 'rgba(120, 53, 15, 0.3)',
-        boxShadow: alarm ? 'inset 0 0 40px rgba(255, 0, 0, 0.4)' : (isEclipse ? '0 0 30px rgba(6, 182, 212, 0.15)' : '0 0 15px rgba(120, 53, 15, 0.05)'),
-        filter: isEclipse ? 'hue-rotate(180deg) contrast(1.1)' : isCriticalEnergy ? 'hue-rotate(-20deg) contrast(1.2)' : 'none'
+        borderColor: isEclipse ? 'rgba(147, 51, 234, 0.5)' : 'rgba(120, 53, 15, 0.3)',
+        boxShadow: alarm ? 'inset 0 0 40px rgba(255, 0, 0, 0.4)' : (isEclipse ? '0 0 30px rgba(147, 51, 234, 0.15)' : '0 0 15px rgba(120, 53, 15, 0.05)'),
+        filter: isEclipse ? 'hue-rotate(280deg) contrast(1.1) brightness(0.8)' : isCriticalEnergy ? 'hue-rotate(-20deg) contrast(1.2)' : 'none'
     };
 
     // Clases dinámicas para alertas críticas
@@ -225,11 +241,15 @@ export const Layout = () => {
 
             <!-- VFX Perimetral Progresivo -->
             <div 
-                className=${`vignette-damage ${alarm || sacrificePeak ? 'active-alarm' : ''}`}
+                className=${`vignette-damage ${alarm || decisionPeak ? 'active-alarm' : ''}`}
                 style=${{
             zIndex: 50,
-            '--vignette-opacity': sacrificePeak ? 1.0 : (alarm ? 0.8 : (isEclipse ? orbitalCycle / 100 : 0)),
-            boxShadow: `inset 0 0 120px rgba(${alarm || isEclipse || sacrificePeak ? '153, 27, 27' : '0, 0, 0'}, ${sacrificePeak ? 0.8 : (alarm ? 0.6 : (isEclipse ? 0.4 : 0))})`
+            '--vignette-opacity': decisionPeak ? 1.0 : (alarm ? 0.8 : (isEclipse ? orbitalCycle / 100 : 0)),
+            boxShadow: decisionPeak === 'SACRIFICE' 
+                ? 'inset 0 0 150px rgba(153, 27, 27, 0.9)' 
+                : decisionPeak === 'AUTHORIZE'
+                ? 'inset 0 0 150px rgba(5, 150, 105, 0.8)'
+                : `inset 0 0 120px rgba(${alarm ? '153, 27, 27' : (isEclipse ? '147, 51, 234' : '0, 0, 0')}, ${alarm ? 0.6 : (isEclipse ? 0.4 : 0)})`
         }}
             >
                 <div className="noise-texture"></div>
@@ -265,10 +285,17 @@ export const Layout = () => {
                         </button>
                         
                         <button 
-                            onClick=${() => bus.emit('OPEN_MODAL', { title: 'CONFIGURACIÓN', content: 'AJUSTES DE NÚCLEO NO DISPONIBLES EN ESTA VERSIÓN.' })}
+                            onClick=${() => bus.emit('OPEN_MODAL', { title: 'CONFIGURACIÓN', content: 'AJUSTES TÉCNICOS DEL NÚCLEO BASTIÓN.' })}
                             className="border border-zinc-800 bg-zinc-900/60 px-8 py-2 text-zinc-400 font-mono text-xs hover:text-zinc-200 transition-all uppercase tracking-widest"
                         >
                             Configuración
+                        </button>
+
+                        <button 
+                            onClick=${toggleFullScreen}
+                            className="border border-cyan-900/30 bg-cyan-950/10 px-8 py-2 text-cyan-500/70 font-mono text-[10px] hover:text-cyan-400 hover:bg-cyan-900/20 transition-all uppercase tracking-[0.2em]"
+                        >
+                            ${isFS ? 'Salir Pantalla Completa' : 'Pantalla Completa'}
                         </button>
                     </div>
                 </div>
@@ -387,6 +414,15 @@ export const Layout = () => {
                         >
                             Reanudar Conexión
                         </button>
+
+                        <div className="pt-4 border-t border-cyan-900/30">
+                            <button 
+                                onClick=${toggleFullScreen}
+                                className="px-6 py-2 border border-zinc-800 text-zinc-500 hover:text-cyan-500 hover:border-cyan-500/30 transition-all uppercase tracking-widest text-[10px]"
+                            >
+                                ${isFS ? 'Desactivar Fullscreen' : 'Activar Fullscreen'}
+                            </button>
+                        </div>
                     </div>
                 </div>
             `}
@@ -414,6 +450,23 @@ export const Layout = () => {
                         </div>
                         <div className="text-zinc-400 font-mono text-[12px] leading-relaxed my-4">
                             ${modal.content}
+                            ${modal.title === 'CONFIGURACIÓN' && html`
+                                <div className="mt-6 p-4 border border-zinc-800 bg-black/40 space-y-4">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-zinc-500 uppercase tracking-widest text-[10px]">Visualización</span>
+                                        <button 
+                                            onClick=${toggleFullScreen}
+                                            className="px-4 py-1 border border-cyan-900/50 text-cyan-500 text-[10px] hover:bg-cyan-500/10 transition-all uppercase tracking-widest"
+                                        >
+                                            ${isFS ? 'Salir Pantalla Completa' : 'Entrar Pantalla Completa'}
+                                        </button>
+                                    </div>
+                                    <div className="flex justify-between items-center opacity-50">
+                                        <span className="text-zinc-600 uppercase tracking-widest text-[10px]">Calidad_Neural</span>
+                                        <span className="text-zinc-700 text-[10px]">MÁXIMA</span>
+                                    </div>
+                                </div>
+                            `}
                         </div>
                         ${modal.footer ? modal.footer : html`
                             <button 

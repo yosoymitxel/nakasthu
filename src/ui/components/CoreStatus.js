@@ -76,7 +76,7 @@ export const CoreStatus = () => {
                     <${StatusBar} 
                         label="Ciclo Orbital" 
                         value=${displayWorldTime} 
-                        colorClass="cyan" 
+                        colorClass=${mode === 'ECLIPSE' ? 'purple' : 'cyan'} 
                         suffix="/100"
                         extraLabel=${phase}
                     />
@@ -97,7 +97,7 @@ export const CoreStatus = () => {
                         [INICIO]
                     </button>
                     <button 
-                        onClick=${() => bus.emit('OPEN_MODAL', { title: 'CONFIGURACIÓN', content: 'ACCESO A NÚCLEO RESTRINGIDO.' })}
+                        onClick=${() => bus.emit('OPEN_MODAL', { title: 'CONFIGURACIÓN', content: 'AJUSTES TÉCNICOS DEL NÚCLEO BASTIÓN.' })}
                         className="px-2 py-1 border border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:text-zinc-200 text-[12px] font-mono tracking-widest uppercase transition-all"
                     >
                         [CONFIG]

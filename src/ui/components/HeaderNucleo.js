@@ -13,9 +13,12 @@ export const HeaderNucleo = () => {
     const energy = useGameState('energy');
     const stability = useGameState('stability');
     const orbitalCycle = useGameState('orbitalCycle');
+    const mode = useGameState('mode');
     const isPaused = useGameState('isPaused');
     const currentStep = useGameState('currentStep');
     const utilidadOculta = useGameState('utilidadOculta');
+
+    const isEclipse = mode === 'ECLIPSE';
 
     // MENU INVISIBLE (Utilidad de Sujetos)
     const invisibleMenu = (currentStep >= 4) ? html`
@@ -57,7 +60,7 @@ export const HeaderNucleo = () => {
         setActiveHighlights(prev => ({ ...prev, orbital: newState }));
 
         if (newState) {
-            bus.emit('HIGHLIGHT_MODULE', { areas: ['R_BOTTOM'], color: '#06b6d4' });
+            bus.emit('HIGHLIGHT_MODULE', { areas: ['R_BOTTOM'], color: isEclipse ? '#9333ea' : '#06b6d4' });
         } else {
             bus.emit('HIGHLIGHT_MODULE', { clear: ['R_BOTTOM'] });
         }
@@ -67,7 +70,7 @@ export const HeaderNucleo = () => {
         <div className="relative flex flex-col h-full w-full bg-transparent p-2 justify-center gap-1">
             <!-- CONTADOR SOLAR (Top Right) -->
             <div className="absolute top-2 right-4 text-[12px] font-mono text-zinc-400 tracking-tighter">
-                SOLAR ${Math.floor(orbitalCycle)}/100
+                ${isEclipse ? 'ECLIPSE' : 'SOLAR'} ${Math.floor(orbitalCycle)}/100
             </div>
 
             <!-- Barra 1: ENERGÍA (Amarillo/Amber) -->
@@ -110,19 +113,19 @@ export const HeaderNucleo = () => {
                 </div>
             </div>
 
-            <!-- Barra 3: CICLO ORBITAL (Cian) -->
+            <!-- Barra 3: CICLO ORBITAL (Cian / Lila en Eclipse) -->
             <div 
                 className="flex items-center gap-3 pr-16 cursor-help group/orbital"
                 onClick=${handleOrbitalClick}
             >
                 <div className="flex flex-col w-24">
-                    <span className=${`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${activeHighlights.orbital ? 'text-cyan-400' : 'text-cyan-700'}`}>Orbital_Sync</span>
-                    <span className=${`text-[14px] font-mono font-bold leading-none ${activeHighlights.orbital ? 'text-cyan-300' : 'text-cyan-600'}`}>🌑 ${Math.floor(orbitalCycle)}%</span>
+                    <span className=${`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${activeHighlights.orbital ? (isEclipse ? 'text-purple-400' : 'text-cyan-400') : (isEclipse ? 'text-purple-700' : 'text-cyan-700')}`}>Orbital_Sync</span>
+                    <span className=${`text-[14px] font-mono font-bold leading-none ${activeHighlights.orbital ? (isEclipse ? 'text-purple-300' : 'text-cyan-300') : (isEclipse ? 'text-purple-600' : 'text-cyan-600')}`}>🌑 ${Math.floor(orbitalCycle)}%</span>
                 </div>
 
-                <div className=${`flex-1 h-3 bg-black/40 relative border transition-all duration-300 ${activeHighlights.orbital ? 'border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.2)]' : 'border-zinc-800/50'}`}>
+                <div className=${`flex-1 h-3 bg-black/40 relative border transition-all duration-300 ${activeHighlights.orbital ? (isEclipse ? 'border-purple-500/50 shadow-[0_0_10px_rgba(147,51,234,0.2)]' : 'border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.2)]') : 'border-zinc-800/50'}`}>
                     <div 
-                        className="absolute h-full bg-cyan-500 transition-all duration-1000 shadow-[0_0_15px_rgba(6,182,212,0.4)]"
+                        className=${`absolute h-full transition-all duration-1000 ${isEclipse ? 'bg-purple-600 shadow-[0_0_15px_rgba(147,51,234,0.4)]' : 'bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]'}`}
                         style=${{ width: `${Math.floor(orbitalCycle)}%` }}
                     >
                         <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.2)_50%,transparent_100%)] w-20 animate-scanline-h" style=${{ animationDelay: '2s' }}></div>

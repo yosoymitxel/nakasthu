@@ -37,10 +37,10 @@ export const PortalScene = () => {
                         <feDropShadow dx="0" dy="0" stdDeviation="5" floodColor="#06b6d4" />
                     </filter>
                     
-                    <!-- Corona de Eclipse (Rojo) -->
+                    <!-- Corona de Eclipse (Lila) -->
                     <filter id="eclipseCorona" x="-50%" y="-50%" width="200%" height="200%">
                         <feGaussianBlur stdDeviation="6" result="blur" />
-                        <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" />
+                        <feColorMatrix in="blur" type="matrix" values="0.6 0 0 0 0  0.2 0 0 0 0  0.9 0 0 0 0  0 0 0 1 0" />
                     </filter>
                 </defs>
 
@@ -56,10 +56,10 @@ export const PortalScene = () => {
                     ` : html`
                         <!-- MODO ECLIPSE -->
                         <g>
-                            <!-- Aura Roja -->
+                            <!-- Aura Lila -->
                             <circle 
                                 r="65" 
-                                fill="#ef4444" 
+                                fill="#9333ea" 
                                 filter="url(#eclipseCorona)"
                                 className="opacity-80"
                             />
@@ -72,7 +72,7 @@ export const PortalScene = () => {
                             <circle 
                                 r="60" 
                                 fill="none" 
-                                stroke="#ef4444" 
+                                stroke="#9333ea" 
                                 strokeWidth="0.5" 
                                 strokeDasharray="2,4"
                             />

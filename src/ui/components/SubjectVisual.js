@@ -14,12 +14,18 @@ export const SubjectVisual = () => {
     const moduleLock = useGameState('moduleLock');
 
     const [authFlash, setAuthFlash] = useState(false);
+    const [sacrificeFlash, setSacrificeFlash] = useState(false);
     const [localFlash, setLocalFlash] = useState(null);
 
     useEffect(() => {
         const onAuth = () => {
             setAuthFlash(true);
             setTimeout(() => setAuthFlash(false), 300);
+        };
+
+        const onSacrifice = () => {
+            setSacrificeFlash(true);
+            setTimeout(() => setSacrificeFlash(false), 300);
         };
 
         const onFlash = (data) => {
@@ -30,15 +36,19 @@ export const SubjectVisual = () => {
         };
 
         bus.on('AUTHORIZE_EFFECT', onAuth);
+        bus.on('SACRIFICE_PEAK', onSacrifice);
         bus.on('TRIGGER_FLASH', onFlash);
         return () => {
             bus.off('AUTHORIZE_EFFECT', onAuth);
+            bus.off('SACRIFICE_PEAK', onSacrifice);
             bus.off('TRIGGER_FLASH', onFlash);
         };
     }, []);
 
     const isLocked = moduleLock && moduleLock.subject;
     const isPaused = useGameState('isPaused');
+    const mode = useGameState('mode');
+    const isEclipse = mode === 'ECLIPSE';
 
     if (isLocked) {
         return html`
@@ -65,8 +75,14 @@ export const SubjectVisual = () => {
 
     return html`
         <div 
-            className=${`relative h-full w-full overflow-hidden flex flex-col items-center justify-center transition-colors ${authFlash ? 'bg-[#064e3b] duration-75' : 'bg-transparent duration-[2000ms]'} ${isPaused ? 'filter grayscale blur-[1px]' : ''}`}
-            style=${localFlash ? { backgroundColor: localFlash.color, transitionDuration: '75ms' } : {}}
+            className=${`relative h-full w-full overflow-hidden flex flex-col items-center justify-center transition-colors 
+                ${authFlash ? 'bg-[#064e3b] duration-75' : sacrificeFlash ? 'bg-[#7f1d1d] duration-75' : 'bg-transparent duration-[2000ms]'} 
+                ${isPaused ? 'filter grayscale blur-[1px]' : ''} 
+                ${isEclipse ? 'shadow-[inset_0_0_50px_rgba(147,51,234,0.1)]' : ''}`}
+            style=${{
+                ...(localFlash ? { backgroundColor: localFlash.color, transitionDuration: '75ms' } : {}),
+                filter: isEclipse ? 'hue-rotate(280deg) brightness(0.9) contrast(1.1)' : 'none'
+            }}
         >
             <!-- Scanlines / Grid overlay -->
             <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] pointer-events-none z-10"></div>

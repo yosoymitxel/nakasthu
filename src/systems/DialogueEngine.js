@@ -150,10 +150,18 @@ class DialogueEngine {
         // Impacto mecánico en la corrupción del sujeto actual
         if (option.corruptionImpact && state.currentEntity) {
             // Ajustar la probabilidad de corrupción del sujeto basado en el diálogo
-            const currentProb = state.currentEntity.corruption || 0;
-            state.currentEntity.corruption = Math.min(100, Math.max(0, currentProb + option.corruptionImpact));
+            const currentProb = state.currentEntity.scannedData.corruption || 0;
+            const newCorruption = Math.min(100, Math.max(0, currentProb + option.corruptionImpact));
             
-            console.log(`%c[DIALOGUE] Impacto en corrupción: ${option.corruptionImpact}% (Total: ${state.currentEntity.corruption}%)`, 'color: #ef4444;');
+            state.currentEntity.scannedData.corruption = newCorruption;
+            
+            // Añadir al historial de indicios para el promedio en MOD-02
+            if (!state.currentEntity.scannedData.corruptionHistory) {
+                state.currentEntity.scannedData.corruptionHistory = [];
+            }
+            state.currentEntity.scannedData.corruptionHistory.push(newCorruption);
+            
+            console.log(`%c[DIALOGUE] Impacto en corrupción: ${option.corruptionImpact}% (Total: ${newCorruption}%)`, 'color: #ef4444;');
         }
         state.endBatch();
 

@@ -68,7 +68,8 @@ export const generateSubject = () => {
             temperature: Math.floor(35 + Math.random() * 5), // 35-40°C
             neuralSync: Math.floor(Math.random() * 100), // 0-100%
             implants: Math.floor(Math.random() * 5),
-            corruption: Math.floor(corruptionLevel * 100)
+            corruption: Math.floor(corruptionLevel * 100),
+            corruptionHistory: [] // Historial de indicios para promedio
         },
         // Atributos visuales
         visual: {
