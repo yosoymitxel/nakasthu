@@ -37,18 +37,20 @@ class GameLoop {
         if (state.energy <= 0 || state.stability <= 0) {
             state.gameStatus = 'GAME_OVER';
             const reason = state.energy <= 0 ? 'ENERGY_DEPLETED' : 'STABILITY_COLLAPSED';
-            const details = reason === 'ENERGY_DEPLETED' 
+            const details = reason === 'ENERGY_DEPLETED'
                 ? 'Agotamiento de energía crítico. El sistema ha entrado en modo de hibernación forzada para preservar el núcleo. La biomasa residual ha sido purgada.'
                 : 'La sincronía neural con el bastión se ha roto. El exceso de errores de juicio o la autorización de entidades corruptas ha saturado los filtros de biomasa.';
-            
+
             console.log("%c[SYSTEM FAILURE] El bastión ha sido brechado.", "color: #ff0000; font-weight: bold;");
             bus.emit('SYSTEM_FAILURE', {
                 reason,
                 details,
-                stats: { 
-                    ...state.stats, 
+                stats: {
+                    ...state.stats,
                     processed: state.processedCount,
                     errors: state.judgmentErrors,
+                    energy: state.energy,
+                    stability: state.stability,
                     techniciansRecruited: state.techniciansRecruited,
                     devotsRecruited: state.devotsRecruited
                 }

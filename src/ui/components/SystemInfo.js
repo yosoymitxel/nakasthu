@@ -15,7 +15,7 @@ export const SystemInfo = () => {
     ];
 
     const openManual = () => {
-        bus.emit('OPEN_MODAL', {
+        bus.emit('UI_MODAL_OPEN', {
             title: 'MANUAL DE USUARIO - BASTIÓN NAKASTHU',
             content: html`
                 <div className="space-y-4">

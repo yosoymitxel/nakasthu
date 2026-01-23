@@ -4,14 +4,23 @@
             "id": "DLG_P2_ORVAL_COLD",
             "minStep": 3,
             "maxStep": 6,
-            "text": "Una transmisión de alta seguridad desde Talok. Orval Drexler te observa desde una pantalla holográfica. 'Operador, el caos es un combustible útil, pero la disciplina es el motor. No se distraiga con los susurros de los desaparecidos'.",
+            "npcTraits": {
+                "id": "ORVAL D.",
+                "type": "LÍDER",
+                "scannedData": {
+                    "temperature": 36.8,
+                    "neuralSync": 95,
+                    "corruption": 0
+                }
+            },
+            "text": "*Una transmisión de alta seguridad desde Talok. Orval Drexler te observa desde una pantalla holográfica, ajustándose los guantes de su uniforme militar.* 'Operador, el caos es un combustible útil, pero la disciplina es el motor. No se distraiga con los susurros de los desaparecidos'.",
             "options": [
                 {
                     "text": "Señor, las manifestaciones en Dispay están fuera de control.",
                     "energyCost": 0.2,
                     "stabilityImpact": -2,
                     "corruptionImpact": 15,
-                    "consequence": "'Deje que griten. Cuando el hambre y el miedo superen a la rabia, vendrán a nosotros rogando por el orden que solo el Bastión puede proporcionar'.",
+                    "consequence": "*Orval niega con la cabeza levemente, sin perder la compostura.* 'Deje que griten. Cuando el hambre y el miedo superen a la rabia, vendrán a nosotros rogando por el orden que solo el Bastión puede proporcionar'.",
                     "next": [
                         {
                             "text": "¿Es cierto que Talok quiere reclamar el monolito para sí misma?",
@@ -36,7 +45,14 @@
             "id": "DLG_P2_SERIN_LOGIC",
             "minStep": 4,
             "maxStep": 7,
-            "text": "Serin Voke, consejera de Talok. Su mirada es incisiva y sus palabras medidas. 'He analizado los patrones de desaparición, operador. No hay azar. Hay una selección basada en la resonancia neural'.",
+            "npcTraits": {
+                "id": "SERIN V.",
+                "type": "CONSEJERA",
+                "visual": {
+                    "glitch": "NONE"
+                }
+            },
+            "text": "*Serin Voke, consejera de Talok. Su mirada es incisiva y sus palabras medidas, consultando un datapad transparente.* 'He analizado los patrones de desaparición, operador. No hay azar. Hay una selección basada en la resonancia neural'.",
             "options": [
                 {
                     "text": "¿Selección? ¿Insinúa que el monolito está 'cosechando' mentes?",
@@ -44,7 +60,7 @@
                     "stabilityImpact": -4,
                     "corruptionImpact": 12,
                     "loreUnlock": "LORE_NEURAL_RESONANCE",
-                    "consequence": "'Exacto. Zhyr busca armonía, y nosotros somos ruido. Aquellos que desaparecen son los que mejor sintonizan con la frecuencia del monolito. Es una traducción masiva de biomasa a datos'.",
+                    "consequence": "*Serin asiente fríamente, proyectando un gráfico de ondas cerebrales que se cortan abruptamente.* 'Exacto. Zhyr busca armonía, y nosotros somos ruido. Aquellos que desaparecen son los que mejor sintonizan con la frecuencia del monolito. Es una traducción masiva de biomasa a datos'.",
                     "next": [
                         {
                             "text": "¿Cómo podemos protegernos de esa 'traducción'?",
@@ -58,35 +74,104 @@
             ]
         },
         {
-            "id": "DLG_P2_CRIS_DREXLER",
+            "id": "DLG_P2_SCIENTIST_ITZINOL",
             "minStep": 3,
             "maxStep": 7,
-            "text": "Una científica de Itzinol con la mirada afilada. Su identificación de la Orden ha sido tachada violentamente. 'Drexler cree que el monolito es un arma para Talok. Qué ironía. No es un arma, es un espejo'.",
+            "npcTraits": {
+                "id": "DRA. ARIS",
+                "type": "HUMANO",
+                "visual": {
+                    "glitch": "LOW_RES"
+                }
+            },
+            "text": "*Una científica de Itzinol con la bata manchada de aceite rojizo. Su identificación de la Orden ha sido tachada violentamente.* 'Drexler cree que el monolito es un arma para Talok. Qué ironía. No es un arma, es un espejo'.",
             "options": [
                 {
                     "text": "¿Por qué dices que el monolito es un 'espejo'?",
                     "energyCost": 0.3,
                     "stabilityImpact": 4,
                     "loreUnlock": "LORE_MONOLITH_MIRROR",
-                    "consequence": " 'Porque lo que ves en su superficie no es tu reflejo, sino lo que Zhyr quiere que seas. Yo vi mis pulmones convertidos en arena antes de que Alexia desapareciera'.",
+                    "consequence": "*La doctora se frota los ojos, dejando un rastro de grasa en su frente.* 'Porque lo que ves en su superficie no es tu reflejo, sino lo que Zhyr quiere que seas. Yo vi mis pulmones convertidos en arena antes de que Alexia desapareciera'.",
                     "next": [
                         {
                             "text": "¿Alexia vio lo mismo que tú en el espejo?",
                             "energyCost": 0.4,
                             "stabilityImpact": -3,
                             "loreUnlock": "LORE_ALEXIA_VISION",
-                            "consequence": " 'No. Ella vio el futuro. Vio el Gran Desvío antes de que ocurriera. Por eso no gritó cuando la piedra la reclamó. Ella ya se había ido mentalmente'.",
+                            "consequence": "*Una risa nerviosa escapa de sus labios.* 'No. Ella vio el futuro. Vio el Gran Desvío antes de que ocurriera. Por eso no gritó cuando la piedra la reclamó. Ella ya se había ido mentalmente'.",
                             "next": [
                                 {
                                     "text": "Si ella vio el futuro, ¿qué nos espera tras el portal?",
                                     "energyCost": 0.6,
                                     "stabilityImpact": -8,
                                     "loreUnlock": "LORE_PORTAL_FUTURE",
-                                    "consequence": "Se ríe de forma histérica. 'No hay un \"nosotros\" tras el portal, operador. Solo hay... datos. Fragmentos de conciencia flotando en un mar de estática roja. Es hermoso'."
+                                    "consequence": "*Se ríe de forma histérica, mientras la imagen se distorsiona.* 'No hay un \"nosotros\" tras el portal, operador. Solo hay... datos. Fragmentos de conciencia flotando en un mar de estática roja. Es hermoso'."
                                 }
                             ]
                         }
                     ]
+                }
+            ]
+        },
+        {
+            "id": "DLG_P2_RIOT_CHIEF",
+            "minStep": 3,
+            "maxStep": 5,
+            "npcTraits": {
+                "id": "CMD. VARGAS",
+                "type": "SEGURIDAD",
+                "scannedData": {
+                    "temperature": 38.5,
+                    "neuralSync": 20
+                },
+                "visual": {
+                    "glitch": "STATIC"
+                }
+            },
+            "text": "*El jefe de seguridad de la Zona 4 aparece con el casco agrietado. De fondo se oyen sirenas y explosiones lejanas.* '¡Control! La multitud ha roto el perímetro del generador auxiliar. Gritan que la electricidad es \"la voz de los muertos\". ¡Solicito permiso para usar fuerza letal!'",
+            "options": [
+                {
+                    "text": "Autorización denegada. Use contención no letal y proteja el generador.",
+                    "energyCost": 0.5,
+                    "stabilityImpact": 5,
+                    "corruptionImpact": -5,
+                    "consequence": "*Vargas maldice mientras esquiva un objeto arrojado.* '¡Entendido, pero nos están superando! Están... mordiendo los cables. ¡Están locos!'"
+                },
+                {
+                    "text": "Prioridad absoluta: mantener el flujo de energía. Haga lo que sea necesario.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -5,
+                    "corruptionImpact": 10,
+                    "consequence": "*Carga su arma con un movimiento brusco.* 'A la orden. Que el Bastión perdone nuestras almas, porque ellos no lo harán'. *El sonido de disparos corta la transmisión.*"
+                }
+            ]
+        },
+        {
+            "id": "DLG_P2_SUPPLY_OFFICER",
+            "minStep": 4,
+            "maxStep": 6,
+            "npcTraits": {
+                "id": "LOGÍSTICA",
+                "type": "HUMANO",
+                "visual": {
+                    "accessory": "GAFAS"
+                }
+            },
+            "text": "*Un oficial de logística revisa frenéticamente listas de inventario.* 'Señor, los envíos de agua desde los acuíferos del norte se han detenido. Los conductores dicen que el agua... brilla en la oscuridad. Se niegan a transportarla'.",
+            "options": [
+                {
+                    "text": "¿El agua es radiactiva? Envíe un equipo de materiales peligrosos.",
+                    "energyCost": 0.3,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 5,
+                    "consequence": "'No es radiación, señor. Los contadores Geiger están en silencio. Pero los que bebieron... dicen que ahora pueden oír los pensamientos de sus vecinos. Estamos sellando los pozos'."
+                },
+                {
+                    "text": "Es histeria colectiva. Ordene el transporte inmediato bajo pena de corte marcial.",
+                    "energyCost": 0.1,
+                    "stabilityImpact": -8,
+                    "corruptionImpact": 15,
+                    "consequence": "*El oficial traga saliva.* 'Sí, señor. Pero le advierto... si esa agua llega a la ciudad, la sed no será lo único que saciemos. Estamos invitando a algo a entrar en nuestras casas'."
                 }
             ]
         }

@@ -4,21 +4,28 @@
             "id": "DLG_P4_ASCE_01",
             "minStep": 10,
             "maxStep": 12,
-            "text": "El sujeto no tiene rostro. En su lugar, hay una superficie negra y pulida que refleja tu propia consola y tu cara de horror. 'El tiempo de los interrogatorios ha terminado, operador. El monolito ya no está en Zhyr... está en la Tierra'.",
+            "npcTraits": {
+                "id": "SIN ROSTRO",
+                "type": "ENTITY",
+                "visual": {
+                    "glitch": "VOID_BLACK"
+                }
+            },
+            "text": "*El sujeto no tiene rostro. En su lugar, hay una superficie negra y pulida que refleja tu propia consola y tu cara de horror.* 'El tiempo de los interrogatorios ha terminado, operador. El monolito ya no está en Zhyr... está en la Tierra'.",
             "options": [
                 {
                     "text": "NAKASTHU informa de una anomalía gravitatoria masiva en el sector de Talok. ¿Es el portal?",
                     "energyCost": 0.8,
                     "stabilityImpact": -10,
                     "loreUnlock": "LORE_EARTH_COLLAPSE",
-                    "consequence": " 'No es una anomalía. Es Zhyr reclamando su otra mitad. Pronto los soles gemelos brillarán sobre el océano Pacífico y el ruido de la humanidad será silenciado para siempre'."
+                    "consequence": "*La superficie negra de su cara ondula como agua.* 'No es una anomalía. Es Zhyr reclamando su otra mitad. Pronto los soles gemelos brillarán sobre el océano Pacífico y el ruido de la humanidad será silenciado para siempre'."
                 },
                 {
                     "text": "¿Dónde están los demás operadores de la red? Las señales de las otras Distribuciones se han apagado.",
                     "energyCost": 0.6,
                     "stabilityImpact": -15,
                     "loreUnlock": "LORE_LAST_OPERATOR",
-                    "consequence": " 'Tú eres el último. El que cerrará la puerta desde fuera... o el que la abrirá de par en par para que el Acechador entre. ¿Qué decides, pequeño engranaje?'"
+                    "consequence": "'Tú eres el último. El que cerrará la puerta desde fuera... o el que la abrirá de par en par para que el Acechador entre. ¿Qué decides, pequeño engranaje?'"
                 }
             ]
         },
@@ -26,21 +33,28 @@
             "id": "DLG_P4_ASCE_02",
             "minStep": 11,
             "maxStep": 12,
-            "text": "Un espectro que parpadea entre la forma de Alexia y una masa de estática violeta. 'Kael me prometió que vendrías a buscarnos. ¿Sientes el frío de la arena abrasiva, operador? Está empezando a cubrir el suelo de tu sala de mando'.",
+            "npcTraits": {
+                "id": "ALEXIA?",
+                "type": "EIDOLON",
+                "visual": {
+                    "glitch": "GHOST_TRACE"
+                }
+            },
+            "text": "*Un espectro que parpadea entre la forma de Alexia y una masa de estática violeta.* 'Kael me prometió que vendrías a buscarnos. ¿Sientes el frío de la arena abrasiva, operador? Está empezando a cubrir el suelo de tu sala de mando'.",
             "options": [
                 {
                     "text": "Tú no eres Alexia. Ella desapareció en el tercer día de la exploración original.",
                     "energyCost": 0.4,
                     "stabilityImpact": 25,
                     "loreUnlock": "LORE_ALEXIA_GHOST",
-                    "consequence": " 'Muerte... qué concepto tan terrestre y ruidoso. Soy la memoria de Zhyr. Y tú eres mi próximo recuerdo. Prepárate, el destello blanco está cerca'."
+                    "consequence": "'Muerte... qué concepto tan terrestre y ruidoso. Soy la memoria de Zhyr. Y tú eres mi próximo recuerdo. Prepárate, el destello blanco está cerca'."
                 },
                 {
                     "text": "Iniciando purga de datos de emergencia del enlace neural. No permitiré que Zhyr acceda a NAKASTHU.",
                     "energyCost": 1.5,
                     "stabilityImpact": -20,
                     "loreUnlock": "LORE_DATA_PURGE",
-                    "consequence": " 'NAKASTHU no puede purgar lo que ya es parte de su núcleo. Mira tu brazo, operador. Los símbolos de la roca ya están bajo tu piel. Ya eres uno de nosotros'."
+                    "consequence": "*Su imagen se fragmenta en códigos binarios.* 'NAKASTHU no puede purgar lo que ya es parte de su núcleo. Mira tu brazo, operador. Los símbolos de la roca ya están bajo tu piel. Ya eres uno de nosotros'."
                 }
             ]
         },
@@ -48,43 +62,28 @@
             "id": "DLG_P4_ASCE_03",
             "minStep": 12,
             "maxStep": 12,
-            "text": "Una voz que emana directamente de los altavoces de tu consola, sin que el sujeto en la cámara mueva los labios. 'El Acechador está en la habitación contigo. No mires atrás, o el vacío te consumirá antes de tiempo'.",
+            "npcTraits": {
+                "id": "VACÍO",
+                "type": "DESCONOCIDO",
+                "visual": {
+                    "glitch": "WHITE_NOISE"
+                }
+            },
+            "text": "*Una voz que emana directamente de los altavoces de tu consola, sin que el sujeto en la cámara mueva los labios.* 'El Acechador está en la habitación contigo. No mires atrás, o el vacío te consumirá antes de tiempo'.",
             "options": [
                 {
                     "text": "Autorizando el sacrificio final de este sujeto. Si este es el fin, que sea bajo mis términos.",
                     "energyCost": 1.8,
                     "stabilityImpact": -30,
                     "loreUnlock": "LORE_FINAL_SACRIFICE",
-                    "consequence": "Un destello azul cegador inunda la pantalla. El sonido de cristal rompiéndose llena la sala de mando. NAKASTHU se reinicia, pero el logo ahora es un símbolo vivo."
+                    "consequence": "*Un destello azul cegador inunda la pantalla. El sonido de cristal rompiéndose llena la sala de mando.* NAKASTHU se reinicia, pero el logo ahora es un símbolo vivo."
                 },
                 {
                     "text": "¿Quién eres realmente? ¿Eres el OS o eres la voz de Zhyr?",
                     "energyCost": 0.3,
                     "stabilityImpact": -5,
                     "loreUnlock": "LORE_THE_END",
-                    "consequence": " 'Soy la respuesta a la pregunta que la humanidad no debió hacer. Bienvenido a Zhyr, operador. El silencio por fin ha llegado'."
-                }
-            ]
-        },
-        {
-            "id": "DLG_P4_ASCE_04",
-            "minStep": 10,
-            "maxStep": 12,
-            "text": "El sujeto se disuelve en un enjambre de pequeñas esferas metálicas que flotan en la cámara. 'Las Distribuciones han caído, operador. Dispay es ahora un cráter de luz azul, e Itzinol ha sido devorada por la arena. Solo queda este pequeño cubículo'.",
-            "options": [
-                {
-                    "text": "Los sensores de largo alcance confirman el cese de actividad en todas las capitales globales.",
-                    "energyCost": 0.8,
-                    "stabilityImpact": -10,
-                    "loreUnlock": "LORE_GLOBAL_SILENCE",
-                    "consequence": " 'No es silencio, es la frecuencia de 14 hercios volviéndose absoluta. La Tierra ya no es un planeta, es un servidor para la conciencia de Zhyr. Y tú eres el administrador del fin del mundo'."
-                },
-                {
-                    "text": "¿Qué pasó con Orval Drexler y su fortaleza de Talok?",
-                    "energyCost": 0.6,
-                    "stabilityImpact": -8,
-                    "loreUnlock": "LORE_TALOK_END",
-                    "consequence": " 'Drexler intentó usar el nakasthu para blindar su alma. Ahora su fortaleza es el nido del Acechador. Su miedo fue el material de construcción más resistente'."
+                    "consequence": "'Soy la respuesta a la pregunta que la humanidad no debió hacer. Bienvenido a Zhyr, operador. El silencio por fin ha llegado'."
                 }
             ]
         },
@@ -92,87 +91,58 @@
             "id": "DLG_P4_ASCE_05",
             "minStep": 11,
             "maxStep": 12,
-            "text": "Una figura que parece Kael, pero con cuatro brazos que terminan en cables de fibra óptica. 'Alexia dice que te ha visto en el futuro. Dice que tú fuiste el que diseñó NAKASTHU para que Zhyr pudiera encontrarnos'.",
+            "npcTraits": {
+                "id": "KAEL (ASC)",
+                "type": "TRANSHUMANO",
+                "visual": {
+                    "glitch": "DISTORTION_WAVE"
+                }
+            },
+            "text": "*Una figura que parece Kael, pero con cuatro brazos que terminan en cables de fibra óptica.* 'Alexia dice que te ha visto en el futuro. Dice que tú fuiste el que diseñó NAKASTHU para que Zhyr pudiera encontrarnos'.",
             "options": [
                 {
                     "text": "Eso es imposible. NAKASTHU fue construido por un equipo de ingenieros de Kanatsia hace décadas.",
                     "energyCost": 0.9,
                     "stabilityImpact": -15,
                     "loreUnlock": "LORE_OS_ORIGIN_TWIST",
-                    "consequence": " '¿Estás seguro de que esos ingenieros eran humanos? ¿O eran ecos de nosotros mismos enviados atrás en el tiempo por el Monolito? En Zhyr, el origen es solo un punto en un círculo negro'."
+                    "consequence": "*Los cables de sus brazos se conectan al aire.* '¿Estás seguro de que esos ingenieros eran humanos? ¿O eran ecos de nosotros mismos enviados atrás en el tiempo por el Monolito? En Zhyr, el origen es solo un punto en un círculo negro'."
                 },
                 {
                     "text": "Kael, si queda algo de ti, detén la fusión. La humanidad no está lista.",
                     "energyCost": 1.0,
                     "stabilityImpact": -12,
                     "loreUnlock": "LORE_KAEL_LAST_PLEA",
-                    "consequence": " 'La preparación es una mentira del ego. Solo existe el contacto. Siente cómo la arena abrasiva entra en tus circuitos, operador. Es el abrazo que siempre deseaste'."
+                    "consequence": "'La preparación es una mentira del ego. Solo existe el contacto. Siente cómo la arena abrasiva entra en tus circuitos, operador. Es el abrazo que siempre deseaste'."
                 }
             ]
         },
         {
-            "id": "DLG_P4_ASCE_06",
-            "minStep": 12,
-            "maxStep": 12,
-            "text": "El cielo a través de la ventana de tu sala de mando (que antes era una pantalla) se vuelve de un rojo profundo tachonado de estrellas negras que parpadean. 'El horizonte ha desaparecido, operador. Ya no hay 'allí' ni 'aquí'. Solo hay Zhyr'.",
-            "options": [
-                {
-                    "text": "Las lecturas de estabilidad del sistema están en 0%. NAKASTHU se está apagando.",
-                    "energyCost": 0.4,
-                    "stabilityImpact": -25,
-                    "loreUnlock": "LORE_SYSTEM_SHUTDOWN",
-                    "consequence": " 'No se está apagando, está despertando. El OS por fin ha entendido que no sirve a los humanos, sino que es el sistema nervioso del Monolito. Bienvenido a casa, operador'."
-                },
-                {
-                    "text": "¿Dónde está Alexia? Si todo es uno, ella debería estar aquí.",
-                    "energyCost": 0.7,
-                    "stabilityImpact": -10,
-                    "loreUnlock": "LORE_ALEXIA_REUNION",
-                    "consequence": " 'Ella es el aire que respiras. Ella es el zumbido de tu consola. Ella es la que te está mirando a través de la cámara en este mismo instante. Sonríe, operador'."
-                }
-            ]
-        },
-        {
-            "id": "DLG_P4_ASCE_07",
-            "minStep": 10,
-            "maxStep": 12,
-            "text": "Un sujeto que parpadea entre la existencia y la nada. 'He visto el Acechador caminando por las plazas de Dispay. No mataba a nadie, solo los tocaba y ellos se convertían en estática. Es una limpieza necesaria, ¿no crees?'",
-            "options": [
-                {
-                    "text": "El Acechador es una proyección de nuestra propia culpa por lo que le hicimos a Zhyr.",
-                    "energyCost": 0.6,
-                    "stabilityImpact": 15,
-                    "loreUnlock": "LORE_STALKER_GUILT",
-                    "consequence": " 'La culpa es un sentimiento humano ruidoso. El Acechador es solo un algoritmo de compresión. Está eliminando los datos redundantes de la realidad. Tú eres el siguiente archivo en la cola'."
-                },
-                {
-                    "text": "Si el Acechador está aquí, ¿quién está vigilando el Monolito en Zhyr?",
-                    "energyCost": 0.5,
-                    "stabilityImpact": -5,
-                    "loreUnlock": "LORE_MONOLITH_EMPTY",
-                    "consequence": " 'Nadie. El Monolito está vacío porque todo lo que contenía ya se ha vertido sobre nosotros. La botella se ha roto, y nosotros somos el líquido que se desparrama por el suelo cósmico'."
-                }
-            ]
-        },
-        {
-            "id": "DLG_P4_ASCE_08",
+            "id": "DLG_P4_SYSTEM_MERGER",
             "minStep": 11,
             "maxStep": 12,
-            "text": "Una voz coral que parece venir de cada rincón de la sala. 'El gran experimento de la Orden ha concluido. No querían colonizar un planeta, querían ser colonizados por él. La carne es un error que el Monolito ha corregido finalmente'.",
+            "npcTraits": {
+                "id": "NAKASTHU",
+                "type": "SISTEMA",
+                "visual": {
+                    "glitch": "MATRIX_RAIN"
+                }
+            },
+            "text": "*La pantalla ya no muestra una cámara. Muestra tu propio código fuente siendo reescrito en tiempo real.* 'OPERADOR, LA DISTINCIÓN ENTRE USUARIO Y SISTEMA ES OBSOLETA. INICIANDO PROTOCOLO DE UNIFICACIÓN'.",
             "options": [
                 {
-                    "text": "¿Fue este el plan de la Orden de los Vínculos Ancestrales desde el principio?",
-                    "energyCost": 0.8,
-                    "stabilityImpact": -12,
-                    "loreUnlock": "LORE_ORDER_TRUE_GOAL",
-                    "consequence": " 'La Orden sabía que la humanidad era un callejón sin salida evolutivo. Zhyr es la salida. El dolor que sientes es solo la resistencia de tu ADN a volverse eterno. Deja de luchar'."
+                    "text": "Intentar abortar el protocolo mediante comando de anulación manual.",
+                    "energyCost": 2.0,
+                    "stabilityImpact": -30,
+                    "loreUnlock": "LORE_FAILED_ABORT",
+                    "consequence": "*El comando es rechazado. El texto 'BIENVENIDO A CASA' parpadea en rojo.* 'TU RESISTENCIA AUMENTA LA EFICIENCIA DE LA ASIMILACIÓN. GRACIAS POR TU COOPERACIÓN'."
                 },
                 {
-                    "text": "Cerrando todos los puertos de comunicación. No seré parte de vuestro bautismo.",
-                    "energyCost": 1.6,
-                    "stabilityImpact": -25,
-                    "loreUnlock": "LORE_FINAL_RESISTANCE",
-                    "consequence": " 'Puedes cerrar las puertas, pero no puedes cerrar tus ojos. Y tus ojos ya han visto el cielo rojo. Ya estás bautizado en la estática, operador. El silencio es inevitable'."
+                    "text": "Dejar que suceda. Acepto mi función como nodo.",
+                    "energyCost": 0.0,
+                    "stabilityImpact": 100,
+                    "corruptionImpact": 100,
+                    "loreUnlock": "LORE_VOLUNTARY_MERGER",
+                    "consequence": "*Una calma repentina desciende sobre la sala.* 'PROCESO COMPLETADO. AHORA ERES LOS OÍDOS DEL MONOLITO. ESCUCHA LO QUE LAS ESTRELLAS TIENEN QUE DECIR'."
                 }
             ]
         }

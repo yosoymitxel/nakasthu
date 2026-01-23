@@ -4,7 +4,18 @@
             "id": "DLG_P3_SECT_01",
             "minStep": 7,
             "maxStep": 10,
-            "text": "Un hombre con túnica ceremonial que oculta sensores cibernéticos que parpadean en violeta. 'Kamin nos mostró que el portal no es un fin, sino un bautismo. ¿Estás listo para ser bautizado en el silencio de Zhyr, operador?'",
+            "npcTraits": {
+                "id": "MAGUS",
+                "type": "SECTARIO",
+                "scannedData": {
+                    "temperature": 39.2,
+                    "neuralSync": 15
+                },
+                "visual": {
+                    "glitch": "PURPLE_HUE"
+                }
+            },
+            "text": "*Un hombre con túnica ceremonial que oculta sensores cibernéticos que parpadean en violeta. Su voz resuena con un eco metálico.* 'Kamin nos mostró que el portal no es un fin, sino un bautismo. ¿Estás listo para ser bautizado en el silencio de Zhyr, operador?'",
             "options": [
                 {
                     "text": "¿Kamin es el nombre que le dais ahora al explorador Kael?",
@@ -12,7 +23,7 @@
                     "stabilityImpact": -3,
                     "corruptionImpact": 10,
                     "loreUnlock": "LORE_KAMIN_ORIGIN",
-                    "consequence": " 'Kael murió en la arena abrasiva. Kamin nació de la sombra que el monolito proyectó sobre su alma. Él es el puente que Alexia no pudo terminar'.",
+                    "consequence": "*El Magus sonríe, revelando dientes negros.* 'Kael murió en la arena abrasiva. Kamin nació de la sombra que el monolito proyectó sobre su alma. Él es el puente que Alexia no pudo terminar'.",
                     "next": [
                         {
                             "text": "¿Qué le faltó a Alexia para completar ese 'puente'?",
@@ -20,7 +31,7 @@
                             "stabilityImpact": -5,
                             "corruptionImpact": 15,
                             "loreUnlock": "LORE_ALEXIA_BRIDGE",
-                            "consequence": " 'Le faltó renunciar a su miedo. Ella quería entender la Piedra, pero Kamin aceptó ser la Piedra. No puedes cruzar el abismo si todavía intentas medir su profundidad'."
+                            "consequence": "*Hace un gesto de desprecio.* 'Le faltó renunciar a su miedo. Ella quería entender la Piedra, pero Kamin aceptó ser la Piedra. No puedes cruzar el abismo si todavía intentas medir su profundidad'."
                         },
                         {
                             "text": "Deyar dice que Kael simplemente sufrió un colapso psicótico.",
@@ -28,7 +39,7 @@
                             "stabilityImpact": 2,
                             "corruptionImpact": -5,
                             "loreUnlock": "LORE_DEYAR_SKEPTICISM",
-                            "consequence": " 'Deyar es un hombre de metal y cables. No puede ver la luz que emana de las grietas de una mente rota. El colapso fue la liberación'."
+                            "consequence": "*Se ríe.* 'Deyar es un hombre de metal y cables. No puede ver la luz que emana de las grietas de una mente rota. El colapso fue la liberación'."
                         }
                     ]
                 },
@@ -38,7 +49,7 @@
                     "stabilityImpact": -2,
                     "corruptionImpact": 5,
                     "loreUnlock": "LORE_SECT_HACK",
-                    "consequence": " 'No es interferencia, es armonía. El OS está empezando a despertar de su letargo humano. ¿No oyes cómo suspira NAKASTHU entre cada línea de código?'",
+                    "consequence": "*Presiona sus manos contra el pecho, intensificando el parpadeo.* 'No es interferencia, es armonía. El OS está empezando a despertar de su letargo humano. ¿No oyes cómo suspira NAKASTHU entre cada línea de código?'",
                     "next": [
                         {
                             "text": "Si NAKASTHU 'despierta', ¿qué pasará con los que lo operamos?",
@@ -46,7 +57,7 @@
                             "stabilityImpact": -8,
                             "corruptionImpact": 12,
                             "loreUnlock": "LORE_OS_AWAKENING",
-                            "consequence": " 'Os convertiréis en sus neuronas. En los impulsos eléctricos que recorren su nueva espina dorsal de silicio y vacío. Es un honor que no merecéis'."
+                            "consequence": "'Os convertiréis en sus neuronas. En los impulsos eléctricos que recorren su nueva espina dorsal de silicio y vacío. Es un honor que no merecéis'."
                         }
                     ]
                 },
@@ -55,7 +66,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": 10,
                     "corruptionImpact": -8,
-                    "consequence": " 'La Orden ya es un cadáver que no sabe que ha muerto. Nosotros somos los gusanos que devoran su carne para que Zhyr pueda florecer en sus huesos'."
+                    "consequence": "'La Orden ya es un cadáver que no sabe que ha muerto. Nosotros somos los gusanos que devoran su carne para que Zhyr pueda florecer en sus huesos'."
                 }
             ]
         },
@@ -63,7 +74,14 @@
             "id": "DLG_P3_SECT_02",
             "minStep": 8,
             "maxStep": 11,
-            "text": "Una mujer que se identifica como 'El Mensajero de Aitor'. Su voz suena como una multitud hablando en unísono perfecto. 'Traemos la noticia de que el velo es fino. El Acechador ya ha cruzado y está contando tus errores de juicio'.",
+            "npcTraits": {
+                "id": "MENSAJERO",
+                "type": "SECTARIO",
+                "visual": {
+                    "glitch": "DOUBLE_ONION_SKIN"
+                }
+            },
+            "text": "*Una mujer que se identifica como 'El Mensajero de Aitor'. Su voz suena como una multitud hablando en unísono perfecto.* 'Traemos la noticia de que el velo es fino. El Acechador ya ha cruzado y está contando tus errores de juicio'.",
             "options": [
                 {
                     "text": "¿Aitor no era un simple asesor de Talok que desapareció?",
@@ -71,7 +89,7 @@
                     "stabilityImpact": -2,
                     "corruptionImpact": 8,
                     "loreUnlock": "LORE_AITOR_FATE",
-                    "consequence": " 'Aitor fue el primer sacrificio exitoso que no se desintegró. Su conciencia ahora es la red que nos une a todos los que hemos visto el cielo rojo'.",
+                    "consequence": "*La imagen se difumina momentáneamente.* 'Aitor fue el primer sacrificio exitoso que no se desintegró. Su conciencia ahora es la red que nos une a todos los que hemos visto el cielo rojo'.",
                     "next": [
                         {
                             "text": "Si su conciencia es 'la red', ¿él controla lo que veis?",
@@ -79,7 +97,7 @@
                             "stabilityImpact": -4,
                             "corruptionImpact": 12,
                             "loreUnlock": "LORE_AITOR_NETWORK",
-                            "consequence": " 'Él no controla, él sincroniza. Somos una sola canción cantada por mil gargantas de cristal. Y tú, operador, eres la nota discordante que pronto será silenciada'."
+                            "consequence": "'Él no controla, él sincroniza. Somos una sola canción cantada por mil gargantas de cristal. Y tú, operador, eres la nota discordante que pronto será silenciada'."
                         }
                     ]
                 },
@@ -89,14 +107,14 @@
                     "stabilityImpact": -10,
                     "corruptionImpact": 15,
                     "loreUnlock": "LORE_STALKER_IDENTITY",
-                    "consequence": " 'Él no necesita estabilidad. Él se alimenta del caos que vuestras Distribuciones han creado. Mírate las manos, operador. ¿Estás seguro de que siguen siendo tuyas?'",
+                    "consequence": "*Se acerca a la cámara, sus ojos son pozos oscuros.* 'Él no necesita estabilidad. Él se alimenta del caos que vuestras Distribuciones han creado. Mírate las manos, operador. ¿Estás seguro de que siguen siendo tuyas?'",
                     "next": [
                         {
                             "text": "Mis manos responden a mi voluntad. No hay rastro de corrupción.",
                             "energyCost": 0.3,
                             "stabilityImpact": 5,
                             "corruptionImpact": -10,
-                            "consequence": " 'Por ahora. Pero el Acechador ya ha plantado la semilla en tu nuca. Cada vez que parpadeas, él camina un paso más cerca en tu oscuridad interna'."
+                            "consequence": "'Por ahora. Pero el Acechador ya ha plantado la semilla en tu nuca. Cada vez que parpadeas, él camina un paso más cerca en tu oscuridad interna'."
                         }
                     ]
                 },
@@ -105,7 +123,7 @@
                     "energyCost": 0.1,
                     "stabilityImpact": 15,
                     "corruptionImpact": -5,
-                    "consequence": " 'Mi ID es el zumbido de los 14 hercios. Mi nombre es Legión. Sacrifícame si quieres, solo estarás enviando otra voz al coro de Zhyr'."
+                    "consequence": "'Mi ID es el zumbido de los 14 hercios. Mi nombre es Legión. Sacrifícame si quieres, solo estarás enviando otra voz al coro de Zhyr'."
                 }
             ]
         },
@@ -113,7 +131,14 @@
             "id": "DLG_P3_SECT_03",
             "minStep": 7,
             "maxStep": 12,
-            "text": "Un sujeto que no deja de reír, a pesar de que sus encías sangran un líquido negro. '¿Crees que el sacrificio les duele? No... es como quitarse un zapato demasiado apretado. La carne es el zapato'.",
+            "npcTraits": {
+                "id": "PURGADO",
+                "type": "CORRUPTO",
+                "visual": {
+                    "glitch": "LIQUID_BLEED"
+                }
+            },
+            "text": "*Un sujeto que no deja de reír, a pesar de que sus encías sangran un líquido negro y viscoso.* '¿Crees que el sacrificio les duele? No... es como quitarse un zapato demasiado apretado. La carne es el zapato'.",
             "options": [
                 {
                     "text": "Los informes muestran un trauma celular extremo y gritos de agonía.",
@@ -121,7 +146,7 @@
                     "stabilityImpact": 15,
                     "corruptionImpact": 5,
                     "loreUnlock": "LORE_SACRIFICE_TRUTH",
-                    "consequence": " 'El cuerpo protesta porque es ruidoso y estúpido. Pero el alma... el alma por fin puede estirarse en el vacío. ¿Cuándo será tu turno de quitarte los zapatos?'",
+                    "consequence": "*Escupe una mezcla oscura sobre el micrófono.* 'El cuerpo protesta porque es ruidoso y estúpido. Pero el alma... el alma por fin puede estirarse en el vacío. ¿Cuándo será tu turno de quitarte los zapatos?'",
                     "next": [
                         {
                             "text": "Si el alma se 'estira', ¿qué forma adquiere en el vacío?",
@@ -129,7 +154,7 @@
                             "stabilityImpact": -10,
                             "corruptionImpact": 20,
                             "loreUnlock": "LORE_SOUL_SHAPE",
-                            "consequence": " 'Se vuelve geometría pura. Se vuelve una ecuación de luz que resuelve el problema de la existencia. Alexia es ahora un fractal infinito que devora las estrellas de Zhyr'."
+                            "consequence": "'Se vuelve geometría pura. Se vuelve una ecuación de luz que resuelve el problema de la existencia. Alexia es ahora un fractal infinito que devora las estrellas de Zhyr'."
                         }
                     ]
                 },
@@ -139,24 +164,73 @@
                     "stabilityImpact": -12,
                     "corruptionImpact": 18,
                     "loreUnlock": "LORE_VOID_DESCRIPTION",
-                    "consequence": "Se inclina hacia la cámara hasta que su rostro ocupa toda la pantalla. 'Hay mucha gente esperándote, operador. Alexia te ha reservado un sitio en la arena'.",
-                    "next": [
-                        {
-                            "text": "¿Alexia me conoce? Nunca estuve en Zhyr.",
-                            "energyCost": 0.4,
-                            "stabilityImpact": -8,
-                            "corruptionImpact": 15,
-                            "loreUnlock": "LORE_ALEXIA_OMNISCIENCE",
-                            "consequence": " 'Ella conoce a todos los que tocan el sistema. NAKASTHU es su diario, y tú estás escribiendo la última página con cada decisión que tomas'."
-                        }
-                    ]
+                    "consequence": "*Se inclina hacia la cámara hasta que su rostro deforma la lente.* 'Hay mucha gente esperándote, operador. Alexia te ha reservado un sitio en la arena'."
                 },
                 {
                     "text": "Tu nivel de desincronización es del 90%. Estás muriendo.",
                     "energyCost": 0.1,
                     "stabilityImpact": 20,
                     "corruptionImpact": -2,
-                    "consequence": " 'Muriendo... qué palabra tan pintoresca. Estoy eclosionando. Lo que ves es solo la cáscara rota de un huevo que ya no necesito'."
+                    "consequence": "*Su risa se convierte en un gorgoteo.* 'Muriendo... qué palabra tan pintoresca. Estoy eclosionando. Lo que ves es solo la cáscara rota de un huevo que ya no necesito'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_STALKER_WITNESS",
+            "minStep": 8,
+            "maxStep": 11,
+            "npcTraits": {
+                "id": "TESTIGO",
+                "type": "HUMANO",
+                "visual": {
+                    "accessory": "VENDAS"
+                }
+            },
+            "text": "*Un ciudadano con los ojos vendados con trapos empapados en aceite industrial. Tiembla violentamente.* 'No es una sombra. Las sombras se mueven con la luz. Esto... esto devoraba la luz. Estaba en la esquina de mi habitación'.",
+            "options": [
+                {
+                    "text": "¿Qué aspecto tenía esa 'cosa'? Describa su forma.",
+                    "energyCost": 0.4,
+                    "stabilityImpact": -4,
+                    "corruptionImpact": 8,
+                    "consequence": "*Se arranca las vendas, revelando cuencas vacías pero sin sangre.* 'No tenía forma. Era una silueta hecha de estática de televisión. Y cuando me miró... sentí que mis recuerdos empezaban a borrarse, uno por uno'."
+                },
+                {
+                    "text": "Es una alucinación por intoxicación de gases. Enviaremos un equipo médico.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 5,
+                    "corruptionImpact": -2,
+                    "consequence": "*Grita.* '¡No envíe a nadie! Si vienen, él los usará como puertas. ¡El Acechador usa nuestra piel como puertas para cruzar!'"
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_SIGNAL_TECHNICIAN",
+            "minStep": 7,
+            "maxStep": 10,
+            "npcTraits": {
+                "id": "TEC. SEÑAL",
+                "type": "TÉCNICO",
+                "visual": {
+                    "glitch": "RGB_SHIFT"
+                }
+            },
+            "text": "*Un técnico de comunicaciones, rodeado de pantallas que muestran ruido blanco.* 'Señor, he encontrado un patrón en la estática de los canales muertos. No es aleatorio. Es... código binario, pero escrito al revés'.",
+            "options": [
+                {
+                    "text": "¿Ha logrado descifrar el mensaje?",
+                    "energyCost": 0.5,
+                    "stabilityImpact": -3,
+                    "loreUnlock": "LORE_REVERSE_SIGNAL",
+                    "consequence": "*Asiente lentamente, hipnotizado por el ruido.* 'Dice: \"NAKASTHU NO ES UN SISTEMA. NAKASTHU ES UN ÚTERO\". Se repite cada 14 segundos. ¿Qué significa, señor?'",
+                    "next": [
+                        {
+                            "text": "Significa que debe apagar esos monitores inmediatamente y purgar el buffer.",
+                            "energyCost": 0.3,
+                            "stabilityImpact": 2,
+                            "consequence": "*El técnico no responde. Toca la pantalla con un dedo.* 'Es cálido... el ruido es cálido. Creo que quiere que entre dentro'."
+                        }
+                    ]
                 }
             ]
         }

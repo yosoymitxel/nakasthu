@@ -178,13 +178,15 @@ export const handleAuthorize = () => {
 const checkGameStatus = () => {
     if (state.stability <= 0) {
         state.gameStatus = 'GAME_OVER';
-        bus.emit('SYSTEM_FAILURE', { 
+        bus.emit('SYSTEM_FAILURE', {
             reason: 'STABILITY_COLLAPSED',
             details: 'La sincronía neural con el bastión se ha roto. El exceso de errores de juicio o la autorización de entidades corruptas ha saturado los filtros de biomasa.',
-            stats: { 
-                ...state.stats, 
+            stats: {
+                ...state.stats,
                 processed: state.processedCount,
                 errors: state.judgmentErrors,
+                energy: state.energy,
+                stability: state.stability,
                 techniciansRecruited: state.techniciansRecruited,
                 devotsRecruited: state.devotsRecruited
             }
@@ -195,13 +197,15 @@ const checkGameStatus = () => {
 
     if (state.energy <= 0) {
         state.gameStatus = 'GAME_OVER';
-        bus.emit('SYSTEM_FAILURE', { 
+        bus.emit('SYSTEM_FAILURE', {
             reason: 'ENERGY_DEPLETED',
             details: 'Agotamiento de energía crítico. El sistema ha entrado en modo de hibernación forzada para preservar el núcleo. La biomasa residual ha sido purgada.',
-            stats: { 
-                ...state.stats, 
+            stats: {
+                ...state.stats,
                 processed: state.processedCount,
                 errors: state.judgmentErrors,
+                energy: state.energy,
+                stability: state.stability,
                 techniciansRecruited: state.techniciansRecruited,
                 devotsRecruited: state.devotsRecruited
             }
@@ -212,15 +216,15 @@ const checkGameStatus = () => {
 
     if (state.processedCount >= state.quota) {
         console.log("%c[SYSTEM] CUOTA CUMPLIDA. EVALUANDO DESEMPEÑO...", "color: #00ff00; font-weight: bold;");
-        
+
         // Verificar metas del paso actual antes de avanzar
         const metaResults = gameSequencer.checkStepMeta();
-        
+
         if (metaResults.success) {
             bus.emit('TERMINAL_PRINT', {
                 text: '[SISTEMA] OBJETIVOS DE FASE CUMPLIDOS. PREPARANDO TRANSICIÓN...'
             });
-            
+
             // Avanzar al siguiente paso narrativo
             setTimeout(() => {
                 gameSequencer.nextStep();
@@ -230,7 +234,7 @@ const checkGameStatus = () => {
             state.gameStatus = 'GAME_OVER';
             const failureReason = metaResults.messages.join(' | ');
             bus.emit('SYSTEM_FAILURE', { reason: `ERROR DE PROTOCOLO: ${failureReason}` });
-            
+
             bus.emit('TERMINAL_PRINT', {
                 text: `[FALLO CRÍTICO] OBJETIVOS NO ALCANZADOS: ${failureReason}`,
                 type: 'SYSTEM'

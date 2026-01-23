@@ -5,6 +5,7 @@
  */
 import { state } from '../core/State.js';
 import { bus } from '../core/Bus.js';
+import { applyTraits } from './EntityGenerator.js';
 
 class DialogueEngine {
     constructor() {
@@ -76,7 +77,7 @@ class DialogueEngine {
         if (this.dialogues.length === 0) return;
 
         const currentStep = state.currentStep || 1;
-        
+
         // 1. Filtrar diálogos por el paso actual (minStep/maxStep)
         let pool = this.dialogues.filter(d => {
             const minStep = d.minStep || 1;
@@ -85,10 +86,8 @@ class DialogueEngine {
         });
 
         // 2. Priorizar diálogos NO usados en esta sesión (para evitar repetición inmediata)
-        if (!state.usedDialogueIds) state.usedDialogueIds = [];
-        
         let unusedPool = pool.filter(d => !state.usedDialogueIds.includes(d.id));
-        
+
         // Si todos los diálogos del pool actual han sido usados, reseteamos los de este pool
         if (unusedPool.length === 0 && pool.length > 0) {
             console.log('[DIALOGUE] Pool agotado para este paso. Reiniciando memoria local.');
@@ -108,8 +107,20 @@ class DialogueEngine {
         this.currentDialogue = unusedPool[randomIndex];
 
         // Registrar como usado
-        if (!state.usedDialogueIds.includes(this.currentDialogue.id)) {
-            state.usedDialogueIds.push(this.currentDialogue.id);
+        const usedIds = [...state.usedDialogueIds];
+        if (!usedIds.includes(this.currentDialogue.id)) {
+            usedIds.push(this.currentDialogue.id);
+            state.usedDialogueIds = usedIds;
+        }
+
+        // Aplicar sobreescritura de rasgos de NPC si existen
+        if (this.currentDialogue.npcTraits && state.currentEntity) {
+            console.log(`%c[DIALOGUE] Aplicando rasgos narrativos al sujeto: ${this.currentDialogue.id}`, 'color: #06b6d4; font-weight: bold;');
+            state.startBatch();
+            applyTraits(state.currentEntity, this.currentDialogue.npcTraits);
+            state.endBatch();
+            // Notificar que el sujeto ha sido actualizado (para que los módulos se refresquen)
+            bus.emit('NEW_SUBJECT_DETECTED', state.currentEntity);
         }
 
         // Actualizar estado para React
@@ -146,21 +157,21 @@ class DialogueEngine {
         state.startBatch();
         if (option.energyCost) state.energy = Math.floor(Math.max(0, state.energy - option.energyCost));
         if (option.stabilityImpact) state.stability = Math.floor(Math.max(0, state.stability + option.stabilityImpact));
-        
+
         // Impacto mecánico en la corrupción del sujeto actual
         if (option.corruptionImpact && state.currentEntity) {
             // Ajustar la probabilidad de corrupción del sujeto basado en el diálogo
             const currentProb = state.currentEntity.scannedData.corruption || 0;
             const newCorruption = Math.min(100, Math.max(0, currentProb + option.corruptionImpact));
-            
+
             state.currentEntity.scannedData.corruption = newCorruption;
-            
+
             // Añadir al historial de indicios para el promedio en MOD-02
             if (!state.currentEntity.scannedData.corruptionHistory) {
                 state.currentEntity.scannedData.corruptionHistory = [];
             }
             state.currentEntity.scannedData.corruptionHistory.push(newCorruption);
-            
+
             console.log(`%c[DIALOGUE] Impacto en corrupción: ${option.corruptionImpact}% (Total: ${newCorruption}%)`, 'color: #ef4444;');
         }
         state.endBatch();
@@ -168,7 +179,7 @@ class DialogueEngine {
         // Desbloquear lore si existe
         if (option.loreUnlock) {
             bus.emit('LORE_UNLOCKED', option.loreUnlock);
-            
+
             // Si es un comando de terminal
             if (option.loreUnlock.startsWith('CMD_')) {
                 const command = option.loreUnlock.replace('CMD_', '');

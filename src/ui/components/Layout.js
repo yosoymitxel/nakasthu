@@ -47,6 +47,7 @@ export const Layout = () => {
     const [deathReason, setDeathReason] = useState(null);
     const [deathDetails, setDeathDetails] = useState(null);
     const [deathStats, setDeathStats] = useState(null);
+    const [stableRank, setStableRank] = useState(null); // Capturar rango final para evitar parpadeo
     const [isFS, setIsFS] = useState(isFullScreen());
 
     // Listener para pantalla completa
@@ -108,6 +109,23 @@ export const Layout = () => {
     }, [gameStatus, hasSeenWelcome, quota]);
     */
 
+    // Lógica de cálculo de rango moved up to avoid flicker and allow stable rank capture
+    const getRank = () => {
+        const errors = deathStats?.errors !== undefined ? deathStats.errors : judgmentErrors;
+        const currentEnergy = deathStats?.energy !== undefined ? deathStats.energy : energy;
+
+        // Si hay errores críticos o falló el sistema, es F
+        const isSystemFailure = deathReason && (deathReason.includes('ERROR CRÍTICO') || deathReason.includes('SUJETO DESCONTROLADO'));
+
+        if (isSystemFailure || errors > 5) return { label: 'F', color: 'text-red-600', desc: 'FRACASO ABSOLUTO' };
+
+        // Si llegamos a un final normal, evaluar desempeño
+        if (errors === 0 && currentEnergy > 80) return { label: 'S', color: 'text-amber-400', desc: 'EJECUCIÓN PERFECTA' };
+        if (errors <= 2) return { label: 'A', color: 'text-emerald-400', desc: 'DESEMPEÑO SOBRESALIENTE' };
+        if (errors <= 5) return { label: 'C', color: 'text-yellow-600', desc: 'DESEMPEÑO ACEPTABLE' };
+        return { label: 'D', color: 'text-zinc-500', desc: 'RIESGO OPERATIVO' };
+    };
+
     // Listener para feedback de impacto
     useEffect(() => {
         const onFlash = (data) => {
@@ -152,16 +170,16 @@ export const Layout = () => {
         bus.on('TRIGGER_FLASH', onFlash);
         bus.on('SACRIFICE_PEAK', onSacrificePeak);
         bus.on('AUTHORIZE_EFFECT', onAuthorizePeak);
-        bus.on('OPEN_MODAL', onOpenModal);
-        bus.on('MODAL_CLOSE_INTERNAL', onCloseModal);
+        bus.on('UI_MODAL_OPEN', onOpenModal);
+        bus.on('UI_MODAL_CLOSE', onCloseModal);
         bus.on('SYSTEM_FAILURE', onSystemFailure);
         bus.on('GAME_ENDING', onGameEnding);
         return () => {
             bus.off('TRIGGER_FLASH', onFlash);
             bus.off('SACRIFICE_PEAK', onSacrificePeak);
             bus.off('AUTHORIZE_EFFECT', onAuthorizePeak);
-            bus.off('OPEN_MODAL', onOpenModal);
-            bus.off('MODAL_CLOSE_INTERNAL', onCloseModal);
+            bus.off('UI_MODAL_OPEN', onOpenModal);
+            bus.off('UI_MODAL_CLOSE', onCloseModal);
             bus.off('SYSTEM_FAILURE', onSystemFailure);
             bus.off('GAME_ENDING', onGameEnding);
         };
@@ -175,6 +193,17 @@ export const Layout = () => {
     const isLoreArchive = gameStatus === 'LORE_ARCHIVE';
     const isPaused = state.isPaused;
 
+    // Capturar el rango final para evitar parpadeo al reiniciar el nivel
+    useEffect(() => {
+        if (isGameOver) {
+            setStableRank(getRank());
+        } else if (stableRank) {
+            // Limpiar con retraso después de que la pantalla de muerte desaparezca (1.5s transition)
+            const timer = setTimeout(() => setStableRank(null), 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [isGameOver, deathStats, deathReason]);
+
     // Listener para pausa y Lore (Escape key)
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -183,7 +212,7 @@ export const Layout = () => {
                     state.gameStatus = 'PLAYING';
                     return;
                 }
-                
+
                 if (gameStatus === 'PLAYING') {
                     const newPauseState = !state.isPaused;
                     state.isPaused = newPauseState;
@@ -199,23 +228,6 @@ export const Layout = () => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [gameStatus]);
 
-    // Lógica de cálculo de rango
-    const getRank = () => {
-        // Priorizar estadísticas del final si existen
-        const errors = deathStats?.errors !== undefined ? deathStats.errors : judgmentErrors;
-        const currentEnergy = deathStats?.energy !== undefined ? deathStats.energy : energy;
-
-        // Si hay errores críticos o falló el sistema, es F
-        const isSystemFailure = deathReason && (deathReason.includes('ERROR CRÍTICO') || deathReason.includes('SUJETO DESCONTROLADO'));
-        
-        if (isSystemFailure || errors > 5) return { label: 'F', color: 'text-red-600', desc: 'FRACASO ABSOLUTO' };
-        
-        // Si llegamos a un final normal, evaluar desempeño
-        if (errors === 0 && currentEnergy > 80) return { label: 'S', color: 'text-amber-400', desc: 'EJECUCIÓN PERFECTA' };
-        if (errors <= 2) return { label: 'A', color: 'text-emerald-400', desc: 'DESEMPEÑO SOBRESALIENTE' };
-        if (errors <= 5) return { label: 'C', color: 'text-yellow-600', desc: 'DESEMPEÑO ACEPTABLE' };
-        return { label: 'D', color: 'text-zinc-500', desc: 'RIESGO OPERATIVO' };
-    };
 
     const rank = getRank();
 
@@ -245,11 +257,11 @@ export const Layout = () => {
                 style=${{
             zIndex: 50,
             '--vignette-opacity': decisionPeak ? 1.0 : (alarm ? 0.8 : (isEclipse ? orbitalCycle / 100 : 0)),
-            boxShadow: decisionPeak === 'SACRIFICE' 
-                ? 'inset 0 0 150px rgba(153, 27, 27, 0.9)' 
+            boxShadow: decisionPeak === 'SACRIFICE'
+                ? 'inset 0 0 150px rgba(153, 27, 27, 0.9)'
                 : decisionPeak === 'AUTHORIZE'
-                ? 'inset 0 0 150px rgba(5, 150, 105, 0.8)'
-                : `inset 0 0 120px rgba(${alarm ? '153, 27, 27' : (isEclipse ? '147, 51, 234' : '0, 0, 0')}, ${alarm ? 0.6 : (isEclipse ? 0.4 : 0)})`
+                    ? 'inset 0 0 150px rgba(5, 150, 105, 0.8)'
+                    : `inset 0 0 120px rgba(${alarm ? '153, 27, 27' : (isEclipse ? '147, 51, 234' : '0, 0, 0')}, ${alarm ? 0.6 : (isEclipse ? 0.4 : 0)})`
         }}
             >
                 <div className="noise-texture"></div>
@@ -266,11 +278,11 @@ export const Layout = () => {
                     <div className="flex flex-col gap-4 w-64">
                         <button 
                             onClick=${() => {
-                                if (currentStep === 1) {
-                                    bus.emit('GAME_START');
-                                }
-                                state.gameStatus = 'PLAYING';
-                            }}
+            if (currentStep === 1) {
+                bus.emit('GAME_START');
+            }
+            state.gameStatus = 'PLAYING';
+        }}
                             className="group relative border border-cyan-500/40 bg-cyan-950/20 px-8 py-3 hover:bg-cyan-500/30 transition-all"
                         >
                             <span className="text-cyan-400 font-mono text-sm tracking-widest uppercase">Iniciar Turno</span>
@@ -285,17 +297,10 @@ export const Layout = () => {
                         </button>
                         
                         <button 
-                            onClick=${() => bus.emit('OPEN_MODAL', { title: 'CONFIGURACIÓN', content: 'AJUSTES TÉCNICOS DEL NÚCLEO BASTIÓN.' })}
+                            onClick=${() => bus.emit('UI_MODAL_OPEN', { title: 'CONFIGURACIÓN', content: 'AJUSTES TÉCNICOS DEL NÚCLEO BASTIÓN.' })}
                             className="border border-zinc-800 bg-zinc-900/60 px-8 py-2 text-zinc-400 font-mono text-xs hover:text-zinc-200 transition-all uppercase tracking-widest"
                         >
                             Configuración
-                        </button>
-
-                        <button 
-                            onClick=${toggleFullScreen}
-                            className="border border-cyan-900/30 bg-cyan-950/10 px-8 py-2 text-cyan-500/70 font-mono text-[10px] hover:text-cyan-400 hover:bg-cyan-900/20 transition-all uppercase tracking-[0.2em]"
-                        >
-                            ${isFS ? 'Salir Pantalla Completa' : 'Pantalla Completa'}
                         </button>
                     </div>
                 </div>
@@ -321,50 +326,48 @@ export const Layout = () => {
                             </p>
                         </div>
 
-                        ${deathStats && html`
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 py-6 border-y border-zinc-800/50">
-                                <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
-                                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Sujetos Procesados</span>
-                                    <span className="text-2xl font-black text-zinc-200">${deathStats.processed || processedCount}</span>
-                                </div>
-                                <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
-                                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Errores de Juicio</span>
-                                    <span className="text-2xl font-black text-red-500">${deathStats.errors !== undefined ? deathStats.errors : judgmentErrors}</span>
-                                </div>
-                                <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
-                                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Técnicos Reclutados</span>
-                                    <span className="text-xl font-bold text-cyan-400">${deathStats.techniciansRecruited || techniciansRecruited}</span>
-                                </div>
-                                <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
-                                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Devotos Admitidos</span>
-                                    <span className="text-xl font-bold text-purple-400">${deathStats.devotsRecruited || devotsRecruited}</span>
-                                </div>
-                                <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
-                                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Inocentes Sacrificados</span>
-                                    <span className="text-xl font-bold text-zinc-400">${deathStats.innocentsSacrificed || stats.innocentsSacrificed}</span>
-                                </div>
-                                <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
-                                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Corruptos Autorizados</span>
-                                    <span className="text-xl font-bold text-zinc-400">${deathStats.corruptsAuthorized || stats.corruptsAuthorized}</span>
-                                </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 py-6 border-y border-zinc-800/50">
+                            <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
+                                <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Sujetos Procesados</span>
+                                <span className="text-2xl font-black text-zinc-200">${deathStats?.processed ?? processedCount}</span>
                             </div>
-                        `}
+                            <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
+                                <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Errores de Juicio</span>
+                                <span className="text-2xl font-black text-red-500">${deathStats?.errors ?? judgmentErrors}</span>
+                            </div>
+                            <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
+                                <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Energía Final</span>
+                                <span className="text-xl font-bold text-amber-400">${deathStats?.energy ?? energy}%</span>
+                            </div>
+                            <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
+                                <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Estabilidad Final</span>
+                                <span className="text-xl font-bold text-red-400">${deathStats?.stability ?? stability}%</span>
+                            </div>
+                            <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
+                                <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Inocentes Sacrificados</span>
+                                <span className="text-xl font-bold text-zinc-400">${deathStats?.innocentsSacrificed ?? stats.innocentsSacrificed}</span>
+                            </div>
+                            <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
+                                <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Corruptos Autorizados</span>
+                                <span className="text-xl font-bold text-zinc-400">${deathStats?.corruptsAuthorized ?? stats.corruptsAuthorized}</span>
+                            </div>
+                        </div>
 
                         <div className="text-center space-y-2">
-                            <div className=${`text-3xl font-black tracking-widest ${rank.color}`}>RANGO: ${rank.label}</div>
-                            <div className="text-[10px] text-zinc-600 uppercase tracking-[0.4em]">${rank.desc}</div>
+                            <div className=${`text-3xl font-black tracking-widest ${stableRank?.color || rank.color}`}>RANGO: ${stableRank?.label || rank.label}</div>
+                            <div className="text-[10px] text-zinc-600 uppercase tracking-[0.4em]">${stableRank?.desc || rank.desc}</div>
                         </div>
                     </div>
 
                     <div className="flex gap-6 mt-4">
                         <button 
                             onClick=${() => {
-                                setDeathReason(null);
-                                setDeathDetails(null);
-                                setDeathStats(null);
-                                gameSequencer.resetLevel();
-                                state.gameStatus = 'PLAYING';
-                            }}
+            setDeathReason(null);
+            setDeathDetails(null);
+            setDeathStats(null);
+            gameSequencer.resetLevel();
+            state.gameStatus = 'PLAYING';
+        }}
                             className="group relative px-10 py-4 border border-red-600/50 text-red-400 font-mono text-sm hover:bg-red-900/20 transition-all uppercase tracking-[0.2em] font-bold"
                         >
                             <span className="relative z-10">Reiniciar Nivel</span>
@@ -372,11 +375,11 @@ export const Layout = () => {
                         </button>
                         <button 
                             onClick=${() => {
-                                setDeathReason(null);
-                                setDeathDetails(null);
-                                setDeathStats(null);
-                                state.resetState();
-                            }}
+            setDeathReason(null);
+            setDeathDetails(null);
+            setDeathStats(null);
+            state.resetState();
+        }}
                             className="px-10 py-4 border border-zinc-800 text-zinc-500 font-mono text-sm hover:bg-zinc-900/40 transition-all uppercase tracking-[0.2em]"
                         >
                             Ir al Inicio
@@ -440,7 +443,7 @@ export const Layout = () => {
         }}
             />
 
-            <!-- Sistema de Modales Antiguo (Compatibilidad) -->
+            <!-- Sistema de Modales Antiguo (Compatibilidad UI) -->
             ${modal && html`
                 <div className="modal-overlay" onClick=${() => setModal(null)}>
                     <div className="bg-[#1a1a1c] border border-zinc-800 p-6 w-[500px] shadow-2xl relative" onClick=${e => e.stopPropagation()}>

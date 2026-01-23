@@ -45,6 +45,52 @@ export const Operations = () => {
 
     const [flash, setFlash] = useState(null);
 
+    // Parser de Markdown para Diálogos
+    const parseDialogue = (text) => {
+        if (!text) return [];
+        // Separar por bloques de acción (entre asteriscos)
+        const parts = text.split(/(\*[^*]+\*)/g).filter(p => p.length > 0);
+        return parts.map(part => {
+            if (part.startsWith('*') && part.endsWith('*')) {
+                return { type: 'ACTION', text: part.replace(/\*/g, '').trim() };
+            }
+            return { type: 'SPEECH', text: part.trim() };
+        });
+    };
+
+    // Función para añadir mensajes secuencialmente (Acción -> Tipeo de Habla)
+    const appendParsedMessages = async (sender, text, baseType) => {
+        const blocks = parseDialogue(text);
+
+        for (const block of blocks) {
+            if (block.type === 'ACTION') {
+                // Las acciones aparecen instantáneamente
+                setMessages(prev => [...prev, {
+                    sender,
+                    text: block.text,
+                    type: 'ACTION',
+                    timestamp: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                }]);
+                // Pequeña pausa antes de lo siguiente
+                await new Promise(r => setTimeout(r, 600));
+            } else {
+                // El habla se tipea
+                setIsTyping(true);
+                // Aquí se podría emitir un sonido de tipeo: bus.emit('PLAY_SOUND', 'TYPE');
+                await new Promise(r => setTimeout(r, 1000)); // Simular tiempo de procesamiento
+
+                setMessages(prev => [...prev, {
+                    sender,
+                    text: block.text,
+                    type: baseType,
+                    timestamp: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                }]);
+                setIsTyping(false);
+                await new Promise(r => setTimeout(r, 400));
+            }
+        }
+    };
+
     useEffect(() => {
         const onFlash = (data) => {
             if (data.target === 'MOD04') {
@@ -91,35 +137,26 @@ export const Operations = () => {
         };
 
         const onDialogueStarted = (dialogue) => {
-            setMessages(prev => [...prev, {
-                sender: 'SUJETO',
-                text: dialogue.text,
-                type: 'SUBJECT'
-            }]);
+            appendParsedMessages('SUJETO', dialogue.text, 'SUBJECT');
         };
 
-        const onDialogueOptionSelected = (data) => {
+        const onDialogueOptionSelected = async (data) => {
             // Mostrar la elección del operador en COMMS
             setMessages(prev => [...prev, {
                 sender: 'OPERADOR',
                 text: `> ${data.option}`,
-                type: 'OPERATOR'
+                type: 'OPERATOR',
+                timestamp: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
             }]);
 
-            // Mostrar la respuesta del sujeto en COMMS después de un breve retraso
-            setIsTyping(true);
-            setTimeout(() => {
-                setMessages(prev => [...prev, {
-                    sender: 'SUJETO',
-                    text: data.consequence,
-                    type: 'SUBJECT'
-                }]);
-                setIsTyping(false);
-                bus.emit('TERMINAL_PRINT', {
-                    text: `[SISTEMA] Respuesta analizada y registrada.`,
-                    type: 'SYSTEM'
-                });
-            }, 800);
+            // Mostrar la respuesta del sujeto en COMMS de forma secuencial
+            await new Promise(r => setTimeout(r, 500));
+            await appendParsedMessages('SUJETO', data.consequence, 'SUBJECT');
+
+            bus.emit('TERMINAL_PRINT', {
+                text: `[SISTEMA] Respuesta analizada y registrada.`,
+                type: 'SYSTEM'
+            });
         };
 
         const onDialogueEnded = () => {
@@ -278,21 +315,24 @@ export const Operations = () => {
             <!-- SECCIÓN CENTRAL: CHAT / LOG -->
             <div className="flex-grow overflow-y-auto p-4 space-y-3 custom-scrollbar bg-black/5 min-h-0 max-h-[200px]">
                 ${messages.map((msg, i) => html`
-                    <div key=${i} className=${`flex flex-col animate-fade-in ${msg.type === 'SYSTEM' ? 'border-l-2 border-zinc-800 pl-3' : ''}`}>
-                        <div className="flex justify-between items-center mb-1">
-                            <span className=${`text-[12px] font-bold tracking-widest uppercase ${msg.type === 'SYSTEM' ? 'text-zinc-400' :
-            msg.type === 'SUBJECT' ? 'text-cyan-600/60' :
-                'text-emerald-600/60'
+                    <div key=${i} className=${`flex flex-col animate-fade-in ${msg.type === 'SYSTEM' ? 'border-l-2 border-zinc-800 pl-3' :
+            msg.type === 'ACTION' ? 'border-y border-zinc-900/30 bg-zinc-950/20 py-2 my-1 items-center' : ''
+        }`}>
+                        <div className=${`flex justify-between items-center mb-1 ${msg.type === 'ACTION' ? 'hidden' : ''}`}>
+                            <span className=${`text-[10px] font-bold tracking-[0.2em] uppercase ${msg.type === 'SYSTEM' ? 'text-zinc-500' :
+            msg.type === 'SUBJECT' ? 'text-cyan-600/80' :
+                'text-emerald-600/80'
         }`}>
                                 ${msg.sender}
                             </span>
-                            <span className="text-[12px] text-zinc-500 font-mono">${msg.timestamp || ''}</span>
+                            <span className="text-[9px] text-zinc-700 font-mono tracking-tighter">${msg.timestamp || ''}</span>
                         </div>
-                        <p className=${`text-[12px] leading-relaxed ${msg.type === 'SYSTEM' ? 'text-zinc-400 italic' :
-            msg.type === 'SUBJECT' ? 'text-zinc-300' :
-                'text-emerald-500/80'
+                        <p className=${`text-[12px] leading-relaxed ${msg.type === 'SYSTEM' ? 'text-zinc-500 italic' :
+            msg.type === 'ACTION' ? 'text-amber-500/60 text-[11px] italic tracking-widest' :
+                msg.type === 'SUBJECT' ? 'text-zinc-300' :
+                    'text-emerald-500/80 font-bold'
         }`}>
-                            ${msg.text}
+                            ${msg.type === 'ACTION' ? `◆ ${msg.text} ◆` : msg.text}
                         </p>
                     </div>
                 `)}
@@ -318,9 +358,9 @@ export const Operations = () => {
                                         onClick=${() => handleOptionSelect(idx)}
                                         disabled=${isTyping || opt.used}
                                         className=${`flex-1 border text-[11px] transition-all uppercase tracking-tighter font-bold p-1 leading-tight flex flex-col justify-center items-center text-center
-                                            ${opt.used 
-                                                ? 'border-zinc-800 bg-zinc-900/10 text-zinc-700 cursor-not-allowed opacity-50' 
-                                                : 'border-cyan-900/30 bg-cyan-950/10 hover:bg-cyan-900/20 text-cyan-600'}`}
+                                            ${opt.used
+                ? 'border-zinc-800 bg-zinc-900/10 text-zinc-700 cursor-not-allowed opacity-50'
+                : 'border-cyan-900/30 bg-cyan-950/10 hover:bg-cyan-900/20 text-cyan-600'}`}
                                     >
                                         <span className="line-clamp-2">${opt.text}</span>
                                         <div className="text-[9px] text-zinc-500 mt-1">

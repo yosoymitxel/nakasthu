@@ -16,7 +16,7 @@ export const ControlPanel = () => {
         state.isTutorialActive = false;
         state.tutorialStep = 0;
         state.endBatch();
-        
+
         bus.emit('TERMINAL_PRINT', {
             text: '>>> PROTOCOLO DE INDUCCIÓN ABORTADO. CONTROL MANUAL RESTABLECIDO.',
             type: 'SYSTEM'
@@ -24,7 +24,7 @@ export const ControlPanel = () => {
     };
 
     const handleManual = () => {
-        bus.emit('OPEN_MODAL', {
+        bus.emit('UI_MODAL_OPEN', {
             title: 'OPERATIONAL_MANUAL',
             content: html`
                 <div className="space-y-4 text-zinc-400 font-mono text-[11px]">

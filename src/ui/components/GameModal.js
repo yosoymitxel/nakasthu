@@ -255,7 +255,7 @@ export const GameModal = memo(({
                 if (isTutorial) {
                     bus.emit('TUTORIAL_CONTINUE', {});
                 }
-                bus.emit('MODAL_CLOSE', {});
+                bus.emit('STORY_MODAL_CLOSE', {});
             }}
                             disabled=${isTyping}
                             className=${`
@@ -274,7 +274,7 @@ export const GameModal = memo(({
                                 key="btn-continue"
                                 onClick=${() => {
                 if (onContinue) onContinue();
-                bus.emit('MODAL_CLOSE', {});
+                bus.emit('STORY_MODAL_CLOSE', {});
             }}
                                 className="flex-1 py-3 border border-cyan-500/50 text-cyan-400 text-sm tracking-widest uppercase hover:bg-cyan-500/10 transition-all"
                             >
@@ -285,7 +285,7 @@ export const GameModal = memo(({
                                 onClick=${() => {
                 if (onRestart) onRestart();
                 gameSequencer.resetLevel();
-                bus.emit('MODAL_CLOSE', {});
+                bus.emit('STORY_MODAL_CLOSE', {});
             }}
                                 className="flex-1 py-3 border border-red-900/50 text-red-500/70 text-sm tracking-widest uppercase hover:bg-red-900/10 hover:text-red-400 transition-all"
                             >
@@ -324,7 +324,7 @@ export const useGameModal = () => {
 
     useEffect(() => {
         const handleShow = (data) => {
-            console.log('%c[GAMEMODAL] MODAL_SHOW received', 'color: #f59e0b; font-weight: bold;', data);
+            console.log('%c[GAMEMODAL] STORY_MODAL_OPEN received', 'color: #f59e0b; font-weight: bold;', data);
             state.isModalOpen = true; // Pausar motor
             setModalState({
                 visible: true,
@@ -341,12 +341,12 @@ export const useGameModal = () => {
             setModalState(prev => ({ ...prev, visible: false }));
         };
 
-        bus.on('MODAL_SHOW', handleShow);
-        bus.on('MODAL_CLOSE', handleClose);
+        bus.on('STORY_MODAL_OPEN', handleShow);
+        bus.on('STORY_MODAL_CLOSE', handleClose);
 
         return () => {
-            bus.off('MODAL_SHOW', handleShow);
-            bus.off('MODAL_CLOSE', handleClose);
+            bus.off('STORY_MODAL_OPEN', handleShow);
+            bus.off('STORY_MODAL_CLOSE', handleClose);
         };
     }, []);
 

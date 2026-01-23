@@ -159,7 +159,7 @@ class TutorialController {
 
     notifySystem(text, title = 'MANUAL DE INDUCCIÓN') {
         this.modalOpen = true;
-        bus.emit('MODAL_SHOW', {
+        bus.emit('STORY_MODAL_OPEN', {
             mode: 'Briefing',
             isTutorial: true,
             title: title,

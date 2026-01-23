@@ -64,7 +64,8 @@ const initialState = {
     focusMode: false, // Bloquea el resto de la UI durante diálogos profundos
     unlockedCommands: ['HELP', 'CLEAR', 'STATUS'], // Comandos iniciales
     hasSeenTutorial: localStorage.getItem('nakasthu_tutorial_seen') === 'true',
-    requiredScan: 'BIOMETRIC' // Tipo de escaneo requerido para decisiones (rotativo)
+    requiredScan: 'BIOMETRIC', // Tipo de escaneo requerido para decisiones (rotativo)
+    usedDialogueIds: []        // Memoria de diálogos para evitar repeticiones
 };
 
 // Objeto base que contiene los métodos de batching y acciones de entidad

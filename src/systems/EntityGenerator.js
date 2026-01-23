@@ -41,10 +41,10 @@ export const generateSubject = () => {
     const id = `${PREFIXES[Math.floor(Math.random() * PREFIXES.length)]}-${Math.floor(Math.random() * 99)}`;
     const typeKeys = Object.keys(ENTITY_TYPES);
     const type = ENTITY_TYPES[typeKeys[Math.floor(Math.random() * typeKeys.length)]];
-    
+
     // Motor de Veracidad: Determinar corrupción real
     const isCorrupt = Math.random() > 0.6; // 40% de probabilidad de ser corrupto
-    
+
     // Probabilidad base de ser un Eidolon (Corrupción visual)
     const corruptionLevel = type === ENTITY_TYPES.EIDOLON ? 0.8 + Math.random() * 0.2 : Math.random() * 0.3;
 
@@ -79,6 +79,35 @@ export const generateSubject = () => {
     };
 
     console.log(`%c[ENTITY] Nuevo sujeto detectado: ID ${id} | Tipo: ${type} | Prob. Corrupción: ${(corruptionLevel * 100).toFixed(0)}%`, "color: #ff00ff; font-weight: bold;");
-    
+
+    return subject;
+};
+
+/**
+ * Sobreescribe rasgos de un sujeto existente.
+ * Útil para alinear el NPC con la narrativa de un diálogo.
+ */
+export const applyTraits = (subject, traits) => {
+    if (!subject || !traits) return subject;
+
+    // Solo sobreescribir si el trait existe en el objeto traits
+    if (traits.id) subject.id = traits.id;
+    if (traits.type) subject.type = traits.type;
+    if (traits.name) subject.name = traits.name; // Soporte para nombre real opcional
+
+    if (traits.scannedData) {
+        subject.scannedData = {
+            ...subject.scannedData,
+            ...traits.scannedData
+        };
+    }
+
+    if (traits.visual) {
+        subject.visual = {
+            ...subject.visual,
+            ...traits.visual
+        };
+    }
+
     return subject;
 };

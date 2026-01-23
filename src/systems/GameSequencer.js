@@ -172,7 +172,7 @@ class GameSequencer {
 
         // REGLA ESPECIAL: Opción de tutorial al iniciar el primer Gameplay (Paso 4)
         if (nextStepIdx === 4 && !state.tutorialChoiceMade) {
-            bus.emit('OPEN_MODAL', {
+            bus.emit('UI_MODAL_OPEN', {
                 title: 'PROTOCOLO DE INDUCCIÓN - OPERADOR',
                 content: html`
                     <div className="space-y-4 text-[14px] font-mono">
@@ -188,7 +188,7 @@ class GameSequencer {
                         state.tutorialChoiceMade = true;
                         state.isTutorialActive = true;
                         state.tutorialStep = 1;
-                        bus.emit('MODAL_CLOSE_INTERNAL');
+                        bus.emit('UI_MODAL_CLOSE');
                         this.finalizeStepTransition(nextStepIdx);
                     }}
                             className="flex-1 py-2 bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 transition-all uppercase text-[12px] tracking-widest"
@@ -200,7 +200,7 @@ class GameSequencer {
                         state.tutorialChoiceMade = true;
                         state.isTutorialActive = false;
                         state.tutorialStep = 0;
-                        bus.emit('MODAL_CLOSE_INTERNAL');
+                        bus.emit('UI_MODAL_CLOSE');
                         this.finalizeStepTransition(nextStepIdx);
                     }}
                             className="flex-1 py-2 bg-zinc-950 border border-red-900/30 text-red-900/60 hover:text-red-600 transition-all uppercase text-[10px] tracking-tighter"
@@ -241,7 +241,7 @@ class GameSequencer {
 
         // Mostrar modal de briefing SOLO para gameplay (Y si no hay tutorial activo)
         if (stepData.config.type === 'gameplay' && !state.isTutorialActive) {
-            bus.emit('MODAL_SHOW', {
+            bus.emit('STORY_MODAL_OPEN', {
                 mode: 'Briefing',
                 title: stepData.config.name,
                 content: stepData.config.briefingText
@@ -295,7 +295,7 @@ class GameSequencer {
         }
         state.endBatch();
 
-        bus.emit('SUBJECT_PROCESSED', { 
+        bus.emit('SUBJECT_PROCESSED', {
             stats: {
                 techniciansRecruited: state.techniciansRecruited,
                 devotsRecruited: state.devotsRecruited,
@@ -367,7 +367,7 @@ class GameSequencer {
         bus.emit('GAME_ENDING', {
             faction,
             text: endingText,
-            stats: { 
+            stats: {
                 techniciansRecruited: state.techniciansRecruited,
                 devotsRecruited: state.devotsRecruited,
                 influenceGathered: state.influenceGathered,

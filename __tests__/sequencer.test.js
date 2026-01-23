@@ -39,7 +39,7 @@ describe('Narrative Sequencer Validations (sequencer.test.js)', () => {
         gameSequencer.nextStep();
 
         expect(state.currentStep).toBe(3);
-        expect(bus.emit).toHaveBeenCalledWith('OPEN_MODAL', expect.objectContaining({
+        expect(bus.emit).toHaveBeenCalledWith('UI_MODAL_OPEN', expect.objectContaining({
             title: 'PROTOCOLO DE INDUCCIÓN - OPERADOR'
         }));
 

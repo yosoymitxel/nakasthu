@@ -4,7 +4,12 @@
             "id": "DLG_KAEL_STORY",
             "minStep": 1,
             "maxStep": 6,
-            "text": "Sujeto identificado como Kael, líder de la expedición de la Orden. Su visor retinal parpadea con una luz violeta rítmica. 'Operador, el cañón de Zhyr no es geología. Es anatomía. Lo que pisamos está... esperando'.",
+            "npcTraits": {
+                "id": "KAEL",
+                "type": "HUMANO",
+                "scannedData": { "temperature": 36.5, "neuralSync": 40 }
+            },
+            "text": "*Sujeto identificado como Kael, líder de la expedición de la Orden. Su visor retinal parpadea con una luz violeta rítmica.* 'Operador, el cañón de Zhyr no es geología. Es anatomía. Lo que pisamos está... esperando'.",
             "options": [
                 {
                     "text": "¿Qué quieres decir con que el cañón es 'anatomía'?",
@@ -73,7 +78,12 @@
             "id": "DLG_ALEXIA_ECHO",
             "minStep": 2,
             "maxStep": 8,
-            "text": "Una mujer que dice llamarse Alexia, aunque los registros indican que 'desapareció' hace semanas. Su cuerpo parece estar compuesto de una estática densa. 'El destello blanco no fue el final. Fue la apertura del diafragma'.",
+            "npcTraits": {
+                "id": "ALEXIA",
+                "type": "EIDOLON",
+                "visual": { "glitch": "CHROMATIC" }
+            },
+            "text": "*Una mujer que dice llamarse Alexia, aunque los registros indican que 'desapareció' hace semanas. Su cuerpo parece estar compuesto de una estática densa.* 'El destello blanco no fue el final. Fue la apertura del diafragma'.",
             "options": [
                 {
                     "text": "¿Dónde has estado desde el incidente del monolito?",
@@ -116,7 +126,12 @@
             "id": "DLG_DEYAR_TRAUMA",
             "minStep": 1,
             "maxStep": 4,
-            "text": "Deyar, el técnico de la expedición. Sus manos tiemblan tanto que apenas puede sostener su comunicador. 'Mis drones... mis hermosos drones... se convirtieron en ceniza fría en cuanto se acercaron a esa cosa'.",
+            "npcTraits": {
+                "id": "DEYAR",
+                "type": "HUMANO",
+                "scannedData": { "temperature": 36.5, "neuralSync": 40 }
+            },
+            "text": "*El técnico de la expedición. Sus manos tiemblan tanto que apenas puede sostener su comunicador.* 'Mis drones... mis hermosos drones... se convirtieron en ceniza fría en cuanto se acercaron a esa cosa'.",
             "options": [
                 {
                     "text": "Dime qué detectaron tus sensores antes de colapsar.",
@@ -148,7 +163,11 @@
             "id": "DLG_ELARA_RUMORS",
             "minStep": 2,
             "maxStep": 5,
-            "text": "Elara, una operadora de fábrica con ojeras que parecen tatuadas. Mira nerviosamente a su alrededor. 'He oído cosas, operador. Cosas que no salen en las transmisiones oficiales de Talok'.",
+            "npcTraits": {
+                "id": "ELARA",
+                "type": "HUMANO"
+            },
+            "text": "*Elara, una operadora de fábrica con ojeras que parecen tatuadas. Mira nerviosamente a su alrededor.* 'He oído cosas, operador. Cosas que no salen en las transmisiones oficiales de Talok'.",
             "options": [
                 {
                     "text": "¿Qué clase de cosas has oído?",
