@@ -31,21 +31,17 @@ describe('Narrative Sequencer Validations (sequencer.test.js)', () => {
         expect(step.config.type).toBe('mechanic'); // El monolito
     });
 
-    it('El Paso 4 debe presentar la opción de tutorial y no avanzar hasta elegir', () => {
+    it('El Paso 4 debe iniciar la Reconstrucción sin bloqueo del sistema antiguo', () => {
         state.currentStep = 3;
         gameSequencer.init();
 
-        // Intentamos avanzar al 4
+        // Avanzamos al 4
         gameSequencer.nextStep();
 
-        expect(state.currentStep).toBe(3);
-        expect(bus.emit).toHaveBeenCalledWith('UI_MODAL_OPEN', expect.objectContaining({
-            title: 'PROTOCOLO DE INDUCCIÓN - OPERADOR'
-        }));
-
-        // Simulamos la elección
-        gameSequencer.finalizeStepTransition(4);
         expect(state.currentStep).toBe(4);
+        const step = gameSequencer.getCurrentStepData();
+        expect(step.config.name).toBe('Reconstrucción');
+        expect(step.config.type).toBe('gameplay');
     });
 
     it('Debe cambiar a la ruta religiosa (storyPath 1) al avanzar al Paso 7', () => {

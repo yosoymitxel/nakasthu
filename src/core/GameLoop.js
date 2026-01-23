@@ -65,7 +65,11 @@ class GameLoop {
         state.startBatch();
 
         // 0. Verificar fallo del sistema (Game Over)
-        this.checkSystemFailure();
+        // PROTECCIÓN: No verificar fallo si estamos en tutorial o hay modal abierto
+        if (!state.isTutorialActive && !state.isModalOpen) {
+            this.checkSystemFailure();
+        }
+
         if (state.gameStatus !== 'PLAYING') {
             state.endBatch();
             return;

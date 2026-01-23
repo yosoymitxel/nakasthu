@@ -8,6 +8,8 @@
 import { bus } from '../core/Bus.js';
 import { state } from '../core/State.js';
 import { html } from '../ui/utils/html.js';
+import { quotaTracker } from './QuotaTracker.js';
+import { factionSystem } from './FactionSystem.js';
 
 /**
  * Configuración de los 12 pasos narrativos.
@@ -170,50 +172,6 @@ class GameSequencer {
         // Sincronizar con State
         state.startBatch();
 
-        // REGLA ESPECIAL: Opción de tutorial al iniciar el primer Gameplay (Paso 4)
-        if (nextStepIdx === 4 && !state.tutorialChoiceMade) {
-            bus.emit('UI_MODAL_OPEN', {
-                title: 'PROTOCOLO DE INDUCCIÓN - OPERADOR',
-                content: html`
-                    <div className="space-y-4 text-[14px] font-mono">
-                        <p className="font-bold text-amber-500">IDENTIDAD CONFIRMADA. ENLACE ESTABLECIDO.</p>
-                        <p>¿Desea iniciar el protocolo de inducción asistida? [TUTORIAL]</p>
-                        <p className="text-zinc-500 italic text-[12px]">"La ignorancia es el primer paso hacia el colapso de integridad."</p>
-                    </div>
-                `,
-                footer: html`
-                    <div className="flex gap-2 w-full">
-                        <button 
-                            onClick=${() => {
-                        state.tutorialChoiceMade = true;
-                        state.isTutorialActive = true;
-                        state.tutorialStep = 1;
-                        bus.emit('UI_MODAL_CLOSE');
-                        this.finalizeStepTransition(nextStepIdx);
-                    }}
-                            className="flex-1 py-2 bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 transition-all uppercase text-[12px] tracking-widest"
-                        >
-                            ACEPTAR PROTOCOLO
-                        </button>
-                        <button 
-                            onClick=${() => {
-                        state.tutorialChoiceMade = true;
-                        state.isTutorialActive = false;
-                        state.tutorialStep = 0;
-                        bus.emit('UI_MODAL_CLOSE');
-                        this.finalizeStepTransition(nextStepIdx);
-                    }}
-                            className="flex-1 py-2 bg-zinc-950 border border-red-900/30 text-red-900/60 hover:text-red-600 transition-all uppercase text-[10px] tracking-tighter"
-                        >
-                            SALTAR [AUTO-DIDACTA]
-                        </button>
-                    </div>
-                `
-            });
-            state.endBatch();
-            return true;
-        }
-
         this.finalizeStepTransition(nextStepIdx);
         state.endBatch();
         return true;
@@ -224,6 +182,10 @@ class GameSequencer {
      */
     finalizeStepTransition(stepIdx) {
         this.currentStep = stepIdx;
+
+        // Emitir evento de cambio de paso para el ModuleRegistry
+        bus.emit('STATE_CHANGE:step', this.currentStep);
+
         state.currentStep = this.currentStep;
 
         const stepData = this.getCurrentStepData();
@@ -266,6 +228,10 @@ class GameSequencer {
         state.influenceGathered = 0;
         state.utilidadOculta = 0;
         state.quota = currentConfig.subjectCount || 10;
+
+        // Sincronizar QuotaTracker
+        quotaTracker.setQuota(state.quota);
+
         state.nextSubject();      // Forzar nuevo sujeto para evitar el mismo
         state.endBatch();
 
@@ -284,14 +250,18 @@ class GameSequencer {
             if (type === 'técnico') {
                 state.techniciansRecruited++;
                 state.utilidadOculta += 10;
+                factionSystem.registerAction('ORDEN', 1);
             } else if (type === 'devoto') {
                 state.devotsRecruited++;
                 state.utilidadOculta -= 5; // Balance narrativo
+                factionSystem.registerAction('CAOS', 1);
             }
 
             if (influence) {
                 state.influenceGathered += influence;
             }
+        } else if (action === 'sacrifice') {
+            bus.emit('ACTION_TAKEN', { action: 'SACRIFICE', subjectId: subject.id });
         }
         state.endBatch();
 

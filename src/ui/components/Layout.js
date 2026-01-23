@@ -11,6 +11,7 @@ import { SidebarRight } from './SidebarRight.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { state } from '../../core/State.js';
 import { bus } from '../../core/Bus.js';
+import { moduleRegistry, MODULES } from '../../systems/ModuleRegistry.js';
 import { gameSequencer, STEPS_CONFIG } from '../../systems/GameSequencer.js';
 
 // Importar Pantallas
@@ -22,6 +23,19 @@ import { GameModal, useGameModal } from './GameModal.js';
 import { toggleFullScreen, isFullScreen } from '../utils/fullscreen.js';
 
 const { useState, useEffect } = React;
+
+// Mapeo de Áreas de Grid a IDs de Módulo
+const AREA_TO_MODULE = {
+    'L_UPPER': MODULES.BIOSCAN.id,
+    'L_LOWER': MODULES.ANALYTICS.id,
+    'C_FOOTER': MODULES.RESONANCE.id,
+    'C_MAIN': MODULES.OPERATIONS.id,
+    'R_UPPER': MODULES.LORE_ARCHIVE.id,
+    'L_BOTTOM': 'MOD_RESERVE', // Placeholder
+    'R_TOP': 'MOD_CONTROL', // Placeholder
+    'R_MIDDLE': 'MOD_ZHYR_OS', // Placeholder
+    'R_BOTTOM': 'MOD_REF' // Placeholder
+};
 
 export const Layout = () => {
     // Suscribirse a valores globales para efectos de Layout
@@ -37,6 +51,11 @@ export const Layout = () => {
     const techniciansRecruited = useGameState('techniciansRecruited');
     const devotsRecruited = useGameState('devotsRecruited');
     const tutorialStep = useGameState('tutorialStep');
+    const isTutorialActive = useGameState('isTutorialActive');
+    const activeTutorialId = useGameState('activeTutorialId');
+
+    // Estado local para forzar re-render al desbloquear módulos
+    const [unlockedModules, setUnlockedModules] = useState(new Set(moduleRegistry.activeModules));
 
     const [flash, setFlash] = useState(null); // { color, duration }
     const [alarm, setAlarm] = useState(false);
@@ -57,6 +76,15 @@ export const Layout = () => {
         return () => document.removeEventListener('fullscreenchange', onFSChange);
     }, []);
 
+    // Listener para desbloqueo de módulos
+    useEffect(() => {
+        const onModuleUnlock = () => {
+            setUnlockedModules(new Set(moduleRegistry.activeModules));
+        };
+        bus.on('MODULE_UNLOCKED', onModuleUnlock);
+        return () => bus.off('MODULE_UNLOCKED', onModuleUnlock);
+    }, []);
+
     // Sistema de Pasos Narrativos
     const currentStep = useGameState('currentStep');
     const stepConfig = STEPS_CONFIG[currentStep];
@@ -69,35 +97,57 @@ export const Layout = () => {
         }
     }, []);
 
-    // Lógica de bloqueo de tutorial
+    // Lógica de bloqueo visual
     const getModuleTutorialStatus = (areaId) => {
-        const isTutorialActive = useGameState('isTutorialActive');
-        const tutorialStep = useGameState('tutorialStep');
+        // Hooks removed from here. Using closure variables.
+        const moduleId = AREA_TO_MODULE[areaId];
 
-        // Si no hay tutorial, todo desbloqueado
-        if (!isTutorialActive) return { locked: false, highlighted: false };
+        // 1. Estado de Bloqueo Base: Si tiene un ID de módulo mapeado y no está activo -> Bloqueado
+        let locked = false;
 
-        switch (tutorialStep) {
-            case 1: // Bienvenida - Todo bloqueado (excepto C_HEADER)
-                return { locked: true, highlighted: false };
-            case 2: // Escaneo - Resaltar BioScan
-                if (areaId === 'L_UPPER') return { locked: false, highlighted: true };
-                return { locked: true, highlighted: false };
-            case 3: // Análisis - Resaltar Analytics
-                if (areaId === 'L_LOWER') return { locked: false, highlighted: true };
-                return { locked: true, highlighted: false };
-            case 4: // Resonancia - Resaltar Oscilloscope
-                if (areaId === 'C_FOOTER') return { locked: false, highlighted: true };
-                return { locked: true, highlighted: false };
-            case 5: // Decisión - Resaltar Operations
-                if (areaId === 'C_MAIN') return { locked: false, highlighted: true };
-                return { locked: true, highlighted: false };
-            case 6: // Recursos - Resaltar Cabezal
-                if (areaId === 'C_HEADER') return { locked: false, highlighted: true };
-                return { locked: true, highlighted: false };
-            default:
-                return { locked: false, highlighted: false };
+        if (moduleId) {
+            // Si es un módulo registrado, verificamos su estado en el registro
+            const isRegisteredModule = Object.values(MODULES).some(m => m.id === moduleId);
+            if (isRegisteredModule) {
+                locked = !moduleRegistry.isModuleActive(moduleId);
+            } else {
+                // Para módulos placeholder (Control, OS, etc), asumimos desbloqueados por defecto
+                // O podemos definir lógica específica aquí si quisiéramos bloquearlos
+                locked = false;
+            }
         }
+
+        // 2. Resaltado (Highlight) y Foco (Spotlight) durante Tutoriales
+        let highlighted = false;
+
+        if (isTutorialActive) {
+            // Mapping de Tutorial ID -> Area ID
+            const TUTORIAL_TO_AREA = {
+                [MODULES.BIOSCAN.tutorial]: 'L_UPPER',
+                [MODULES.ANALYTICS.tutorial]: 'L_LOWER',
+                [MODULES.RESONANCE.tutorial]: 'C_FOOTER',
+                [MODULES.OPERATIONS.tutorial]: 'C_MAIN',
+                [MODULES.LORE_ARCHIVE.tutorial]: 'R_UPPER',
+                [MODULES.QUOTA_TRACKER.tutorial]: 'R_TOP', // Aproximación, ajustar si hay panel específico
+
+                // Mapeos extra para nuevos tutoriales
+                'TUTO_UNREST': 'R_BOTTOM',
+                'TUTO_FACTION': 'R_MIDDLE',
+                'TUTO_RITUAL': 'MOD_RESERVE', // Si hubiera panel específico
+                'TUTO_PORTAL': 'L_BOTTOM'
+            };
+
+            // Determinar si esta área es la target del tutorial actual
+            if (activeTutorialId && TUTORIAL_TO_AREA[activeTutorialId] === areaId) {
+                highlighted = true;
+            } else {
+                // Dim/Lock todo lo que no sea el target
+                // Esto crea el efecto visual de "Foco" y previene interacciones erróneas
+                locked = true;
+            }
+        }
+
+        return { locked, highlighted };
     };
 
     // Modal de Bienvenida (Omitido ahora por sistema de pasos, pero guardamos la lógica si se requiere)

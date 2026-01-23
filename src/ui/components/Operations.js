@@ -24,6 +24,7 @@ export const Operations = () => {
     const activeDialogue = useGameState('activeDialogue');
     const tutorialStep = useGameState('tutorialStep');
     const isTutorialActive = useGameState('isTutorialActive');
+    const activeTutorialId = useGameState('activeTutorialId'); // New check
 
     const [messages, setMessages] = useState([]);
     const [isTyping, setIsTyping] = useState(false);
@@ -395,29 +396,30 @@ export const Operations = () => {
 
                 <!-- SENTENCE BUTTONS -->
                 <div className="h-20 p-4 flex flex-col items-center justify-center bg-black/60 relative">
-                    ${(isTutorialActive && tutorialStep !== 5) || (!isTutorialActive && !isScanComplete) ? html`
-                        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center z-30 group/lock border-y border-red-900/20">
-                            <span className="text-[10px] text-red-500/80 font-mono tracking-[0.2em] uppercase animate-pulse text-center px-4 mb-1">
-                                ${isTutorialActive
-                ? 'PROTOCOLO DE SENTENCIA BLOQUEADO'
-                : 'AUTORIZACIÓN PENDIENTE DE VALIDACIÓN BIOMÉTRICA'}
-                            </span>
-                            <span className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest">
-                                ${isTutorialActive
-                ? '[SIGA LAS INSTRUCCIONES DEL TUTORIAL]'
-                : `[SE REQUIERE ESCANEO: ${SCAN_TYPES[requiredScan]?.name || requiredScan}]`}
-                            </span>
-                        </div>
-                    ` : null}
+                    ${(isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') ? null : (isTutorialActive || !isScanComplete) ? html`
+                         <!-- Bloquear si NO estamos en tutorial de operaciones Y (estamos en otro tutorial O no hay scan completo) -->
+                         <!-- Espera, si estamos en TUTO_OPERATIONS queremos ver los botones. Si estamos en OTRO tutorial, Layout.js ya lo bloquea visualmente. -->
+                         <!-- Pero aqui bloqueamos interaction lógica si no hay scan. -->
+                         ${(!isTutorialActive && !isScanComplete) ? html`
+                            <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center z-30 group/lock border-y border-red-900/20">
+                                <span className="text-[10px] text-red-500/80 font-mono tracking-[0.2em] uppercase animate-pulse text-center px-4 mb-1">
+                                    AUTORIZACIÓN PENDIENTE DE VALIDACIÓN BIOMÉTRICA
+                                </span>
+                                <span className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest">
+                                    [SE REQUIERE ESCANEO: ${SCAN_TYPES[requiredScan]?.name || requiredScan}]
+                                </span>
+                            </div>
+                        `: null}
+                    `: null}
                     
                     <div className="flex items-center justify-center gap-6 w-full h-full">
                         <button 
                             onClick=${() => handleAction('SACRIFICE')}
-                            disabled=${isTyping || kaminOverride || (isTutorialActive && tutorialStep !== 5) || (!isTutorialActive && !isScanComplete)}
+                            disabled=${isTyping || kaminOverride || (!isTutorialActive && !isScanComplete)}
                             className=${`flex-1 max-w-[180px] h-full relative group border-[0.5px] transition-all uppercase tracking-[0.3em] font-black text-[12px] 
                                 ${kaminOverride
             ? 'border-purple-900/50 text-purple-500/60 animate-pulse cursor-not-allowed'
-            : ((isTutorialActive && tutorialStep === 5) || (!isTutorialActive && isScanComplete))
+            : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isTutorialActive && isScanComplete))
                 ? 'border-red-900/50 text-red-700/80 hover:bg-red-900/20 hover:border-red-600/50'
                 : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
                         >
@@ -430,11 +432,11 @@ export const Operations = () => {
 
                         <button 
                             onClick=${() => handleAction('AUTHORIZE')}
-                            disabled=${isTyping || (isTutorialActive && tutorialStep !== 5) || (!isTutorialActive && !isScanComplete)}
+                            disabled=${isTyping || (!isTutorialActive && !isScanComplete)}
                             className=${`flex-1 max-w-[180px] h-full relative group border-[0.5px] transition-all uppercase tracking-[0.3em] font-black text-[12px] 
                                 ${kaminOverride
             ? 'border-purple-500/70 text-purple-400 bg-purple-900/20 hover:bg-purple-900/40 animate-pulse'
-            : ((isTutorialActive && tutorialStep === 5) || (!isTutorialActive && isScanComplete))
+            : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isTutorialActive && isScanComplete))
                 ? 'border-emerald-900/50 text-emerald-700/80 hover:bg-emerald-900/20 hover:border-emerald-600/50'
                 : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
                         >

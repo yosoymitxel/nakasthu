@@ -1,174 +1,270 @@
 /**
  * TUTORIALCONTROLLER.JS
- * Gestiona la secuencia narrativa inicial y el aprendizaje del jugador.
+ * Sistema modular de tutoriales basado en ModuleRegistry.
  * Regla 2.A: Vanilla JS.
  */
 import { bus } from '../core/Bus.js';
 import { state } from '../core/State.js';
+import { MODULES } from './ModuleRegistry.js';
+
+// Definición del contenido de tutoriales por módulo
+const TUTORIAL_CONTENT = {
+    [MODULES.BIOSCAN.tutorial]: {
+        title: 'MÓDULO DESBLOQUEADO: BIOSCAN',
+        steps: [
+            "Localice el [[MOD-01]] a su izquierda. Este es su ojo principal en el Bastión.",
+            "Realice un ESCANEO TÉRMICO para identificar la firma de calor del sujeto.",
+            "Compare los resultados con los parámetros biológicos estándar (36.5°C - 37.5°C)."
+        ]
+    },
+    [MODULES.ANALYTICS.tutorial]: {
+        title: 'MÓDULO DESBLOQUEADO: ANALYTICS',
+        steps: [
+            "Observe el [[MOD-02]] superior. El Motor Analítico procesa los datos crudos.",
+            "Detecte anomalías en la sincronización neural. Valores bajos indican inestabilidad o desincronización.",
+            "Use estos datos para juzgar la legitimidad de la solicitud de ingreso."
+        ]
+    },
+    [MODULES.RESONANCE.tutorial]: {
+        title: 'MÓDULO DESBLOQUEADO: RESONANCIA',
+        steps: [
+            "El [[MOD-05]] inferior gestiona el enlace neural directo.",
+            "Sincronice la frecuencia hasta superar el 85% para estabilizar la conexión.",
+            "Una conexión inestable aumentará el consumo de energía y riesgo de corrupción."
+        ]
+    },
+    [MODULES.OPERATIONS.tutorial]: {
+        title: 'PROTOCOLO: OPERACIONES',
+        steps: [
+            "Use el [[MOD-04]] central para emitir el juicio final.",
+            "[AUTORIZAR]: Permite el ingreso al Bastión. Consume estabilidad si hay error.",
+            "[SACRIFICAR]: Elimina la amenaza. Restaura estabilidad, pero tiene coste moral."
+        ]
+    },
+    [MODULES.LORE_ARCHIVE.tutorial]: {
+        title: 'ACCESO: ARCHIVO LORE',
+        steps: [
+            "El comando `/lore` desbloquea el acceso a la memoria recuperada de Zhyr.",
+            "Busque pistas en los diálogos de NPC para desbloquear nuevas entradas.",
+            "La información es poder. Úsela para desbloquear comandos ocultos."
+        ]
+    },
+    [MODULES.QUOTA_TRACKER.tutorial]: {
+        title: 'PROTOCOLO: CUOTAS',
+        steps: [
+            "El Bastión exige resultados. Cada ciclo tiene un objetivo de producción.",
+            "Complete el procesamiento de sujetos válidos para cumplir la cuota.",
+            "Fallar repetidamente en la cuota atraerá la atención de Kamin. Y no querrá eso."
+        ]
+    },
+    'TUTO_UNREST': {
+        title: 'ALERTA: DISTURBIOS CIVILES',
+        steps: [
+            "El descontento en los sectores bajos ha alcanzado niveles críticos.",
+            "El Medidor de Disturbios rastrea la tensión social. Rechazos injustificados aumentan la tensión.",
+            "Si el nivel llega a CRÍTICO, ocurrirán sabotajes automáticos."
+        ]
+    },
+    'TUTO_FACTION': {
+        title: 'ANÁLISIS: FACCIONES',
+        steps: [
+            "La sociedad se divide. 'Orden' (Técnicos) vs 'Caos' (Devotos).",
+            "Sus decisiones alimentan una de estas fuerzas. El equilibrio es frágil.",
+            "Visualice el dominio ideológico en el nuevo panel. Desbloqueará opciones únicas."
+        ]
+    },
+    'TUTO_RITUAL': {
+        title: 'PROTOCOLO: RITUALES',
+        steps: [
+            "El sacrificio genera 'Carga Ritual'. Acumúlela eliminando amenazas.",
+            "Use las cargas para realizar rituales de Purificación (Estabilidad) o Ascensión (Energía).",
+            "Advertencia: Los rituales tienen un alto coste moral e impacto en la facción."
+        ]
+    },
+    'TUTO_PORTAL': {
+        title: 'ALERTA: INESTABILIDAD DIMENSIONAL',
+        steps: [
+            "El Portal se debilita. La exposición constante a sujetos anómalos corroe la realidad.",
+            "Supervise el Monitor de Flujo. Si baja del 30%, ocurrirán fugas de vacío.",
+            "Debe invertir recursos para ESTABILIZAR el portal manualmente si decae demasiado."
+        ]
+    }
+};
+
+import { html } from '../ui/utils/html.js';
 
 class TutorialController {
     constructor() {
-        this.isActive = false;
-        this.modalOpen = false;
-        this.pendingStep = null;
+        this.activeTutorialId = null;
+        this.currentStepIndex = 0;
+        this.isModalOpen = false;
         this.init();
     }
 
     init() {
-        // Activación desde el secuenciador
-        bus.on('STATE_CHANGE:tutorialStep', (step) => {
-            if (step === 1 && !this.isActive) {
-                this.startTutorial();
-            } else if (step === 0 && this.isActive) {
-                this.stopTutorial();
+        // Escuchar desbloqueo de módulos
+        bus.on('MODULE_UNLOCKED', (data) => {
+            if (data.tutorialId && TUTORIAL_CONTENT[data.tutorialId]) {
+                this.proposeTutorial(data.id, data.name, data.tutorialId);
             }
         });
 
-        // Avance manual (Botón RECIBIDO en el modal)
-        bus.on('TUTORIAL_CONTINUE', async () => {
-            this.modalOpen = false;
-            await this.wait(300); // Pausa visual para transición
-
-            if (this.pendingStep) {
-                const next = this.pendingStep;
-                this.pendingStep = null;
-                this.advanceToStep(next);
-            } else {
-                // Avances secuenciales manuales
-                if (state.tutorialStep === 1) {
-                    this.advanceToStep(2); // De bienvenida a BioScan
-                } else if (state.tutorialStep === 3) {
-                    this.advanceToStep(4); // De Analytics a Resonancia (Manual)
-                } else if (state.tutorialStep === 6) {
-                    this.advanceToStep(7); // De recursos a finalización
-                }
-            }
+        // Avance manual desde el modal
+        bus.on('TUTORIAL_CONTINUE', () => {
+            this.nextStep();
         });
 
-        // Avance por acciones del juego (Gatillados por eventos)
-        bus.on('SCAN_COMPLETED', async (data) => {
-            if (state.tutorialStep === 2 && data.type.id === 'THERMAL') {
-                if (this.modalOpen) {
-                    this.pendingStep = 3; // Mostrar Analytics después del modal
-                } else {
-                    await this.wait(800);
-                    this.advanceToStep(3); // De BioScan a Analytics Result
-                }
-            }
-        });
-
-        bus.on('RESONANCE_UPDATE', async (data) => {
-            // Solo avanzar si estamos en el paso 4 y la sincronía es alta
-            if (state.tutorialStep === 4 && data.sync > 85) {
-                if (this.modalOpen) {
-                    this.pendingStep = 5;
-                } else {
-                    await this.wait(800);
-                    this.advanceToStep(5); // De Resonancia a Decisión
-                }
-            }
-        });
-
-        bus.on('SESSION_TERMINATED', async () => {
-            if (state.tutorialStep === 5) {
-                if (this.modalOpen) {
-                    this.pendingStep = 6;
-                } else {
-                    await this.wait(800);
-                    this.advanceToStep(6); // De Decisión a Recursos
-                }
-            }
+        // Cierre de modal
+        bus.on('UI_MODAL_CLOSE', () => {
+            this.isModalOpen = false;
         });
     }
 
-    async startTutorial() {
-        this.isActive = true;
+    proposeTutorial(moduleId, moduleName, tutorialId) {
+        console.log(`[TUTORIAL] Proposal for: ${moduleName}`);
+
+        // Si ya hay un tutorial activo, lo ignoramos o encolamos (por ahora simple: ignorar si está ocupado, o mostrar si es solo una propuesta encima de nada)
+        // Mejor: Si isModalOpen es true, esperar.
+        if (this.isModalOpen) {
+            console.log(`[TUTORIAL] Modal open, retrying proposal for ${moduleName} in 2s...`);
+            setTimeout(() => this.proposeTutorial(moduleId, moduleName, tutorialId), 2000);
+            return;
+        }
+
+        this.isModalOpen = true; // Marcar como ocupado inmediatamente
+
+        bus.emit('UI_MODAL_OPEN', {
+            title: 'NUEVO SISTEMA DETECTADO',
+            content: html`
+                <div className="space-y-4">
+                    <p className="text-emerald-400 font-bold text-lg">${moduleName}</p>
+                    <p className="text-zinc-300">Se ha instalado un nuevo módulo en su terminal.</p>
+                    <p className="text-zinc-400 text-sm">¿Desea ejecutar el protocolo de instrucción?</p>
+                </div>
+            `,
+            footer: html`
+                <div className="flex gap-2 w-full">
+                    <button 
+                        onClick=${() => {
+                    bus.emit('UI_MODAL_CLOSE'); // El controller escuchará esto y pondrá isModalOpen = false
+                    // Pequeño hack: marcamos isModalOpen true de nuevo inmediatamente para que el startModule lo tome
+                    this.isModalOpen = true;
+
+                    setTimeout(() => this.startModuleTutorial(tutorialId), 100);
+                }}
+                        className="flex-1 py-2 bg-emerald-900/30 border border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/20 transition-all uppercase tracking-widest text-xs"
+                    >
+                        INICIAR INSTRUCCIÓN
+                    </button>
+                    <button 
+                        onClick=${() => {
+                    bus.emit('UI_MODAL_CLOSE');
+                    bus.emit('TERMINAL_PRINT', { text: `> Tutorial skipped for ${moduleName}. Use /help to review.`, type: 'INFO' });
+                }}
+                        className="flex-1 py-2 bg-zinc-900 border border-zinc-700 text-zinc-500 hover:text-zinc-300 transition-all uppercase tracking-widest text-xs"
+                    >
+                        OMITIR
+                    </button>
+                </div>
+            `
+        });
+    }
+
+    startModuleTutorial(tutorialId) {
+        console.log(`[TUTORIAL] Iniciando tutorial: ${tutorialId}`);
+        this.activeTutorialId = tutorialId;
+
+        // Sync with global state
         state.isTutorialActive = true;
-        state.tutorialStep = 1;
+        state.activeTutorialId = tutorialId;
 
-        if (!state.currentEntity) {
-            state.nextSubject();
-        }
+        // Modal is already open (from proposal) or closed.
+        // We need to ensure we overlap correctly.
 
-        this.notifySystem(
-            "Bienvenido al Protocolo de Inducción, Operador. Aquí aprenderá a gestionar la biomasa en el Bastión Nakasthu. Durante este proceso, solo los módulos necesarios estarán operativos.",
-            "FASE 0: INDUCCIÓN NEURAL"
-        );
+        // If coming from Proposal, we are 'isModalOpen=true'.
+        // We emit STORY_MODAL_OPEN which replaces the current modal.
+        this.currentStepIndex = 0;
+        this.showCurrentStep();
     }
 
-    stopTutorial() {
-        this.isActive = false;
+    endTutorial() {
+        console.log(`[TUTORIAL] Completado: ${this.activeTutorialId}`);
+        this.activeTutorialId = null;
+
+        // Sync with global state
         state.isTutorialActive = false;
+        state.activeTutorialId = null;
         state.tutorialStep = 0;
-        this.modalOpen = false;
-        this.pendingStep = null;
+
+        this.currentStepIndex = 0;
+        this.isModalOpen = false;
+        bus.emit('UI_MODAL_CLOSE'); // Asegurar cierre
+
+        // Feedback visual de completado
+        bus.emit('TERMINAL_PRINT', {
+            text: '>>> TUTORIAL MODULE COMPLETED. SYSTEM OPTIMIZED.',
+            type: 'SUCCESS'
+        });
     }
 
-    advanceToStep(nextStep) {
-        console.log(`[TUTORIAL] Advancing from ${state.tutorialStep} to ${nextStep}`);
+    showCurrentStep() {
+        const content = TUTORIAL_CONTENT[this.activeTutorialId];
+        if (!content) return;
 
-        // Evitar dobles llamadas o pasos repetidos
-        if (state.tutorialStep === nextStep) return;
+        // Sincronizar estado global para que UI reaccione (Highlights, Unlocks)
+        state.tutorialStep = this.currentStepIndex;
 
-        state.tutorialStep = nextStep;
+        const stepText = content.steps[this.currentStepIndex];
+        const title = `${content.title} (${this.currentStepIndex + 1}/${content.steps.length})`;
 
-        if (nextStep === 2) {
-            this.notifySystem(
-                "PASO 1: LA DETECCIÓN. Localice el [[MOD-01]] a su izquierda. Realice un ESCANEO TÉRMICO para identificar la firma de calor del sujeto. Este es el primer paso para cualquier procesamiento.",
-                "PASO 1: EL BIOSCAN"
-            );
-        } else if (nextStep === 3) {
-            this.notifySystem(
-                "Lectura térmica recibida con éxito. Observe el [[MOD-02]] superior. Analytics ha procesado los rastros, revelando anomalías en la firma biológica. Este módulo será su guía para juzgar la legitimidad del sujeto.",
-                "PASO 2: ANÁLISIS DE DATOS"
-            );
-        } else if (nextStep === 4) {
-            this.notifySystem(
-                "Ahora que conoce al sujeto, debemos estabilizar la conexión. PASO 3: LA RESONANCIA. El [[MOD-05]] inferior está desajustado. Sincronice la frecuencia hasta superar el 85% para estabilizar el enlace neural.",
-                "PASO 3: RESONANCIA NEURAL"
-            );
-        } else if (nextStep === 5) {
-            if (!state.currentEntity) state.nextSubject();
-            this.notifySystem(
-                "Enlace estable y seguro. PASO 4: LA SENTENCIA. Use el [[MOD-04]] central para [AUTORIZAR] el acceso del sujeto. Durante el tutorial, las acciones no consumen energía.",
-                "PASO 4: OPERACIONES"
-            );
-        } else if (nextStep === 6) {
-            this.notifySystem(
-                "Sujeto procesado correctamente. Control de recursos: El [[MOD-03]] superior muestra la ENERGÍA (vital para escaneos), la ESTABILIDAD (integridad del sistema) y el CICLO ORBITAL. Manténgalos bajo vigilancia constante.",
-                "PASO 5: RECURSOS CRÍTICOS"
-            );
-        } else if (nextStep === 7) {
-            this.notifySystem(
-                "Inducción completada. El control manual ha sido transferido. La Nakara requiere su juicio, Operador. No nos falle.",
-                "SISTEMAS NOMINALES"
-            );
-
-            // Finalización formal
-            state.isTutorialActive = false;
-            state.tutorialStep = 0;
-            state.hasSeenTutorial = true;
-            localStorage.setItem('nakasthu_tutorial_seen', 'true');
-            this.isActive = false;
-
-            // Feedback visual de reset
-            bus.emit('TERMINAL_PRINT', { text: '>>> REFRESHING INTERFACE... ZHYR_OS ONLINE.', type: 'SYSTEM' });
-            bus.emit('TRIGGER_FLASH', { color: '#00FFFF', duration: 1000 });
-        }
-    }
-
-    notifySystem(text, title = 'MANUAL DE INDUCCIÓN') {
-        this.modalOpen = true;
+        this.isModalOpen = true;
         bus.emit('STORY_MODAL_OPEN', {
-            mode: 'Briefing',
+            mode: 'Briefing', // Reutilizamos el estilo de briefing
             isTutorial: true,
             title: title,
-            content: text
+            content: stepText,
+            allowClose: false // Obligar a completar o tener botón de "Entendido" que emita TUTORIAL_CONTINUE
         });
     }
 
-    wait(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    nextStep() {
+        const content = TUTORIAL_CONTENT[this.activeTutorialId];
+        if (!content) return;
+
+        this.currentStepIndex++;
+        // Sync here too just in case though showCurrentStep does it
+        state.tutorialStep = this.currentStepIndex;
+
+        if (this.currentStepIndex < content.steps.length) {
+            // Siguiente paso
+            // Pequeño delay visual
+            setTimeout(() => this.showCurrentStep(), 300);
+        } else {
+            // Fin del tutorial
+            this.endTutorial();
+        }
+    }
+
+    endTutorial() {
+        console.log(`[TUTORIAL] Completado: ${this.activeTutorialId}`);
+        this.activeTutorialId = null;
+        this.currentStepIndex = 0;
+        this.isModalOpen = false;
+        bus.emit('UI_MODAL_CLOSE'); // Asegurar cierre
+
+        // Feedback visual de completado
+        bus.emit('TERMINAL_PRINT', {
+            text: '>>> TUTORIAL MODULE COMPLETED. SYSTEM OPTIMIZED.',
+            type: 'SUCCESS'
+        });
+    }
+
+    // Método para reiniciar tutoriales desde settings (Futuro)
+    replayTutorial(moduleId) {
+        const module = Object.values(MODULES).find(m => m.id === moduleId);
+        if (module && module.tutorial) {
+            this.startModuleTutorial(module.tutorial);
+        }
     }
 }
 

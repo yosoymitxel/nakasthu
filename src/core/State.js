@@ -60,6 +60,7 @@ const initialState = {
     isPaused: false,
     isModalOpen: false, // Bloquea el tick del motor si hay un modal activo
     isTutorialActive: false,
+    activeTutorialId: null, // ID del tutorial activo actual
     tutorialStep: 0, // 0: No tutorial, 1-4: Pasos del tutorial
     focusMode: false, // Bloquea el resto de la UI durante diálogos profundos
     unlockedCommands: ['HELP', 'CLEAR', 'STATUS'], // Comandos iniciales
