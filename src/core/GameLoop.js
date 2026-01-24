@@ -59,27 +59,30 @@ class GameLoop {
     }
 
     tick() {
-        if (state.gameStatus !== 'PLAYING' || state.isPaused || state.isModalOpen || state.focusMode) return;
+        if (state.isPaused || state.isModalOpen || state.focusMode) return;
+
+        // Allow loop only for PLAYING and MECHANIC (partial)
+        if (state.gameStatus !== 'PLAYING' && state.gameStatus !== 'MECHANIC') return;
 
         // Iniciar ráfaga de actualizaciones (Batch)
         state.startBatch();
 
         // 0. Verificar fallo del sistema (Game Over)
         // PROTECCIÓN: No verificar fallo si estamos en tutorial o hay modal abierto
-        if (!state.isTutorialActive && !state.isModalOpen) {
+        // 0. Verificar fallo del sistema (Game Over)
+        // PROTECCIÓN: No verificar fallo si estamos en tutorial o hay modal abierto
+        if (state.gameStatus === 'PLAYING' && !state.isTutorialActive && !state.isModalOpen) {
             this.checkSystemFailure();
         }
 
-        if (state.gameStatus !== 'PLAYING') {
-            state.endBatch();
-            return;
-        }
-
-        // --- Lógica de Resonancia (Siempre activa para el tutorial) ---
+        // --- Lógica de Resonancia (Siempre activa para tutorial y MECHANIC) ---
         updateResonance();
 
-        // --- Si el tutorial está activo, solo actualizamos resonancia y salimos ---
-        if (state.isTutorialActive || (state.tutorialStep > 0 && state.tutorialStep < 4)) {
+        // --- Si el tutorial está activo o es una fase mecánica, solo actualizamos resonancia y salimos ---
+        // Excepción: Si es MECHANIC, permitimos resonancia pero evitamos el resto (drain de energía)
+        const isMechanicOrTutorial = state.gameStatus === 'MECHANIC' || state.isTutorialActive || (state.tutorialStep > 0 && state.tutorialStep < 4);
+
+        if (isMechanicOrTutorial) {
             state.endBatch();
             return;
         }

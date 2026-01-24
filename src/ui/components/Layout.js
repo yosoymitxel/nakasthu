@@ -328,10 +328,7 @@ export const Layout = () => {
                     <div className="flex flex-col gap-4 w-64">
                         <button 
                             onClick=${() => {
-            if (currentStep === 1) {
-                bus.emit('GAME_START');
-            }
-            state.gameStatus = 'PLAYING';
+            bus.emit('GAME_START');
         }}
                             className="group relative border border-cyan-500/40 bg-cyan-950/20 px-8 py-3 hover:bg-cyan-500/30 transition-all"
                         >
@@ -517,6 +514,23 @@ export const Layout = () => {
                                     <div className="flex justify-between items-center opacity-50">
                                         <span className="text-zinc-600 uppercase tracking-widest text-[10px]">Calidad_Neural</span>
                                         <span className="text-zinc-700 text-[10px]">MÁXIMA</span>
+                                    </div>
+                                </div>
+                                
+                                <div className="mt-6 p-4 border border-zinc-800 bg-black/40 space-y-4">
+                                    <h3 className="text-zinc-500 uppercase tracking-widest text-[10px] border-b border-zinc-800 pb-2 mb-2">Selector de Nivel [DEV]</h3>
+                                    <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto custom-scrollbar">
+                                        ${Object.entries(STEPS_CONFIG).map(([id, config]) => html`
+                                            <button 
+                                                onClick=${() => {
+                gameSequencer.jumpToStep(parseInt(id));
+                setModal(null);
+            }}
+                                                className="px-2 py-2 border border-zinc-800 text-zinc-500 hover:text-cyan-400 hover:border-cyan-900/50 transition-all uppercase tracking-widest text-[9px] text-left truncate"
+                                            >
+                                                ${id}. ${config.name}
+                                            </button>
+                                        `)}
                                     </div>
                                 </div>
                             `}

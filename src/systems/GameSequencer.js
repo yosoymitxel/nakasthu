@@ -133,7 +133,18 @@ class GameSequencer {
         this.storyPath = state.storyPath || 0;
 
         console.log('%c[SEQUENCER] Sistema narrativo inicializado en paso ' + this.currentStep, 'color: #9333ea; font-weight: bold;');
-        bus.emit('STEP_CHANGE', this.getCurrentStepData());
+
+        // Set initial status based on step type
+        const initialStepData = this.getCurrentStepData();
+        if (initialStepData.config.type === 'cinematic') {
+            state.gameStatus = 'CINEMATIC';
+        } else if (initialStepData.config.type === 'mechanic') {
+            state.gameStatus = 'MECHANIC';
+        } else {
+            state.gameStatus = 'PLAYING';
+        }
+
+        bus.emit('STEP_CHANGE', initialStepData);
     }
 
     /**
@@ -197,6 +208,17 @@ class GameSequencer {
             this.storyPath = stepData.config.meta.newStoryPath;
             state.storyPath = this.storyPath;
             bus.emit('ACT_CHANGE', { newAct: this.storyPath });
+        }
+
+        // Determine and set Game Status based on step type
+        if (state.gameStatus !== 'GAME_OVER') {
+            if (stepData.config.type === 'cinematic') {
+                state.gameStatus = 'CINEMATIC';
+            } else if (stepData.config.type === 'mechanic') {
+                state.gameStatus = 'MECHANIC';
+            } else {
+                state.gameStatus = 'PLAYING';
+            }
         }
 
         bus.emit('STEP_CHANGE', stepData);
@@ -321,6 +343,54 @@ class GameSequencer {
             recommendation: weightedTech >= weightedFaith ? 'ESTABILIZAR' : 'TRASCENDER',
             dominant: weightedTech >= weightedFaith ? 'orden' : 'caos'
         };
+    }
+
+    /**
+     * Salta inmediatamente a un paso específico (DevMode / Selector de Nivel)
+     */
+    jumpToStep(stepIndex) {
+        if (!STEPS_CONFIG[stepIndex]) {
+            console.error(`[SEQUENCER] Paso inválido: ${stepIndex}`);
+            return;
+        }
+
+        console.log(`%c[SEQUENCER] >>> JUMPING TO STEP ${stepIndex} <<<`, 'color: #fca5a5; font-weight: bold; background: #450a0a; padding: 4px;');
+
+        // 1. Limpieza total del estado anterior
+        state.resetState();
+
+        // 2. Limpieza de tutoriales activos (importar controller o emitir evento)
+        // Usamos evento para desacoplar si no tenemos acceso directo, pero como es sistema central...
+        // Importamos dinámicamente o asumimos que TutorialController escucha el reset, 
+        // pero mejor ser explícito si podemos. 
+        // Por ahora confiamos en resetState() que pone isTutorialActive false, 
+        // pero TutorialController interno necesita resetearse también.
+        // Emitiremos un evento de FORCE_RESET
+        bus.emit('SYSTEM_FORCE_RESET');
+
+        // 3. Forzar parámetros del paso
+        this.currentStep = stepIndex;
+        // Reset path only if jumping to early steps, otherwise keep? 
+        // For "independent module" testing, we assume path 0 default.
+        if (stepIndex <= 3) {
+            this.storyPath = 0;
+        }
+
+        // 4. Inicializar transición como si fuera carga limpia
+        state.startBatch();
+        state.currentStep = stepIndex;
+        state.storyPath = this.storyPath;
+        state.gameStatus = 'LOADING'; // Temporal para evitar ticks locos
+        state.endBatch();
+
+        setTimeout(() => {
+            this.finalizeStepTransition(stepIndex);
+
+            // Forzar cierre de cualquier modal residual
+            bus.emit('UI_MODAL_CLOSE');
+
+            console.log(`[SEQUENCER] Salto completado.`);
+        }, 100);
     }
 
     /**

@@ -1,0 +1,71 @@
+import { describe, test, expect, beforeEach, vi } from 'vitest';
+import { gameLoop } from '../src/core/GameLoop.js';
+import { state } from '../src/core/State.js';
+import { bus } from '../src/core/Bus.js';
+import { updateResonance } from '../src/systems/MechanicsEngine.js';
+
+// Mock dependencies
+vi.mock('../src/systems/MechanicsEngine.js', () => ({
+    updateResonance: vi.fn()
+}));
+
+// Mock html utility because it uses https import not supported
+vi.mock('../src/ui/utils/html.js', () => ({
+    html: (strings, ...values) => strings[0]
+}));
+
+describe('GameLoop Refactor Tests', () => {
+    beforeEach(() => {
+        state.resetState();
+        state.energy = 100;
+        state.stability = 100;
+        vi.clearAllMocks();
+    });
+
+    test('should NOT drain energy or update resonance in CINEMATIC state', () => {
+        state.gameStatus = 'CINEMATIC';
+        state.energy = 100;
+
+        gameLoop.tick();
+
+        expect(state.energy).toBe(100);
+        expect(updateResonance).not.toHaveBeenCalled();
+    });
+
+    test('should update resonance but NOT drain energy in MECHANIC state', () => {
+        state.gameStatus = 'MECHANIC';
+        state.energy = 100;
+        state.mode = 'NORMAL';
+
+        gameLoop.tick();
+
+        expect(state.energy).toBe(100);
+        expect(updateResonance).toHaveBeenCalled();
+    });
+
+    test('should drain energy and update resonance in PLAYING state', () => {
+        state.gameStatus = 'PLAYING';
+        state.energy = 100;
+        state.isTutorialActive = false; // Ensure tutorial doesn't block
+        state.mode = 'NORMAL';
+
+        gameLoop.tick();
+
+        // Energy drain is 0.01 per tick in NORMAL, but State.js floors values!
+        // So 100 - 0.01 = 99.99 -> 99.
+        expect(state.energy).toBe(99);
+        expect(updateResonance).toHaveBeenCalled();
+    });
+
+    // Special test for tutorial override in loop
+    test('should NOT drain energy if Tutorial is active even in PLAYING state', () => {
+        state.gameStatus = 'PLAYING';
+        state.energy = 100;
+        state.isTutorialActive = true;
+
+        gameLoop.tick();
+
+        expect(state.energy).toBe(100);
+        expect(updateResonance).toHaveBeenCalled(); // Resonance still updates for tutorial
+    });
+});

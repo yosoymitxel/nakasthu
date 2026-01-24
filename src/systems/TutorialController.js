@@ -118,6 +118,11 @@ class TutorialController {
         bus.on('UI_MODAL_CLOSE', () => {
             this.isModalOpen = false;
         });
+
+        // Reset forzado del sistema
+        bus.on('SYSTEM_FORCE_RESET', () => {
+            this.cancelActiveTutorial();
+        });
     }
 
     proposeTutorial(moduleId, moduleName, tutorialId) {
@@ -245,18 +250,18 @@ class TutorialController {
         }
     }
 
-    endTutorial() {
-        console.log(`[TUTORIAL] Completado: ${this.activeTutorialId}`);
+    // Método para cancelar tutoriales activos forzosamente (ej: al saltar de nivel)
+    cancelActiveTutorial() {
+        if (!this.activeTutorialId) return;
+
+        console.log(`[TUTORIAL] Cancelando tutorial activo: ${this.activeTutorialId}`);
         this.activeTutorialId = null;
         this.currentStepIndex = 0;
+        state.isTutorialActive = false;
+        state.activeTutorialId = null;
+        state.tutorialStep = 0;
         this.isModalOpen = false;
-        bus.emit('UI_MODAL_CLOSE'); // Asegurar cierre
-
-        // Feedback visual de completado
-        bus.emit('TERMINAL_PRINT', {
-            text: '>>> TUTORIAL MODULE COMPLETED. SYSTEM OPTIMIZED.',
-            type: 'SUCCESS'
-        });
+        bus.emit('UI_MODAL_CLOSE');
     }
 
     // Método para reiniciar tutoriales desde settings (Futuro)

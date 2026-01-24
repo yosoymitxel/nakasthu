@@ -55,7 +55,7 @@ const initialState = {
         corruptsAuthorized: 0,
         innocentsAuthorized: 0
     },
-    gameStatus: 'START_MENU', // 'START_MENU' | 'PLAYING' | 'PAUSED' | 'GAME_OVER' | 'LORE_ARCHIVE'
+    gameStatus: 'START_MENU', // 'START_MENU' | 'PLAYING' | 'PAUSED' | 'GAME_OVER' | 'LORE_ARCHIVE' | 'CINEMATIC' | 'MECHANIC'
     previousGameStatus: 'START_MENU',
     isPaused: false,
     isModalOpen: false, // Bloquea el tick del motor si hay un modal activo
