@@ -13,7 +13,7 @@ import { useGameState } from '../hooks/useGameState.js';
 
 import { getModuleName } from '../../systems/ModuleRegistry.js';
 
-export const SidebarLeft = ({ getModuleTutorialStatus }) => {
+export const SidebarLeft = ({ getModuleTutorialStatus, unlockedModules = new Set() }) => {
     const storyPath = useGameState('storyPath');
 
     return html`

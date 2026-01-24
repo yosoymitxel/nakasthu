@@ -12,7 +12,7 @@ import { Oscilloscope } from './Oscilloscope.js';
 import { getModuleName } from '../../systems/ModuleRegistry.js';
 import { useGameState } from '../hooks/useGameState.js';
 
-export const CenterCore = ({ getModuleTutorialStatus }) => {
+export const CenterCore = ({ getModuleTutorialStatus, unlockedModules = new Set() }) => {
     const storyPath = useGameState('storyPath');
 
     return html`

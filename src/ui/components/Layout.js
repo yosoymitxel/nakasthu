@@ -47,6 +47,7 @@ export const Layout = () => {
     const tutorialStep = useGameState('tutorialStep');
     const isTutorialActive = useGameState('isTutorialActive');
     const activeTutorialId = useGameState('activeTutorialId');
+    const storyPath = useGameState('storyPath') || 0;
 
     // Estado local para forzar re-render al desbloquear módulos
     const [unlockedModules, setUnlockedModules] = useState(new Set(moduleRegistry.activeModules));
@@ -142,7 +143,7 @@ export const Layout = () => {
                 [MODULES.RESONANCE?.tutorial || 'TUTO_RESONANCE']: 'C_FOOTER',
                 [MODULES.OPERATIONS?.tutorial || 'TUTO_OPERATIONS']: 'C_MAIN',
                 [MODULES.LORE_ARCHIVE?.tutorial || 'TUTO_LORE']: 'R_UPPER',
-                [MODULES.QUOTA_TRACKER?.tutorial || 'TUTO_QUOTA']: 'C_MAIN', // El QuotaTracker visualmente está en Operations
+                [MODULES.QUOTA_TRACKER?.tutorial || 'TUTO_QUOTA']: 'R_TOP',
                 [MODULES.UNREST_METER?.tutorial || 'TUTO_UNREST']: 'R_BOTTOM',
                 [MODULES.FACTION_SYSTEM?.tutorial || 'TUTO_FACTION']: 'R_MIDDLE',
                 [MODULES.TERMINAL?.tutorial || 'TUTO_TERMINAL']: 'R_MIDDLE',

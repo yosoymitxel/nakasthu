@@ -85,7 +85,6 @@ export const MODULES = {
         name: 'Medidor de Disturbios',
         sectarianName: 'Monitor de Agitación',
         unlockStep: 5,
-        requiredPath: 0, // El descontento civil es una mecánica técnica/social
         tutorial: 'TUTO_UNREST',
         description: 'Monitoreo de estabilidad social en sectores.'
     },
