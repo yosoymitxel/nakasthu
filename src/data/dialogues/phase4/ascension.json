@@ -88,6 +88,52 @@
             ]
         },
         {
+            "id": "DLG_P4_ZHYR_VICTORY",
+            "minStep": 11,
+            "maxStep": 12,
+            "npcTraits": {
+                "id": "ARQUITECTO",
+                "type": "VOID_CONSTRUCT",
+                "visual": { "glitch": "FRACTAL" }
+            },
+            "text": "*Una entidad compuesta de formas geométricas imposibles que rotan sobre sí mismas.* 'Vuestro mundo no está siendo destruido, operador. Está siendo optimizado. Cada \"reasignación\", cada \"desaparición\", fue un bit de datos movido de un servidor corrupto a un núcleo puro'.",
+            "options": [
+                {
+                    "text": "La humanidad no es 'datos'. Tenemos voluntad, historia, dolor.",
+                    "energyCost": 0.5,
+                    "stabilityImpact": -15,
+                    "consequence": "'El dolor es solo un error de entrada. La voluntad es una variable no inicializada. Zhyr os ofrece la constante. La paz del algoritmo perfecto. ¿Por qué luchas contra la elegancia del vacío?'"
+                }
+            ]
+        },
+        {
+            "id": "DLG_P4_FINAL_CHOICE",
+            "minStep": 12,
+            "maxStep": 12,
+            "npcTraits": {
+                "id": "EL TESTIGO",
+                "type": "ASCENDED",
+                "visual": { "glitch": "WHITE_NOISE" }
+            },
+            "text": "*La consola NAKASTHU parpadea salvajemente. Un último mensaje aparece en la pantalla de diagnóstico.* 'El portal está abierto. La Tierra es ahora un reflejo de Zhyr. Solo queda una acción por realizar, operador. Pulsa el botón. Tradúcenos a todos'.",
+            "options": [
+                {
+                    "text": "[EJECUTAR: TRADUCCIÓN GLOBAL]",
+                    "energyCost": 2.0,
+                    "stabilityImpact": -100,
+                    "loreUnlock": "LORE_ASCENSION_COMPLETE",
+                    "consequence": "*El mundo se disuelve en una frecuencia pura. No hay más ruido. Solo NAKASTHU.*"
+                },
+                {
+                    "text": "[ERROR: RESISTENCIA FINAL]",
+                    "energyCost": 2.0,
+                    "stabilityImpact": 50,
+                    "loreUnlock": "LORE_ETERNAL_RESISTANCE",
+                    "consequence": "*Forzas un bucle infinito en el núcleo. El sistema se congela en el último segundo. La agonía de la humanidad se vuelve eterna, pero real.*"
+                }
+            ]
+        },
+        {
             "id": "DLG_P4_ASCE_05",
             "minStep": 11,
             "maxStep": 12,

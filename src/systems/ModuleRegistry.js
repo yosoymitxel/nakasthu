@@ -80,7 +80,10 @@ export const MODULES = {
     }
 };
 
-export const getModuleName = (module, storyPath) => {
+export const getModuleName = (moduleId, storyPath) => {
+    const module = typeof moduleId === 'string' ? Object.values(MODULES).find(m => m.id === moduleId) : moduleId;
+    if (!module) return 'Unknown Module';
+
     if (storyPath === 1) {
         const sectarianNames = {
             'MOD_BIOSCAN': 'Altar de Examen',
@@ -89,11 +92,42 @@ export const getModuleName = (module, storyPath) => {
             'MOD_QUOTA': 'Cosecha de Adeptos',
             'MOD_UNREST': 'Monitor de Agitación',
             'MOD_FACTION': 'Panel de Comunión',
-            'MOD_PORTAL': 'Velo Dimensional'
+            'MOD_PORTAL': 'Velo Dimensional',
+            'MOD_RESONANCE': 'Sincronía de Fe',
+            'MOD_LORE': 'Crónicas de la Nakara',
+            'MOD_RITUAL': 'Cámara de Purificación'
         };
         return sectarianNames[module.id] || module.name;
     }
     return module.name;
+};
+
+/**
+ * Reemplaza los tokens [[MOD-XX]] en un texto por el nombre localizado del módulo.
+ */
+export const localizeTutorialText = (text, storyPath) => {
+    if (!text) return '';
+    
+    // Mapeo de MOD-XX a IDs internos
+    const tokenMap = {
+        'MOD-01': 'MOD_BIOSCAN',
+        'MOD-02': 'MOD_ANALYTICS',
+        'MOD-03': 'MOD_CORE_STATUS', // Asumiendo este ID
+        'MOD-04': 'MOD_OPERATIONS',
+        'MOD-05': 'MOD_RESONANCE',
+        'MOD-06': 'MOD_RESONANCE', // A veces se usa 06 para resonancia
+        'MOD-07': 'MOD_QUOTA',
+        'MOD-08': 'MOD_UNREST'
+    };
+
+    return text.replace(/\[\[MOD-(\d+)\]\]/g, (match, p1) => {
+        const tokenId = `MOD-${p1}`;
+        const moduleId = tokenMap[tokenId];
+        if (moduleId) {
+            return `[${getModuleName(moduleId, storyPath)}]`;
+        }
+        return match;
+    });
 };
 
 class ModuleRegistry {

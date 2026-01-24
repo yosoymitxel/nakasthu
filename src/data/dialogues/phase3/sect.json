@@ -128,6 +128,64 @@
             ]
         },
         {
+            "id": "DLG_P3_KAMIN_VOICE",
+            "minStep": 7,
+            "maxStep": 9,
+            "npcTraits": {
+                "id": "DEVOTO",
+                "type": "SECTARIO",
+                "visual": {
+                    "glitch": "PURPLE_HUE"
+                }
+            },
+            "text": "*El sujeto no habla, pero su boca se mueve y escuchas la voz de Kael (Kamin) a través de los altavoces.* 'Kamin no habla de odio, habla de esperanza. Dice que el portal es un regalo, un Renacimiento. Su voz es la única que puede calmar el zumbido de las máquinas'.",
+            "options": [
+                {
+                    "text": "¿Cómo puede ser un regalo un portal que ha evaporado a millones?",
+                    "energyCost": 0.4,
+                    "stabilityImpact": -5,
+                    "corruptionImpact": 15,
+                    "consequence": "'Millones no han muerto, han sido liberados de la carne y del hambre. La Orden os dio implantes para sobrevivir en el veneno; Zhyr nos da el vacío para no necesitar aire. ¿Quién es el verdadero libertador?'"
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_DISPAY_RAGE",
+            "minStep": 7,
+            "maxStep": 10,
+            "text": "*Un joven con una bufanda cubriendo su rostro, sus ojos inyectados en sangre.* 'En las plazas de Dispay ya no gritamos por comida. Gritamos por la verdad. ¡Si mis padres están en el otro lado, quiero ir con ellos! ¡Abrid la puerta o la derribaremos nosotros!'",
+            "options": [
+                {
+                    "text": "El portal es inestable. Cruzar sin autorización es un suicidio biológico.",
+                    "energyCost": 0.3,
+                    "stabilityImpact": 10,
+                    "consequence": "'¡Suicidio es quedarse aquí trabajando para Talok! Kamin dice que la piedra nos espera. Si el Bastión no nos deja pasar, quemaremos cada cable de este sistema hasta que el cielo se vuelva púrpura'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_DREXLER_DEBATE",
+            "minStep": 8,
+            "maxStep": 10,
+            "npcTraits": {
+                "id": "ORVAL D.",
+                "type": "LÍDER",
+                "visual": {
+                    "glitch": "LOW_RES"
+                }
+            },
+            "text": "*Orval Drexler parece haber envejecido diez años en una semana. Su uniforme está desaliñado.* 'El debate en la sala de conferencias es una farsa. Itzinol y Dispay están a punto de declararnos la guerra por el control de Zhyr. Y ahora esta... secta... está infiltrándose en mis propios regimientos'.",
+            "options": [
+                {
+                    "text": "Señor, los informes indican que el 30% de la guardia de Talok asiste a los sermones de Kamin.",
+                    "energyCost": 0.5,
+                    "stabilityImpact": -10,
+                    "loreUnlock": "LORE_SECT_HACK",
+                    "consequence": "*Drexler golpea la mesa.* '¡Lo sé! El incienso está nublando los sensores de mis hombres. Si perdemos el Bastión frente a esos fanáticos, la humanidad no será reasignada... será borrada. Operador, mantenga la lógica pura a cualquier precio'."
+                }
+            ]
+        },
+        {
             "id": "DLG_P3_SECT_03",
             "minStep": 7,
             "maxStep": 12,

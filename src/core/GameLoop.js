@@ -6,6 +6,7 @@
 import { state } from './State.js';
 import { bus } from './Bus.js';
 import { updateResonance } from '../systems/MechanicsEngine.js';
+import { CONFIG } from './Config.js';
 
 class GameLoop {
     constructor() {
@@ -34,14 +35,27 @@ class GameLoop {
         // En el tutorial no se puede perder por recursos
         if (state.isTutorialActive) return;
 
-        if (state.energy <= 0 || state.stability <= 0) {
-            state.gameStatus = 'GAME_OVER';
-            const reason = state.energy <= 0 ? 'ENERGY_DEPLETED' : 'STABILITY_COLLAPSED';
-            const details = reason === 'ENERGY_DEPLETED'
-                ? 'Agotamiento de energía crítico. El sistema ha entrado en modo de hibernación forzada para preservar el núcleo. La biomasa residual ha sido purgada.'
-                : 'La sincronía neural con el bastión se ha roto. El exceso de errores de juicio o la autorización de entidades corruptas ha saturado los filtros de biomasa.';
+        const isExcessiveErrors = state.judgmentErrors >= (state.maxErrors || CONFIG.MAX_JUDGMENT_ERRORS);
+        const isStabilityCollapsed = state.stability <= 0;
+        const isEnergyDepleted = state.energy <= 0;
 
-            console.log("%c[SYSTEM FAILURE] El bastión ha sido brechado.", "color: #ff0000; font-weight: bold;");
+        if (isEnergyDepleted || isStabilityCollapsed || isExcessiveErrors) {
+            state.gameStatus = 'GAME_OVER';
+            let reason = 'SYSTEM_FAILURE';
+            let details = '';
+
+            if (isEnergyDepleted) {
+                reason = 'ENERGY_DEPLETED';
+                details = 'Agotamiento de energía crítico. El sistema ha entrado en modo de hibernación forzada para preservar el núcleo.';
+            } else if (isStabilityCollapsed) {
+                reason = 'STABILITY_COLLAPSED';
+                details = 'La sincronía neural con el bastión se ha roto. El exceso de errores de juicio o la autorización de entidades corruptas ha saturado los filtros de biomasa.';
+            } else if (isExcessiveErrors) {
+                reason = 'EXCESSIVE_ERRORS';
+                details = `Protocolo de seguridad activado: Se ha alcanzado el límite de ${state.maxErrors || CONFIG.MAX_JUDGMENT_ERRORS} errores de juicio. El Operador ha sido relevado de sus funciones.`;
+            }
+
+            console.log(`%c[SYSTEM FAILURE] ${reason}: ${details}`, "color: #ff0000; font-weight: bold;");
             bus.emit('SYSTEM_FAILURE', {
                 reason,
                 details,

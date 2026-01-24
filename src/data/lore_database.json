@@ -68,6 +68,10 @@
         "LORE_ALEXIA_REUNION": "Alexia no está en Zhyr; ella es Zhyr. Cada vez que el operador mira la cámara, está mirando a Alexia a los ojos.",
         "LORE_GLOBAL_SILENCE": "El silencio global tras la caída de las Distribuciones es la señal de que la Tierra ha terminado de ser procesada por el Monolito.",
         "LORE_THE_END": "El final no es la destrucción, sino el silencio. El ruido de la humanidad cesa cuando los soles gemelos finalmente se elevan sobre la Tierra.",
-        "LORE_FINAL_SACRIFICE": "El sacrificio final reinicia el sistema, pero no para salvarlo, sino para completar la transición. El logo de NAKASTHU es ahora el ojo de Zhyr."
+        "LORE_FINAL_SACRIFICE": "El sacrificio final reinicia el sistema, pero no para salvarlo, sino para completar la transición. El logo de NAKASTHU es ahora el ojo de Zhyr.",
+        "LORE_DRONE_DATA": "Los datos recuperados del dron de Deyar muestran que el monolito no emitía radiación, sino una secuencia de comandos que 'reescribía' el aire circundante.",
+        "LORE_ALEXIA_TRANSLATION": "Alexia logró traducir tres palabras antes de su desaparición: 'EL REINICIO COMIENZA'. No se refería al sistema, sino a la especie humana.",
+        "LORE_ASCENSION_COMPLETE": "La Ascensión Global ha terminado. La Tierra ya no existe en el plano físico; ahora es un sector de procesamiento de datos en el núcleo de Zhyr.",
+        "LORE_ETERNAL_RESISTANCE": "La resistencia final del operador creó un bucle de agonía infinita. La humanidad no ha sido borrada, pero vive atrapada en el último segundo antes del fin."
     }
 }

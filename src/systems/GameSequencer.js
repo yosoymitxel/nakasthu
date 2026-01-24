@@ -10,6 +10,7 @@ import { state } from '../core/State.js';
 import { html } from '../ui/utils/html.js';
 import { quotaTracker } from './QuotaTracker.js';
 import { factionSystem } from './FactionSystem.js';
+import { CONFIG } from '../core/Config.js';
 
 /**
  * Configuración de los 12 pasos narrativos.
@@ -199,9 +200,22 @@ class GameSequencer {
 
         state.currentStep = this.currentStep;
 
+        const currentConfig = STEPS_CONFIG[this.currentStep];
         const stepData = this.getCurrentStepData();
 
         console.log(`%c[SEQUENCER] Avanzando a paso ${this.currentStep}: ${stepData.config.name}`, 'color: #10b981;');
+
+        // Resetear contadores de progreso para el nuevo nivel
+        state.processedCount = 0;
+        state.judgmentErrors = 0;
+        state.techniciansRecruited = 0;
+        state.devotsRecruited = 0;
+        state.influenceGathered = 0;
+        state.utilidadOculta = 0;
+        state.quota = currentConfig.subjectCount || CONFIG.DEFAULT_QUOTA;
+
+        // Sincronizar QuotaTracker
+        quotaTracker.setQuota(state.quota);
 
         // Verificar si hay cambio de acto
         if (stepData.config.meta?.actChange) {
@@ -241,15 +255,15 @@ class GameSequencer {
 
         // Sincronizar con State
         state.startBatch();
-        state.energy = 100;
-        state.stability = 100;
+        state.energy = CONFIG.ENERGY.INITIAL;
+        state.stability = CONFIG.STABILITY.INITIAL;
         state.processedCount = 0;
         state.judgmentErrors = 0;
         state.techniciansRecruited = 0;
         state.devotsRecruited = 0;
         state.influenceGathered = 0;
         state.utilidadOculta = 0;
-        state.quota = currentConfig.subjectCount || 10;
+        state.quota = currentConfig.subjectCount || CONFIG.DEFAULT_QUOTA;
 
         // Sincronizar QuotaTracker
         quotaTracker.setQuota(state.quota);

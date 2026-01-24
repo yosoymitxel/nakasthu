@@ -11,7 +11,7 @@ describe('UnrestMeter Tests (unrest_meter.test.js)', () => {
     });
 
     it('debe iniciar con nivel 0 (calma)', () => {
-        expect(unrestMeter.level).toBe(0);
+        expect(state.unrest).toBe(0);
         expect(unrestMeter.isActive).toBe(false);
     });
 
@@ -21,17 +21,17 @@ describe('UnrestMeter Tests (unrest_meter.test.js)', () => {
 
         unrestMeter.increase(10);
 
-        expect(unrestMeter.level).toBe(10);
+        expect(state.unrest).toBe(10);
         expect(spy).toHaveBeenCalledWith('UNREST_UPDATE', expect.objectContaining({ level: 10, status: 'CALM' }));
     });
 
     it('decrease() debe reducir el nivel pero no bajar de 0', () => {
         unrestMeter.isActive = true;
-        unrestMeter.level = 20;
+        state.unrest = 20;
 
         unrestMeter.decrease(50);
 
-        expect(unrestMeter.level).toBe(0);
+        expect(state.unrest).toBe(0);
     });
 
     it('debe cambiar de estado (CALM -> RIOT) al superar umbrales', () => {
@@ -49,19 +49,21 @@ describe('UnrestMeter Tests (unrest_meter.test.js)', () => {
     it('triggerRiot() debe causar penalizaciones si el nivel es crítico', () => {
         const spy = vi.spyOn(bus, 'emit');
         unrestMeter.isActive = true;
-        unrestMeter.level = 90;
+        state.unrest = 90;
+
+        // Mock Math.random to ensure riot triggers (probability is 0.7)
+        vi.spyOn(Math, 'random').mockReturnValue(0.8);
 
         unrestMeter.checkRiotChance(); // Simula el chequeo periódico
 
-        // Si nivel > 80, hay chance de disturbio
-        // Forzamos el RNG en la implementación o probamos que llame al bus si ocurre
-        // Para test robusto, asumiremos que checkRiotChance emite evento si la condición se cumple
-        // Necesitaremos mockear Math.random si es probabilístico
+        expect(spy).toHaveBeenCalledWith('RIOT_EVENT', expect.any(Object));
+        
+        vi.restoreAllMocks();
     });
 
     it('no debe procesar cambios si no está activo', () => {
         unrestMeter.isActive = false;
         unrestMeter.increase(50);
-        expect(unrestMeter.level).toBe(0);
+        expect(state.unrest).toBe(0);
     });
 });

@@ -141,12 +141,20 @@ export const GameModal = memo(({
 
         const errors = stats.judgmentErrors || 0;
         const processed = stats.processedCount || 0;
+        const maxAllowed = state.maxErrors || 3;
 
-        if (errors === 0 && processed >= 10) return { label: 'S', color: 'text-amber-400', desc: 'PERFECTO' };
-        if (errors <= 1) return { label: 'A', color: 'text-emerald-400', desc: 'EXCELENTE' };
-        if (errors <= 3) return { label: 'B', color: 'text-cyan-400', desc: 'BUENO' };
-        if (errors <= 5) return { label: 'C', color: 'text-yellow-500', desc: 'ACEPTABLE' };
-        return { label: 'D', color: 'text-red-500', desc: 'DEFICIENTE' };
+        // Si llegó al límite de errores, es rango F (Fracaso)
+        if (errors >= maxAllowed) return { label: 'F', color: 'text-red-600', desc: 'SISTEMA COMPROMETIDO' };
+
+        // Escala dinámica basada en el margen de error
+        if (errors === 0 && processed >= state.quota) return { label: 'S', color: 'text-amber-400', desc: 'PERFECTO' };
+        if (errors === 0) return { label: 'A', color: 'text-emerald-400', desc: 'EXCELENTE' };
+        
+        const ratio = errors / maxAllowed;
+        if (ratio < 0.4) return { label: 'B', color: 'text-cyan-400', desc: 'ESTABLE' };
+        if (ratio < 0.7) return { label: 'C', color: 'text-yellow-500', desc: 'ADECUADO' };
+        
+        return { label: 'D', color: 'text-orange-500', desc: 'CRÍTICO' };
     };
 
     if (!visible) {

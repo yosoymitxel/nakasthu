@@ -11,6 +11,13 @@ export const ENTITY_TYPES = {
     HIBRIDO: 'HÍBRIDO'
 };
 
+export const ENTITY_ROLES = {
+    TECNICO: 'técnico',
+    DEVOTO: 'devoto',
+    CIUDADANO: 'ciudadano',
+    INFILTRADO: 'infiltrado'
+};
+
 const PREFIXES = ['ZHYR', 'KRON', 'XEN', 'VAL', 'NYX'];
 const GLITCH_TYPES = ['STATIC', 'CHROMATIC', 'VOID', 'GHOST', 'NONE'];
 
@@ -42,6 +49,9 @@ export const generateSubject = () => {
     const typeKeys = Object.keys(ENTITY_TYPES);
     const type = ENTITY_TYPES[typeKeys[Math.floor(Math.random() * typeKeys.length)]];
 
+    const roleKeys = Object.keys(ENTITY_ROLES);
+    const role = ENTITY_ROLES[roleKeys[Math.floor(Math.random() * roleKeys.length)]];
+
     // Motor de Veracidad: Determinar corrupción real
     const isCorrupt = Math.random() > 0.6; // 40% de probabilidad de ser corrupto
 
@@ -53,8 +63,11 @@ export const generateSubject = () => {
 
     const subject = {
         id,
-        type,
+        type: role, // Usamos role para el campo 'type' que espera el GameSequencer
+        species: type, // Guardamos la especie original por si se necesita
         isCorrupt, // Booleano oculto de veracidad
+        influence: Math.floor(Math.random() * 5), // 0-4 de influencia
+        utility: Math.floor(Math.random() * 100), // 0-100 de utilidad técnica
         mentalStability: Math.floor(Math.random() * 100),
         dialogue: {
             plea: typeDialogues.pleas[Math.floor(Math.random() * typeDialogues.pleas.length)],

@@ -187,4 +187,42 @@ describe('New Mechanics Validations (new_mechanics.test.js)', () => {
         expect(state.focusMode).toBe(false);
         expect(dialogueEngine.currentDialogue).toBe(null);
     });
+
+    it('GameOver por errores de juicio: debe dispararse al alcanzar el límite de 3 errores', () => {
+        const spy = vi.spyOn(bus, 'emit');
+        
+        // Simular 3 errores de juicio
+        state.currentEntity = { id: 'S1', isCorrupt: true, scannedTypes: ['BIOMETRIC'] };
+        state.requiredScan = 'BIOMETRIC';
+        handleAuthorize(); // Error 1 (Autorizar corrupto)
+        
+        state.currentEntity = { id: 'S2', isCorrupt: false, scannedTypes: ['BIOMETRIC'] };
+        handleSacrifice(); // Error 2 (Sacrificar inocente)
+        
+        state.currentEntity = { id: 'S3', isCorrupt: true, scannedTypes: ['BIOMETRIC'] };
+        handleAuthorize(); // Error 3 (Autorizar corrupto)
+        
+        expect(state.judgmentErrors).toBe(3);
+        expect(state.gameStatus).toBe('GAME_OVER');
+        expect(spy).toHaveBeenCalledWith('SYSTEM_FAILURE', expect.objectContaining({
+            reason: 'EXCESSIVE_ERRORS'
+        }));
+    });
+
+    it('Impacto en Agitación/Herejía: las decisiones erróneas deben afectar las métricas sociales', () => {
+        const initialUnrest = state.unrest;
+        
+        // Sacrificar inocente (Aumenta agitación)
+        state.currentEntity = { id: 'S1', isCorrupt: false, scannedTypes: ['BIOMETRIC'] };
+        handleSacrifice();
+        
+        expect(state.unrest).toBeGreaterThan(initialUnrest);
+        
+        // Autorizar corrupto (Aumenta agitación aún más)
+        const unrestAfterFirstError = state.unrest;
+        state.currentEntity = { id: 'S2', isCorrupt: true, scannedTypes: ['BIOMETRIC'] };
+        handleAuthorize();
+        
+        expect(state.unrest).toBeGreaterThan(unrestAfterFirstError);
+    });
 });

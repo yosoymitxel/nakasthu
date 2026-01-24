@@ -93,23 +93,14 @@
                     "loreUnlock": "LORE_MONOLITH_MIRROR",
                     "consequence": "*La doctora se frota los ojos, dejando un rastro de grasa en su frente.* 'Porque lo que ves en su superficie no es tu reflejo, sino lo que Zhyr quiere que seas. Yo vi mis pulmones convertidos en arena antes de que Alexia desapareciera'.",
                     "next": [
-                        {
-                            "text": "¿Alexia vio lo mismo que tú en el espejo?",
-                            "energyCost": 0.4,
-                            "stabilityImpact": -3,
-                            "loreUnlock": "LORE_ALEXIA_VISION",
-                            "consequence": "*Una risa nerviosa escapa de sus labios.* 'No. Ella vio el futuro. Vio el Gran Desvío antes de que ocurriera. Por eso no gritó cuando la piedra la reclamó. Ella ya se había ido mentalmente'.",
-                            "next": [
                                 {
-                                    "text": "Si ella vio el futuro, ¿qué nos espera tras el portal?",
-                                    "energyCost": 0.6,
-                                    "stabilityImpact": -8,
-                                    "loreUnlock": "LORE_PORTAL_FUTURE",
-                                    "consequence": "*Se ríe de forma histérica, mientras la imagen se distorsiona.* 'No hay un \"nosotros\" tras el portal, operador. Solo hay... datos. Fragmentos de conciencia flotando en un mar de estática roja. Es hermoso'."
+                                    "text": "¿Alexia vio lo mismo que tú en el espejo?",
+                                    "energyCost": 0.4,
+                                    "stabilityImpact": -3,
+                                    "loreUnlock": "LORE_ALEXIA_VISION",
+                                    "consequence": "'Ella no vio arena. Ella vio... un hogar. Por eso no gritó cuando el destello la reclamó. Tenía una expresión de alivio que me perseguirá hasta que Zhyr me trague a mí también'."
                                 }
                             ]
-                        }
-                    ]
                 }
             ]
         },
@@ -172,6 +163,62 @@
                     "stabilityImpact": -8,
                     "corruptionImpact": 15,
                     "consequence": "*El oficial traga saliva.* 'Sí, señor. Pero le advierto... si esa agua llega a la ciudad, la sed no será lo único que saciemos. Estamos invitando a algo a entrar en nuestras casas'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P2_ELARA_FEAR",
+            "minStep": 4,
+            "maxStep": 6,
+            "npcTraits": {
+                "id": "ELARA",
+                "type": "OPERADORA",
+                "visual": {
+                    "glitch": "LOW_RES"
+                }
+            },
+            "text": "*Una operadora de fábrica con ojeras profundas y manos temblorosas. Mira nerviosa a su alrededor.* '¿Has oído lo que dicen? Que todo esto comenzó con un experimento de la Orden en Zhyr. Que nosotros somos solo... biomasa de repuesto'.",
+            "options": [
+                {
+                    "text": "La Orden busca la supervivencia de la humanidad. Esos rumores son peligrosos.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 5,
+                    "consequence": "*Elara baja la voz hasta que es apenas un susurro.* 'Eso dicen ellos. Pero el técnico mayor dice que si sabemos demasiado, seremos los próximos en desvanecernos. El Bastión no nos protege, nos procesa'."
+                },
+                {
+                    "text": "¿Qué más dice ese 'técnico mayor' sobre las desapariciones?",
+                    "energyCost": 0.5,
+                    "stabilityImpact": -8,
+                    "loreUnlock": "LORE_ELARA_RUMORS",
+                    "consequence": "'Dice que el monolito no es un objeto, sino un depredador. Y que las Distribuciones están alimentándolo con nosotros para ganar tiempo. ¿Es cierto, operador? ¿Soy solo comida para esa piedra?'"
+                }
+            ]
+        },
+        {
+            "id": "DLG_P2_INFRASTRUCTURE_FAIL",
+            "minStep": 4,
+            "maxStep": 6,
+            "text": "*El sujeto viste un uniforme de hospital andrajoso. Sus manos están manchadas de antiséptico seco.* 'No hay doctores en el Sector 7. Las máquinas de diálisis se han detenido porque nadie sabe cómo calibrarlas. ¿Dónde están todos?'",
+            "options": [
+                {
+                    "text": "Se han realizado reasignaciones de emergencia para estabilizar los núcleos de energía.",
+                    "energyCost": 0.3,
+                    "stabilityImpact": 10,
+                    "consequence": "'¿Reasignaciones? Mi hija desapareció en medio de una cirugía. ¡No fue reasignada, se evaporó! El Bastión está mintiendo. El orden de Itzinol es una tumba bien pintada'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P2_KANATSIA_VACUUM",
+            "minStep": 5,
+            "maxStep": 7,
+            "text": "*Un ciudadano de Kanatsia con el rostro desencajado.* 'Erick Nebot se ha ido. Nuestra distribución está descabezada y Talok está enviando 'comités temporales' que huelen a ocupación militar. ¡Esto es un golpe de estado bajo el velo del desastre!'",
+            "options": [
+                {
+                    "text": "El comité temporal de Talok solo busca evitar el colapso de Kanatsia.",
+                    "energyCost": 0.4,
+                    "stabilityImpact": 12,
+                    "consequence": "'¡Mientes! Orval Drexler solo quiere el monolito. Nos está usando como escudos de carne mientras sus agentes saquean nuestros archivos clasificados sobre Zhyr'."
                 }
             ]
         }

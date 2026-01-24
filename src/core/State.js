@@ -5,14 +5,14 @@
  */
 import { bus } from './Bus.js';
 import { generateSubject } from '../systems/EntityGenerator.js';
+import { CONFIG } from './Config.js';
 
 let isBatching = false;
 
 const initialState = {
-    energy: 100,
-    stability: 100,
+    energy: CONFIG.ENERGY.INITIAL,
+    stability: CONFIG.STABILITY.INITIAL,
     oxygen: 100,
-    faith: 0,
     worldTime: 0,
     phase: 'SOLAR',
     currentRoom: 0,
@@ -41,8 +41,11 @@ const initialState = {
     // Cuota y Estadísticas (Fase 11)
     currentTurn: 1,
     processedCount: 0,
-    quota: 10,
+    quota: CONFIG.DEFAULT_QUOTA,
     judgmentErrors: 0,
+    maxErrors: CONFIG.MAX_JUDGMENT_ERRORS, // Agregado para visibilidad en UI
+    unrest: 0,           // 0-100: Nivel de agitación civil
+    faith: 0,            // 0-100: Nivel de herejía/devoción (storyPath 1)
     techniciansRecruited: 0,
     devotsRecruited: 0,
     influenceGathered: 0,

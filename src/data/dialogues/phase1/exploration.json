@@ -75,6 +75,53 @@
             ]
         },
         {
+            "id": "DLG_P1_DEYAR_TECH",
+            "minStep": 1,
+            "maxStep": 3,
+            "npcTraits": {
+                "id": "DEYAR",
+                "type": "TÉCNICO",
+                "visual": { "glitch": "LOW_RES" }
+            },
+            "text": "*Deyar sostiene los restos de un dron cuya carcasa está fundida, no por calor, sino por algo que parece corrosión molecular.* 'Esto... esto no es ciencia, operador. Mis sensores no registraron radiación, ni pulso electromagnético. Solo... silencio. Un silencio que rompió el silicio'.",
+            "options": [
+                {
+                    "text": "¿Qué dicen los registros de caja negra del dron antes del colapso?",
+                    "energyCost": 0.3,
+                    "stabilityImpact": -2,
+                    "loreUnlock": "LORE_DRONE_DATA",
+                    "consequence": " 'Nada. El último frame es una imagen del monolito, pero los símbolos... se estaban moviendo. No en la superficie, sino fuera de ella. Como si la roca estuviera proyectando su propio lenguaje en el aire'."
+                },
+                {
+                    "text": "Concéntrate, técnico. Necesitamos una explicación racional para la desaparición de Alexia.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 5,
+                    "consequence": "*Deyar ríe nerviosamente, un sonido seco y agudo.* '¿Racional? Vi cómo el aire se abría como una herida y se la tragaba. No hay física que explique cómo un cuerpo humano se convierte en píxeles de carne en medio de un desierto'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P1_SYMBOLS_ALIVE",
+            "minStep": 2,
+            "maxStep": 4,
+            "npcTraits": {
+                "id": "ALEXIA (PRE)",
+                "type": "SIMBOLOGISTA",
+                "visual": { "glitch": "NONE" }
+            },
+            "text": "*Alexia antes del incidente. Sus ojos brillan con una intensidad febril mientras estudia una muestra de arena.* 'No es erosión, operador. Es caligrafía. El viento no sopla sobre Zhyr; Zhyr está dictando su historia a través de las dunas'.",
+            "options": [
+                {
+                    "text": "¿Puedes traducir alguno de los glifos del monolito?",
+                    "energyCost": 0.4,
+                    "stabilityImpact": -3,
+                    "corruptionImpact": 8,
+                    "loreUnlock": "LORE_ALEXIA_TRANSLATION",
+                    "consequence": " 'No se traducen con la mente, se sienten con la médula. Dice algo sobre... \"el primer paso del retorno\". Como si nosotros no hubiéramos descubierto este lugar, sino que hubiéramos vuelto a casa después de un largo exilio'."
+                }
+            ]
+        },
+        {
             "id": "DLG_ALEXIA_ECHO",
             "minStep": 2,
             "maxStep": 8,

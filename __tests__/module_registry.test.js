@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { bus } from '../src/core/Bus.js';
-import { moduleRegistry, MODULES } from '../src/systems/ModuleRegistry.js';
+import { moduleRegistry, MODULES, localizeTutorialText } from '../src/systems/ModuleRegistry.js';
 
 describe('ModuleRegistry Tests (module_registry.test.js)', () => {
     beforeEach(() => {
@@ -56,5 +56,17 @@ describe('ModuleRegistry Tests (module_registry.test.js)', () => {
         moduleRegistry.forceUnlock('MOD_PORTAL');
 
         expect(moduleRegistry.isModuleActive('MOD_PORTAL')).toBe(true);
+    });
+
+    it('localizeTutorialText debe reemplazar tokens [[MOD-XX]] correctamente', () => {
+        const text = "Localice el [[MOD-01]] a su izquierda.";
+        
+        // Ruta Técnica (storyPath: 0)
+        const techText = localizeTutorialText(text, 0);
+        expect(techText).toBe("Localice el [Escáner Biométrico] a su izquierda.");
+        
+        // Ruta Sectaria (storyPath: 1)
+        const sectText = localizeTutorialText(text, 1);
+        expect(sectText).toBe("Localice el [Altar de Examen] a su izquierda.");
     });
 });

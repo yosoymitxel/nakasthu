@@ -5,7 +5,7 @@
  */
 import { bus } from '../core/Bus.js';
 import { state } from '../core/State.js';
-import { MODULES } from './ModuleRegistry.js';
+import { MODULES, localizeTutorialText } from './ModuleRegistry.js';
 
 // Definición del contenido de tutoriales por módulo (Ruta Técnica)
 const TUTORIAL_CONTENT = {
@@ -337,7 +337,8 @@ class TutorialController {
         // Sincronizar estado global para que UI reaccione (Highlights, Unlocks)
         state.tutorialStep = this.currentStepIndex;
 
-        const stepText = content.steps[this.currentStepIndex];
+        const rawText = content.steps[this.currentStepIndex];
+        const stepText = localizeTutorialText(rawText, state.storyPath);
         const title = `${content.title} (${this.currentStepIndex + 1}/${content.steps.length})`;
 
         this.isModalOpen = true;

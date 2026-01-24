@@ -48,6 +48,7 @@ export const Layout = () => {
     const processedCount = useGameState('processedCount');
     const quota = useGameState('quota');
     const judgmentErrors = useGameState('judgmentErrors');
+    const maxErrors = useGameState('maxErrors');
     const techniciansRecruited = useGameState('techniciansRecruited');
     const devotsRecruited = useGameState('devotsRecruited');
     const tutorialStep = useGameState('tutorialStep');
@@ -161,16 +162,19 @@ export const Layout = () => {
     const getRank = () => {
         const errors = deathStats?.errors !== undefined ? deathStats.errors : judgmentErrors;
         const currentEnergy = deathStats?.energy !== undefined ? deathStats.energy : energy;
+        const maxAllowed = maxErrors || 3;
 
-        // Si hay errores críticos o falló el sistema, es F
-        const isSystemFailure = deathReason && (deathReason.includes('ERROR CRÍTICO') || deathReason.includes('SUJETO DESCONTROLADO'));
+        // El rango F se reserva principalmente para el exceso de errores de juicio
+        if (errors >= maxAllowed) return { label: 'F', color: 'text-red-600', desc: 'INCOMPETENCIA TOTAL' };
 
-        if (isSystemFailure || errors > 5) return { label: 'F', color: 'text-red-600', desc: 'FRACASO ABSOLUTO' };
-
-        // Si llegamos a un final normal, evaluar desempeño
+        // Si falló por otros motivos (energía/estabilidad), evaluamos el desempeño previo
         if (errors === 0 && currentEnergy > 80) return { label: 'S', color: 'text-amber-400', desc: 'EJECUCIÓN PERFECTA' };
-        if (errors <= 2) return { label: 'A', color: 'text-emerald-400', desc: 'DESEMPEÑO SOBRESALIENTE' };
-        if (errors <= 5) return { label: 'C', color: 'text-yellow-600', desc: 'DESEMPEÑO ACEPTABLE' };
+        if (errors === 0) return { label: 'A', color: 'text-emerald-400', desc: 'DESEMPEÑO SOBRESALIENTE' };
+        
+        const ratio = errors / maxAllowed;
+        if (ratio < 0.4) return { label: 'B', color: 'text-cyan-400', desc: 'OPERACIÓN ESTABLE' };
+        if (ratio < 0.7) return { label: 'C', color: 'text-yellow-600', desc: 'OPERACIÓN ACEPTABLE' };
+        
         return { label: 'D', color: 'text-zinc-500', desc: 'RIESGO OPERATIVO' };
     };
 
@@ -204,7 +208,12 @@ export const Layout = () => {
         const onCloseModal = () => setModal(null);
 
         const onSystemFailure = (data) => {
-            setDeathReason(data.reason === 'ENERGY_DEPLETED' ? 'ERROR CRÍTICO: Agotamiento de Energía' : 'SUJETO DESCONTROLADO: Inestabilidad Neural');
+            let reasonLabel = 'SISTEMA COMPROMETIDO';
+            if (data.reason === 'ENERGY_DEPLETED') reasonLabel = 'ERROR CRÍTICO: Agotamiento de Energía';
+            if (data.reason === 'STABILITY_COLLAPSED') reasonLabel = 'SUJETO DESCONTROLADO: Inestabilidad Neural';
+            if (data.reason === 'EXCESSIVE_ERRORS') reasonLabel = 'FALLO OPERATIVO: Exceso de Errores';
+            
+            setDeathReason(reasonLabel);
             setDeathDetails(data.details || data.text);
             setDeathStats(data.stats);
         };
@@ -357,13 +366,33 @@ export const Layout = () => {
             <!-- Protocolo de Colapso (Muerte / Final) -->
             <div className=${`death-screen ${isGameOver ? 'active' : ''}`}>
                 <div className="flex flex-col items-center space-y-8 max-w-4xl text-center px-4 overflow-y-auto max-h-screen py-12 custom-scrollbar">
-                    <h1 className=${`font-mono text-4xl tracking-[0.3em] uppercase font-black ${deathReason && deathReason.includes('FINAL') ? 'text-cyan-500' : 'text-red-600'}`}>
-                        ${deathReason && deathReason.includes('FINAL') ? 'PROTOCOLOS COMPLETADOS' : 'BASTIÓN COMPROMETIDO'}
-                    </h1>
+                    ${(() => {
+                        const isFinal = deathReason && deathReason.includes('FINAL');
+                        const isProtocol = deathReason && deathReason.includes('PROTOCOL');
+                        const isErrors = deathReason && deathReason.includes('EXCESSIVE');
+                        
+                        let headerText = 'BASTIÓN COMPROMETIDO';
+                        let headerColor = 'text-red-600';
+                        
+                        if (isFinal) {
+                            headerText = 'PROTOCOLOS COMPLETADOS';
+                            headerColor = 'text-cyan-500';
+                        } else if (isProtocol) {
+                            headerText = 'DESEMPEÑO INSUFICIENTE';
+                            headerColor = 'text-amber-500';
+                        } else if (isErrors) {
+                            headerText = 'OPERADOR RELEVADO';
+                            headerColor = 'text-red-800';
+                        }
+
+                        return html`<h1 className=${`font-mono text-4xl tracking-[0.3em] uppercase font-black ${headerColor}`}>
+                            ${headerText}
+                        </h1>`;
+                    })()}
                     
                     <div className="space-y-6 w-full max-w-2xl">
-                        <div className=${`p-4 border bg-zinc-950/40 ${deathReason && deathReason.includes('FINAL') ? 'border-cyan-900/30' : 'border-red-900/30'}`}>
-                            <p className=${`font-bold text-xl tracking-widest animate-pulse mb-2 ${deathReason && deathReason.includes('FINAL') ? 'text-cyan-400' : 'text-red-500'}`}>
+                        <div className=${`p-4 border bg-zinc-950/40 ${deathReason && (deathReason.includes('FINAL') || deathReason.includes('PROTOCOL')) ? 'border-cyan-900/30' : 'border-red-900/30'}`}>
+                            <p className=${`font-bold text-xl tracking-widest animate-pulse mb-2 ${deathReason && (deathReason.includes('FINAL') || deathReason.includes('PROTOCOL')) ? 'text-cyan-400' : 'text-amber-500'}`}>
                                 ${deathReason || 'CONEXIÓN CORTADA'}
                             </p>
                             <p className="text-zinc-400 text-[14px] leading-relaxed italic">

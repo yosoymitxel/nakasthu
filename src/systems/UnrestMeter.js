@@ -14,7 +14,6 @@ const STATUS_LEVELS = {
 
 class UnrestMeter {
     constructor() {
-        this.level = 0; // 0-100
         this.isActive = false;
         this.init();
     }
@@ -42,7 +41,7 @@ class UnrestMeter {
     }
 
     reset() {
-        this.level = 0;
+        state.unrest = 0;
         this.isActive = false;
         this.emitUpdate();
     }
@@ -54,21 +53,22 @@ class UnrestMeter {
 
     increase(amount) {
         if (!this.isActive) return;
-        this.level = Math.min(100, this.level + amount);
+        state.unrest = Math.min(100, state.unrest + amount);
         this.checkStatus();
         this.emitUpdate();
     }
 
     decrease(amount) {
         if (!this.isActive) return;
-        this.level = Math.max(0, this.level - amount);
+        state.unrest = Math.max(0, state.unrest - amount);
         this.checkStatus();
         this.emitUpdate();
     }
 
     getStatus() {
-        if (this.level >= STATUS_LEVELS.CRITICAL.threshold) return 'CRITICAL';
-        if (this.level >= STATUS_LEVELS.TENSION.threshold) return 'TENSION';
+        const level = state.unrest;
+        if (level >= STATUS_LEVELS.CRITICAL.threshold) return 'CRITICAL';
+        if (level >= STATUS_LEVELS.TENSION.threshold) return 'TENSION';
         return 'CALM';
     }
 
@@ -84,7 +84,7 @@ class UnrestMeter {
 
     checkRiotChance() {
         if (!this.isActive) return;
-        if (this.level > 80) {
+        if (state.unrest > 80) {
             if (Math.random() > 0.7) { // 30% chance por chequeo
                 bus.emit('RIOT_EVENT', { damage: 10 });
                 bus.emit('TERMINAL_PRINT', {
@@ -98,7 +98,7 @@ class UnrestMeter {
 
     emitUpdate() {
         bus.emit('UNREST_UPDATE', {
-            level: this.level,
+            level: state.unrest,
             status: this.getStatus(),
             label: STATUS_LEVELS[this.getStatus()].label
         });

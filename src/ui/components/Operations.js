@@ -21,6 +21,7 @@ export const Operations = () => {
     const processedCount = useGameState('processedCount');
     const quota = useGameState('quota');
     const judgmentErrors = useGameState('judgmentErrors');
+    const maxErrors = useGameState('maxErrors');
     const activeDialogue = useGameState('activeDialogue');
     const tutorialStep = useGameState('tutorialStep');
     const isTutorialActive = useGameState('isTutorialActive');
@@ -308,8 +309,8 @@ export const Operations = () => {
                         ></div>
                     </div>
                     <div className="flex justify-center">
-                        <span className=${`text-[12px] font-bold font-mono uppercase ${state.storyPath === 1 ? 'text-purple-900/60' : 'text-red-900/60'}`}>
-                            ${state.storyPath === 1 ? 'CISMA' : 'ERR'}: ${judgmentErrors}
+                        <span className=${`text-[12px] font-bold font-mono uppercase ${judgmentErrors >= (maxErrors || 3) - 1 ? 'text-red-500 animate-pulse' : (state.storyPath === 1 ? 'text-purple-900/60' : 'text-zinc-600')}`}>
+                            ${state.storyPath === 1 ? 'CISMA' : 'ERR'}: ${judgmentErrors} / ${maxErrors || 3}
                         </span>
                     </div>
                 </div>
