@@ -8,50 +8,10 @@
 import { html } from '../utils/html.js';
 import { bus } from '../../core/Bus.js';
 import { state } from '../../core/State.js';
-import { gameSequencer, STEPS_CONFIG } from '../../systems/GameSequencer.js';
+import { CONFIG } from '../../data/gameConfig.js';
+import { getRandomFragment, calculateRank } from '../../utils/systemUtils.js';
 
 const { useState, useEffect, memo } = React;
-
-/**
- * Fragmentos narrativos para los briefings
- * Parafraseados de HistoriaCompleta.md
- */
-const NARRATIVE_FRAGMENTS = {
-    // Órdenes de Orval Drexler
-    drexler: [
-        '"La distracción es un lujo que no podemos permitirnos. Cada sujeto procesado es un paso hacia la estabilidad." — Orval Drexler',
-        '"El monolito es la clave, y Talok lo reclamará antes que nadie. No habrá interferencias." — Orval Drexler',
-        '"El caos es útil. Deja que griten, que se desahoguen. Cuando estén cansados, vendrán a nosotros." — Orval Drexler',
-        '"No subestimen a Kamin. Es más que un fanático. Sabe manipular a las masas." — Orval Drexler'
-    ],
-    // Susurros de Kamin
-    kamin: [
-        '"El portal no es solo una puerta; es un espejo. Nos refleja lo que hemos ignorado." — Kamin, Mensajero de Aitor',
-        '"La verdad siempre cuesta caro. Pero vale la pena pagar el precio." — Kamin',
-        '"Nos han mentido durante meses. La respuesta no está en sus tecnologías vacías." — Kamin',
-        '"Hay algo allí. Observándonos. El Renacimiento está cerca." — Kamin'
-    ],
-    // Reportes del sistema
-    sistema: [
-        '>>> ALERTA: Desviación detectada en patrones neurales de la población.',
-        '>>> INFORME: Protestas en aumento. Índice de estabilidad: CRÍTICO.',
-        '>>> REGISTRO: Sujeto #7 presenta anomalías incompatibles con protocolo estándar.',
-        '>>> ADVERTENCIA: Interferencia del Eidolon detectada en subsistema de decisiones.'
-    ]
-};
-
-/**
- * Obtiene un fragmento narrativo aleatorio según el paso y contexto
- */
-const getRandomFragment = (step, storyPath) => {
-    if (step <= 3 || step === 4) {
-        return NARRATIVE_FRAGMENTS.drexler[Math.floor(Math.random() * NARRATIVE_FRAGMENTS.drexler.length)];
-    } else if (step >= 7 && storyPath === 1) {
-        return NARRATIVE_FRAGMENTS.kamin[Math.floor(Math.random() * NARRATIVE_FRAGMENTS.kamin.length)];
-    } else {
-        return NARRATIVE_FRAGMENTS.sistema[Math.floor(Math.random() * NARRATIVE_FRAGMENTS.sistema.length)];
-    }
-};
 
 /**
  * Componente GameModal
@@ -108,15 +68,7 @@ export const GameModal = memo(({
             const match = part.match(/\[\[MOD-(\d+)\]\]/);
             if (match) {
                 const modId = match[0].replace('[[', '').replace(']]', '');
-                // Mapeo amigable de MOD IDs a nombres de área
-                const modMap = {
-                    'MOD-01': 'L_UPPER',   // BioScan
-                    'MOD-02': 'L_LOWER',   // Analytics
-                    'MOD-03': 'C_HEADER',  // Core Status
-                    'MOD-04': 'C_MAIN',    // Operations
-                    'MOD-05': 'C_FOOTER'   // Oscilloscope
-                };
-                const areaId = modMap[modId] || 'C_HEADER';
+                const areaId = CONFIG.UI.MOD_MAP[modId] || 'C_HEADER';
 
                 return html`
                     <button 
@@ -135,33 +87,11 @@ export const GameModal = memo(({
         });
     };
 
-    // Calcular rango de desempeño
-    const getRank = (stats) => {
-        if (!stats) return { label: 'N/A', color: 'text-zinc-500' };
-
-        const errors = stats.judgmentErrors || 0;
-        const processed = stats.processedCount || 0;
-        const maxAllowed = state.maxErrors || 3;
-
-        // Si llegó al límite de errores, es rango F (Fracaso)
-        if (errors >= maxAllowed) return { label: 'F', color: 'text-red-600', desc: 'SISTEMA COMPROMETIDO' };
-
-        // Escala dinámica basada en el margen de error
-        if (errors === 0 && processed >= state.quota) return { label: 'S', color: 'text-amber-400', desc: 'PERFECTO' };
-        if (errors === 0) return { label: 'A', color: 'text-emerald-400', desc: 'EXCELENTE' };
-        
-        const ratio = errors / maxAllowed;
-        if (ratio < 0.4) return { label: 'B', color: 'text-cyan-400', desc: 'ESTABLE' };
-        if (ratio < 0.7) return { label: 'C', color: 'text-yellow-500', desc: 'ADECUADO' };
-        
-        return { label: 'D', color: 'text-orange-500', desc: 'CRÍTICO' };
-    };
-
     if (!visible) {
         return null;
     }
 
-    const rank = getRank(stats);
+    const rank = calculateRank(stats);
 
     return html`
         <div className=${`game-modal-overlay fixed inset-0 z-[800] flex items-center justify-center p-4 transition-all duration-500 ${isTutorial ? 'bg-black/30' : 'bg-black/90'}`}>

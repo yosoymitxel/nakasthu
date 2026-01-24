@@ -1,16 +1,20 @@
 /**
- * CONTROLPANEL.JS (MOD-08)
- * Bloque 8: Panel de Control.
+ * CONTROLPANEL.JS (MOD-07)
+ * Bloque 7: Panel de Control.
  */
 import { html } from '../utils/html.js';
 import { state } from '../../core/State.js';
 import { bus } from '../../core/Bus.js';
+import { CONFIG } from '../../data/gameConfig.js';
 import { useGameState } from '../hooks/useGameState.js';
 
 export const ControlPanel = () => {
     const isPaused = useGameState('isPaused');
     const isTutorialActive = useGameState('isTutorialActive');
-    const storyPath = useGameState('storyPath');
+    const storyPath = useGameState('storyPath') || 0;
+    const labels = CONFIG.UI.LABELS[storyPath].controlPanel;
+    const processedCount = useGameState('processedCount');
+    const quota = useGameState('quota');
 
     const isSectarian = storyPath === 1;
 
@@ -21,20 +25,20 @@ export const ControlPanel = () => {
         state.endBatch();
 
         bus.emit('TERMINAL_PRINT', {
-            text: '>>> PROTOCOLO DE INDUCCIÓN ABORTADO. CONTROL MANUAL RESTABLECIDO.',
+            text: labels.skipTutorialMsg,
             type: 'SYSTEM'
         });
     };
 
     const handleManual = () => {
         bus.emit('UI_MODAL_OPEN', {
-            title: isSectarian ? 'CODEX_SANTUARIO' : 'OPERATIONAL_MANUAL',
+            title: labels.manualTitle,
             content: html`
                 <div className="space-y-4 text-zinc-400 font-mono text-[11px]">
-                    <p><strong className=${isSectarian ? 'text-purple-500' : 'text-cyan-500'}>${isSectarian ? 'MISIÓN:' : 'OBJETIVO:'}</strong> ${isSectarian ? 'Recuperar almas para el Aitor.' : 'Procesar biomasa según criterios de pureza.'}</p>
-                    <p><strong className="text-red-500">${isSectarian ? 'PURGAR:' : 'SACRIFICAR:'}</strong> ${isSectarian ? 'Elimina impuros (+30 Fe). Error si es devoto (-25 Agitación).' : 'Elimina sujetos corruptos (+30 Energía). Error si es puro (-25 Estabilidad).'}</p>
-                    <p><strong className="text-emerald-500">${isSectarian ? 'CONSAGRAR:' : 'AUTORIZAR:'}</strong> ${isSectarian ? 'Acepta a los elegidos (-10 Fe, +10 Agitación). Error si es impuro (-30 Agitación).' : 'Permite el paso de sujetos puros (-10 Energía, +10 Estabilidad). Error si es corrupto (-30 Estabilidad).'}</p>
-                    <p><strong className="text-amber-500">${isSectarian ? 'COMUNIÓN:' : 'RESONANCIA:'}</strong> ${isSectarian ? 'Sincroniza la fe con el vacío para evitar el colapso del santuario.' : 'Sincroniza frecuencia y fase para evitar degradación de estabilidad.'}</p>
+                    <p><strong className=${isSectarian ? 'text-purple-500' : 'text-cyan-500'}>${labels.manual.objective.label}</strong> ${labels.manual.objective.text}</p>
+                    <p><strong className="text-red-500">${labels.manual.sacrifice.label}</strong> ${labels.manual.sacrifice.text}</p>
+                    <p><strong className="text-emerald-500">${labels.manual.authorize.label}</strong> ${labels.manual.authorize.text}</p>
+                    <p><strong className="text-amber-500">${labels.manual.resonance.label}</strong> ${labels.manual.resonance.text}</p>
                 </div>
             `
         });
@@ -42,7 +46,16 @@ export const ControlPanel = () => {
 
     return html`
         <div className=${`relative flex flex-col h-full w-full p-2 justify-center items-center gap-1 transition-colors duration-1000 ${isSectarian ? 'bg-purple-950/10 shadow-[inset_0_0_20px_rgba(147,51,234,0.1)]' : 'bg-black/20'}`}>
-            <!-- BOTONES DE CONTROL (Strict Block 8) -->
+            
+            <!-- QUOTA TRACKER (MOD-07 logic) -->
+            <div className="absolute top-1 right-2 flex flex-col items-end opacity-40">
+                <span className="text-[7px] font-bold text-zinc-500 tracking-tighter">QUOTA_SYS</span>
+                <span className=${`text-[10px] font-black ${processedCount >= quota ? 'text-emerald-500' : 'text-zinc-400'}`}>
+                    ${processedCount}/${quota}
+                </span>
+            </div>
+
+            <!-- BOTONES DE CONTROL (Strict Block 7) -->
             <div className="flex gap-2 mb-2">
                 <button 
                     onClick=${handleManual}
@@ -71,11 +84,11 @@ export const ControlPanel = () => {
             </div>
 
             <div className="text-[10px] text-zinc-600 font-bold uppercase tracking-[0.2em]">
-                ${isSectarian ? 'Santuario de Mando' : 'Centro de Control'}
+                ${labels.title}
             </div>
             <div className="flex items-center gap-2 mt-1">
                 <span className=${`text-[6px] font-bold uppercase tracking-widest animate-pulse ${isSectarian ? 'text-purple-500' : 'text-emerald-500'}`}>
-                    ${isSectarian ? 'Comunión_Estable' : 'Link_Active'}
+                    ${labels.status}
                 </span>
                 <div className=${`w-1 h-1 rounded-full ${isSectarian ? 'bg-purple-500' : 'bg-emerald-500'}`}></div>
             </div>

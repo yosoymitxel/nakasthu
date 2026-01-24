@@ -59,7 +59,7 @@ describe('CommandEngine Tests (command_engine.test.js)', () => {
 
             const result = processCommand('/repair');
 
-            expect(result.text).toContain('INSUFFICIENT ENERGY');
+            expect(result.text).toContain('ENERGÍA INSUFICIENTE');
             expect(result.type).toBe('error');
         });
     });
@@ -134,7 +134,7 @@ describe('CommandEngine Tests (command_engine.test.js)', () => {
             processCommand('/status');
             const result = processCommand('/status');
 
-            expect(result).toContain('REPETIDO');
+            expect(result.text).toContain('REPETIDO');
         });
 
         it('debe permitir comandos diferentes consecutivos', () => {

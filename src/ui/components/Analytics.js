@@ -6,8 +6,10 @@
 import { html } from '../utils/html.js';
 import { bus } from '../../core/Bus.js';
 import { useGameState } from '../hooks/useGameState.js';
+import { CONFIG } from '../../data/gameConfig.js';
+import { analyzeSubjectProbability, formatScanDetail } from '../../utils/scannerUtils.js';
 
-const { useState, useEffect } = React;
+const { useState, useEffect, useMemo } = React;
 
 export const Analytics = () => {
     const [isProcessing, setIsProcessing] = useState(false);
@@ -19,17 +21,21 @@ export const Analytics = () => {
     const stability = useGameState('stability');
     const mode = useGameState('mode');
     const focusMode = useGameState('focusMode');
-    const storyPath = useGameState('storyPath');
+    const storyPath = useGameState('storyPath') || 0;
 
     const resonanceSync = useGameState('resonanceSync');
     const localFrequency = useGameState('localFrequency');
 
-    const isUnstable = stability < 40;
+    const labels = useMemo(() => CONFIG.UI.LABELS[storyPath], [storyPath]);
+    const anaLabels = labels.analytics;
+    const anaConstants = anaLabels.CONSTANTS;
+
+    const isUnstable = stability < anaConstants.UNSTABLE_THRESHOLD;
     const isSectarian = storyPath === 1;
 
     // Sincronizar el promedio de corrupción cada vez que cambia el historial
     useEffect(() => {
-        if (currentEntity && currentEntity.scannedData && currentEntity.scannedData.corruptionHistory) {
+        if (currentEntity?.scannedData?.corruptionHistory) {
             const history = currentEntity.scannedData.corruptionHistory;
             if (history.length > 0) {
                 const average = Math.floor(history.reduce((a, b) => a + b, 0) / history.length);
@@ -41,62 +47,39 @@ export const Analytics = () => {
         }
     }, [currentEntity?.scannedData?.corruptionHistory?.length]);
 
-    const analyzeSubject = (scanType, entity, currentMode) => {
-        if (!entity) return null;
-        let precision = 0.5;
-        switch (scanType) {
-            case 'NEURAL': precision = 0.9; break;
-            case 'NAKARA': precision = 0.95; break;
-            case 'RESONANCE': precision = 0.7; break;
-            case 'THERMAL': precision = 0.6; break;
-            case 'BIOMETRIC': precision = 0.5; break;
-        }
-        const eclipseInterference = currentMode === 'ECLIPSE' ? 0.2 : 0;
-        precision = Math.max(0.1, precision - eclipseInterference);
-        const showTruth = Math.random() < precision;
-        const displayedIsCorrupt = showTruth ? entity.isCorrupt : !entity.isCorrupt;
-        let prob = displayedIsCorrupt ? (precision * 100 + (Math.random() * (100 - precision * 100))) : ((1 - precision) * 100 * Math.random());
-        return Math.floor(prob);
-    };
-
     useEffect(() => {
         const onScanStart = (data) => {
             setIsProcessing(true);
-            const label = isSectarian ? 'INVOCANDO_TRAZA' : 'INICIANDO_ANALÍTICA';
-            setLines(prev => [{ text: `> ${label}: ${data.type.name}`, color: 'text-zinc-500' }, ...prev]);
+            const scanName = labels.scans[data.type.id] || data.type.name;
+            setLines(prev => [{ text: `> ${anaLabels.invokingTrace}: ${scanName}`, color: 'text-zinc-500' }, ...prev]);
         };
 
         const onScanComplete = (data) => {
             setIsProcessing(false);
             if (currentEntity) {
                 const { scannedData } = currentEntity;
-                let detail = "";
-                let newProb = null;
-                switch (data.type.id) {
-                    case 'BIOMETRIC':
-                        detail = isSectarian ? `AURA: ${Math.floor(scannedData.temperature)}%` : `TEMP: ${Math.floor(scannedData.temperature)}°C`;
-                        break;
-                    case 'NEURAL':
-                        detail = isSectarian ? `COMUNIÓN: ${Math.floor(scannedData.neuralSync)}%` : `SYNC: ${Math.floor(scannedData.neuralSync)}%`;
-                        break;
-                    case 'THERMAL':
-                        detail = isSectarian ? `GRADO_HUMANO: ${Math.floor(scannedData.heatSignature || 0)}λ` : `HEAT_SIG: ${Math.floor(scannedData.heatSignature || 0)}λ`;
-                        break;
-                    case 'NAKARA':
-                        detail = isSectarian ? `PROFUNDIDAD_ALMA: ${Math.floor(scannedData.voidDepth || 0)}m` : `VOID_DEPTH: ${Math.floor(scannedData.voidDepth || 0)}m`;
-                        break;
-                    case 'RESONANCE':
-                        detail = isSectarian ? `SANTUARIO: ${Math.floor(localFrequency || 0)}Hz` : `FREQ: ${Math.floor(localFrequency || 0)}Hz`;
-                        break;
-                    default: detail = isSectarian ? `GRACIA_RECIBIDA: OK` : `DATA_RECOVERY: SUCCESS`;
-                }
                 
-                newProb = analyzeSubject(data.type.id, currentEntity, mode);
+                const valMap = {
+                    BIOMETRIC: Math.floor(scannedData.temperature),
+                    NEURAL: Math.floor(scannedData.neuralSync),
+                    THERMAL: Math.floor(scannedData.heatSignature || 0),
+                    NAKARA: Math.floor(scannedData.voidDepth || 0),
+                    RESONANCE: Math.floor(localFrequency || 0)
+                };
+
+                const pattern = anaLabels.results[data.type.id] || anaLabels.results.DEFAULT;
+                
+                // Asegurar que formatScanDetail esté disponible (Fix ReferenceError)
+                const detail = typeof formatScanDetail === 'function' 
+                    ? formatScanDetail(pattern, valMap[data.type.id])
+                    : pattern.replace('{val}', valMap[data.type.id]);
+                
+                const newProb = analyzeSubjectProbability(data.type.id, currentEntity, mode);
 
                 let trendColor = "text-zinc-400";
                 if (newProb !== null) {
-                    if (newProb > 70) trendColor = "text-red-400";
-                    else if (newProb > 35) trendColor = "text-orange-400";
+                    if (newProb > anaConstants.PROB_CRITICAL) trendColor = "text-red-400";
+                    else if (newProb > anaConstants.PROB_WARNING) trendColor = "text-orange-400";
                     else trendColor = isSectarian ? "text-purple-400" : "text-cyan-400";
 
                     // Actualizar el historial de indicios en el estado global
@@ -108,7 +91,8 @@ export const Analytics = () => {
                     }
                 }
 
-                const dataString = `> SCAN: ${data.type.name} | RESULT: [${detail}] | PROB: ${newProb || '??'}%`;
+                const scanName = labels.scans[data.type.id] || data.type.name;
+                const dataString = `> SCAN: ${scanName} | RESULT: [${detail}] | PROB: ${newProb || '??'}%`;
                 setLines(prev => [{ text: dataString, color: trendColor }, ...prev]);
 
                 // ENVIAR A LORE (MOD-09)
@@ -122,37 +106,65 @@ export const Analytics = () => {
             }
         };
 
-        const onNewSubject = () => {
-            setLines([]);
+        const onNewSubject = (entity) => {
+            setLines([
+                { text: `> ${anaLabels.monitoring}: ENTIDAD_${entity.id}_DETECTADA`, color: isSectarian ? 'text-purple-400' : 'text-cyan-400' },
+                { text: `> ANALISIS_INICIAL: [PROCESANDO...]`, color: 'text-zinc-500' }
+            ]);
             setCorruptionProb(null);
             setPrevProb(null);
         };
 
         const onDialogueStarted = () => {
             setLines(prev => [
-                { text: `> ${isSectarian ? 'COMUNIÓN' : 'INTERROGAR'}: ${isSectarian ? 'SINTONIZANDO_SUSURROS_ALMA' : 'MONITORIZANDO_RESPUESTAS_VOCALES'}`, color: isSectarian ? 'text-purple-600' : 'text-cyan-600' },
-                { text: `> ${isSectarian ? 'VÍNCULO_ESPIRITUAL_ACTIVO' : 'ENLACE_NEURAL_ACTIVO'}`, color: isSectarian ? 'text-purple-500' : 'text-cyan-500' }, 
+                { text: `> ${labels.operations.interrogateBtn.split('[')[0].trim()}: ${anaLabels.monitoring}`, color: isSectarian ? 'text-purple-600' : 'text-cyan-600' },
+                { text: `> ${anaLabels.linkActive}`, color: isSectarian ? 'text-purple-500' : 'text-cyan-500' }, 
                 ...prev
-            ]);
+            ].slice(0, 50));
+        };
+
+        const onDialogueOptionSelected = (data) => {
+            const { corruptionImpact, stabilityImpact } = data;
+            
+            let impactStr = '';
+            if (corruptionImpact !== 0) impactStr += ` | CORR: ${corruptionImpact > 0 ? '+' : ''}${corruptionImpact}%`;
+            if (stabilityImpact !== 0) impactStr += ` | STAB: ${stabilityImpact > 0 ? '+' : ''}${stabilityImpact}%`;
+
+            setLines(prev => [
+                { text: `> ${labels.operations.operatorSender}: ${data.option}`, color: 'text-zinc-400' },
+                { text: `> ANALISIS_INTERACCION: [${impactStr.trim() || 'NOMINAL'}]`, color: impactStr.includes('+') ? 'text-red-400' : 'text-cyan-500' },
+                ...prev
+            ].slice(0, 50));
+        };
+
+        const onDialogueEnded = () => {
+            setLines(prev => [
+                { text: `> ${anaLabels.statusLabel}: ENLACE_CERRADO`, color: 'text-zinc-600' },
+                ...prev
+            ].slice(0, 50));
         };
 
         bus.on('SCAN_STARTED', onScanStart);
         bus.on('SCAN_COMPLETED', onScanComplete);
         bus.on('NEW_SUBJECT_DETECTED', onNewSubject);
         bus.on('DIALOGUE_STARTED', onDialogueStarted);
+        bus.on('DIALOGUE_OPTION_SELECTED', onDialogueOptionSelected);
+        bus.on('DIALOGUE_ENDED', onDialogueEnded);
         return () => {
             bus.off('SCAN_STARTED', onScanStart);
             bus.off('SCAN_COMPLETED', onScanComplete);
             bus.off('NEW_SUBJECT_DETECTED', onNewSubject);
             bus.off('DIALOGUE_STARTED', onDialogueStarted);
+            bus.off('DIALOGUE_OPTION_SELECTED', onDialogueOptionSelected);
+            bus.off('DIALOGUE_ENDED', onDialogueEnded);
         };
-    }, [currentEntity, mode, localFrequency, isSectarian]);
+    }, [currentEntity, mode, localFrequency, isSectarian, anaLabels, labels]);
 
     return html`
         <div className="flex flex-col h-full bg-transparent font-mono overflow-hidden">
             <header className="p-3 border-b border-zinc-800 flex justify-between items-center bg-black/20">
                 <h2 className="text-[11px] font-black text-zinc-500 tracking-[0.3em] uppercase">
-                    ${isSectarian ? 'MOD-02: ANALÍTICA_DE_FE' : 'MOD-02: DATA_ANALYTICS'}
+                    ${anaLabels.header}
                 </h2>
                 <div className="flex gap-1">
                     <div className=${`w-2 h-0.5 ${isProcessing ? 'animate-pulse bg-amber-500' : 'bg-zinc-800'}`}></div>
@@ -165,7 +177,7 @@ export const Analytics = () => {
                 <div className="mb-4">
                     <div className="flex justify-between items-end mb-1">
                         <span className="text-[12px] text-zinc-400 uppercase tracking-[0.2em] font-bold">
-                            ${isSectarian ? 'Pureza_del_Alma' : 'Probabilidad_Corrupción'}
+                            ${anaLabels.probabilityLabel}
                         </span>
                         <div className="flex items-center gap-2">
                             ${prevProb !== null && corruptionProb !== null && html`
@@ -175,8 +187,8 @@ export const Analytics = () => {
                             `}
                             <span className=${`text-[24px] font-black leading-none ${
                                 corruptionProb === null ? 'text-zinc-800' : 
-                                corruptionProb > 70 ? 'text-red-500' : 
-                                corruptionProb > 35 ? 'text-orange-400' : (isSectarian ? 'text-purple-400' : 'text-cyan-400')
+                                corruptionProb > anaConstants.PROB_CRITICAL ? 'text-red-500' : 
+                                corruptionProb > anaConstants.PROB_WARNING ? 'text-orange-400' : (isSectarian ? 'text-purple-400' : 'text-cyan-400')
                             }`}>
                                 ${corruptionProb === null ? '--%' : `${corruptionProb}%`}
                             </span>
@@ -184,9 +196,9 @@ export const Analytics = () => {
                     </div>
                     <div className="h-[4px] w-full bg-zinc-900 relative overflow-hidden">
                         <div 
-                            className=${`h-full transition-all duration-[1500ms] ${
-                                corruptionProb > 70 ? 'bg-red-500/60' : 
-                                corruptionProb > 35 ? 'bg-orange-400/60' : (isSectarian ? 'bg-purple-400/60' : 'bg-cyan-400/60')
+                            className=${`h-full transition-all duration-[${anaConstants.TRANSITION_MS}ms] ${
+                                corruptionProb > anaConstants.PROB_CRITICAL ? 'bg-red-500/60' : 
+                                corruptionProb > anaConstants.PROB_WARNING ? 'bg-orange-400/60' : (isSectarian ? 'bg-purple-400/60' : 'bg-cyan-400/60')
                             }`}
                             style=${{ width: `${corruptionProb || 0}%` }}
                         ></div>
@@ -196,20 +208,11 @@ export const Analytics = () => {
                 <!-- Log de Datos Recuperados -->
                 <div className="flex-1 flex flex-col gap-1 overflow-y-auto custom-scrollbar pr-2">
                     <div className="text-[12px] text-zinc-500 uppercase tracking-widest mb-2 border-b border-zinc-800 pb-1 font-bold flex justify-between">
-                        <span>${isSectarian ? 'Lectura_de_Emanaciones' : 'Análisis_Trazas_Log'}</span>
-                        ${focusMode && html`<span className=${`${isSectarian ? 'text-purple-600' : 'text-cyan-600'} animate-pulse text-[10px]`}>${isSectarian ? 'COMUNIÓN_ACTIVA' : 'NEURAL_TRACE_ACTIVE'}</span>`}
+                        <span>${anaLabels.logLabel}</span>
+                        ${focusMode && html`<span className=${`${isSectarian ? 'text-purple-600' : 'text-cyan-600'} animate-pulse text-[10px]`}>${anaLabels.traceActive}</span>`}
                     </div>
-                    ${focusMode && html`
-                        <div className=${`text-[12px] ${isSectarian ? 'text-purple-500/80' : 'text-cyan-500/80'} italic uppercase tracking-widest mb-2 animate-pulse`}>
-                            > ${isSectarian ? 'ESCUCHANDO_AL_ÍDOLO...' : 'ANALIZANDO_PATRON_VOCAL...'} [${Math.floor(Date.now() / 1000) % 2 === 0 ? '|||' : '... '}]
-                        </div>
-                    `}
-                    ${lines.length === 0 && !focusMode ? html`
-                        <div className="text-[12px] text-zinc-600 italic uppercase tracking-widest mt-2">
-                            ${isSectarian ? 'Esperando_Señal...' : 'Esperando_Datos...'}
-                        </div>
-                    ` : lines.map((line, i) => html`
-                        <div key=${i} className=${`text-[12px] border-l border-zinc-800 pl-3 leading-tight py-1 ${line.color || 'text-zinc-400'}`}>
+                    ${lines.map((line, i) => html`
+                        <div key=${i} className=${`text-[10px] leading-tight animate-in fade-in slide-in-from-left-1 duration-300 ${line.color}`}>
                             ${line.text}
                         </div>
                     `)}
@@ -220,10 +223,10 @@ export const Analytics = () => {
             <div className="mt-auto p-3 pt-2 border-t border-zinc-800 flex justify-between items-center bg-black/10">
                 <div className="flex gap-2 items-center">
                     <div className=${`w-2 h-2 ${isProcessing ? (isSectarian ? 'bg-purple-500 animate-ping' : 'bg-cyan-500 animate-ping') : 'bg-zinc-800'}`}></div>
-                    <span className="text-[12px] text-zinc-500 uppercase tracking-tighter">${isSectarian ? 'Altar:' : 'Estado:'} ${isProcessing ? 'ACTIVO' : 'LISTO'}</span>
+                    <span className="text-[12px] text-zinc-500 uppercase tracking-tighter">${anaLabels.statusLabel} ${isProcessing ? anaLabels.active : anaLabels.ready}</span>
                 </div>
                 <span className=${`text-[12px] font-bold ${isUnstable ? 'text-amber-500 animate-pulse' : 'text-zinc-600'}`}>
-                    ${isUnstable ? (isSectarian ? 'AVISO: AGITACIÓN' : 'WARN: ESTABILIDAD') : 'NOMINAL'}
+                    ${isUnstable ? anaLabels.warn : anaLabels.nominal}
                 </span>
             </div>
         </div>

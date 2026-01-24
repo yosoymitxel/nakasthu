@@ -5,6 +5,7 @@
  */
 import { bus } from '../core/Bus.js';
 import { state } from '../core/State.js';
+import { calculateQuotaPercentage, isQuotaReached } from '../utils/quotaUtils.js';
 
 class QuotaTracker {
     constructor() {
@@ -16,7 +17,7 @@ class QuotaTracker {
 
     init() {
         // Escuchar cuando se procesa un sujeto exitosamente
-        bus.on('SUBJECT_PROCESSED', (data) => {
+        bus.on('DECISION_MADE', (data) => {
             // Solo contar si la acción fue positiva (autorizar o reclutar)
             // En este sistema simplificado, asumimos que cualquier proceso cuenta si no fue un error
             this.registerSuccess();
@@ -46,7 +47,7 @@ class QuotaTracker {
         this.current++;
         this.emitUpdate();
 
-        if (this.current >= this.target) {
+        if (isQuotaReached(this.current, this.target)) {
             bus.emit('QUOTA_MET', { target: this.target });
 
             // Efecto visual de éxito
@@ -66,8 +67,7 @@ class QuotaTracker {
     }
 
     getPercentage() {
-        if (this.target === 0) return 0;
-        return Math.min(100, Math.floor((this.current / this.target) * 100));
+        return calculateQuotaPercentage(this.current, this.target);
     }
 
     checkStatus() {

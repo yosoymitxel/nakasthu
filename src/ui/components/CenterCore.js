@@ -9,7 +9,12 @@ import { HeaderNucleo } from './HeaderNucleo.js';
 import { Operations } from './Operations.js';
 import { Oscilloscope } from './Oscilloscope.js';
 
+import { getModuleName } from '../../systems/ModuleRegistry.js';
+import { useGameState } from '../hooks/useGameState.js';
+
 export const CenterCore = ({ getModuleTutorialStatus }) => {
+    const storyPath = useGameState('storyPath');
+
     return html`
         <${React.Fragment}>
             <${ModuleWrapper} 
@@ -17,7 +22,7 @@ export const CenterCore = ({ getModuleTutorialStatus }) => {
                 locked=${getModuleTutorialStatus('C_HEADER').locked}
                 highlighted=${getModuleTutorialStatus('C_HEADER').highlighted}
             >
-                <${Panel} title="MOD-03: CORE_HEADER" areaId="C_HEADER" className="w-full h-full overflow-hidden" contentClassName="!p-0">
+                <${Panel} title="SYS_STATUS: CORE_NUCLEO" areaId="C_HEADER" className="w-full h-full overflow-hidden" contentClassName="!p-0">
                     <${HeaderNucleo} />
                 <//>
             <//>
@@ -27,7 +32,7 @@ export const CenterCore = ({ getModuleTutorialStatus }) => {
                 locked=${getModuleTutorialStatus('C_MAIN').locked}
                 highlighted=${getModuleTutorialStatus('C_MAIN').highlighted}
             >
-                <${Panel} title="MOD-04: OPERATIONS" areaId="C_MAIN" className="w-full h-full overflow-hidden" contentClassName="!p-0">
+                <${Panel} title=${getModuleName('MOD-04', storyPath)} areaId="C_MAIN" className="w-full h-full overflow-hidden" contentClassName="!p-0">
                     <${Operations} />
                 <//>
             <//>
@@ -37,7 +42,7 @@ export const CenterCore = ({ getModuleTutorialStatus }) => {
                 locked=${getModuleTutorialStatus('C_FOOTER').locked}
                 highlighted=${getModuleTutorialStatus('C_FOOTER').highlighted}
             >
-                <${Panel} title="MOD-05: RESONANCE" areaId="C_FOOTER" className="w-full h-full overflow-hidden" contentClassName="!p-0">
+                <${Panel} title=${getModuleName('MOD-06', storyPath)} areaId="C_FOOTER" className="w-full h-full overflow-hidden" contentClassName="!p-0">
                     <${Oscilloscope} />
                 <//>
             <//>

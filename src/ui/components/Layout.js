@@ -12,7 +12,9 @@ import { useGameState } from '../hooks/useGameState.js';
 import { state } from '../../core/State.js';
 import { bus } from '../../core/Bus.js';
 import { moduleRegistry, MODULES } from '../../systems/ModuleRegistry.js';
-import { gameSequencer, STEPS_CONFIG } from '../../systems/GameSequencer.js';
+import { gameSequencer } from '../../systems/GameSequencer.js';
+import { STEPS_CONFIG } from '../../data/stepsConfig.js';
+import { CONFIG } from '../../data/gameConfig.js';
 
 // Importar Pantallas
 import { CinematicScreen } from '../screens/cinematic/CinematicScreen.js';
@@ -21,21 +23,12 @@ import { GameplayScreen } from '../screens/gameplay/GameplayScreen.js';
 import { LoreScreen } from '../screens/lore/LoreScreen.js';
 import { GameModal, useGameModal } from './GameModal.js';
 import { toggleFullScreen, isFullScreen } from '../utils/fullscreen.js';
+import { calculateRank } from '../../utils/systemUtils.js';
 
 const { useState, useEffect } = React;
 
 // Mapeo de Áreas de Grid a IDs de Módulo para el sistema de bloqueo
-const AREA_TO_MODULE = {
-    'L_UPPER': MODULES.BIOSCAN.id,
-    'L_LOWER': MODULES.ANALYTICS.id,
-    'C_FOOTER': MODULES.RESONANCE.id,
-    'C_MAIN': MODULES.OPERATIONS.id,
-    'R_UPPER': MODULES.LORE_ARCHIVE.id,
-    'R_TOP': MODULES.QUOTA_TRACKER.id,
-    'R_MIDDLE': MODULES.FACTION_SYSTEM.id,
-    'R_BOTTOM': MODULES.UNREST_METER.id,
-    'L_BOTTOM': MODULES.PORTAL_MONITOR.id
-};
+const AREA_TO_MODULE = CONFIG.UI.AREA_TO_MODULE;
 
 export const Layout = () => {
     // Suscribirse a valores globales para efectos de Layout
@@ -80,11 +73,26 @@ export const Layout = () => {
     // Listener para desbloqueo de módulos
     useEffect(() => {
         const onModuleUnlock = () => {
-            setUnlockedModules(new Set(moduleRegistry.activeModules));
+            // Filtrar los módulos que están realmente activos (según paso y ruta)
+            const activeIds = Object.values(MODULES)
+                .filter(m => moduleRegistry.isModuleActive(m.id))
+                .map(m => m.id);
+            setUnlockedModules(new Set(activeIds));
         };
         bus.on('MODULE_UNLOCKED', onModuleUnlock);
-        return () => bus.off('MODULE_UNLOCKED', onModuleUnlock);
+        bus.on('ACT_CHANGE', onModuleUnlock);
+        
+        // Ejecutar inicialmente para sincronizar estado si ya hay módulos
+        onModuleUnlock();
+
+        return () => {
+            bus.off('MODULE_UNLOCKED', onModuleUnlock);
+            bus.off('ACT_CHANGE', onModuleUnlock);
+        };
     }, []);
+
+    // Función helper para verificar si un módulo está activo y cumple requisitos de ruta
+    const isModuleActive = (moduleId) => moduleRegistry.isModuleActive(moduleId);
 
     // Sistema de Pasos Narrativos
     const currentStep = useGameState('currentStep');
@@ -100,8 +108,15 @@ export const Layout = () => {
 
     // Lógica de bloqueo visual
     const getModuleTutorialStatus = (areaId) => {
-        // Hooks removed from here. Using closure variables.
-        const moduleId = AREA_TO_MODULE[areaId];
+        const storyPath = state.storyPath || 0;
+        
+        // 0. Determinar el ModuleId correcto para el área según la ruta
+        let moduleId = AREA_TO_MODULE[areaId];
+        
+        // Excepción para R_MIDDLE que depende de la ruta
+        if (areaId === 'R_MIDDLE') {
+            moduleId = storyPath === 1 ? AREA_TO_MODULE.R_MIDDLE_SECT : AREA_TO_MODULE.R_MIDDLE_TECH;
+        }
 
         // 1. Estado de Bloqueo Base: Si tiene un ID de módulo mapeado y no está activo -> Bloqueado
         let locked = false;
@@ -112,8 +127,6 @@ export const Layout = () => {
             if (isRegisteredModule) {
                 locked = !moduleRegistry.isModuleActive(moduleId);
             } else {
-                // Para módulos placeholder (Control, OS, etc), asumimos desbloqueados por defecto
-                // O podemos definir lógica específica aquí si quisiéramos bloquearlos
                 locked = false;
             }
         }
@@ -124,16 +137,16 @@ export const Layout = () => {
         if (isTutorialActive) {
             // Mapping de Tutorial ID -> Area ID
             const TUTORIAL_TO_AREA = {
-                [MODULES.BIOSCAN.tutorial]: 'L_UPPER',
-                [MODULES.ANALYTICS.tutorial]: 'L_LOWER',
-                [MODULES.RESONANCE.tutorial]: 'C_FOOTER',
-                [MODULES.OPERATIONS.tutorial]: 'C_MAIN',
-                [MODULES.LORE_ARCHIVE.tutorial]: 'R_UPPER',
-                [MODULES.QUOTA_TRACKER.tutorial]: 'C_MAIN', // El QuotaTracker visualmente está en Operations
-                [MODULES.RITUAL_ENGINE.tutorial]: 'L_BOTTOM',
-                [MODULES.UNREST_METER.tutorial]: 'R_BOTTOM',
-                [MODULES.FACTION_SYSTEM.tutorial]: 'R_MIDDLE',
-                [MODULES.PORTAL_MONITOR.tutorial]: 'L_BOTTOM'
+                [MODULES.BIOSCAN?.tutorial || 'TUTO_BIOSCAN']: 'L_UPPER',
+                [MODULES.ANALYTICS?.tutorial || 'TUTO_ANALYTICS']: 'L_LOWER',
+                [MODULES.RESONANCE?.tutorial || 'TUTO_RESONANCE']: 'C_FOOTER',
+                [MODULES.OPERATIONS?.tutorial || 'TUTO_OPERATIONS']: 'C_MAIN',
+                [MODULES.LORE_ARCHIVE?.tutorial || 'TUTO_LORE']: 'R_UPPER',
+                [MODULES.QUOTA_TRACKER?.tutorial || 'TUTO_QUOTA']: 'C_MAIN', // El QuotaTracker visualmente está en Operations
+                [MODULES.UNREST_METER?.tutorial || 'TUTO_UNREST']: 'R_BOTTOM',
+                [MODULES.FACTION_SYSTEM?.tutorial || 'TUTO_FACTION']: 'R_MIDDLE',
+                [MODULES.TERMINAL?.tutorial || 'TUTO_TERMINAL']: 'R_MIDDLE',
+                [MODULES.PORTAL_MONITOR?.tutorial || 'TUTO_PORTAL']: 'L_BOTTOM'
             };
 
             // Determinar si esta área es la target del tutorial actual
@@ -157,26 +170,6 @@ export const Layout = () => {
         }
     }, [gameStatus, hasSeenWelcome, quota]);
     */
-
-    // Lógica de cálculo de rango moved up to avoid flicker and allow stable rank capture
-    const getRank = () => {
-        const errors = deathStats?.errors !== undefined ? deathStats.errors : judgmentErrors;
-        const currentEnergy = deathStats?.energy !== undefined ? deathStats.energy : energy;
-        const maxAllowed = maxErrors || 3;
-
-        // El rango F se reserva principalmente para el exceso de errores de juicio
-        if (errors >= maxAllowed) return { label: 'F', color: 'text-red-600', desc: 'INCOMPETENCIA TOTAL' };
-
-        // Si falló por otros motivos (energía/estabilidad), evaluamos el desempeño previo
-        if (errors === 0 && currentEnergy > 80) return { label: 'S', color: 'text-amber-400', desc: 'EJECUCIÓN PERFECTA' };
-        if (errors === 0) return { label: 'A', color: 'text-emerald-400', desc: 'DESEMPEÑO SOBRESALIENTE' };
-        
-        const ratio = errors / maxAllowed;
-        if (ratio < 0.4) return { label: 'B', color: 'text-cyan-400', desc: 'OPERACIÓN ESTABLE' };
-        if (ratio < 0.7) return { label: 'C', color: 'text-yellow-600', desc: 'OPERACIÓN ACEPTABLE' };
-        
-        return { label: 'D', color: 'text-zinc-500', desc: 'RIESGO OPERATIVO' };
-    };
 
     // Listener para feedback de impacto
     useEffect(() => {
@@ -253,7 +246,12 @@ export const Layout = () => {
     // Capturar el rango final para evitar parpadeo al reiniciar el nivel
     useEffect(() => {
         if (isGameOver) {
-            setStableRank(getRank());
+            const currentStats = {
+                errors: deathStats?.errors !== undefined ? deathStats.errors : judgmentErrors,
+                energy: deathStats?.energy !== undefined ? deathStats.energy : energy,
+                maxErrors: maxErrors || 3
+            };
+            setStableRank(calculateRank(currentStats));
         } else if (stableRank) {
             // Limpiar con retraso después de que la pantalla de muerte desaparezca (1.5s transition)
             const timer = setTimeout(() => setStableRank(null), 2000);
@@ -286,7 +284,11 @@ export const Layout = () => {
     }, [gameStatus]);
 
 
-    const rank = getRank();
+    const rank = calculateRank({
+        errors: deathStats?.errors !== undefined ? deathStats.errors : judgmentErrors,
+        energy: deathStats?.energy !== undefined ? deathStats.energy : energy,
+        maxErrors: maxErrors || 3
+    });
 
     // Estilo dinámico del borde del contenedor
     const gridStyle = {
@@ -474,7 +476,7 @@ export const Layout = () => {
                     return html`<${MechanicScreen} config=${stepConfig} />`;
                 case 'gameplay':
                 default:
-                    return html`<${GameplayScreen} getModuleTutorialStatus=${getModuleTutorialStatus} />`;
+                    return html`<${GameplayScreen} getModuleTutorialStatus=${getModuleTutorialStatus} unlockedModules=${unlockedModules} />`;
             }
         })()}
             </div>

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { bus } from '../src/core/Bus.js';
+import { portalFlux } from '../src/services/PortalService.js';
 import { state } from '../src/core/State.js';
-import { portalFlux } from '../src/systems/PortalFlux.js';
+import { bus } from '../src/core/Bus.js';
 
 describe('PortalFlux Tests (portal_flux.test.js)', () => {
     beforeEach(() => {

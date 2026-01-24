@@ -105,6 +105,8 @@ class LoreSystem {
     }
 
     saveToArchive(data) {
+        if (!data) return;
+
         // Almacenar en el estado global (Rule: State.js loreArchive)
         const newArchive = [...state.loreArchive, {
             ...data,
@@ -113,7 +115,8 @@ class LoreSystem {
         
         state.loreArchive = newArchive;
         
-        console.log(`%c[LORE] Entrada archivada: ${data.entityId}`, "color: #a78bfa;");
+        const logId = data.entityId || data.loreId || 'SISTEMA_GENERIC';
+        console.log(`%c[LORE] Entrada archivada: ${logId}`, "color: #a78bfa; font-weight: bold;");
     }
 }
 

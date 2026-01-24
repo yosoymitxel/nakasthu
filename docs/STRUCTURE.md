@@ -7,9 +7,12 @@ Este proyecto utiliza una arquitectura **Híbrida ESM-Native**:
 
 ## Directorios
 - `/src/core`: Motor lógico puro (Bus, State, GameLoop).
+- `/src/services`: Gestores de lógica compleja (MechanicManager).
 - `/src/systems`: Subsistemas de juego (Scanner, Portal, etc.).
+- `/src/data`: Configuración centralizada (gameConfig.js) y datos narrativos.
+- `/src/utils`: Utilidades puras independientes del framework (math, text, probability).
 - `/src/ui/components`: Componentes visuales usando `html` tagged templates.
-- `/src/ui/utils`: Utilidades (binding de htm con React).
+- `/src/ui/utils`: Utilidades de UI (binding de htm con React).
 - `/src/ui/hooks`: Hooks de conexión con el estado global.
 
 ## Flujo de Datos

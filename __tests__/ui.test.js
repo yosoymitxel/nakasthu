@@ -18,7 +18,7 @@ describe('UI & Communications Validations (ui.test.js)', () => {
 
         // Segunda ejecución inmediata (simulando doble Enter rápido)
         const response2 = processCommand(cmd);
-        expect(response2).toBe("ERROR: COMANDO REPETIDO DETECTADO. FLUJO BLOQUEADO.");
+        expect(response2.text).toBe("ERROR: COMANDO REPETIDO DETECTADO. FLUJO BLOQUEADO.");
     });
 
     it('Validar que los 4 botones de interacción de diálogo resten la energía configurada (5 pts)', () => {

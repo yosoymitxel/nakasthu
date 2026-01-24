@@ -5,14 +5,15 @@
  */
 import { html } from '../utils/html.js';
 import { dialogueEngine } from '../../systems/DialogueEngine.js';
-import { handleSacrifice, handleAuthorize } from '../../systems/MechanicsEngine.js';
 import { bus } from '../../core/Bus.js';
 import { state } from '../../core/State.js';
+import { CONFIG } from '../../data/gameConfig.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { useStoryLabels } from './MainLayout.js';
 import { gameSequencer } from '../../systems/GameSequencer.js';
 import { PortalScene } from './PortalScene.js';
 import { SubjectVisual } from './SubjectVisual.js';
+import { Coms } from './Coms.js';
 import { SCAN_TYPES } from '../../systems/Scanner.js';
 
 const { useState, useEffect, useRef } = React;
@@ -27,71 +28,31 @@ export const Operations = () => {
     const isTutorialActive = useGameState('isTutorialActive');
     const activeTutorialId = useGameState('activeTutorialId'); // New check
 
-    const [messages, setMessages] = useState([]);
     const [isTyping, setIsTyping] = useState(false);
     const [kaminOverride, setKaminOverride] = useState(false);
     const requiredScan = useGameState('requiredScan');
     const currentEntity = useGameState('currentEntity');
     const currentStep = useGameState('currentStep');
+    const storyPath = useGameState('storyPath') || 0;
+    const labels = CONFIG.UI.LABELS[storyPath].operations;
     const storyLabels = useStoryLabels();
-
-    // Detectar si el sujeto actual es Kamin (Override en Paso 6)
-    const isKaminSubject = currentEntity?.id === 'KAMIN' ||
-        currentEntity?.name?.toLowerCase().includes('kamin');
 
     // Verificar si el escaneo requerido ha sido completado
     const isScanComplete = currentEntity?.scannedTypes?.includes(requiredScan);
 
-    const scrollRef = useRef(null);
-    const messagesEndRef = useRef(null);
-
     const [flash, setFlash] = useState(null);
 
-    // Parser de Markdown para Diálogos
-    const parseDialogue = (text) => {
-        if (!text) return [];
-        // Separar por bloques de acción (entre asteriscos)
-        const parts = text.split(/(\*[^*]+\*)/g).filter(p => p.length > 0);
-        return parts.map(part => {
-            if (part.startsWith('*') && part.endsWith('*')) {
-                return { type: 'ACTION', text: part.replace(/\*/g, '').trim() };
-            }
-            return { type: 'SPEECH', text: part.trim() };
-        });
-    };
-
-    // Función para añadir mensajes secuencialmente (Acción -> Tipeo de Habla)
-    const appendParsedMessages = async (sender, text, baseType) => {
-        const blocks = parseDialogue(text);
-
-        for (const block of blocks) {
-            if (block.type === 'ACTION') {
-                // Las acciones aparecen instantáneamente
-                setMessages(prev => [...prev, {
-                    sender,
-                    text: block.text,
-                    type: 'ACTION',
-                    timestamp: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-                }]);
-                // Pequeña pausa antes de lo siguiente
-                await new Promise(r => setTimeout(r, 600));
-            } else {
-                // El habla se tipea
-                setIsTyping(true);
-                // Aquí se podría emitir un sonido de tipeo: bus.emit('PLAY_SOUND', 'TYPE');
-                await new Promise(r => setTimeout(r, 1000)); // Simular tiempo de procesamiento
-
-                setMessages(prev => [...prev, {
-                    sender,
-                    text: block.text,
-                    type: baseType,
-                    timestamp: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-                }]);
-                setIsTyping(false);
-                await new Promise(r => setTimeout(r, 400));
-            }
-        }
-    };
+    useEffect(() => {
+        const onDialogue = (data) => {
+            // Sincronizar estado de escritura con Coms si es necesario
+            if (data.target && data.target !== 'MOD04' && data.target !== 'GLOBAL') return;
+            setIsTyping(true);
+            // El tiempo aquí debe ser aproximado al de Coms para deshabilitar botones
+            setTimeout(() => setIsTyping(false), 2000); 
+        };
+        bus.on('DIALOGUE_EMITTED', onDialogue);
+        return () => bus.off('DIALOGUE_EMITTED', onDialogue);
+    }, []);
 
     useEffect(() => {
         const onFlash = (data) => {
@@ -105,30 +66,16 @@ export const Operations = () => {
     }, []);
 
     useEffect(() => {
-        const onDialogue = (data) => {
-            if (data.type === 'SYSTEM') {
-                setMessages(prev => [...prev, data]);
-            } else {
-                setIsTyping(true);
-                setTimeout(() => {
-                    setMessages(prev => [...prev, data]);
-                    setIsTyping(false);
-                }, 800);
-            }
-        };
-
         const onNewSubject = (entity) => {
-            setMessages([{ sender: 'SISTEMA', text: 'NUEVO SUJETO DETECTADO EN CÁMARA.', type: 'SYSTEM' }]);
-
             // Detectar Override de Kamin (Paso 6)
             if (entity?.id === 'KAMIN' || entity?.name?.toLowerCase().includes('kamin')) {
                 setKaminOverride(true);
                 setTimeout(() => {
-                    setMessages(prev => [...prev, {
-                        sender: 'SISTEMA',
-                        text: '>>> ALERTA: ANOMALÍA EN PROTOCOLO DE DECISIÓN. OVERRIDE DETECTADO.',
+                    bus.emit('DIALOGUE_EMITTED', {
+                        sender: labels.systemSender,
+                        text: labels.anomalyMsg,
                         type: 'SYSTEM'
-                    }]);
+                    });
                     bus.emit('TRIGGER_FLASH', { color: '#9333ea', duration: 150, target: 'MOD04' });
                 }, 500);
             }
@@ -139,41 +86,50 @@ export const Operations = () => {
         };
 
         const onDialogueStarted = (dialogue) => {
-            appendParsedMessages('SUJETO', dialogue.text, 'SUBJECT');
+            bus.emit('DIALOGUE_EMITTED', {
+                sender: labels.subjectSender,
+                text: dialogue.text,
+                type: 'SUBJECT'
+            });
         };
 
         const onDialogueOptionSelected = async (data) => {
-            // Mostrar la elección del operador en COMMS
-            setMessages(prev => [...prev, {
-                sender: 'OPERADOR',
+            // Emitir elección del operador
+            bus.emit('DIALOGUE_EMITTED', {
+                sender: labels.operatorSender,
                 text: `> ${data.option}`,
-                type: 'OPERATOR',
-                timestamp: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-            }]);
+                type: 'OPERATOR'
+            });
 
-            // Mostrar la respuesta del sujeto en COMMS de forma secuencial
-            await new Promise(r => setTimeout(r, 500));
-            await appendParsedMessages('SUJETO', data.consequence, 'SUBJECT');
+            // La respuesta del sujeto ya debería venir por DIALOGUE_EMITTED desde el motor
+            if (data.consequence) {
+                setTimeout(() => {
+                    bus.emit('DIALOGUE_EMITTED', {
+                        sender: labels.subjectSender,
+                        text: data.consequence,
+                        type: 'SUBJECT'
+                    });
+                }, 1000);
+            }
 
             bus.emit('TERMINAL_PRINT', {
-                text: `[SISTEMA] Respuesta analizada y registrada.`,
+                text: `[${labels.systemSender}] Respuesta analizada y registrada.`,
                 type: 'SYSTEM'
             });
         };
 
         const onDialogueEnded = () => {
-            setMessages(prev => [...prev, {
-                sender: 'SISTEMA',
-                text: 'ENLACE NEURAL CERRADO.',
+            bus.emit('DIALOGUE_EMITTED', {
+                sender: labels.systemSender,
+                text: labels.linkClosedMsg,
                 type: 'SYSTEM'
-            }]);
+            });
         };
 
         const onSessionTerminated = () => {
-            setMessages([]);
+            // Coms ya escucha SESSION_TERMINATED
         };
 
-        bus.on('DIALOGUE_EMITTED', onDialogue);
         bus.on('NEW_SUBJECT_DETECTED', onNewSubject);
         bus.on('SCAN_COMPLETED', onScanComplete);
         bus.on('SESSION_TERMINATED', onSessionTerminated);
@@ -182,7 +138,6 @@ export const Operations = () => {
         bus.on('DIALOGUE_ENDED', onDialogueEnded);
 
         return () => {
-            bus.off('DIALOGUE_EMITTED', onDialogue);
             bus.off('NEW_SUBJECT_DETECTED', onNewSubject);
             bus.off('SCAN_COMPLETED', onScanComplete);
             bus.off('SESSION_TERMINATED', onSessionTerminated);
@@ -190,11 +145,7 @@ export const Operations = () => {
             bus.off('DIALOGUE_OPTION_SELECTED', onDialogueOptionSelected);
             bus.off('DIALOGUE_ENDED', onDialogueEnded);
         };
-    }, []);
-
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
+    }, [labels]);
 
     const handleDialogueAction = (actionName) => {
         if (isTyping || activeDialogue) return;
@@ -202,8 +153,8 @@ export const Operations = () => {
         // Coste base de iniciar interrogatorio: 5 (Omitir en tutorial)
         if (state.energy < 5 && !state.isTutorialActive) {
             bus.emit('DIALOGUE_EMITTED', {
-                sender: 'SISTEMA',
-                text: `[CRÍTICO] Energía insuficiente para iniciar enlace.`,
+                sender: labels.systemSender,
+                text: labels.energyErrorMsg,
                 type: 'SYSTEM'
             });
             return;
@@ -229,8 +180,8 @@ export const Operations = () => {
         // Protección: No actuar si no hay sujeto
         if (!currentEntity) {
             bus.emit('DIALOGUE_EMITTED', {
-                sender: 'SISTEMA',
-                text: 'ERROR: NO HAY SUJETO EN CÁMARA PARA PROCESAR.',
+                sender: labels.systemSender,
+                text: labels.noSubjectMsg,
                 type: 'SYSTEM'
             });
             return;
@@ -250,15 +201,15 @@ export const Operations = () => {
         // Override de Kamin: Solo permitir AUTHORIZE
         if (kaminOverride && type === 'SACRIFICE') {
             bus.emit('DIALOGUE_EMITTED', {
-                sender: 'SISTEMA',
-                text: 'CRITICAL_ERROR: OVERRIDE BY EIDOLON - ACCIÓN BLOQUEADA',
+                sender: labels.systemSender,
+                text: labels.overrideBlockedMsg,
                 type: 'SYSTEM'
             });
             bus.emit('TRIGGER_FLASH', { color: '#9333ea', duration: 100, target: 'MOD04' });
             return;
         }
 
-        if (type === 'SACRIFICE') handleSacrifice();
+        if (type === 'SACRIFICE') bus.emit('SACRIFICE_REQUEST');
         if (type === 'AUTHORIZE') {
             // Si es Kamin, disparar efectos visuales y preparar transición
             if (kaminOverride) {
@@ -266,7 +217,7 @@ export const Operations = () => {
                 state.storyPath = 1; // Forzar ruta religiosa
                 setKaminOverride(false);
             }
-            handleAuthorize();
+            bus.emit('AUTHORIZE_REQUEST');
         }
     };
 
@@ -296,7 +247,7 @@ export const Operations = () => {
                 <div className="w-1/3 h-full flex flex-col justify-around px-3 py-2 bg-black/10">
                     <div className="flex flex-col items-center">
                         <span className="text-[12px] text-zinc-400 uppercase tracking-widest font-bold mb-1">
-                            ${state.storyPath === 1 ? 'COSECHA_DE_ALMAS' : 'QUOTA_RECOVERY'}
+                            ${labels.quotaLabel}
                         </span>
                         <span className=${`text-2xl font-black font-mono ${state.storyPath === 1 ? 'text-purple-600/70' : 'text-emerald-600/70'}`}>
                             ${processedCount} / ${quota}
@@ -310,44 +261,14 @@ export const Operations = () => {
                     </div>
                     <div className="flex justify-center">
                         <span className=${`text-[12px] font-bold font-mono uppercase ${judgmentErrors >= (maxErrors || 3) - 1 ? 'text-red-500 animate-pulse' : (state.storyPath === 1 ? 'text-purple-900/60' : 'text-zinc-600')}`}>
-                            ${state.storyPath === 1 ? 'CISMA' : 'ERR'}: ${judgmentErrors} / ${maxErrors || 3}
+                            ${labels.errorLabel}: ${judgmentErrors} / ${maxErrors || 3}
                         </span>
                     </div>
                 </div>
             </div>
 
-            <!-- SECCIÓN CENTRAL: CHAT / LOG -->
-            <div className="flex-grow overflow-y-auto p-4 space-y-3 custom-scrollbar bg-black/5 min-h-0 max-h-[200px]">
-                ${messages.map((msg, i) => html`
-                    <div key=${i} className=${`flex flex-col animate-fade-in ${msg.type === 'SYSTEM' ? 'border-l-2 border-zinc-800 pl-3' :
-            msg.type === 'ACTION' ? 'border-y border-zinc-900/30 bg-zinc-950/20 py-2 my-1 items-center' : ''
-        }`}>
-                        <div className=${`flex justify-between items-center mb-1 ${msg.type === 'ACTION' ? 'hidden' : ''}`}>
-                            <span className=${`text-[10px] font-bold tracking-[0.2em] uppercase ${msg.type === 'SYSTEM' ? 'text-zinc-500' :
-            msg.type === 'SUBJECT' ? 'text-cyan-600/80' :
-                'text-emerald-600/80'
-        }`}>
-                                ${msg.sender}
-                            </span>
-                            <span className="text-[9px] text-zinc-700 font-mono tracking-tighter">${msg.timestamp || ''}</span>
-                        </div>
-                        <p className=${`text-[12px] leading-relaxed ${msg.type === 'SYSTEM' ? 'text-zinc-500 italic' :
-            msg.type === 'ACTION' ? 'text-amber-500/60 text-[11px] italic tracking-widest' :
-                msg.type === 'SUBJECT' ? 'text-zinc-300' :
-                    'text-emerald-500/80 font-bold'
-        }`}>
-                            ${msg.type === 'ACTION' ? `◆ ${msg.text} ◆` : msg.text}
-                        </p>
-                    </div>
-                `)}
-                ${isTyping && html`
-                    <div className="flex items-center gap-2 text-zinc-600 animate-pulse text-[10px] ml-3">
-                        <span className="w-1.5 h-1.5 bg-zinc-600 rounded-full animate-bounce"></span>
-                        RECIBIENDO TRANSMISIÓN...
-                    </div>
-                `}
-                <div ref=${messagesEndRef} />
-            </div>
+            <!-- SECCIÓN CENTRAL: CHAT / LOG (MOD-05) -->
+            <${Coms} />
 
             <!-- SECCIÓN INFERIOR: ACTION MATRIX -->
             <div className="flex-none border-t border-zinc-800 bg-black/40">
@@ -378,7 +299,7 @@ export const Operations = () => {
                                 disabled=${isTyping}
                                 className="flex-1 border border-red-900/30 bg-red-950/10 hover:bg-red-900/20 text-red-700 text-[10px] transition-all uppercase tracking-tighter font-black p-1 leading-tight"
                             >
-                                TERMINAR INTERROGATORIO
+                                ${labels.interrogateEnd}
                             </button>
                         </div>
                     ` : html`
@@ -389,10 +310,10 @@ export const Operations = () => {
                                 className=${`flex-1 border text-[12px] transition-all uppercase tracking-tighter font-bold
                                     ${state.storyPath === 1 ? 'border-purple-900/30 bg-purple-950/10 hover:bg-purple-900/20 text-purple-600' : 'border-cyan-900/30 bg-cyan-950/10 hover:bg-cyan-900/20 text-cyan-600'}`}
                             >
-                                ${state.storyPath === 1 ? 'INICIAR COMUNIÓN [INTERROGAR]' : 'INICIAR ENLACE NEURAL [INTERROGAR]'}
+                                ${labels.interrogateBtn}
                             </button>
                             <div className="flex-grow flex items-center justify-center p-2 text-center">
-                                <span className="text-[12px] text-zinc-500 uppercase italic">Sujeto en espera de interacción...</span>
+                                <span className="text-[12px] text-zinc-500 uppercase italic">${labels.waitingSubject}</span>
                             </div>
                         <//>
                     `}
@@ -407,10 +328,10 @@ export const Operations = () => {
                          ${(!isTutorialActive && !isScanComplete) ? html`
                             <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center z-30 group/lock border-y border-red-900/20">
                                 <span className="text-[10px] text-red-500/80 font-mono tracking-[0.2em] uppercase animate-pulse text-center px-4 mb-1">
-                                    AUTORIZACIÓN PENDIENTE DE VALIDACIÓN BIOMÉTRICA
+                                    ${labels.pendingValidation}
                                 </span>
                                 <span className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest">
-                                    [SE REQUIERE ESCANEO: ${SCAN_TYPES[requiredScan]?.name || requiredScan}]
+                                    [${labels.scanRequired}: ${SCAN_TYPES[requiredScan]?.name || requiredScan}]
                                 </span>
                             </div>
                         `: null}

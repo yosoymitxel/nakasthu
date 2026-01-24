@@ -5,22 +5,27 @@ import { executeScan } from '../src/systems/Scanner.js';
 import { dialogueEngine } from '../src/systems/DialogueEngine.js';
 import { gameLoop } from '../src/core/GameLoop.js';
 import { gameSequencer } from '../src/systems/GameSequencer.js';
-import { handleSacrifice, handleAuthorize } from '../src/systems/MechanicsEngine.js';
+import { unrestMeter } from '../src/systems/UnrestMeter.js';
 
 describe('New Mechanics Validations (new_mechanics.test.js)', () => {
     beforeEach(() => {
         state.resetState();
+        state.currentStep = 4; // Asegurar un paso con mecánicas de decisión
+        gameSequencer.init();
+        unrestMeter.activate(); // Forzar activación para tests
         state.gameStatus = 'PLAYING';
         state.currentEntity = {
             id: 'TEST-001',
-            type: 'HUMAN',
+            type: 'técnico',
+            utility: 10,
+            influence: 5,
             scannedData: {
                 corruption: 20,
                 corruptionHistory: []
             },
             isCorrupt: false,
             scanHistory: {},
-            scannedTypes: []
+            scannedTypes: ['BIOMETRIC']
         };
         vi.clearAllMocks();
         vi.useFakeTimers();
@@ -161,10 +166,9 @@ describe('New Mechanics Validations (new_mechanics.test.js)', () => {
         state.focusMode = true;
         dialogueEngine.currentDialogue = { id: 'test' }; // Simular diálogo activo
         
-        state.currentEntity = { id: 'S1', isCorrupt: true, scannedTypes: ['BIOMETRIC'] };
-        state.requiredScan = 'BIOMETRIC';
-        
-        handleSacrifice();
+        // Procesar un error (genera flash y cierra foco)
+        state.currentEntity = { id: 'S1', isCorrupt: false, scannedTypes: ['BIOMETRIC'] };
+        bus.emit('SACRIFICE_REQUEST');
         
         expect(spy).toHaveBeenCalledWith('TRIGGER_FLASH', expect.objectContaining({
             target: 'MOD04'
@@ -177,8 +181,8 @@ describe('New Mechanics Validations (new_mechanics.test.js)', () => {
         state.focusMode = true;
         dialogueEngine.currentDialogue = { id: 'test2' };
 
-        state.currentEntity = { id: 'S2', isCorrupt: false, scannedTypes: ['BIOMETRIC'] };
-        handleAuthorize();
+        state.currentEntity = { id: 'S2', isCorrupt: true, scannedTypes: ['BIOMETRIC'] };
+        bus.emit('AUTHORIZE_REQUEST');
 
         expect(spy).toHaveBeenCalledWith('TRIGGER_FLASH', expect.objectContaining({
             target: 'MOD04'
@@ -194,13 +198,13 @@ describe('New Mechanics Validations (new_mechanics.test.js)', () => {
         // Simular 3 errores de juicio
         state.currentEntity = { id: 'S1', isCorrupt: true, scannedTypes: ['BIOMETRIC'] };
         state.requiredScan = 'BIOMETRIC';
-        handleAuthorize(); // Error 1 (Autorizar corrupto)
+        bus.emit('AUTHORIZE_REQUEST'); // Error 1 (Autorizar corrupto)
         
         state.currentEntity = { id: 'S2', isCorrupt: false, scannedTypes: ['BIOMETRIC'] };
-        handleSacrifice(); // Error 2 (Sacrificar inocente)
+        bus.emit('SACRIFICE_REQUEST'); // Error 2 (Sacrificar inocente)
         
         state.currentEntity = { id: 'S3', isCorrupt: true, scannedTypes: ['BIOMETRIC'] };
-        handleAuthorize(); // Error 3 (Autorizar corrupto)
+        bus.emit('AUTHORIZE_REQUEST'); // Error 3 (Autorizar corrupto)
         
         expect(state.judgmentErrors).toBe(3);
         expect(state.gameStatus).toBe('GAME_OVER');
@@ -214,14 +218,14 @@ describe('New Mechanics Validations (new_mechanics.test.js)', () => {
         
         // Sacrificar inocente (Aumenta agitación)
         state.currentEntity = { id: 'S1', isCorrupt: false, scannedTypes: ['BIOMETRIC'] };
-        handleSacrifice();
+        bus.emit('SACRIFICE_REQUEST');
         
         expect(state.unrest).toBeGreaterThan(initialUnrest);
         
         // Autorizar corrupto (Aumenta agitación aún más)
         const unrestAfterFirstError = state.unrest;
         state.currentEntity = { id: 'S2', isCorrupt: true, scannedTypes: ['BIOMETRIC'] };
-        handleAuthorize();
+        bus.emit('AUTHORIZE_REQUEST');
         
         expect(state.unrest).toBeGreaterThan(unrestAfterFirstError);
     });

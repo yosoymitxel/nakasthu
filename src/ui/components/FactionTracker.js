@@ -1,16 +1,18 @@
 /**
- * FACTIONTRACKER.JS (MOD_FACTION)
+ * FACTIONTRACKER.JS (MOD-08)
  * Visualización del alineamiento ideológico: ORDEN vs CAOS.
  */
 import { html } from '../utils/html.js';
 import { bus } from '../../core/Bus.js';
+import { CONFIG } from '../../data/gameConfig.js';
 import { useGameState } from '../hooks/useGameState.js';
 
 const { useState, useEffect } = React;
 
 export const FactionTracker = () => {
     const [alignments, setAlignments] = useState({ orden: 0, caos: 0, dominant: 'NEUTRAL' });
-    const storyPath = useGameState('storyPath');
+    const storyPath = useGameState('storyPath') || 0;
+    const labels = CONFIG.UI.LABELS[storyPath].factions;
 
     useEffect(() => {
         const onUpdate = (data) => {
@@ -31,13 +33,13 @@ export const FactionTracker = () => {
             <div className="flex justify-between items-end mb-2">
                 <div className="flex flex-col">
                     <span className=${`text-[9px] font-bold ${alignments.dominant === 'ORDEN' ? (isSectarian ? 'text-purple-300' : 'text-cyan-400') : 'text-zinc-500'}`}>
-                        ${isSectarian ? '[DOGMA]' : '[ORDEN]'}
+                        ${labels.order}
                     </span>
                     <span className=${`text-xl font-black leading-none ${isSectarian ? 'text-purple-400' : 'text-cyan-500'}`}>${alignments.orden}</span>
                 </div>
                 <div className="flex flex-col items-end">
                     <span className=${`text-[9px] font-bold ${alignments.dominant === 'CAOS' ? (isSectarian ? 'text-purple-600' : 'text-purple-400') : 'text-zinc-500'}`}>
-                        ${isSectarian ? '[ÉXTASIS]' : '[CAOS]'}
+                        ${labels.chaos}
                     </span>
                     <span className=${`text-xl font-black leading-none ${isSectarian ? 'text-purple-700' : 'text-purple-500'}`}>${alignments.caos}</span>
                 </div>
@@ -60,18 +62,16 @@ export const FactionTracker = () => {
 
             <div className="mt-3 space-y-1">
                 <div className="flex justify-between text-[8px] text-zinc-600 uppercase tracking-widest">
-                    <span>${isSectarian ? 'Sintonía_del_Alma' : 'Dominancia_Actual'}</span>
+                    <span>${labels.statusLabel}</span>
                     <span className=${alignments.dominant === 'ORDEN' ? (isSectarian ? 'text-purple-300' : 'text-cyan-400') : alignments.dominant === 'CAOS' ? 'text-purple-500' : 'text-zinc-500'}>
                         ${alignments.dominant}
                     </span>
                 </div>
                 <div className="h-px bg-zinc-800/50 w-full"></div>
                 <p className="text-[9px] leading-tight text-zinc-500 italic mt-2">
-                    ${alignments.dominant === 'ORDEN' ? 
-                        (isSectarian ? 'El Dogma prevalece. Las plegarias son unánimes y frías.' : 'Las máquinas rugen con precisión técnica. La eficiencia es ley.') : 
-                        alignments.dominant === 'CAOS' ? 
-                        (isSectarian ? 'El Éxtasis consume la razón. La carne se funde con el vacío.' : 'El incienso nubla los sensores. La fe consume la lógica del sistema.') : 
-                        'El equilibrio se mantiene. Por ahora.'}
+                    ${alignments.dominant === 'ORDEN' ? labels.descriptions.order : 
+                      alignments.dominant === 'CAOS' ? labels.descriptions.chaos : 
+                      labels.descriptions.neutral}
                 </p>
             </div>
 

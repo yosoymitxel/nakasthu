@@ -9,37 +9,16 @@
  */
 import { html } from '../utils/html.js';
 import { useGameState } from '../hooks/useGameState.js';
+import { CONFIG } from '../../data/gameConfig.js';
 
 const { memo } = React;
-
-/**
- * Configuración de etiquetas según ruta narrativa
- */
-const LABELS_CONFIG = {
-    0: { // Ruta Técnico/Operador
-        action1: 'Mano de Obra',
-        action2: 'Filtración Química',
-        action3: 'Autorizar',
-        rejectLabel: 'Sacrificar',
-        utilityLabel: 'Utilidad Técnica',
-        themeColor: 'cyan'
-    },
-    1: { // Ruta Religioso/Líder
-        action1: 'Devoción Total',
-        action2: 'Sincronía con el Aitor',
-        action3: 'Consagrar',
-        rejectLabel: 'Purgar',
-        utilityLabel: 'Fe Acumulada',
-        themeColor: 'purple'
-    }
-};
 
 /**
  * Hook para obtener las etiquetas actuales según storyPath
  */
 export const useStoryLabels = () => {
     const storyPath = useGameState('storyPath');
-    return LABELS_CONFIG[storyPath] || LABELS_CONFIG[0];
+    return CONFIG.UI.LABELS[storyPath] || CONFIG.UI.LABELS[0];
 };
 
 /**
@@ -48,7 +27,7 @@ export const useStoryLabels = () => {
  */
 export const MainLayout = memo(({ children }) => {
     const storyPath = useGameState('storyPath');
-    const themeColor = LABELS_CONFIG[storyPath]?.themeColor || 'cyan';
+    const themeColor = (CONFIG.UI.LABELS[storyPath] || CONFIG.UI.LABELS[0]).themeColor;
 
     return html`
         <div 
@@ -71,7 +50,7 @@ MainLayout.displayName = 'MainLayout';
  */
 export const ModuleWrapper = memo(({ area, children, className = "", locked = false, highlighted = false }) => {
     const storyPath = useGameState('storyPath');
-    const themeColor = LABELS_CONFIG[storyPath]?.themeColor || 'cyan';
+    const themeColor = (CONFIG.UI.LABELS[storyPath] || CONFIG.UI.LABELS[0]).themeColor;
 
     const focusMode = useGameState('focusMode');
     const isShielded = focusMode && area !== 'C_MAIN' && area !== 'C_HEADER' && area !== 'L_LOWER';
@@ -157,7 +136,7 @@ ModuleWrapper.displayName = 'ModuleWrapper';
  */
 export const InvisibleUtilityBar = memo(({ value = 0, max = 100 }) => {
     const storyPath = useGameState('storyPath');
-    const labels = LABELS_CONFIG[storyPath] || LABELS_CONFIG[0];
+    const labels = useStoryLabels();
     const percentage = Math.min(100, Math.max(0, (value / max) * 100));
 
     // Color según storyPath

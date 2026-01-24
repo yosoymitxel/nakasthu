@@ -2,12 +2,7 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { gameLoop } from '../src/core/GameLoop.js';
 import { state } from '../src/core/State.js';
 import { bus } from '../src/core/Bus.js';
-import { updateResonance } from '../src/systems/MechanicsEngine.js';
-
-// Mock dependencies
-vi.mock('../src/systems/MechanicsEngine.js', () => ({
-    updateResonance: vi.fn()
-}));
+import { MechanicManager } from '../src/services/MechanicManager.js';
 
 // Mock html utility because it uses https import not supported
 vi.mock('../src/ui/utils/html.js', () => ({
@@ -19,6 +14,7 @@ describe('GameLoop Refactor Tests', () => {
         state.resetState();
         state.energy = 100;
         state.stability = 100;
+        vi.spyOn(MechanicManager, 'updateResonance');
         vi.clearAllMocks();
     });
 
@@ -29,7 +25,7 @@ describe('GameLoop Refactor Tests', () => {
         gameLoop.tick();
 
         expect(state.energy).toBe(100);
-        expect(updateResonance).not.toHaveBeenCalled();
+        expect(MechanicManager.updateResonance).not.toHaveBeenCalled();
     });
 
     test('should update resonance but NOT drain energy in MECHANIC state', () => {
@@ -40,7 +36,7 @@ describe('GameLoop Refactor Tests', () => {
         gameLoop.tick();
 
         expect(state.energy).toBe(100);
-        expect(updateResonance).toHaveBeenCalled();
+        expect(MechanicManager.updateResonance).toHaveBeenCalled();
     });
 
     test('should drain energy and update resonance in PLAYING state', () => {
@@ -54,7 +50,7 @@ describe('GameLoop Refactor Tests', () => {
         // Energy drain is 0.01 per tick in NORMAL, but State.js floors values!
         // So 100 - 0.01 = 99.99 -> 99.
         expect(state.energy).toBe(99);
-        expect(updateResonance).toHaveBeenCalled();
+        expect(MechanicManager.updateResonance).toHaveBeenCalled();
     });
 
     // Special test for tutorial override in loop
@@ -66,6 +62,6 @@ describe('GameLoop Refactor Tests', () => {
         gameLoop.tick();
 
         expect(state.energy).toBe(100);
-        expect(updateResonance).toHaveBeenCalled(); // Resonance still updates for tutorial
+        expect(MechanicManager.updateResonance).toHaveBeenCalled(); // Resonance still updates for tutorial
     });
 });

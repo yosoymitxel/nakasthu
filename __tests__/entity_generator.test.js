@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { generateSubject, applyTraits, ENTITY_TYPES } from '../src/systems/EntityGenerator.js';
+import { generateSubject, applyTraits, ENTITY_TYPES } from '../src/services/EntityService.js';
 
 describe('EntityGenerator Tests (entity_generator.test.js)', () => {
     describe('generateSubject()', () => {
@@ -28,13 +28,13 @@ describe('EntityGenerator Tests (entity_generator.test.js)', () => {
             expect(parseInt(number)).toBeLessThan(99);
         });
 
-        it('debe generar tipos válidos (HUMANO, CLON, EIDOLON, HÍBRIDO)', () => {
-            const validTypes = Object.values(ENTITY_TYPES);
+        it('debe generar especies válidas (HUMANO, CLON, EIDOLON, HÍBRIDO)', () => {
+            const validSpecies = Object.values(ENTITY_TYPES);
 
             // Generar múltiples sujetos para verificar distribución
             for (let i = 0; i < 20; i++) {
                 const subject = generateSubject();
-                expect(validTypes).toContain(subject.type);
+                expect(validSpecies).toContain(subject.species);
             }
         });
 
@@ -50,17 +50,24 @@ describe('EntityGenerator Tests (entity_generator.test.js)', () => {
             expect(subject.scannedData.neuralSync).toBeLessThanOrEqual(100);
         });
 
+        it('debe generar heatSignature y voidDepth entre 0 y 100', () => {
+            const subject = generateSubject();
+            expect(subject.scannedData.heatSignature).toBeGreaterThanOrEqual(0);
+            expect(subject.scannedData.heatSignature).toBeLessThanOrEqual(100);
+            expect(subject.scannedData.voidDepth).toBeGreaterThanOrEqual(0);
+            expect(subject.scannedData.voidDepth).toBeLessThanOrEqual(100);
+        });
+
         it('EIDOLONs deben tener corrupción alta (80-100%)', () => {
             // Forzar múltiples generaciones hasta obtener un EIDOLON
             let eidolonFound = false;
             for (let i = 0; i < 100 && !eidolonFound; i++) {
                 const subject = generateSubject();
-                if (subject.type === 'EIDOLON') {
+                if (subject.species === 'EIDOLON') {
                     expect(subject.scannedData.corruption).toBeGreaterThanOrEqual(80);
                     eidolonFound = true;
                 }
             }
-            // No forzamos que siempre encuentre uno, pero si lo encuentra debe cumplir
         });
 
         it('debe incluir glitch válido en visuales', () => {

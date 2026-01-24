@@ -1,5 +1,5 @@
 /**
- * UNRESTMONITOR.JS (MOD_UNREST)
+ * UNRESTMONITOR.JS (MOD-10)
  * Monitor de tensión social y riesgo de sabotaje.
  */
 import { html } from '../utils/html.js';

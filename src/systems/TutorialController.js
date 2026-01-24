@@ -9,7 +9,7 @@ import { MODULES, localizeTutorialText } from './ModuleRegistry.js';
 
 // Definición del contenido de tutoriales por módulo (Ruta Técnica)
 const TUTORIAL_CONTENT = {
-    [MODULES.BIOSCAN.tutorial]: {
+    [MODULES.BIOSCAN?.tutorial || 'TUTO_BIOSCAN']: {
         title: 'MÓDULO DESBLOQUEADO: BIOSCAN',
         steps: [
             "Localice el [[MOD-01]] a su izquierda. Este es su ojo principal en el Bastión.",
@@ -17,7 +17,7 @@ const TUTORIAL_CONTENT = {
             "Compare los resultados con los parámetros biológicos estándar (36.5°C - 37.5°C)."
         ]
     },
-    [MODULES.ANALYTICS.tutorial]: {
+    [MODULES.ANALYTICS?.tutorial || 'TUTO_ANALYTICS']: {
         title: 'MÓDULO DESBLOQUEADO: ANALYTICS',
         steps: [
             "Observe el [[MOD-02]] superior. El Motor Analítico procesa los datos crudos.",
@@ -25,15 +25,15 @@ const TUTORIAL_CONTENT = {
             "Use estos datos para juzgar la legitimidad de la solicitud de ingreso."
         ]
     },
-    [MODULES.RESONANCE.tutorial]: {
+    [MODULES.RESONANCE?.tutorial || 'TUTO_RESONANCE']: {
         title: 'MÓDULO DESBLOQUEADO: RESONANCIA',
         steps: [
-            "El [[MOD-05]] inferior gestiona el enlace neural directo.",
+            "El [[MOD-06]] inferior gestiona el enlace neural directo.",
             "Sincronice la frecuencia hasta superar el 85% para estabilizar la conexión.",
             "Una conexión inestable aumentará el consumo de energía y riesgo de corrupción."
         ]
     },
-    [MODULES.OPERATIONS.tutorial]: {
+    [MODULES.OPERATIONS?.tutorial || 'TUTO_OPERATIONS']: {
         title: 'PROTOCOLO: OPERACIONES',
         steps: [
             "Use el [[MOD-04]] central para emitir el juicio final.",
@@ -41,7 +41,7 @@ const TUTORIAL_CONTENT = {
             "[SACRIFICAR]: Elimina la amenaza. Restaura estabilidad, pero tiene coste moral."
         ]
     },
-    [MODULES.LORE_ARCHIVE.tutorial]: {
+    [MODULES.LORE_ARCHIVE?.tutorial || 'TUTO_LORE']: {
         title: 'ACCESO: ARCHIVO LORE',
         steps: [
             "El comando `/lore` desbloquea el acceso a la memoria recuperada de Zhyr.",
@@ -49,7 +49,7 @@ const TUTORIAL_CONTENT = {
             "La información es poder. Úsela para desbloquear comandos ocultos."
         ]
     },
-    [MODULES.QUOTA_TRACKER.tutorial]: {
+    [MODULES.QUOTA_TRACKER?.tutorial || 'TUTO_QUOTA']: {
         title: 'PROTOCOLO: CUOTAS',
         steps: [
             "El Bastión exige resultados. Cada ciclo tiene un objetivo de producción.",
@@ -57,7 +57,7 @@ const TUTORIAL_CONTENT = {
             "Fallar repetidamente en la cuota atraerá la atención de Kamin. Y no querrá eso."
         ]
     },
-    [MODULES.UNREST_METER.tutorial]: {
+    [MODULES.UNREST_METER?.tutorial || 'TUTO_UNREST']: {
         title: 'ALERTA: DISTURBIOS CIVILES',
         steps: [
             "El descontento en los sectores bajos ha alcanzado niveles críticos.",
@@ -65,7 +65,7 @@ const TUTORIAL_CONTENT = {
             "Si el nivel llega a CRÍTICO, ocurrirán sabotajes automáticos."
         ]
     },
-    [MODULES.FACTION_SYSTEM.tutorial]: {
+    [MODULES.FACTION_SYSTEM?.tutorial || 'TUTO_FACTION']: {
         title: 'ANÁLISIS: FACCIONES',
         steps: [
             "La sociedad se divide. 'Orden' (Técnicos) vs 'Caos' (Devotos).",
@@ -73,15 +73,15 @@ const TUTORIAL_CONTENT = {
             "Visualice el dominio ideológico en el nuevo panel. Desbloqueará opciones únicas."
         ]
     },
-    [MODULES.RITUAL_ENGINE.tutorial]: {
-        title: 'PROTOCOLO: RITUALES',
+    [MODULES.TERMINAL?.tutorial || 'TUTO_TERMINAL']: {
+        title: 'ACCESO: TERMINAL DE COMANDOS',
         steps: [
-            "El sacrificio genera 'Carga Ritual'. Acumúlela eliminando amenazas.",
-            "Use las cargas para realizar rituales de Purificación (Estabilidad) o Ascensión (Energía).",
-            "Advertencia: Los rituales tienen un alto coste moral e impacto en la facción."
+            "El [[MOD-09]] permite una intervención directa en los sistemas de Zhyr.",
+            "Escriba comandos para interactuar. Use `HELP` para ver la lista de comandos disponibles.",
+            "Algunas funciones críticas requieren autorización previa o estados de emergencia."
         ]
     },
-    [MODULES.PORTAL_MONITOR.tutorial]: {
+    [MODULES.PORTAL_MONITOR?.tutorial || 'TUTO_PORTAL']: {
         title: 'ALERTA: INESTABILIDAD DIMENSIONAL',
         steps: [
             "El Portal se debilita. La exposición constante a sujetos anómalos corroe la realidad.",
@@ -93,7 +93,7 @@ const TUTORIAL_CONTENT = {
 
 // Definición del contenido de tutoriales por módulo (Ruta Sectaria)
 const TUTORIAL_CONTENT_SECTARIAN = {
-    [MODULES.BIOSCAN.tutorial]: {
+    [MODULES.BIOSCAN?.tutorial || 'TUTO_BIOSCAN']: {
         title: 'REVELACIÓN: ALTAR DE EXAMEN',
         steps: [
             "Observe el [[MOD-01]]. No solo vemos carne, vemos la pureza de la esencia.",
@@ -101,7 +101,7 @@ const TUTORIAL_CONTENT_SECTARIAN = {
             "Busque la sintonía perfecta. Solo los puros de espíritu heredarán el Bastión."
         ]
     },
-    [MODULES.ANALYTICS.tutorial]: {
+    [MODULES.ANALYTICS?.tutorial || 'TUTO_ANALYTICS']: {
         title: 'REVELACIÓN: EMANACIONES DEL ALMA',
         steps: [
             "El [[MOD-02]] superior traduce los susurros del vacío.",
@@ -109,7 +109,15 @@ const TUTORIAL_CONTENT_SECTARIAN = {
             "Use estas visiones para decidir quién merece la iluminación."
         ]
     },
-    [MODULES.OPERATIONS.tutorial]: {
+    [MODULES.RESONANCE?.tutorial || 'TUTO_RESONANCE']: {
+        title: 'REVELACIÓN: SINCRO-FE',
+        steps: [
+            "El [[MOD-06]] inferior es el nexo de sintonía espiritual.",
+            "Alinee las frecuencias del alma con el latido del Aitor hasta el 85%.",
+            "La falta de fe (desincronización) debilita nuestra conexión con lo sagrado."
+        ]
+    },
+    [MODULES.OPERATIONS?.tutorial || 'TUTO_OPERATIONS']: {
         title: 'RITUAL: CONSAGRACIÓN',
         steps: [
             "El [[MOD-04]] es su altar de juicio. El destino de las almas está en sus manos.",
@@ -117,15 +125,23 @@ const TUTORIAL_CONTENT_SECTARIAN = {
             "[PURGAR]: Libera al impuro de su carga física. El Aitor requiere sacrificios."
         ]
     },
-    [MODULES.QUOTA_TRACKER.tutorial]: {
+    [MODULES.QUOTA_TRACKER?.tutorial || 'TUTO_QUOTA']: {
         title: 'RITUAL: LA COSECHA',
         steps: [
             "El Aitor exige una cuota de almas para mantener el Velo.",
             "Complete la cosecha de adeptos para asegurar nuestra supervivencia espiritual.",
-            "Cada alma cuenta. La duda es el primer paso hacia el Cisma."
+            "Si la cosecha falla, el Velo se rasgará. Y el vacío entrará."
         ]
     },
-    [MODULES.UNREST_METER.tutorial]: {
+    [MODULES.TERMINAL?.tutorial || 'TUTO_TERMINAL']: {
+        title: 'REVELACIÓN: SUSURROS DEL VACÍO',
+        steps: [
+            "El [[MOD-09]] es su canal directo con la voz del Aitor.",
+            "Escuche los susurros y responda. Use el lenguaje sagrado para intervenir en la realidad.",
+            "Ciertos rituales de comando solo pueden ser ejecutados en estados de éxtasis o crisis."
+        ]
+    },
+    [MODULES.UNREST_METER?.tutorial || 'TUTO_UNREST']: {
         title: 'ALERTA: AGITACIÓN HERÉTICA',
         steps: [
             "Los no creyentes se agitan en las sombras del Bastión.",
@@ -133,7 +149,7 @@ const TUTORIAL_CONTENT_SECTARIAN = {
             "Si la agitación desborda, los infieles sabotearán nuestros sistemas sagrados."
         ]
     },
-    [MODULES.FACTION_SYSTEM.tutorial]: {
+    [MODULES.FACTION_SYSTEM?.tutorial || 'TUTO_FACTION']: {
         title: 'VISIÓN: SINTONÍA DEL ALMA',
         steps: [
             "El mundo se divide entre el Dogma y el Éxtasis.",
@@ -141,7 +157,7 @@ const TUTORIAL_CONTENT_SECTARIAN = {
             "Observe el Panel de Comunión. El dominio de nuestra fe desbloqueará milagros técnicos."
         ]
     },
-    [MODULES.PORTAL_MONITOR.tutorial]: {
+    [MODULES.PORTAL_MONITOR?.tutorial || 'TUTO_PORTAL']: {
         title: 'ALERTA: DEBILIDAD DEL VELO',
         steps: [
             "El Velo entre mundos se desgarra. La presencia del Aitor exige un conducto estable.",
@@ -165,7 +181,8 @@ class TutorialController {
     init() {
         // Escuchar desbloqueo de módulos
         bus.on('MODULE_UNLOCKED', (data) => {
-            if (data.tutorialId && TUTORIAL_CONTENT[data.tutorialId]) {
+            const hasContent = TUTORIAL_CONTENT[data.tutorialId] || TUTORIAL_CONTENT_SECTARIAN[data.tutorialId];
+            if (data.tutorialId && hasContent) {
                 this.proposeTutorial(data.id, data.name, data.tutorialId);
             }
         });
@@ -203,6 +220,9 @@ class TutorialController {
         // Omitir todo el tutorial (reutilizando lógica de Mod-08)
         bus.on('TUTORIAL_SKIP_ALL', () => {
             console.log('[TUTORIAL] Skipping all pending tutorials.');
+            localStorage.setItem('nakasthu_skip_tutorials', 'true');
+            localStorage.setItem('nakasthu_tutorial_seen', 'true');
+            
             this.proposalQueue = []; // Limpiar cola
             this.cancelActiveTutorial(); // Cancelar el actual
             

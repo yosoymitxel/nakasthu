@@ -1,12 +1,12 @@
 /**
- * OSCILLOSCOPE.JS (MOD-05)
+ * OSCILLOSCOPE.JS (MOD-06)
  * Visualización de ondas de resonancia.
  */
 import { html } from '../utils/html.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { state as engineState } from '../../core/State.js';
 import { bus } from '../../core/Bus.js';
-import { updateResonance } from '../../systems/MechanicsEngine.js';
+import { MechanicManager } from '../../services/MechanicManager.js';
 
 const { useEffect, useRef } = React;
 
@@ -175,7 +175,7 @@ export const Oscilloscope = () => {
         if (isNaN(val)) return;
         setSliderFreq(val);
         engineState.localFrequency = val;
-        updateResonance(); // Actualización inmediata
+        MechanicManager.updateResonance(); // Actualización inmediata
     };
 
     const handlePhaseChange = (e) => {
@@ -183,7 +183,7 @@ export const Oscilloscope = () => {
         if (isNaN(val)) return;
         setSliderPhase(val);
         engineState.localPhase = val;
-        updateResonance(); // Actualización inmediata
+        MechanicManager.updateResonance(); // Actualización inmediata
     };
 
     return html`

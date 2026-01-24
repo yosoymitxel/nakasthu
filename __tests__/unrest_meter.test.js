@@ -51,8 +51,8 @@ describe('UnrestMeter Tests (unrest_meter.test.js)', () => {
         unrestMeter.isActive = true;
         state.unrest = 90;
 
-        // Mock Math.random to ensure riot triggers (probability is 0.7)
-        vi.spyOn(Math, 'random').mockReturnValue(0.8);
+        // Mock Math.random to ensure riot triggers (probability is CONFIG.UNREST.RIOT_CHANCE)
+        vi.spyOn(Math, 'random').mockReturnValue(0.1);
 
         unrestMeter.checkRiotChance(); // Simula el chequeo periódico
 

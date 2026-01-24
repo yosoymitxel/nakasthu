@@ -5,14 +5,11 @@
  */
 import { state } from '../core/State.js';
 import { bus } from '../core/Bus.js';
+import { CONFIG } from '../data/gameConfig.js';
+import { toInt } from '../utils/mathUtils.js';
+import { calculateScanCost, calculateAdjustedDuration } from '../utils/scannerUtils.js';
 
-export const SCAN_TYPES = {
-    THERMAL: { id: 'THERMAL', name: 'TÉRMICO', cost: 0.5, duration: 2000 },
-    NEURAL: { id: 'NEURAL', name: 'NEURAL', cost: 1, duration: 4000 },
-    NAKARA: { id: 'NAKARA', name: 'SONDA NAKARA', cost: 2, duration: 6000 },
-    BIOMETRIC: { id: 'BIOMETRIC', name: 'BIO-MÉTRICO', cost: 0.5, duration: 2500 },
-    RESONANCE: { id: 'RESONANCE', name: 'RESONANCIA', cost: 1, duration: 5000 }
-};
+export const SCAN_TYPES = CONFIG.SCANNER.TYPES;
 
 /**
  * Ejecuta un escaneo consumiendo energía.
@@ -22,10 +19,9 @@ export const executeScan = async (typeId) => {
     const scan = SCAN_TYPES[typeId];
     if (!scan || state.activeScan) return false;
 
-    // Calcular coste extra por repetición
+    // Calcular coste extra por repetición usando utilidad
     const scanCount = state.currentEntity?.scanHistory?.[typeId] || 0;
-    const repetitionPenalty = 1 + (scanCount * 0.5); // +50% por cada repetición
-    const finalCost = scan.cost * repetitionPenalty;
+    const finalCost = calculateScanCost(scan, scanCount, CONFIG.SCANNER.REPETITION_PENALTY);
 
     // Verificar energía
     if (state.energy < finalCost) {
@@ -36,16 +32,19 @@ export const executeScan = async (typeId) => {
 
     // Consumir energía (Solo si no estamos en el tutorial)
     if (!state.isTutorialActive) {
-        state.energy = Math.floor(Math.max(0, state.energy - finalCost));
+        state.energy = toInt(Math.max(0, state.energy - finalCost));
         bus.emit('TERMINAL_PRINT', {
             text: `[RECURSOS] ESCANEO ${scan.name} INICIADO. COSTO: ${finalCost.toFixed(1)} ENERGÍA.`,
             type: 'SYSTEM'
         });
     }
     
-    // Calcular duración ajustada por sincronía de resonancia (MOD-06)
-    const syncBonus = (state.resonanceSync / 100) * 0.5;
-    const adjustedDuration = scan.duration * (1 - syncBonus);
+    // Calcular duración ajustada por sincronía de resonancia usando utilidad
+    const adjustedDuration = calculateAdjustedDuration(
+        scan.duration, 
+        state.resonanceSync || 0, 
+        CONFIG.SCANNER.SYNC_BONUS_MAX
+    );
 
     // Notificar inicio y establecer estado global
     state.activeScan = { id: scan.id, progress: 0, name: scan.name };
@@ -59,7 +58,7 @@ export const executeScan = async (typeId) => {
         const interval = setInterval(() => {
             if (state.isPaused) return;
 
-            elapsedReal += 100;
+            elapsedReal += CONFIG.SCANNER.SCAN_INTERVAL;
             const progress = Math.min((elapsedReal / adjustedDuration) * 100, 100);
             
             // Actualizar progreso en el estado global

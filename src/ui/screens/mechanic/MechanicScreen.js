@@ -7,6 +7,7 @@ import { SpecialMechanic } from '../../components/SpecialMechanic.js';
 import { useGameState } from '../../hooks/useGameState.js';
 import { bus } from '../../../core/Bus.js';
 import { gameSequencer } from '../../../systems/GameSequencer.js';
+import { calculateJudgmentRecommendation } from '../../../utils/gameplayUtils.js';
 
 const { memo, useState, useEffect } = React;
 
@@ -26,7 +27,7 @@ export const MechanicScreen = memo(({ config }) => {
     // Caso 11: Juicio Final (Split Terminal)
     if (config.meta?.dualChoice) {
         const { leftOption, rightOption } = config.meta;
-        const recommendation = gameSequencer.calculateJudgmentRecommendation();
+        const recommendation = calculateJudgmentRecommendation();
 
         return html`
             <div className="mechanic-screen fixed inset-0 bg-[#050505] flex items-center justify-center z-[450] p-8">

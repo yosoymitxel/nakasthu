@@ -5,13 +5,16 @@
  */
 import { state } from './State.js';
 import { bus } from './Bus.js';
-import { updateResonance } from '../systems/MechanicsEngine.js';
-import { CONFIG } from './Config.js';
+import { MechanicManager } from '../services/MechanicManager.js';
+import { CONFIG } from '../data/gameConfig.js';
+import { evaluateSystemStatus, calculateNextOrbitalState } from '../utils/systemUtils.js';
 
 class GameLoop {
     constructor() {
         this.interval = null;
         this.tickRate = 1000;
+        this.lastEnergyWarning = false;
+        this.lastStabilityWarning = false;
     }
 
     start() {
@@ -35,149 +38,89 @@ class GameLoop {
         // En el tutorial no se puede perder por recursos
         if (state.isTutorialActive) return;
 
-        const isExcessiveErrors = state.judgmentErrors >= (state.maxErrors || CONFIG.MAX_JUDGMENT_ERRORS);
-        const isStabilityCollapsed = state.stability <= 0;
-        const isEnergyDepleted = state.energy <= 0;
+        const status = evaluateSystemStatus(state, CONFIG);
 
-        if (isEnergyDepleted || isStabilityCollapsed || isExcessiveErrors) {
+        if (status.failed) {
             state.gameStatus = 'GAME_OVER';
-            let reason = 'SYSTEM_FAILURE';
-            let details = '';
-
-            if (isEnergyDepleted) {
-                reason = 'ENERGY_DEPLETED';
-                details = 'Agotamiento de energía crítico. El sistema ha entrado en modo de hibernación forzada para preservar el núcleo.';
-            } else if (isStabilityCollapsed) {
-                reason = 'STABILITY_COLLAPSED';
-                details = 'La sincronía neural con el bastión se ha roto. El exceso de errores de juicio o la autorización de entidades corruptas ha saturado los filtros de biomasa.';
-            } else if (isExcessiveErrors) {
-                reason = 'EXCESSIVE_ERRORS';
-                details = `Protocolo de seguridad activado: Se ha alcanzado el límite de ${state.maxErrors || CONFIG.MAX_JUDGMENT_ERRORS} errores de juicio. El Operador ha sido relevado de sus funciones.`;
-            }
-
-            console.log(`%c[SYSTEM FAILURE] ${reason}: ${details}`, "color: #ff0000; font-weight: bold;");
+            
             bus.emit('SYSTEM_FAILURE', {
-                reason,
-                details,
+                reason: status.reason,
+                details: status.details,
                 stats: {
-                    ...state.stats,
                     processed: state.processedCount,
                     errors: state.judgmentErrors,
                     energy: state.energy,
-                    stability: state.stability,
-                    techniciansRecruited: state.techniciansRecruited,
-                    devotsRecruited: state.devotsRecruited
+                    stability: state.stability
                 }
             });
         }
     }
 
-    tick() {
-        if (state.isPaused || state.isModalOpen || state.focusMode) return;
-
-        // Allow loop only for PLAYING and MECHANIC (partial)
-        if (state.gameStatus !== 'PLAYING' && state.gameStatus !== 'MECHANIC') return;
-
-        // Iniciar ráfaga de actualizaciones (Batch)
-        state.startBatch();
-
-        // 0. Verificar fallo del sistema (Game Over)
-        // PROTECCIÓN: No verificar fallo si estamos en tutorial o hay modal abierto
-        // 0. Verificar fallo del sistema (Game Over)
-        // PROTECCIÓN: No verificar fallo si estamos en tutorial o hay modal abierto
-        if (state.gameStatus === 'PLAYING' && !state.isTutorialActive && !state.isModalOpen) {
-            this.checkSystemFailure();
-        }
-
-        // --- Lógica de Resonancia (Siempre activa para tutorial y MECHANIC) ---
-        updateResonance();
-
-        // --- Si el tutorial está activo o es una fase mecánica, solo actualizamos resonancia y salimos ---
-        // Excepción: Si es MECHANIC, permitimos resonancia pero evitamos el resto (drain de energía)
-        const isMechanicOrTutorial = state.gameStatus === 'MECHANIC' || state.isTutorialActive || (state.tutorialStep > 0 && state.tutorialStep < 4);
-
-        if (isMechanicOrTutorial) {
-            state.endBatch();
-            return;
-        }
-
-        // --- Lógica de Juego Normal (Drenaje de vitales, Eclipse, etc.) ---
-
-        // Notificación de energía crítica (Fase 18)
-        if (state.energy < 20 && !this.lastEnergyWarning) {
-            bus.emit('TERMINAL_PRINT', {
-                text: '>>> WARNING: CRITICAL_POWER_LEVEL - SISTEMAS DE SOPORTE AL LÍMITE.',
-                type: 'SYSTEM'
-            });
+    handleWarnings() {
+        // Energía
+        if (state.energy < CONFIG.SYSTEM.ENERGY_WARNING_THRESHOLD && !this.lastEnergyWarning) {
+            bus.emit('TERMINAL_PRINT', { text: '>>> WARNING: CRITICAL_POWER_LEVEL - SISTEMAS DE SOPORTE AL LÍMITE.', type: 'SYSTEM' });
             this.lastEnergyWarning = true;
-        } else if (state.energy >= 20) {
+        } else if (state.energy >= CONFIG.SYSTEM.ENERGY_WARNING_THRESHOLD) {
             this.lastEnergyWarning = false;
         }
 
-        // Notificación de estabilidad crítica
-        if (state.stability < 20 && !this.lastStabilityWarning) {
-            bus.emit('TERMINAL_PRINT', {
-                text: '>>> ALERTA: INESTABILIDAD NEURAL CRÍTICA - BASTIÓN COMPROMETIDO.',
-                type: 'SYSTEM'
-            });
+        // Estabilidad
+        if (state.stability < CONFIG.SYSTEM.STABILITY_WARNING_THRESHOLD && !this.lastStabilityWarning) {
+            bus.emit('TERMINAL_PRINT', { text: '>>> ALERTA: INESTABILIDAD NEURAL CRÍTICA - BASTIÓN COMPROMETIDO.', type: 'SYSTEM' });
             this.lastStabilityWarning = true;
-        } else if (state.stability >= 20) {
+        } else if (state.stability >= CONFIG.SYSTEM.STABILITY_WARNING_THRESHOLD) {
             this.lastStabilityWarning = false;
         }
+    }
 
-        // 1. Ciclo de tiempo y ECLIPSE
-        const orbitalStep = state.mode === 'ECLIPSE' ? 2 : 1; // 2% en eclipse, 1% en solar (ajustable)
+    updateOrbitalCycle() {
+        const nextState = calculateNextOrbitalState(state, CONFIG);
+        
+        state.mode = nextState.mode;
+        state.phase = nextState.phase;
+        state.worldTime = nextState.worldTime;
+        state.orbitalCycle = nextState.orbitalCycle;
+        state.eclipseTimer = nextState.eclipseTimer;
 
-        if (state.mode === 'ECLIPSE') {
-            state.eclipseTimer--;
-            state.orbitalCycle = Math.min(100, state.orbitalCycle + orbitalStep);
+        if (nextState.triggerAlert) {
+            bus.emit('TERMINAL_PRINT', { text: '[CRITICAL] Iniciando ciclo de ECLIPSE. Interferencia orbital detectada.', type: 'SYSTEM' });
+        }
+    }
 
-            if (state.eclipseTimer <= 0 || state.orbitalCycle >= 100) {
-                state.mode = 'NORMAL';
-                state.phase = 'SOLAR';
-                state.worldTime = 0;
-                state.orbitalCycle = 0;
-                console.log("%c[ECLIPSE] Finalizado. Regresando a fase SOLAR.", "color: #06b6d4;");
-            }
-        } else {
-            // Avance constante del 1% (o según velocidad de dificultad)
-            state.worldTime += 1;
-            state.orbitalCycle = Math.min(100, state.worldTime);
+    tick() {
+        if (state.isPaused || state.isModalOpen || state.focusMode) return;
+        if (state.gameStatus !== 'PLAYING' && state.gameStatus !== 'MECHANIC') return;
 
-            if (state.worldTime >= 100) {
-                state.mode = 'ECLIPSE';
-                state.phase = 'ECLIPSE';
-                state.eclipseTimer = 60; // 60 ticks de duración
-                state.orbitalCycle = 0; // Reiniciar para el nuevo ciclo
-                state.worldTime = 0;
-                console.log("%c[CRITICAL] Iniciando ciclo de ECLIPSE. Interferencia orbital detectada.", "color: #9333ea; font-weight: bold;");
-            }
+        state.startBatch();
+
+        // 1. Verificar fallos y alertas
+        if (state.gameStatus === 'PLAYING' && !state.isTutorialActive) {
+            this.checkSystemFailure();
+            this.handleWarnings();
         }
 
-        // 2. Vitales (Rebalanceo: 1 punto cada 10 segundos = 0.1 por tick)
-        // CONGELAR durante el tutorial (Fase 18)
-        if (state.tutorialStep > 0 && state.tutorialStep < 4) {
+        // 2. Actualizar mecánicas activas
+        MechanicManager.updateResonance();
+
+        // 3. Si estamos en tutorial o mecánica pura, saltar drenaje de vitales
+        if (state.gameStatus === 'MECHANIC' || state.isTutorialActive) {
             state.endBatch();
             return;
         }
 
-        const energyDrain = state.mode === 'ECLIPSE' ? 0.02 : 0.01;
+        // 4. Ciclo Orbital
+        this.updateOrbitalCycle();
+
+        // 5. Drenaje de vitales
+        const energyDrain = state.mode === 'ECLIPSE' ? CONFIG.ENERGY.ECLIPSE_DRAIN : CONFIG.ENERGY.TICK_DRAIN;
         state.energy = Math.max(0, state.energy - energyDrain);
 
         if (!state.purgeActive) {
-            state.oxygen = Math.max(0, state.oxygen - 0.05);
+            state.oxygen = Math.max(0, state.oxygen - CONFIG.SYSTEM.OXYGEN_DRAIN);
         }
 
-        if (state.resonanceSync < 85) {
-            console.log(`[RESONANCE] Sync: ${state.resonanceSync.toFixed(1)}% | Stability: ${state.stability.toFixed(1)}`);
-        }
-
-        // Finalizar ráfaga y emitir UN SOLO evento de cambio
         state.endBatch();
-
-        // Log único por tick para monitorización limpia
-        console.log(`[TICK] T:${state.worldTime} | E:${state.energy.toFixed(1)}% | O:${state.oxygen.toFixed(1)}% | ${state.phase}`);
-
         bus.emit('TICK', { time: state.worldTime });
     }
 }

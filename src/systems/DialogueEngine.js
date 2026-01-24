@@ -5,7 +5,7 @@
  */
 import { state } from '../core/State.js';
 import { bus } from '../core/Bus.js';
-import { applyTraits } from './EntityGenerator.js';
+import { applyTraits } from '../services/EntityService.js';
 
 class DialogueEngine {
     constructor() {
@@ -193,10 +193,12 @@ class DialogueEngine {
             }
         }
 
-        // Emitir consecuencia para el chat
+        // Emitir consecuencia para el chat y analíticas
         bus.emit('DIALOGUE_OPTION_SELECTED', {
             option: option.text,
-            consequence: option.consequence
+            consequence: option.consequence,
+            corruptionImpact: option.corruptionImpact || 0,
+            stabilityImpact: option.stabilityImpact || 0
         });
 
         // Lógica de Ramificación (Depth)

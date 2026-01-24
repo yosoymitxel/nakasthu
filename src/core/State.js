@@ -4,8 +4,8 @@
  * Regla 2.A: Minimiza emisiones para evitar loops de re-renderizado.
  */
 import { bus } from './Bus.js';
-import { generateSubject } from '../systems/EntityGenerator.js';
-import { CONFIG } from './Config.js';
+import { generateSubject } from '../services/EntityService.js';
+import { CONFIG } from '../data/gameConfig.js';
 
 let isBatching = false;
 
@@ -67,7 +67,7 @@ const initialState = {
     tutorialStep: 0, // 0: No tutorial, 1-4: Pasos del tutorial
     focusMode: false, // Bloquea el resto de la UI durante diálogos profundos
     unlockedCommands: ['HELP', 'CLEAR', 'STATUS'], // Comandos iniciales
-    hasSeenTutorial: localStorage.getItem('nakasthu_tutorial_seen') === 'true',
+    hasSeenTutorial: localStorage.getItem('nakasthu_tutorial_seen') === 'true' || localStorage.getItem('nakasthu_skip_tutorials') === 'true',
     requiredScan: 'BIOMETRIC', // Tipo de escaneo requerido para decisiones (rotativo)
     usedDialogueIds: []        // Memoria de diálogos para evitar repeticiones
 };

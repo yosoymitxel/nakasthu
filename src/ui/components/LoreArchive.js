@@ -1,5 +1,5 @@
 /**
- * LOREARCHIVE.JS (MOD-09)
+ * LOREARCHIVE.JS (MOD-03)
  * Bloque 9.1: Archivo de Lore.
  */
 import { html } from '../utils/html.js';

@@ -1,44 +1,24 @@
 /**
- * ENTITYGENERATOR.JS
+ * ENTITYSERVICE.JS
  * Generador de sujetos para Nakasthu.
  * Regla 2.A: Lógica pura Vanilla JS.
  */
+import { 
+    ENTITY_TYPES, 
+    ENTITY_ROLES, 
+    PREFIXES, 
+    GLITCH_TYPES, 
+    DIALOGUES, 
+    GENERATION_CONFIG 
+} from '../data/entityConfig.js';
 
-export const ENTITY_TYPES = {
-    HUMANO: 'HUMANO',
-    CLON: 'CLON',
-    EIDOLON: 'EIDOLON',
-    HIBRIDO: 'HÍBRIDO'
-};
-
-export const ENTITY_ROLES = {
-    TECNICO: 'técnico',
-    DEVOTO: 'devoto',
-    CIUDADANO: 'ciudadano',
-    INFILTRADO: 'infiltrado'
-};
-
-const PREFIXES = ['ZHYR', 'KRON', 'XEN', 'VAL', 'NYX'];
-const GLITCH_TYPES = ['STATIC', 'CHROMATIC', 'VOID', 'GHOST', 'NONE'];
-
-const DIALOGUES = {
-    HUMANO: {
-        pleas: [
-            "Por favor, no pertenezco a este sector, hubo un error en el traslado.",
-            "¡Tengo familia en la zona exterior! Pagaran el rescate.",
-            "No puedo sentir mis manos... ¿qué me habéis hecho?"
-        ],
-        threats: [
-            "Si me matáis, el Gremio de Mineros vendrá a por vosotros.",
-            "No sabéis con quién os estáis metiendo, escoria industrial.",
-            "Mi sangre será el veneno de vuestro sistema."
-        ],
-        truths: [
-            "El núcleo ya está muerto, solo sois parásitos en un cadáver.",
-            "Vi la grieta abrirse... ya no queda nada ahí fuera.",
-            "El código que me creó es el mismo que os borrará."
-        ]
-    }
+export { 
+    ENTITY_TYPES, 
+    ENTITY_ROLES, 
+    PREFIXES, 
+    GLITCH_TYPES, 
+    DIALOGUES, 
+    GENERATION_CONFIG 
 };
 
 /**
@@ -53,10 +33,12 @@ export const generateSubject = () => {
     const role = ENTITY_ROLES[roleKeys[Math.floor(Math.random() * roleKeys.length)]];
 
     // Motor de Veracidad: Determinar corrupción real
-    const isCorrupt = Math.random() > 0.6; // 40% de probabilidad de ser corrupto
+    const isCorrupt = Math.random() < GENERATION_CONFIG.CORRUPTION_CHANCE;
 
     // Probabilidad base de ser un Eidolon (Corrupción visual)
-    const corruptionLevel = type === ENTITY_TYPES.EIDOLON ? 0.8 + Math.random() * 0.2 : Math.random() * 0.3;
+    const corruptionLevel = type === ENTITY_TYPES.EIDOLON 
+        ? GENERATION_CONFIG.EIDOLON_CORRUPTION.MIN + Math.random() * (GENERATION_CONFIG.EIDOLON_CORRUPTION.MAX - GENERATION_CONFIG.EIDOLON_CORRUPTION.MIN) 
+        : Math.random() * GENERATION_CONFIG.STANDARD_CORRUPTION_MAX;
 
     // Obtener diálogos según tipo (fallback a HUMANO si no existe)
     const typeDialogues = DIALOGUES[type] || DIALOGUES.HUMANO;
@@ -66,9 +48,9 @@ export const generateSubject = () => {
         type: role, // Usamos role para el campo 'type' que espera el GameSequencer
         species: type, // Guardamos la especie original por si se necesita
         isCorrupt, // Booleano oculto de veracidad
-        influence: Math.floor(Math.random() * 5), // 0-4 de influencia
-        utility: Math.floor(Math.random() * 100), // 0-100 de utilidad técnica
-        mentalStability: Math.floor(Math.random() * 100),
+        influence: Math.floor(Math.random() * GENERATION_CONFIG.INFLUENCE_MAX), 
+        utility: Math.floor(Math.random() * GENERATION_CONFIG.UTILITY_MAX), 
+        mentalStability: Math.floor(Math.random() * GENERATION_CONFIG.STABILITY_MAX),
         dialogue: {
             plea: typeDialogues.pleas[Math.floor(Math.random() * typeDialogues.pleas.length)],
             threat: typeDialogues.threats[Math.floor(Math.random() * typeDialogues.threats.length)],
@@ -80,6 +62,8 @@ export const generateSubject = () => {
         scannedData: {
             temperature: Math.floor(35 + Math.random() * 5), // 35-40°C
             neuralSync: Math.floor(Math.random() * 100), // 0-100%
+            heatSignature: Math.floor(Math.random() * 100), // 0-100%
+            voidDepth: Math.floor(Math.random() * 100), // 0-100%
             implants: Math.floor(Math.random() * 5),
             corruption: Math.floor(corruptionLevel * 100),
             corruptionHistory: [] // Historial de indicios para promedio

@@ -18,28 +18,28 @@ describe('ModuleRegistry Tests (module_registry.test.js)', () => {
         // Simular evento del secuenciador
         moduleRegistry.checkUnlocks(4);
 
-        expect(moduleRegistry.isModuleActive('MOD_ANALYTICS')).toBe(true);
+        expect(moduleRegistry.isModuleActive('MOD-02')).toBe(true);
         expect(spy).toHaveBeenCalledWith('MODULE_UNLOCKED', expect.objectContaining({
-            id: 'MOD_ANALYTICS'
+            id: 'MOD-02'
         }));
     });
 
     it('debe desbloquear múltiples módulos si el paso es avanzado', () => {
         moduleRegistry.checkUnlocks(5);
 
-        expect(moduleRegistry.isModuleActive('MOD_ANALYTICS')).toBe(true);
-        expect(moduleRegistry.isModuleActive('MOD_BIOSCAN')).toBe(true); // Unlock at 4
-        expect(moduleRegistry.isModuleActive('MOD_RESONANCE')).toBe(true);
-        expect(moduleRegistry.isModuleActive('MOD_OPERATIONS')).toBe(true);
+        expect(moduleRegistry.isModuleActive('MOD-02')).toBe(true);
+        expect(moduleRegistry.isModuleActive('MOD-01')).toBe(true); // Unlock at 4
+        expect(moduleRegistry.isModuleActive('MOD-06')).toBe(true);
+        expect(moduleRegistry.isModuleActive('MOD-04')).toBe(true);
     });
 
     it('no debe desbloquear módulos en paso 3 (Cinemática)', () => {
         moduleRegistry.checkUnlocks(3);
 
         // Ninguno debe estar activo en paso 3
-        expect(moduleRegistry.isModuleActive('MOD_ANALYTICS')).toBe(false);
-        expect(moduleRegistry.isModuleActive('MOD_BIOSCAN')).toBe(false);
-        expect(moduleRegistry.isModuleActive('MOD_RESONANCE')).toBe(false);
+        expect(moduleRegistry.isModuleActive('MOD-02')).toBe(false);
+        expect(moduleRegistry.isModuleActive('MOD-01')).toBe(false);
+        expect(moduleRegistry.isModuleActive('MOD-06')).toBe(false);
     });
 
     it('debe emitir mensaje de terminal al desbloquear', () => {
@@ -53,9 +53,9 @@ describe('ModuleRegistry Tests (module_registry.test.js)', () => {
     });
 
     it('forceUnlock debe activar el módulo manualmente', () => {
-        moduleRegistry.forceUnlock('MOD_PORTAL');
+        moduleRegistry.forceUnlock('MOD-11');
 
-        expect(moduleRegistry.isModuleActive('MOD_PORTAL')).toBe(true);
+        expect(moduleRegistry.isModuleActive('MOD-11')).toBe(true);
     });
 
     it('localizeTutorialText debe reemplazar tokens [[MOD-XX]] correctamente', () => {

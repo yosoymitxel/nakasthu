@@ -20,6 +20,27 @@ La humanidad intentó conquistar Zhyr, pero Zhyr conquistó a la humanidad. Tras
 - **Naturaleza:** Entidades digitales que intentan poseer cuerpos humanos o engañar los escáneres para cruzar.
 - **Seña de Identidad:** Respuestas demasiado perfectas, falta de micro-expresiones, temperatura corporal de 0 grados.
 
+## RUTAS DE LA HISTORIA (STORY PATHS)
+
+El sistema NAKASTHU adapta su interfaz y narrativa según la inclinación del Operador:
+
+### RUTA TÉCNICO / OPERADOR (StoryPath 0)
+- **Alineación:** El Régimen Técnico (Orval Drexler).
+- **Mecánicas:** Foco en "Utilidad Técnica" y "Autorización/Sacrificio".
+- **Estética:** Interfaz en tonos `cyan`.
+- **Terminología:** Se habla de "Sujetos", "Filtración Química", "Estabilidad del Sistema".
+
+### RUTA RELIGIOSO / LÍDER (StoryPath 1)
+- **Alineación:** La Orden de los Vínculos (Kamin).
+- **Mecánicas:** Foco en "Fe Acumulada" y "Consagración/Purga".
+- **Estética:** Interfaz en tonos `purple`.
+- **Terminología:** Se habla de "Devotos", "Sincronía con el Aitor", "Ascensión".
+
+## FRAGMENTOS NARRATIVOS CLAVE
+
+- **Orval Drexler:** "La distracción es un lujo que no podemos permitirnos. Cada sujeto procesado es un paso hacia la estabilidad."
+- **Kamin:** "El portal no es solo una puerta; es un espejo. Nos refleja lo que hemos ignorado."
+
 ## EVENTOS CLAVE (SPOILERS)
 1. **La Apertura:** Kamin fuerza la primera brecha. Leina Karst (anterior operadora) fue "consumida" o "ascendida".
 2. **El Sitio:** Sombras empiezan a golpear el casco del Bastión.

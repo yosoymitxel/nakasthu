@@ -1,10 +1,11 @@
 /**
- * TERMINAL.JS (MOD-06)
+ * TERMINAL.JS (MOD-09)
  * Consola de comandos ZHYR_OS para intervención directa.
  */
 import { html } from '../utils/html.js';
 import { processCommand } from '../../systems/CommandEngine.js';
 import { bus } from '../../core/Bus.js';
+import { CONFIG } from '../../data/gameConfig.js';
 
 import { useGameState } from '../hooks/useGameState.js';
 
@@ -13,8 +14,11 @@ const { useState, useRef, useEffect } = React;
 export const Terminal = () => {
     const isPaused = useGameState('isPaused');
     const isTutorialActive = useGameState('isTutorialActive');
+    const storyPath = useGameState('storyPath') || 0;
+    const labels = CONFIG.UI.LABELS[storyPath].terminal;
+
     const [history, setHistory] = useState([
-        { type: 'sys', text: 'ZHYR_OS v4.0.1 INITIALIZED...' }
+        { type: 'sys', text: labels.welcome }
     ]);
     const [currentInput, setCurrentInput] = useState('');
     const scrollRef = useRef(null);
@@ -38,7 +42,7 @@ export const Terminal = () => {
     // Limpiar terminal al terminar sesión
     useEffect(() => {
         const onSessionTerminated = () => {
-            setHistory([{ type: 'sys', text: 'REINICIANDO TERMINAL... ESPERANDO NUEVA CONEXIÓN.' }]);
+            setHistory([{ type: 'sys', text: labels.reset }]);
         };
 
         const onTerminalPrint = (data) => {
@@ -128,7 +132,7 @@ export const Terminal = () => {
             }
 
             if (cmdInput.toLowerCase() === '/clear') {
-                setHistory([{ type: 'sys', text: 'CONSOLE CLEARED.' }]);
+                setHistory([{ type: 'sys', text: labels.clear }]);
                 setCurrentInput('');
                 return;
             }
@@ -166,9 +170,9 @@ export const Terminal = () => {
             <div className="flex justify-between items-center border-b border-zinc-800 p-3 bg-black/40 sticky top-0 z-10">
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-cyan-500 animate-pulse"></div>
-                    <span className="text-[12px] text-zinc-300 font-bold tracking-[0.2em]">TERMINAL_STATUS: ACTIVE</span>
+                    <span className="text-[12px] text-zinc-300 font-bold tracking-[0.2em]">${labels.header}</span>
                 </div>
-                <span className="text-[10px] text-zinc-500 font-mono tracking-widest">ZHYR_OS v4.0.1</span>
+                <span className="text-[10px] text-zinc-500 font-mono tracking-widest">${labels.version}</span>
             </div>
 
             <!-- Área de Scroll -->
@@ -200,7 +204,7 @@ export const Terminal = () => {
                     onKeyDown=${handleKeyDown}
                     disabled=${isPaused || isTutorialActive}
                     className="flex-1 bg-transparent border-none outline-none text-[12px] text-cyan-400 placeholder-zinc-700 tracking-wider"
-                    placeholder=${isPaused ? "sistema pausado..." : isTutorialActive ? "bloqueo de inducción activo..." : "esperando comando..."}
+                    placeholder=${isPaused ? labels.paused : isTutorialActive ? labels.tutorial : labels.placeholder}
                     autoFocus
                 />
             </div>

@@ -1,16 +1,17 @@
 /**
- * PORTALFLUX.JS (MOD_PORTAL)
+ * PORTALSERVICE.JS (MOD_PORTAL)
  * Monitor de estabilidad dimensional.
  * Desbloqueado en Paso 11: "El Juicio Final" (o antes en paso 10/11).
  */
 import { bus } from '../core/Bus.js';
 import { state } from '../core/State.js';
+import { CONFIG } from '../data/gameConfig.js';
 
 class PortalFlux {
     constructor() {
-        this.stability = 100; // 0-100%
+        this.stability = CONFIG.PORTAL.INITIAL_STABILITY; // 0-100%
         this.isActive = false;
-        this.decayRate = 2; // % por tick/action
+        this.decayRate = CONFIG.PORTAL.DECAY_RATE; // % por tick/action
         this.init();
     }
 
@@ -24,7 +25,7 @@ class PortalFlux {
         });
 
         // Decay natural con cada sujeto procesado o tick
-        bus.on('SUBJECT_PROCESSED', () => {
+        bus.on('DECISION_MADE', () => {
             if (this.isActive) {
                 this.decay(this.decayRate);
             }
@@ -32,12 +33,12 @@ class PortalFlux {
 
         // Acción manual de estabilizar (Command or Button)
         bus.on('PORTAL_STABILIZE', (amount) => {
-            this.stabilize(amount || 10);
+            this.stabilize(amount || CONFIG.PORTAL.STABILIZE_AMOUNT);
         });
     }
 
     reset() {
-        this.stability = 100;
+        this.stability = CONFIG.PORTAL.INITIAL_STABILITY;
         this.isActive = false;
         this.emitUpdate();
     }
@@ -61,9 +62,9 @@ class PortalFlux {
     }
 
     checkAnomalies() {
-        if (this.stability < 30) {
+        if (this.stability < CONFIG.PORTAL.ANOMALY_THRESHOLD) {
             // Alta probabilidad de anomalía
-            if (Math.random() < 0.3) {
+            if (Math.random() < CONFIG.PORTAL.ANOMALY_CHANCE) {
                 this.triggerAnomaly();
             }
         }
@@ -72,7 +73,7 @@ class PortalFlux {
     triggerAnomaly() {
         bus.emit('PORTAL_ANOMALY', {
             type: 'VOID_LEAK',
-            damage: 15
+            damage: CONFIG.PORTAL.ANOMALY_DAMAGE
         });
 
         bus.emit('TERMINAL_PRINT', {
@@ -80,7 +81,7 @@ class PortalFlux {
             type: 'CRITICAL'
         });
 
-        state.stability = Math.max(0, state.stability - 15);
+        state.stability = Math.max(0, state.stability - CONFIG.PORTAL.ANOMALY_DAMAGE);
     }
 
     emitUpdate() {

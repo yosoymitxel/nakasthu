@@ -1,11 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { state } from '../src/core/State.js';
 import { gameLoop } from '../src/core/GameLoop.js';
+import { MechanicManager } from '../src/services/MechanicManager.js';
 
 describe('Resonance Validations (systems.test.js)', () => {
     beforeEach(() => {
         state.resetState();
         state.gameStatus = 'PLAYING';
+        // Inicializar MechanicManager con una mecánica de sincronía para los tests
+        MechanicManager.init({ mechanicType: 'SYNC', syncRequired: 100 });
     });
 
     it('Verificar que el rango de frecuencia permitido esté estrictamente entre 0.1Hz y 60.0Hz', () => {
@@ -22,14 +25,20 @@ describe('Resonance Validations (systems.test.js)', () => {
         expect(validateRange(state.targetFrequency)).toBe(true);
     });
 
-    it('Validar el cálculo de SYNC: 100 - (abs(Target - Player)) debe retornar un entero entre 0 y 100', () => {
+    it('Validar el cálculo de SYNC: Basado en frecuencia (80%) y fase (20%)', () => {
         state.targetFrequency = 30.0;
-        state.localFrequency = 25.0;
+        state.localFrequency = 25.0; // Diff 5
+        state.targetPhase = 0;
+        state.localPhase = 0; // Diff 0
         
         // Forzamos un tick para que se calcule resonanceSync
         gameLoop.tick();
         
-        const expectedSync = Math.max(0, 100 - Math.abs(state.targetFrequency - state.localFrequency));
+        // freqDiff = 5 -> freqScore = 100 - (5 * 2.5) = 87.5
+        // phaseDiff = 0 -> phaseScore = 100
+        // sync = floor(87.5 * 0.8 + 100 * 0.2) = floor(70 + 20) = 90
+        const expectedSync = 90;
+        
         expect(state.resonanceSync).toBe(expectedSync);
         expect(Number.isInteger(state.resonanceSync)).toBe(true);
         expect(state.resonanceSync).toBeGreaterThanOrEqual(0);
@@ -37,32 +46,11 @@ describe('Resonance Validations (systems.test.js)', () => {
     });
 
     it('Comprobar que si SYNC < 40, la Estabilidad disminuya en el siguiente tick del motor', () => {
-        state.targetFrequency = 60.0;
-        state.localFrequency = 10.0; // Diferencia de 50, Sync = 50.
-        
-        // Ajustamos para que Sync sea < 40
-        state.localFrequency = 10.0;
-        state.targetFrequency = 55.0; // Diff 45, Sync 55.
-        
-        state.targetFrequency = 60.0;
-        state.localFrequency = 10.0; // Diff 50, Sync 50.
-        
-        // Para Sync < 40, diff debe ser > 60.
-        state.targetFrequency = 60.0;
-        state.localFrequency = 0.1; // Diff 59.9, Sync 40.1.
-        
-        // Forzamos una diferencia mayor
-        state.targetFrequency = 60.0;
-        state.localFrequency = -10.0; // Esto no debería pasar pero para el test:
-        // En State.js se inicializa con localFrequency: 30.
-        
-        state.targetFrequency = 60.0;
-        state.localFrequency = 100.0; // Diff 40, Sync 60.
-        
-        // El cálculo es: syncPercent = Math.max(0, 100 - freqDiff);
-        // Si freqDiff > 60, syncPercent < 40.
-        state.targetFrequency = 60.0;
-        state.localFrequency = 125.0; // Diff 65, Sync 35.
+        state.targetFrequency = 30.0;
+        state.localFrequency = 70.0; // freqDiff = 40 -> freqScore = 0
+        state.targetPhase = 0;
+        state.localPhase = 0; // phaseDiff = 0 -> phaseScore = 100
+        // sync = floor(0 * 0.8 + 100 * 0.2) = 20 (< 40)
         
         const initialStability = state.stability;
         gameLoop.tick();

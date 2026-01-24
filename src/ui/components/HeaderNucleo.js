@@ -1,6 +1,6 @@
 /**
  * HEADERNUCLEO.JS
- * Bloque 5: MOD-03 CORE_HEADER.
+ * Bloque 5: SYS_STATUS CORE_HEADER.
  * Restauración de barras originales y alineación de sistema.
  */
 import { html } from '../utils/html.js';

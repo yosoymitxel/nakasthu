@@ -1,5 +1,5 @@
 /**
- * PORTALMONITOR.JS (MOD_PORTAL)
+ * PORTALMONITOR.JS (MOD-11)
  * Monitor de flujo y estabilidad dimensional.
  */
 import { html } from '../utils/html.js';

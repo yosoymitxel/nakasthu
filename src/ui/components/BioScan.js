@@ -5,6 +5,8 @@
 import { html } from '../utils/html.js';
 import { executeScan, SCAN_TYPES } from '../../systems/Scanner.js';
 import { useGameState } from '../hooks/useGameState.js';
+import { CONFIG } from '../../data/gameConfig.js';
+import { calculateScanCost } from '../../utils/scannerUtils.js';
 
 export const BioScan = () => {
     const energy = useGameState('energy');
@@ -15,24 +17,15 @@ export const BioScan = () => {
     const isTutorialActive = useGameState('isTutorialActive');
     const requiredScan = useGameState('requiredScan');
     const currentEntity = useGameState('currentEntity');
-    const storyPath = useGameState('storyPath');
+    const storyPath = useGameState('storyPath') || 0;
 
     const isLocked = moduleLock && moduleLock.bioscan;
     const isSectarian = storyPath === 1;
-
-    // Mapeo de nombres para la ruta sectaria
-    const SCAN_NAMES = {
-        THERMAL: isSectarian ? 'GRADO_HUMANO' : 'TÉRMICO',
-        NEURAL: isSectarian ? 'COMUNIÓN' : 'NEURAL',
-        NAKARA: isSectarian ? 'SONDA_ALMA' : 'SONDA NAKARA',
-        BIOMETRIC: isSectarian ? 'LECTURA_AURA' : 'BIO-MÉTRICO',
-        RESONANCE: isSectarian ? 'RESONANCIA' : 'RESONANCIA'
-    };
+    const labels = CONFIG.UI.LABELS[storyPath];
 
     const startScan = async (type) => {
         const scanCount = currentEntity?.scanHistory?.[type.id] || 0;
-        const repetitionPenalty = 1 + (scanCount * 0.5);
-        const finalCost = type.cost * repetitionPenalty;
+        const finalCost = calculateScanCost(type, scanCount, CONFIG.SCANNER.REPETITION_PENALTY);
 
         const canAfford = energy >= finalCost;
         if (activeScan || !canAfford || isLocked) return;
@@ -68,22 +61,13 @@ export const BioScan = () => {
         const isActive = activeScan && activeScan.id === type.id;
         const isRequired = requiredScan === type.id;
         const scanCount = currentEntity?.scanHistory?.[type.id] || 0;
-        const repetitionPenalty = 1 + (scanCount * 0.5);
-        const finalCost = type.cost * repetitionPenalty;
+        const finalCost = calculateScanCost(type, scanCount, CONFIG.SCANNER.REPETITION_PENALTY);
         
         const canAfford = energy >= finalCost;
         const progress = isActive ? activeScan.progress : 0;
 
-        // Colores de borde según repetición
-        const borderColors = [
-            'border-zinc-800/30',      // 0: Neutral
-            'border-emerald-500/40',   // 1: Una vez
-            'border-cyan-500/50',      // 2: Dos veces
-            'border-amber-500/60',     // 3: Tres veces
-            'border-red-500/70',       // 4: Cuatro veces
-            'border-purple-500/80'     // 5+: Crítico
-        ];
-        const borderColorClass = borderColors[Math.min(scanCount, borderColors.length - 1)];
+        // Colores de borde desde CONFIG
+        const borderColorClass = CONFIG.UI.SCAN_BORDER_COLORS[Math.min(scanCount, CONFIG.UI.SCAN_BORDER_COLORS.length - 1)];
 
         return html`
                         <button 
@@ -126,7 +110,7 @@ export const BioScan = () => {
                             <div key="content-container" className="flex justify-between items-start relative z-10">
                                 <div className="flex flex-col">
                                     <span className=${`text-[12px] font-bold uppercase tracking-wider ${isActive ? (isSectarian ? 'text-purple-500' : 'text-cyan-500') : 'text-zinc-400 group-hover:text-amber-600/70'}`}>
-                                        ${SCAN_NAMES[type.id]}
+                                        ${labels.scans[type.id]}
                                     </span>
                                     <span className="text-[12px] text-zinc-400 mt-0.5 font-mono uppercase">
                                         ${isActive ? (isSectarian ? 'Transmutando...' : 'Procesando...') : (canAfford ? (isSectarian ? 'Listo' : 'Ready') : (isSectarian ? 'Falta Ofrenda' : 'Insufficient Power'))}

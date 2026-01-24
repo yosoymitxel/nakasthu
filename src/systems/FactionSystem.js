@@ -29,7 +29,7 @@ class FactionSystem {
         });
 
         // Escuchar decisiones del jugador (Integración con GameSequencer/Operations)
-        bus.on('SUBJECT_PROCESSED', (data) => {
+        bus.on('DECISION_MADE', (data) => {
             if (!this.isActive) return;
 
             // Lógica simple: Técnicos -> Orden, Devotos -> Caos

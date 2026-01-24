@@ -97,7 +97,6 @@ describe('Sectarian Path Integration Tests (sectarian_integration.test.js)', () 
             [MODULES.OPERATIONS.tutorial]: 'C_MAIN',
             [MODULES.LORE_ARCHIVE.tutorial]: 'R_UPPER',
             [MODULES.QUOTA_TRACKER.tutorial]: 'C_MAIN',
-            [MODULES.RITUAL_ENGINE.tutorial]: 'L_BOTTOM',
             [MODULES.UNREST_METER.tutorial]: 'R_BOTTOM',
             [MODULES.FACTION_SYSTEM.tutorial]: 'R_MIDDLE',
             [MODULES.PORTAL_MONITOR.tutorial]: 'L_BOTTOM'
@@ -108,8 +107,6 @@ describe('Sectarian Path Integration Tests (sectarian_integration.test.js)', () 
                 const area = TUTORIAL_TO_AREA[tutoId];
                 if (tutoId === MODULES.QUOTA_TRACKER.tutorial) {
                     expect(area).toBe('C_MAIN'); // QuotaTracker está en Operations
-                } else if (tutoId === MODULES.RITUAL_ENGINE.tutorial) {
-                    expect(area).toBe('L_BOTTOM'); // RitualEngine mapeado a L_BOTTOM
                 } else {
                     const moduleId = AREA_TO_MODULE[area];
                     // Encontrar el módulo que tiene ese tutorialId

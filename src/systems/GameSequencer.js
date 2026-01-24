@@ -10,112 +10,10 @@ import { state } from '../core/State.js';
 import { html } from '../ui/utils/html.js';
 import { quotaTracker } from './QuotaTracker.js';
 import { factionSystem } from './FactionSystem.js';
-import { CONFIG } from '../core/Config.js';
-
-/**
- * Configuración de los 12 pasos narrativos.
- * Cada paso tiene: type, name, briefingText, meta (objetivos ocultos), subjectCount
- */
-export const STEPS_CONFIG = {
-    1: {
-        type: 'cinematic',
-        name: 'La Avanzadilla',
-        briefingText: 'Kael, Deyar y Alexia. Tres sombras modificadas descendieron a Zhyr. No buscaban gloria, buscaban la Piedra. Pero la Piedra los encontró primero.',
-        meta: null
-    },
-    2: {
-        type: 'mechanic',
-        name: 'El Contacto',
-        briefingText: 'La sincronización neural con el Bastión requiere contacto absoluto. El Monolito pulsa. Mantén la conexión o el sistema colapsa.',
-        meta: { syncRequired: 100 }
-    },
-    3: {
-        type: 'cinematic',
-        name: 'El Gran Desvío',
-        briefingText: 'La Piedra despertó. Un tercio de la humanidad se desvaneció en un parpadeo. El caos reina en las Distribuciones. Tú eres el Operador del Bastión, el último filtro entre el orden y la extinción.',
-        meta: null
-    },
-    4: {
-        type: 'gameplay',
-        name: 'Reconstrucción',
-        briefingText: 'Orval Drexler ha ordenado la reconstrucción. Necesitamos mano de obra calificada. Evalúa los sujetos según su utilidad técnica.',
-        subjectCount: 10,
-        meta: {
-            requiredTechnicians: 6,
-            hiddenGoal: 'Estabilizar el país con técnicos cualificados'
-        }
-    },
-    5: {
-        type: 'cinematic',
-        name: 'La Grieta Social',
-        briefingText: 'Las plazas de Dispay arden. La gente no quiere trabajar, quiere a sus desaparecidos. En el BioScan, las lecturas empiezan a mostrar algo más que carne: muestran ecos, susurros de los que se fueron.',
-        meta: null
-    },
-    6: {
-        type: 'gameplay',
-        name: 'La Urgencia',
-        briefingText: 'El tiempo apremia. Los disturbios se intensifican. Procesa los sujetos con rapidez. [ADVERTENCIA: Anomalía detectada en cola de espera]',
-        subjectCount: 7,
-        meta: {
-            kaminAppears: true,
-            kaminPosition: 7,
-            timeMultiplier: 1.5
-        }
-    },
-    7: {
-        type: 'cinematic',
-        name: 'El Mensajero de Aitor',
-        briefingText: 'Kamin no habla de odio, habla de esperanza. Dice que el portal es un regalo, un Renacimiento. Su voz calma el zumbido de las máquinas. La gente empieza a escucharlo.',
-        meta: { actChange: true, newStoryPath: 1 }
-    },
-    8: {
-        type: 'gameplay',
-        name: 'El Convencimiento',
-        briefingText: 'La secta de Kamin crece. Necesitamos sujetos con alta influencia para estabilizar la situación. Si fallas en reclutar suficientes devotos, el Bastión sufrirá sabotajes.',
-        subjectCount: 5,
-        meta: {
-            requiredInfluence: 3,
-            penaltyOnFail: 'sabotage'
-        }
-    },
-    9: {
-        type: 'cinematic',
-        name: 'La Fe Ciega',
-        briefingText: 'Ya no hay ciudadanos, solo devotos. El Bastión hiede a incienso y aceite de máquina. La fe es el nuevo combustible de la Nakara.',
-        meta: null
-    },
-    10: {
-        type: 'gameplay',
-        name: 'La Cosecha de Adeptos',
-        briefingText: 'Admisión masiva. Ya no importa la técnica, solo la cantidad. El Bastión necesita cuerpos. El propósito es secundario.',
-        subjectCount: 15,
-        meta: {
-            massAdmission: true,
-            coreColorOverride: 'purple'
-        }
-    },
-    11: {
-        type: 'mechanic',
-        name: 'El Juicio Final',
-        briefingText: 'El terminal se divide. Leina intenta cerrar la brecha. Kamin exige el sacrificio final. Tu desempeño determinará el destino.',
-        meta: {
-            dualChoice: true,
-            leftOption: { name: 'ESTABILIZAR', faction: 'orden', color: 'cyan' },
-            rightOption: { name: 'TRASCENDER', faction: 'caos', color: 'purple' }
-        }
-    },
-    12: {
-        type: 'cinematic',
-        name: 'Epílogo',
-        briefingText: null, // Se determina según el final elegido
-        meta: {
-            endings: {
-                orden: 'Cierras el portal. La humanidad sobrevive en un mundo roto, pero real. Leina te mira con gratitud silenciosa.',
-                caos: 'Kamin empuja a Leina hacia la grieta. Las sombras devoran el Bastión. "El renacimiento nunca es sencillo", susurra antes de desvanecerse.'
-            }
-        }
-    }
-};
+import { CONFIG } from '../data/gameConfig.js';
+import { STEPS_CONFIG } from '../data/stepsConfig.js';
+import { MechanicManager } from '../services/MechanicManager.js';
+import { calculateJudgmentRecommendation, checkStepMeta } from '../utils/gameplayUtils.js';
 
 /**
  * Clase GameSequencer - Gestiona la progresión narrativa
@@ -124,6 +22,7 @@ class GameSequencer {
     constructor() {
         this.currentStep = 1;
         this.storyPath = 0; // 0: Técnico, 1: Religioso
+        this.decisionSub = null;
     }
 
     /**
@@ -134,6 +33,14 @@ class GameSequencer {
         this.storyPath = state.storyPath || 0;
 
         console.log('%c[SEQUENCER] Sistema narrativo inicializado en paso ' + this.currentStep, 'color: #9333ea; font-weight: bold;');
+
+        // Suscribirse a eventos de procesamiento - Limpiar previa si existe
+        if (this.decisionSub) this.decisionSub();
+
+        this.decisionSub = bus.on('DECISION_MADE', ({ subject, action }) => {
+            this.registerSubjectResult(subject, action);
+            this.checkGameStatus();
+        });
 
         // Set initial status based on step type
         const initialStepData = this.getCurrentStepData();
@@ -146,6 +53,9 @@ class GameSequencer {
         }
 
         bus.emit('STEP_CHANGE', initialStepData);
+        
+        // Inicializar manager de mecánicas para el paso actual
+        MechanicManager.init(initialStepData.config);
     }
 
     /**
@@ -237,6 +147,9 @@ class GameSequencer {
 
         bus.emit('STEP_CHANGE', stepData);
 
+        // Inicializar manager de mecánicas para el nuevo paso
+        MechanicManager.init(currentConfig);
+
         // Mostrar modal de briefing SOLO para gameplay (Y si no hay tutorial activo)
         if (stepData.config.type === 'gameplay' && !state.isTutorialActive) {
             bus.emit('STORY_MODAL_OPEN', {
@@ -300,63 +213,39 @@ class GameSequencer {
             bus.emit('ACTION_TAKEN', { action: 'SACRIFICE', subjectId: subject.id });
         }
         state.endBatch();
-
-        bus.emit('SUBJECT_PROCESSED', {
-            stats: {
-                techniciansRecruited: state.techniciansRecruited,
-                devotsRecruited: state.devotsRecruited,
-                influenceGathered: state.influenceGathered
-            }
-        });
     }
 
     /**
-     * Verifica si se cumplen las metas ocultas del paso
+     * Verifica el estado global para transiciones o fallos críticos
      */
-    checkStepMeta() {
-        const config = STEPS_CONFIG[this.currentStep];
-        const meta = config.meta;
-
-        if (!meta) return { success: true };
-
-        const results = { success: true, messages: [] };
-
-        // Verificar técnicos requeridos (Paso 4)
-        if (meta.requiredTechnicians) {
-            if (state.techniciansRecruited < meta.requiredTechnicians) {
-                results.success = false;
-                results.messages.push(`Técnicos insuficientes: ${state.techniciansRecruited}/${meta.requiredTechnicians}`);
-            }
+    checkGameStatus() {
+        // 1. Verificar Fallo Crítico (Errores de Juicio)
+        if (state.judgmentErrors >= CONFIG.MAX_JUDGMENT_ERRORS) {
+            console.log('%c[SEQUENCER] Límite de errores alcanzado. FALLO DE SISTEMA.', 'color: #ef4444; font-weight: bold;');
+            state.gameStatus = 'GAME_OVER';
+            bus.emit('SYSTEM_FAILURE', {
+                reason: 'EXCESSIVE_ERRORS',
+                errors: state.judgmentErrors
+            });
+            return;
         }
 
-        // Verificar influencia requerida (Paso 8)
-        if (meta.requiredInfluence) {
-            if (state.influenceGathered < meta.requiredInfluence) {
-                results.success = false;
-                results.messages.push('Influencia insuficiente. Sabotaje inminente.');
-                bus.emit('SABOTAGE_TRIGGERED', {});
+        // 2. Verificar si se completó la cuota del nivel
+        if (state.processedCount >= state.quota) {
+            const config = STEPS_CONFIG[this.currentStep];
+            const metaResults = checkStepMeta(config.meta);
+            
+            if (!metaResults.success) {
+                console.log('%c[SEQUENCER] Cuota completada pero metas no alcanzadas.', 'color: #f59e0b;');
+                if (metaResults.messages.some(m => m.includes('Influencia'))) {
+                    bus.emit('SABOTAGE_TRIGGERED', {});
+                }
+            } else {
+                console.log('%c[SEQUENCER] Cuota completada exitosamente.', 'color: #10b981;');
             }
+            
+            this.nextStep();
         }
-
-        return results;
-    }
-
-    /**
-     * Calcula la recomendación del sistema para el Juicio Final
-     */
-    calculateJudgmentRecommendation() {
-        const techScore = (state.techniciansRecruited / 16) * 100; // Max ~16 técnicos
-        const faithScore = (state.devotsRecruited / 20) * 100; // Max ~20 devotos
-
-        const weightedTech = techScore * 0.7;
-        const weightedFaith = faithScore * 0.3;
-
-        return {
-            techPercentage: Math.min(100, Math.round(techScore)),
-            faithPercentage: Math.min(100, Math.round(faithScore)),
-            recommendation: weightedTech >= weightedFaith ? 'ESTABILIZAR' : 'TRASCENDER',
-            dominant: weightedTech >= weightedFaith ? 'orden' : 'caos'
-        };
     }
 
     /**

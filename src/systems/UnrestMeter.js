@@ -5,12 +5,8 @@
  */
 import { bus } from '../core/Bus.js';
 import { state } from '../core/State.js';
-
-const STATUS_LEVELS = {
-    CALM: { threshold: 0, label: 'CALMA', color: '#10b981' },
-    TENSION: { threshold: 40, label: 'TENSIÓN', color: '#f59e0b' },
-    CRITICAL: { threshold: 80, label: 'DISTURBIOS', color: '#ef4444' }
-};
+import { CONFIG } from '../data/gameConfig.js';
+import { getUnrestStatus, shouldTriggerRiot, calculateRiotImpact } from '../utils/unrestUtils.js';
 
 class UnrestMeter {
     constructor() {
@@ -22,15 +18,21 @@ class UnrestMeter {
         bus.on('LEVEL_RESET', () => this.reset());
 
         // Escuchar eventos que aumentan/disminuyen el descontento
-        bus.on('SUBJECT_PROCESSED', (data) => {
+        bus.on('DECISION_MADE', ({ subject, action }) => {
             if (!this.isActive) return;
 
-            // Ejemplo: Si rechazamos a muchos ciudadanos (no implementado en detalle aún), sube el unrest
-            // Por ahora, integración manual o via eventos específicos
+            // Lógica de agitación: las malas decisiones aumentan el descontento
+            if (action === 'sacrifice' && !subject.isCorrupt) {
+                this.increase(CONFIG.UNREST.SACRIFICE_INOCENT_INCREASE); // Sacrificar inocente indigna a la población
+            } else if (action === 'authorize' && subject.isCorrupt) {
+                this.increase(CONFIG.UNREST.AUTHORIZE_CORRUPT_INCREASE); // Autorizar corrupto genera inseguridad
+            } else if (action === 'authorize' && !subject.isCorrupt) {
+                this.decrease(CONFIG.UNREST.AUTHORIZE_INOCENT_DECREASE);  // Autorizar inocente calma a la población
+            }
         });
 
         bus.on('SABOTAGE_TRIGGERED', () => {
-            this.increase(20);
+            this.increase(CONFIG.UNREST.SABOTAGE_INCREASE);
         });
 
         bus.on('MODULE_UNLOCKED', (data) => {
@@ -41,7 +43,7 @@ class UnrestMeter {
     }
 
     reset() {
-        state.unrest = 0;
+        state.unrest = CONFIG.UNREST.INITIAL;
         this.isActive = false;
         this.emitUpdate();
     }
@@ -53,7 +55,7 @@ class UnrestMeter {
 
     increase(amount) {
         if (!this.isActive) return;
-        state.unrest = Math.min(100, state.unrest + amount);
+        state.unrest = Math.min(CONFIG.UNREST.MAX, state.unrest + amount);
         this.checkStatus();
         this.emitUpdate();
     }
@@ -66,10 +68,7 @@ class UnrestMeter {
     }
 
     getStatus() {
-        const level = state.unrest;
-        if (level >= STATUS_LEVELS.CRITICAL.threshold) return 'CRITICAL';
-        if (level >= STATUS_LEVELS.TENSION.threshold) return 'TENSION';
-        return 'CALM';
+        return getUnrestStatus(state.unrest, CONFIG.UNREST.LEVELS);
     }
 
     checkStatus() {
@@ -84,15 +83,14 @@ class UnrestMeter {
 
     checkRiotChance() {
         if (!this.isActive) return;
-        if (state.unrest > 80) {
-            if (Math.random() > 0.7) { // 30% chance por chequeo
-                bus.emit('RIOT_EVENT', { damage: 10 });
-                bus.emit('TERMINAL_PRINT', {
-                    text: '[ALERT] RIOT DETECTED IN SECTOR 4. STABILITY AFFECTED.',
-                    type: 'ERROR'
-                });
-                state.stability = Math.max(0, state.stability - 10);
-            }
+        
+        if (shouldTriggerRiot(state.unrest, CONFIG.UNREST.RIOT_THRESHOLD, CONFIG.UNREST.RIOT_CHANCE)) {
+            bus.emit('RIOT_EVENT', { damage: CONFIG.UNREST.RIOT_DAMAGE });
+            bus.emit('TERMINAL_PRINT', {
+                text: '[ALERT] RIOT DETECTED IN SECTOR 4. STABILITY AFFECTED.',
+                type: 'ERROR'
+            });
+            state.stability = calculateRiotImpact(state.stability, CONFIG.UNREST.RIOT_DAMAGE);
         }
     }
 
@@ -100,7 +98,7 @@ class UnrestMeter {
         bus.emit('UNREST_UPDATE', {
             level: state.unrest,
             status: this.getStatus(),
-            label: STATUS_LEVELS[this.getStatus()].label
+            label: CONFIG.UNREST.LEVELS[this.getStatus()].label
         });
     }
 }

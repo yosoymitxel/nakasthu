@@ -23,7 +23,7 @@ describe('Modular TutorialController Tests (tutorial_controller.test.js)', () =>
         const spy = vi.spyOn(bus, 'emit');
 
         bus.emit('MODULE_UNLOCKED', {
-            id: 'MOD_BIOSCAN',
+            id: 'MOD-01',
             name: 'BioScan',
             tutorialId: 'TUTO_BIOSCAN'
         });
@@ -88,7 +88,7 @@ describe('Modular TutorialController Tests (tutorial_controller.test.js)', () =>
     it('replayTutorial debe reiniciar el tutorial bajo demanda', () => {
         const spy = vi.spyOn(tutorialController, 'startModuleTutorial');
 
-        tutorialController.replayTutorial('MOD_BIOSCAN');
+        tutorialController.replayTutorial('MOD-01');
 
         expect(spy).toHaveBeenCalledWith('TUTO_BIOSCAN');
     });
