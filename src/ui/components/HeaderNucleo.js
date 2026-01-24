@@ -18,6 +18,9 @@ export const HeaderNucleo = () => {
     const currentStep = useGameState('currentStep');
     const utilidadOculta = useGameState('utilidadOculta');
 
+    const storyPath = useGameState('storyPath');
+    const isSectarian = storyPath === 1;
+
     const isEclipse = mode === 'ECLIPSE';
 
     // MENU INVISIBLE (Utilidad de Sujetos)
@@ -38,9 +41,9 @@ export const HeaderNucleo = () => {
         setActiveHighlights(prev => ({ ...prev, energy: newState }));
 
         if (newState) {
-            bus.emit('HIGHLIGHT_MODULE', { areas: ['L_UPPER', 'R_MIDDLE'], color: '#f59e0b' });
+            bus.emit('HIGHLIGHT_MODULE', { areas: ['C_MAIN', 'R_TOP'], color: isSectarian ? '#a855f7' : '#f59e0b' });
         } else {
-            bus.emit('HIGHLIGHT_MODULE', { clear: ['L_UPPER', 'R_MIDDLE'] });
+            bus.emit('HIGHLIGHT_MODULE', { clear: ['C_MAIN', 'R_TOP'] });
         }
     };
 
@@ -49,9 +52,9 @@ export const HeaderNucleo = () => {
         setActiveHighlights(prev => ({ ...prev, stability: newState }));
 
         if (newState) {
-            bus.emit('HIGHLIGHT_MODULE', { areas: ['R_MIDDLE', 'C_FOOTER'], color: '#dc2626' });
+            bus.emit('HIGHLIGHT_MODULE', { areas: ['C_MAIN', 'C_FOOTER'], color: isSectarian ? '#9333ea' : '#dc2626' });
         } else {
-            bus.emit('HIGHLIGHT_MODULE', { clear: ['R_MIDDLE', 'C_FOOTER'] });
+            bus.emit('HIGHLIGHT_MODULE', { clear: ['C_MAIN', 'C_FOOTER'] });
         }
     };
 
@@ -60,9 +63,9 @@ export const HeaderNucleo = () => {
         setActiveHighlights(prev => ({ ...prev, orbital: newState }));
 
         if (newState) {
-            bus.emit('HIGHLIGHT_MODULE', { areas: ['R_BOTTOM'], color: isEclipse ? '#9333ea' : '#06b6d4' });
+            bus.emit('HIGHLIGHT_MODULE', { areas: ['L_BOTTOM'], color: isSectarian ? '#9333ea' : (isEclipse ? '#9333ea' : '#06b6d4') });
         } else {
-            bus.emit('HIGHLIGHT_MODULE', { clear: ['R_BOTTOM'] });
+            bus.emit('HIGHLIGHT_MODULE', { clear: ['L_BOTTOM'] });
         }
     };
 
@@ -70,22 +73,26 @@ export const HeaderNucleo = () => {
         <div className="relative flex flex-col h-full w-full bg-transparent p-2 justify-center gap-1">
             <!-- CONTADOR SOLAR (Top Right) -->
             <div className="absolute top-2 right-4 text-[12px] font-mono text-zinc-400 tracking-tighter">
-                ${isEclipse ? 'ECLIPSE' : 'SOLAR'} ${Math.floor(orbitalCycle)}/100
+                ${isSectarian ? 'CONJUNCIÓN' : (isEclipse ? 'ECLIPSE' : 'SOLAR')} ${Math.floor(orbitalCycle)}/100
             </div>
 
-            <!-- Barra 1: ENERGÍA (Amarillo/Amber) -->
+            <!-- Barra 1: ENERGÍA (Amarillo/Amber -> Púrpura en Secta) -->
             <div 
                 className="flex items-center gap-3 pr-16 cursor-help group/energy"
                 onClick=${handleEnergyClick}
             >
                 <div className="flex flex-col w-24">
-                    <span className=${`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${activeHighlights.energy ? 'text-amber-400' : 'text-amber-700'}`}>System_Power</span>
-                    <span className=${`text-[14px] font-mono font-bold leading-none ${activeHighlights.energy ? 'text-amber-300' : 'text-amber-600'}`}>⚡ ${Math.floor(energy)}%</span>
+                    <span className=${`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${activeHighlights.energy ? (isSectarian ? 'text-purple-400' : 'text-amber-400') : (isSectarian ? 'text-purple-700' : 'text-amber-700')}`}>
+                        ${isSectarian ? 'Fe_Acumulada' : 'System_Power'}
+                    </span>
+                    <span className=${`text-[14px] font-mono font-bold leading-none ${activeHighlights.energy ? (isSectarian ? 'text-purple-300' : 'text-amber-300') : (isSectarian ? 'text-purple-600' : 'text-amber-600')}`}>
+                        ${isSectarian ? '†' : '⚡'} ${Math.floor(energy)}%
+                    </span>
                 </div>
                 
-                <div className=${`flex-1 h-3 bg-black/40 relative border transition-all duration-300 ${activeHighlights.energy ? 'border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.2)]' : 'border-zinc-800/50'}`}>
+                <div className=${`flex-1 h-3 bg-black/40 relative border transition-all duration-300 ${activeHighlights.energy ? (isSectarian ? 'border-purple-500/50 shadow-[0_0_10px_rgba(147,51,234,0.2)]' : 'border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.2)]') : 'border-zinc-800/50'}`}>
                     <div 
-                        className="absolute h-full bg-amber-500 transition-all duration-1000 shadow-[0_0_15px_rgba(245,158,11,0.4)]"
+                        className=${`absolute h-full transition-all duration-1000 ${isSectarian ? 'bg-purple-600 shadow-[0_0_15px_rgba(147,51,234,0.4)]' : 'bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.4)]'}`}
                         style=${{ width: `${Math.floor(energy)}%` }}
                     >
                         <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.2)_50%,transparent_100%)] w-20 animate-scanline-h"></div>
@@ -93,22 +100,26 @@ export const HeaderNucleo = () => {
                 </div>
             </div>
 
-            <!-- Barra 2: ESTABILIDAD (Rojo) -->
+            <!-- Barra 2: ESTABILIDAD (Rojo -> Púrpura Profundo en Secta) -->
             <div 
                 className="flex items-center gap-3 pr-16 cursor-help group/stability"
                 onClick=${handleStabilityClick}
             >
                 <div className="flex flex-col w-24">
-                    <span className=${`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${activeHighlights.stability ? 'text-red-400' : 'text-red-700'}`}>Neural_Sync</span>
-                    <span className=${`text-[14px] font-mono font-bold leading-none ${activeHighlights.stability ? 'text-red-300' : 'text-red-600'}`}>🧠 ${Math.floor(stability)}%</span>
+                    <span className=${`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${activeHighlights.stability ? (isSectarian ? 'text-purple-400' : 'text-red-500') : (isSectarian ? 'text-purple-800' : 'text-red-900')}`}>
+                        ${isSectarian ? 'Sintonía_Mental' : 'Neural_Integrity'}
+                    </span>
+                    <span className=${`text-[14px] font-mono font-bold leading-none ${activeHighlights.stability ? (isSectarian ? 'text-purple-300' : 'text-red-400') : (isSectarian ? 'text-purple-600' : 'text-red-600')}`}>
+                        ${isSectarian ? '◈' : '⚓'} ${Math.floor(stability)}%
+                    </span>
                 </div>
-
-                <div className=${`flex-1 h-3 bg-black/40 relative border transition-all duration-300 ${activeHighlights.stability ? 'border-red-500/50 shadow-[0_0_10px_rgba(220,38,38,0.2)]' : 'border-zinc-800/50'}`}>
+                
+                <div className=${`flex-1 h-3 bg-black/40 relative border transition-all duration-300 ${activeHighlights.stability ? (isSectarian ? 'border-purple-600/50 shadow-[0_0_10px_rgba(147,51,234,0.2)]' : 'border-red-500/50 shadow-[0_0_10px_rgba(220,38,38,0.2)]') : 'border-zinc-800/50'}`}>
                     <div 
-                        className="absolute h-full bg-red-600 transition-all duration-1000 shadow-[0_0_15px_rgba(220,38,38,0.4)]"
+                        className=${`absolute h-full transition-all duration-1000 ${isSectarian ? 'bg-purple-800 shadow-[0_0_15px_rgba(147,51,234,0.3)]' : 'bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.4)]'}`}
                         style=${{ width: `${Math.floor(stability)}%` }}
                     >
-                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.2)_50%,transparent_100%)] w-20 animate-scanline-h" style=${{ animationDelay: '1s' }}></div>
+                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.1)_50%,transparent_100%)] w-20 animate-scanline-h" style=${{ animationDelay: '1s' }}></div>
                     </div>
                 </div>
             </div>

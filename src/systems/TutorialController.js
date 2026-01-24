@@ -7,7 +7,7 @@ import { bus } from '../core/Bus.js';
 import { state } from '../core/State.js';
 import { MODULES } from './ModuleRegistry.js';
 
-// Definición del contenido de tutoriales por módulo
+// Definición del contenido de tutoriales por módulo (Ruta Técnica)
 const TUTORIAL_CONTENT = {
     [MODULES.BIOSCAN.tutorial]: {
         title: 'MÓDULO DESBLOQUEADO: BIOSCAN',
@@ -57,7 +57,7 @@ const TUTORIAL_CONTENT = {
             "Fallar repetidamente en la cuota atraerá la atención de Kamin. Y no querrá eso."
         ]
     },
-    'TUTO_UNREST': {
+    [MODULES.UNREST_METER.tutorial]: {
         title: 'ALERTA: DISTURBIOS CIVILES',
         steps: [
             "El descontento en los sectores bajos ha alcanzado niveles críticos.",
@@ -65,7 +65,7 @@ const TUTORIAL_CONTENT = {
             "Si el nivel llega a CRÍTICO, ocurrirán sabotajes automáticos."
         ]
     },
-    'TUTO_FACTION': {
+    [MODULES.FACTION_SYSTEM.tutorial]: {
         title: 'ANÁLISIS: FACCIONES',
         steps: [
             "La sociedad se divide. 'Orden' (Técnicos) vs 'Caos' (Devotos).",
@@ -73,7 +73,7 @@ const TUTORIAL_CONTENT = {
             "Visualice el dominio ideológico en el nuevo panel. Desbloqueará opciones únicas."
         ]
     },
-    'TUTO_RITUAL': {
+    [MODULES.RITUAL_ENGINE.tutorial]: {
         title: 'PROTOCOLO: RITUALES',
         steps: [
             "El sacrificio genera 'Carga Ritual'. Acumúlela eliminando amenazas.",
@@ -81,12 +81,72 @@ const TUTORIAL_CONTENT = {
             "Advertencia: Los rituales tienen un alto coste moral e impacto en la facción."
         ]
     },
-    'TUTO_PORTAL': {
+    [MODULES.PORTAL_MONITOR.tutorial]: {
         title: 'ALERTA: INESTABILIDAD DIMENSIONAL',
         steps: [
             "El Portal se debilita. La exposición constante a sujetos anómalos corroe la realidad.",
             "Supervise el Monitor de Flujo. Si baja del 30%, ocurrirán fugas de vacío.",
             "Debe invertir recursos para ESTABILIZAR el portal manualmente si decae demasiado."
+        ]
+    }
+};
+
+// Definición del contenido de tutoriales por módulo (Ruta Sectaria)
+const TUTORIAL_CONTENT_SECTARIAN = {
+    [MODULES.BIOSCAN.tutorial]: {
+        title: 'REVELACIÓN: ALTAR DE EXAMEN',
+        steps: [
+            "Observe el [[MOD-01]]. No solo vemos carne, vemos la pureza de la esencia.",
+            "Realice una LECTURA DE AURA para identificar la vibración del sujeto.",
+            "Busque la sintonía perfecta. Solo los puros de espíritu heredarán el Bastión."
+        ]
+    },
+    [MODULES.ANALYTICS.tutorial]: {
+        title: 'REVELACIÓN: EMANACIONES DEL ALMA',
+        steps: [
+            "El [[MOD-02]] superior traduce los susurros del vacío.",
+            "Mida la Corrupción del Alma. Un alma manchada por la duda es un riesgo para la Comunión.",
+            "Use estas visiones para decidir quién merece la iluminación."
+        ]
+    },
+    [MODULES.OPERATIONS.tutorial]: {
+        title: 'RITUAL: CONSAGRACIÓN',
+        steps: [
+            "El [[MOD-04]] es su altar de juicio. El destino de las almas está en sus manos.",
+            "[CONSAGRAR]: Recibe al adepto en nuestra fe. Fortalece la comunión.",
+            "[PURGAR]: Libera al impuro de su carga física. El Aitor requiere sacrificios."
+        ]
+    },
+    [MODULES.QUOTA_TRACKER.tutorial]: {
+        title: 'RITUAL: LA COSECHA',
+        steps: [
+            "El Aitor exige una cuota de almas para mantener el Velo.",
+            "Complete la cosecha de adeptos para asegurar nuestra supervivencia espiritual.",
+            "Cada alma cuenta. La duda es el primer paso hacia el Cisma."
+        ]
+    },
+    [MODULES.UNREST_METER.tutorial]: {
+        title: 'ALERTA: AGITACIÓN HERÉTICA',
+        steps: [
+            "Los no creyentes se agitan en las sombras del Bastión.",
+            "El Monitor de Agitación mide el riesgo de Cisma. Las purgas injustas alimentan la herejía.",
+            "Si la agitación desborda, los infieles sabotearán nuestros sistemas sagrados."
+        ]
+    },
+    [MODULES.FACTION_SYSTEM.tutorial]: {
+        title: 'VISIÓN: SINTONÍA DEL ALMA',
+        steps: [
+            "El mundo se divide entre el Dogma y el Éxtasis.",
+            "Sus actos inclinan la balanza del destino. Busque la sintonía con el Aitor.",
+            "Observe el Panel de Comunión. El dominio de nuestra fe desbloqueará milagros técnicos."
+        ]
+    },
+    [MODULES.PORTAL_MONITOR.tutorial]: {
+        title: 'ALERTA: DEBILIDAD DEL VELO',
+        steps: [
+            "El Velo entre mundos se desgarra. La presencia del Aitor exige un conducto estable.",
+            "Vigile la Estabilidad del Velo. Si decae, las sombras del vacío se filtrarán.",
+            "Debe realizar oraciones de estabilización (recursos) si el Velo empieza a rasgarse."
         ]
     }
 };
@@ -98,6 +158,7 @@ class TutorialController {
         this.activeTutorialId = null;
         this.currentStepIndex = 0;
         this.isModalOpen = false;
+        this.proposalQueue = []; // Cola para tutoriales pendientes
         this.init();
     }
 
@@ -109,6 +170,15 @@ class TutorialController {
             }
         });
 
+        // Escuchar cambios de estado para procesar la cola
+        bus.on('STATE_CHANGE:gameStatus', (status) => {
+            console.log(`[TUTORIAL] Game status changed to: ${status}. Checking queue...`);
+            if (status === 'PLAYING') {
+                // Pequeño delay para dejar que la UI se asiente tras una cinemática
+                setTimeout(() => this.checkQueue(), 1000);
+            }
+        });
+
         // Avance manual desde el modal
         bus.on('TUTORIAL_CONTINUE', () => {
             this.nextStep();
@@ -117,25 +187,70 @@ class TutorialController {
         // Cierre de modal
         bus.on('UI_MODAL_CLOSE', () => {
             this.isModalOpen = false;
+            // Al cerrar cualquier modal, ver si hay algo en cola
+            setTimeout(() => this.checkQueue(), 500);
+        });
+
+        // Escuchar cierre de modal de historia (Briefing/Summary) para procesar la cola
+        bus.on('STORY_MODAL_CLOSE', () => {
+            console.log(`[TUTORIAL] Story modal closed. Checking queue...`);
+            // Solo procesar si estamos en juego
+            if (state.gameStatus === 'PLAYING') {
+                setTimeout(() => this.checkQueue(), 800);
+            }
+        });
+
+        // Omitir todo el tutorial (reutilizando lógica de Mod-08)
+        bus.on('TUTORIAL_SKIP_ALL', () => {
+            console.log('[TUTORIAL] Skipping all pending tutorials.');
+            this.proposalQueue = []; // Limpiar cola
+            this.cancelActiveTutorial(); // Cancelar el actual
+            
+            // Actualizar estado global para que otros módulos se enteren
+            state.startBatch();
+            state.isTutorialActive = false;
+            state.tutorialStep = 0;
+            state.endBatch();
+
+            bus.emit('TERMINAL_PRINT', {
+                text: '>>> PROTOCOLO DE INDUCCIÓN ABORTADO POR EL OPERADOR. CONTROL TOTAL RESTABLECIDO.',
+                type: 'SYSTEM'
+            });
         });
 
         // Reset forzado del sistema
         bus.on('SYSTEM_FORCE_RESET', () => {
+            this.proposalQueue = []; // Limpiar cola en reset
             this.cancelActiveTutorial();
         });
     }
 
-    proposeTutorial(moduleId, moduleName, tutorialId) {
-        console.log(`[TUTORIAL] Proposal for: ${moduleName}`);
-
-        // Si ya hay un tutorial activo, lo ignoramos o encolamos (por ahora simple: ignorar si está ocupado, o mostrar si es solo una propuesta encima de nada)
-        // Mejor: Si isModalOpen es true, esperar.
-        if (this.isModalOpen) {
-            console.log(`[TUTORIAL] Modal open, retrying proposal for ${moduleName} in 2s...`);
-            setTimeout(() => this.proposeTutorial(moduleId, moduleName, tutorialId), 2000);
+    /**
+     * Procesa la cola de tutoriales pendientes
+     */
+    checkQueue() {
+        if (this.proposalQueue.length === 0 || this.isModalOpen || state.gameStatus !== 'PLAYING') {
             return;
         }
 
+        const next = this.proposalQueue.shift();
+        console.log(`[TUTORIAL] Processing queued tutorial: ${next.moduleName}`);
+        this.proposeTutorial(next.moduleId, next.moduleName, next.tutorialId);
+    }
+
+    proposeTutorial(moduleId, moduleName, tutorialId) {
+        // REGLA: No mostrar tutoriales durante cinemáticas o si ya hay un modal abierto
+        if (state.gameStatus !== 'PLAYING' || this.isModalOpen) {
+            // Evitar duplicados en la cola
+            const exists = this.proposalQueue.some(p => p.tutorialId === tutorialId);
+            if (!exists) {
+                console.log(`[TUTORIAL] System busy (Status: ${state.gameStatus}). Queuing: ${moduleName}`);
+                this.proposalQueue.push({ moduleId, moduleName, tutorialId });
+            }
+            return;
+        }
+
+        console.log(`[TUTORIAL] Proposing tutorial for: ${moduleName}`);
         this.isModalOpen = true; // Marcar como ocupado inmediatamente
 
         bus.emit('UI_MODAL_OPEN', {
@@ -213,7 +328,10 @@ class TutorialController {
     }
 
     showCurrentStep() {
-        const content = TUTORIAL_CONTENT[this.activeTutorialId];
+        // Seleccionar contenido según la ruta narrativa
+        const contentPool = state.storyPath === 1 ? TUTORIAL_CONTENT_SECTARIAN : TUTORIAL_CONTENT;
+        const content = contentPool[this.activeTutorialId] || TUTORIAL_CONTENT[this.activeTutorialId];
+        
         if (!content) return;
 
         // Sincronizar estado global para que UI reaccione (Highlights, Unlocks)
@@ -233,7 +351,9 @@ class TutorialController {
     }
 
     nextStep() {
-        const content = TUTORIAL_CONTENT[this.activeTutorialId];
+        const contentPool = state.storyPath === 1 ? TUTORIAL_CONTENT_SECTARIAN : TUTORIAL_CONTENT;
+        const content = contentPool[this.activeTutorialId] || TUTORIAL_CONTENT[this.activeTutorialId];
+        
         if (!content) return;
 
         this.currentStepIndex++;

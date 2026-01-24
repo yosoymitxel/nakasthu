@@ -15,8 +15,19 @@ export const BioScan = () => {
     const isTutorialActive = useGameState('isTutorialActive');
     const requiredScan = useGameState('requiredScan');
     const currentEntity = useGameState('currentEntity');
+    const storyPath = useGameState('storyPath');
 
     const isLocked = moduleLock && moduleLock.bioscan;
+    const isSectarian = storyPath === 1;
+
+    // Mapeo de nombres para la ruta sectaria
+    const SCAN_NAMES = {
+        THERMAL: isSectarian ? 'GRADO_HUMANO' : 'TÉRMICO',
+        NEURAL: isSectarian ? 'COMUNIÓN' : 'NEURAL',
+        NAKARA: isSectarian ? 'SONDA_ALMA' : 'SONDA NAKARA',
+        BIOMETRIC: isSectarian ? 'LECTURA_AURA' : 'BIO-MÉTRICO',
+        RESONANCE: isSectarian ? 'RESONANCIA' : 'RESONANCIA'
+    };
 
     const startScan = async (type) => {
         const scanCount = currentEntity?.scanHistory?.[type.id] || 0;
@@ -43,10 +54,10 @@ export const BioScan = () => {
             <header className="border-b-[0.5px] border-zinc-800 pb-2">
                 <div className="flex justify-between items-center">
                     <h2 className="text-[12px] font-black text-zinc-400 uppercase tracking-[0.3em]">
-                        BIO-SCANNER v4.02
+                        ${isSectarian ? 'ALTAR DE EXAMEN v4.02' : 'BIO-SCANNER v4.02'}
                     </h2>
                     <div className="flex gap-1">
-                        <div className="w-1 h-1 bg-cyan-600/50 animate-pulse"></div>
+                        <div className=${`w-1 h-1 animate-pulse ${isSectarian ? 'bg-purple-600/50' : 'bg-cyan-600/50'}`}></div>
                         <div className="w-1 h-1 bg-zinc-900"></div>
                     </div>
                 </div>
@@ -81,32 +92,32 @@ export const BioScan = () => {
                             disabled=${activeScan || !canAfford || (isTutorialActive && tutorialStep === 2 && type.id !== 'THERMAL')}
                             className=${`
                                 relative overflow-hidden border-[0.5px] p-3 text-left transition-all duration-200 group
-                                ${isActive ? 'border-cyan-600/50 bg-cyan-950/10' : 
-                                  isRequired ? 'border-amber-500/50 bg-amber-950/5 animate-pulse-slow' : `${borderColorClass} bg-black/20 hover:border-amber-900/40`}
+                                ${isActive ? (isSectarian ? 'border-purple-600/50 bg-purple-950/10' : 'border-cyan-600/50 bg-cyan-950/10') : 
+                                  isRequired ? (isSectarian ? 'border-purple-500/50 bg-purple-950/5 animate-pulse-slow' : 'border-amber-500/50 bg-amber-950/5 animate-pulse-slow') : `${borderColorClass} bg-black/20 hover:border-amber-900/40`}
                                 ${(activeScan || !canAfford || (isTutorialActive && tutorialStep === 2 && type.id !== 'THERMAL')) && !isActive ? 'border-red-900/20 opacity-40 cursor-not-allowed' : (activeScan && !isActive ? 'opacity-40' : 'cursor-pointer')}
                             `}
                         >
                             <!-- Scan Count Indicator -->
                             ${scanCount > 0 ? html`
                                 <div className="absolute top-0 left-0 bg-zinc-900/80 px-1 border-r border-b border-zinc-800">
-                                    <span className="text-[8px] text-zinc-500 font-bold">REPEATS: ${scanCount}</span>
+                                    <span className="text-[8px] text-zinc-500 font-bold">${isSectarian ? 'RITUALES' : 'REPEATS'}: ${scanCount}</span>
                                 </div>
                             ` : null}
 
                             <!-- Required Indicator Tag -->
                             ${isRequired ? html`
-                                <div className="absolute top-0 right-0 bg-amber-600/20 text-amber-500 text-[8px] px-1 font-bold tracking-tighter uppercase border-b border-l border-amber-900/30">
-                                    Required
+                                <div className=${`absolute top-0 right-0 ${isSectarian ? 'bg-purple-600/20 text-purple-500 border-purple-900/30' : 'bg-amber-600/20 text-amber-500 border-amber-900/30'} text-[8px] px-1 font-bold tracking-tighter uppercase border-b border-l`}>
+                                    ${isSectarian ? 'SAGRADO' : 'Required'}
                                 </div>
                             ` : null}
 
                             <!-- Progress Bar Background -->
                             ${isActive ? html`
                                 <div key="progress-container" className="absolute inset-0 pointer-events-none">
-                                    <div key="progress-bg" className="absolute inset-0 bg-cyan-500/5"></div>
+                                    <div key="progress-bg" className=${`absolute inset-0 ${isSectarian ? 'bg-purple-500/5' : 'bg-cyan-500/5'}`}></div>
                                     <div 
                                         key="progress-bar"
-                                        className="absolute bottom-0 left-0 h-[1px] bg-cyan-500 transition-all duration-100"
+                                        className=${`absolute bottom-0 left-0 h-[1px] ${isSectarian ? 'bg-purple-500' : 'bg-cyan-500'} transition-all duration-100`}
                                         style=${{ width: `${progress}%` }}
                                     ></div>
                                 </div>
@@ -114,18 +125,18 @@ export const BioScan = () => {
 
                             <div key="content-container" className="flex justify-between items-start relative z-10">
                                 <div className="flex flex-col">
-                                    <span className=${`text-[12px] font-bold uppercase tracking-wider ${isActive ? 'text-cyan-500' : 'text-zinc-400 group-hover:text-amber-600/70'}`}>
-                                        ${type.name}
+                                    <span className=${`text-[12px] font-bold uppercase tracking-wider ${isActive ? (isSectarian ? 'text-purple-500' : 'text-cyan-500') : 'text-zinc-400 group-hover:text-amber-600/70'}`}>
+                                        ${SCAN_NAMES[type.id]}
                                     </span>
                                     <span className="text-[12px] text-zinc-400 mt-0.5 font-mono uppercase">
-                                        ${isActive ? 'Procesando...' : (canAfford ? 'Ready' : 'Insufficient Power')}
+                                        ${isActive ? (isSectarian ? 'Transmutando...' : 'Procesando...') : (canAfford ? (isSectarian ? 'Listo' : 'Ready') : (isSectarian ? 'Falta Ofrenda' : 'Insufficient Power'))}
                                     </span>
                                 </div>
                                 <div className="flex flex-col items-end">
                                     <span className=${`text-[12px] font-mono font-bold ${canAfford ? 'text-zinc-400' : 'text-red-900/50'}`}>
-                                        ${finalCost.toFixed(1)}
+                                        ${Math.floor(finalCost)}
                                     </span>
-                                    <span className="text-[8px] text-zinc-600 uppercase tracking-tighter">Energy_Cost</span>
+                                    <span className="text-[8px] text-zinc-600 uppercase tracking-tighter">${isSectarian ? 'Coste_Fe' : 'Energy_Cost'}</span>
                                 </div>
                             </div>
                         </button>

@@ -247,27 +247,41 @@ export const GameModal = memo(({
                 </div>
 
                 <!-- Footer con botones -->
-                <div className="border-t border-amber-900/30 p-4">
+                <div className="border-t border-amber-900/30 p-4 space-y-3">
                     ${mode === 'Briefing' ? html`
-                        <button 
-                            onClick=${() => {
+                        <${React.Fragment}>
+                            <button 
+                                onClick=${() => {
                 if (onContinue) onContinue();
                 if (isTutorial) {
                     bus.emit('TUTORIAL_CONTINUE', {});
                 }
                 bus.emit('STORY_MODAL_CLOSE', {});
             }}
-                            disabled=${isTyping}
-                            className=${`
-                                w-full py-3 border text-sm tracking-[0.3em] uppercase font-bold
-                                transition-all duration-300
-                                ${isTyping
+                                disabled=${isTyping}
+                                className=${`
+                                    w-full py-3 border text-sm tracking-[0.3em] uppercase font-bold
+                                    transition-all duration-300
+                                    ${isTyping
                 ? 'border-zinc-700 text-zinc-600 cursor-not-allowed'
                 : 'border-amber-500/50 text-amber-400 hover:bg-amber-500/10 hover:border-amber-400'}
+                                `}
+                            >
+                                ${isTyping ? 'RECIBIENDO TRANSMISIÓN...' : (isTutorial ? 'RECIBIDO' : 'INICIAR OPERACIONES')}
+                            </button>
+
+                            ${isTutorial && !isTyping && html`
+                                <button 
+                                    onClick=${() => {
+                bus.emit('TUTORIAL_SKIP_ALL', {});
+                bus.emit('STORY_MODAL_CLOSE', {});
+            }}
+                                    className="w-full py-2 border border-red-900/40 text-red-500/60 text-[10px] tracking-[0.2em] uppercase font-bold hover:bg-red-900/10 hover:text-red-400 transition-all"
+                                >
+                                    OMITIR TODO EL TUTORIAL
+                                </button>
                             `}
-                        >
-                            ${isTyping ? 'RECIBIENDO TRANSMISIÓN...' : (isTutorial ? 'RECIBIDO' : 'INICIAR OPERACIONES')}
-                        </button>
+                        <//>
                     ` : html`
                         <div className="flex gap-3">
                             <button 

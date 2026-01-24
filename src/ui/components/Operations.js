@@ -294,20 +294,22 @@ export const Operations = () => {
 
                 <div className="w-1/3 h-full flex flex-col justify-around px-3 py-2 bg-black/10">
                     <div className="flex flex-col items-center">
-                        <span className="text-[12px] text-zinc-400 uppercase tracking-widest font-bold mb-1">QUOTA_RECOVERY</span>
-                        <span className="text-2xl font-black text-emerald-600/70 font-mono">
+                        <span className="text-[12px] text-zinc-400 uppercase tracking-widest font-bold mb-1">
+                            ${state.storyPath === 1 ? 'COSECHA_DE_ALMAS' : 'QUOTA_RECOVERY'}
+                        </span>
+                        <span className=${`text-2xl font-black font-mono ${state.storyPath === 1 ? 'text-purple-600/70' : 'text-emerald-600/70'}`}>
                             ${processedCount} / ${quota}
                         </span>
                     </div>
                     <div className="w-full bg-zinc-950 h-3 relative overflow-hidden border border-zinc-800/30">
                         <div 
-                            className="h-full bg-emerald-600/40 transition-all duration-1000"
+                            className=${`h-full transition-all duration-1000 ${state.storyPath === 1 ? 'bg-purple-600/40' : 'bg-emerald-600/40'}`}
                             style=${{ width: `${Math.min((processedCount / quota) * 100, 100)}%` }}
                         ></div>
                     </div>
                     <div className="flex justify-center">
-                        <span className="text-[12px] text-red-900/60 font-bold font-mono uppercase">
-                            ERR: ${judgmentErrors}
+                        <span className=${`text-[12px] font-bold font-mono uppercase ${state.storyPath === 1 ? 'text-purple-900/60' : 'text-red-900/60'}`}>
+                            ${state.storyPath === 1 ? 'CISMA' : 'ERR'}: ${judgmentErrors}
                         </span>
                     </div>
                 </div>
@@ -383,9 +385,10 @@ export const Operations = () => {
                             <button 
                                 onClick=${() => handleDialogueAction('INTERROGAR')}
                                 disabled=${isTyping}
-                                className="flex-1 border border-cyan-900/30 bg-cyan-950/10 hover:bg-cyan-900/20 text-cyan-600 text-[12px] transition-all uppercase tracking-tighter font-bold"
+                                className=${`flex-1 border text-[12px] transition-all uppercase tracking-tighter font-bold
+                                    ${state.storyPath === 1 ? 'border-purple-900/30 bg-purple-950/10 hover:bg-purple-900/20 text-purple-600' : 'border-cyan-900/30 bg-cyan-950/10 hover:bg-cyan-900/20 text-cyan-600'}`}
                             >
-                                INICIAR ENLACE NEURAL [INTERROGAR]
+                                ${state.storyPath === 1 ? 'INICIAR COMUNIÓN [INTERROGAR]' : 'INICIAR ENLACE NEURAL [INTERROGAR]'}
                             </button>
                             <div className="flex-grow flex items-center justify-center p-2 text-center">
                                 <span className="text-[12px] text-zinc-500 uppercase italic">Sujeto en espera de interacción...</span>

@@ -24,17 +24,17 @@ import { toggleFullScreen, isFullScreen } from '../utils/fullscreen.js';
 
 const { useState, useEffect } = React;
 
-// Mapeo de Áreas de Grid a IDs de Módulo
+// Mapeo de Áreas de Grid a IDs de Módulo para el sistema de bloqueo
 const AREA_TO_MODULE = {
     'L_UPPER': MODULES.BIOSCAN.id,
     'L_LOWER': MODULES.ANALYTICS.id,
     'C_FOOTER': MODULES.RESONANCE.id,
     'C_MAIN': MODULES.OPERATIONS.id,
     'R_UPPER': MODULES.LORE_ARCHIVE.id,
-    'L_BOTTOM': 'MOD_RESERVE', // Placeholder
-    'R_TOP': 'MOD_CONTROL', // Placeholder
-    'R_MIDDLE': 'MOD_ZHYR_OS', // Placeholder
-    'R_BOTTOM': 'MOD_REF' // Placeholder
+    'R_TOP': MODULES.QUOTA_TRACKER.id,
+    'R_MIDDLE': MODULES.FACTION_SYSTEM.id,
+    'R_BOTTOM': MODULES.UNREST_METER.id,
+    'L_BOTTOM': MODULES.PORTAL_MONITOR.id
 };
 
 export const Layout = () => {
@@ -128,13 +128,11 @@ export const Layout = () => {
                 [MODULES.RESONANCE.tutorial]: 'C_FOOTER',
                 [MODULES.OPERATIONS.tutorial]: 'C_MAIN',
                 [MODULES.LORE_ARCHIVE.tutorial]: 'R_UPPER',
-                [MODULES.QUOTA_TRACKER.tutorial]: 'R_TOP', // Aproximación, ajustar si hay panel específico
-
-                // Mapeos extra para nuevos tutoriales
-                'TUTO_UNREST': 'R_BOTTOM',
-                'TUTO_FACTION': 'R_MIDDLE',
-                'TUTO_RITUAL': 'MOD_RESERVE', // Si hubiera panel específico
-                'TUTO_PORTAL': 'L_BOTTOM'
+                [MODULES.QUOTA_TRACKER.tutorial]: 'C_MAIN', // El QuotaTracker visualmente está en Operations
+                [MODULES.RITUAL_ENGINE.tutorial]: 'L_BOTTOM',
+                [MODULES.UNREST_METER.tutorial]: 'R_BOTTOM',
+                [MODULES.FACTION_SYSTEM.tutorial]: 'R_MIDDLE',
+                [MODULES.PORTAL_MONITOR.tutorial]: 'L_BOTTOM'
             };
 
             // Determinar si esta área es la target del tutorial actual

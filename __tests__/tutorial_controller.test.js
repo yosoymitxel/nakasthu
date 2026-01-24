@@ -1,12 +1,16 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { bus } from '../src/core/Bus.js';
+import { state } from '../src/core/State.js';
 import { tutorialController } from '../src/systems/TutorialController.js';
 
 describe('Modular TutorialController Tests (tutorial_controller.test.js)', () => {
     beforeEach(() => {
+        state.resetState();
+        state.gameStatus = 'PLAYING';
         tutorialController.activeTutorialId = null;
         tutorialController.currentStepIndex = 0;
         tutorialController.isModalOpen = false;
+        tutorialController.proposalQueue = [];
         vi.clearAllMocks();
         vi.useFakeTimers();
     });

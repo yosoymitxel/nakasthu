@@ -80,6 +80,22 @@ export const MODULES = {
     }
 };
 
+export const getModuleName = (module, storyPath) => {
+    if (storyPath === 1) {
+        const sectarianNames = {
+            'MOD_BIOSCAN': 'Altar de Examen',
+            'MOD_ANALYTICS': 'Emanaciones del Alma',
+            'MOD_OPERATIONS': 'Altar de Consagración',
+            'MOD_QUOTA': 'Cosecha de Adeptos',
+            'MOD_UNREST': 'Monitor de Agitación',
+            'MOD_FACTION': 'Panel de Comunión',
+            'MOD_PORTAL': 'Velo Dimensional'
+        };
+        return sectarianNames[module.id] || module.name;
+    }
+    return module.name;
+};
+
 class ModuleRegistry {
     constructor() {
         this.activeModules = new Set();
@@ -108,17 +124,18 @@ class ModuleRegistry {
 
     unlockModule(module) {
         this.activeModules.add(module.id);
+        const displayName = getModuleName(module, state.storyPath);
 
-        console.log(`%c[SYSTEM] Módulo Desbloqueado: ${module.name}`, "color: #00ff00; font-weight: bold;");
+        console.log(`%c[SYSTEM] Módulo Desbloqueado: ${displayName}`, "color: #00ff00; font-weight: bold;");
 
         bus.emit('MODULE_UNLOCKED', {
             id: module.id,
-            name: module.name,
+            name: displayName,
             tutorialId: module.tutorial
         });
 
         bus.emit('TERMINAL_PRINT', {
-            text: `[SYSTEM] NEW MODULE ONLINE: ${module.name}`,
+            text: `[SYSTEM] NEW MODULE ONLINE: ${displayName}`,
             type: 'SUCCESS'
         });
     }
