@@ -21,9 +21,13 @@ import { CinematicScreen } from '../screens/cinematic/CinematicScreen.js';
 import { MechanicScreen } from '../screens/mechanic/MechanicScreen.js';
 import { GameplayScreen } from '../screens/gameplay/GameplayScreen.js';
 import { LoreScreen } from '../screens/lore/LoreScreen.js';
+import { LevelContainer } from '../containers/LevelContainer.js';
 import { GameModal, useGameModal } from './GameModal.js';
 import { toggleFullScreen, isFullScreen } from '../utils/fullscreen.js';
 import { calculateRank } from '../../utils/systemUtils.js';
+
+import { LevelSelectorModal } from './LevelSelectorModal.js';
+import { persistenceManager } from '../../systems/PersistenceManager.js';
 
 const { useState, useEffect } = React;
 
@@ -63,6 +67,8 @@ export const Layout = () => {
     const [deathStats, setDeathStats] = useState(null);
     const [stableRank, setStableRank] = useState(null); // Capturar rango final para evitar parpadeo
     const [isFS, setIsFS] = useState(isFullScreen());
+
+    const [isLevelSelectorOpen, setIsLevelSelectorOpen] = useState(false);
 
     // Listener para pantalla completa
     useEffect(() => {
@@ -342,8 +348,15 @@ export const Layout = () => {
         }}
                             className="group relative border border-cyan-500/40 bg-cyan-950/20 px-8 py-3 hover:bg-cyan-500/30 transition-all"
                         >
-                            <span className="text-cyan-400 font-mono text-sm tracking-widest uppercase">Iniciar Turno</span>
+                            <span className="text-cyan-400 font-mono text-sm tracking-widest uppercase">Iniciar Juego</span>
                             <div className="absolute inset-0 border border-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity animate-pulse"></div>
+                        </button>
+
+                        <button 
+                            onClick=${() => setIsLevelSelectorOpen(true)}
+                            className="group relative border border-zinc-800 bg-zinc-900/10 px-8 py-3 hover:bg-zinc-800 transition-all"
+                        >
+                            <span className="text-zinc-500 group-hover:text-zinc-300 font-mono text-[10px] tracking-[0.2em] uppercase">Selector de Secuencias</span>
                         </button>
 
                         <button 
@@ -467,19 +480,13 @@ export const Layout = () => {
 
             <!-- Renderizado Dinámico de Pantallas según Paso Narrativo -->
             <div className=${`transition-all duration-[2000ms] ${isGameOver || isStartMenu || isLoreArchive ? 'opacity-0 pointer-events-none' : ''}`}>
-                ${(!isGameOver && !isStartMenu && !isLoreArchive) && (() => {
-            if (!stepConfig) return null;
-
-            switch (stepConfig.type) {
-                case 'cinematic':
-                    return html`<${CinematicScreen} config=${stepConfig} />`;
-                case 'mechanic':
-                    return html`<${MechanicScreen} config=${stepConfig} />`;
-                case 'gameplay':
-                default:
-                    return html`<${GameplayScreen} getModuleTutorialStatus=${getModuleTutorialStatus} unlockedModules=${unlockedModules} />`;
-            }
-        })()}
+                ${(!isGameOver && !isStartMenu && !isLoreArchive) && html`
+                    <${LevelContainer} 
+                        stepConfig=${stepConfig} 
+                        getModuleTutorialStatus=${getModuleTutorialStatus} 
+                        unlockedModules=${unlockedModules} 
+                    />
+                `}
             </div>
 
             <!-- Modal de Pausa -->
@@ -495,17 +502,60 @@ export const Layout = () => {
                             Reanudar Conexión
                         </button>
 
-                        <div className="pt-4 border-t border-cyan-900/30">
+                        <div className="grid grid-cols-2 gap-3 pt-6 border-t border-cyan-900/30">
                             <button 
-                                onClick=${toggleFullScreen}
-                                className="px-6 py-2 border border-zinc-800 text-zinc-500 hover:text-cyan-500 hover:border-cyan-500/30 transition-all uppercase tracking-widest text-[10px]"
+                                onClick=${() => {
+                                    gameSequencer.resetLevel();
+                                    state.isPaused = false;
+                                }}
+                                className="px-4 py-2 border border-amber-900/30 text-amber-600 hover:bg-amber-900/10 transition-all uppercase tracking-widest text-[10px]"
                             >
-                                ${isFS ? 'Desactivar Fullscreen' : 'Activar Fullscreen'}
+                                Reiniciar Nivel
+                            </button>
+                            <button 
+                                onClick=${() => {
+                                    persistenceManager.saveGame(state);
+                                    state.isPaused = false;
+                                }}
+                                className="px-4 py-2 border border-emerald-900/30 text-emerald-600 hover:bg-emerald-900/10 transition-all uppercase tracking-widest text-[10px]"
+                            >
+                                Guardar Partida
+                            </button>
+                            <button 
+                                onClick=${() => {
+                                    state.resetState();
+                                    state.isPaused = false;
+                                }}
+                                className="px-4 py-2 border border-zinc-800 text-zinc-500 hover:bg-zinc-900/40 transition-all uppercase tracking-widest text-[10px]"
+                            >
+                                Reiniciar Juego
+                            </button>
+                            <button 
+                                onClick=${() => {
+                                    state.resetState();
+                                    state.gameStatus = 'START_MENU';
+                                    state.isPaused = false;
+                                }}
+                                className="px-4 py-2 border border-red-900/30 text-red-700 hover:bg-red-900/10 transition-all uppercase tracking-widest text-[10px]"
+                            >
+                                Salir al Menú
                             </button>
                         </div>
+
+                        <button 
+                            onClick=${toggleFullScreen}
+                            className="w-full mt-4 px-6 py-2 border border-zinc-800 text-zinc-500 hover:text-cyan-500 hover:border-cyan-500/30 transition-all uppercase tracking-widest text-[10px]"
+                        >
+                            ${isFS ? 'Desactivar Fullscreen' : 'Activar Fullscreen'}
+                        </button>
                     </div>
                 </div>
             `}
+
+            <${LevelSelectorModal} 
+                isOpen=${isLevelSelectorOpen} 
+                onClose=${() => setIsLevelSelectorOpen(false)} 
+            />
 
             <!-- Nuevo Sistema de Modales Narrativos -->
             <${GameModal} 

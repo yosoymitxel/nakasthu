@@ -90,14 +90,21 @@ export const calculateRank = (stats) => {
     const errors = stats?.errors || 0;
     const currentEnergy = stats?.energy || 0;
     const maxAllowed = stats?.maxErrors || 3;
+    const processed = stats?.processed || 0;
+
+    // Si no ha procesado a nadie, el rango es Nulo o Base
+    if (processed === 0) return { label: '---', color: 'text-zinc-500', desc: 'SIN DATOS DE RENDIMIENTO' };
 
     if (errors >= maxAllowed) return { label: 'F', color: 'text-red-600', desc: 'INCOMPETENCIA TOTAL' };
-    if (errors === 0 && currentEnergy > 80) return { label: 'S', color: 'text-amber-400', desc: 'EJECUCIÓN PERFECTA' };
+    
+    // S: 0 errores, >80 energía y al menos 5 procesados
+    if (errors === 0 && currentEnergy > 80 && processed >= 5) return { label: 'S', color: 'text-amber-400', desc: 'EJECUCIÓN PERFECTA' };
+    
+    // A: 0 errores
     if (errors === 0) return { label: 'A', color: 'text-emerald-400', desc: 'DESEMPEÑO SOBRESALIENTE' };
     
     const ratio = errors / maxAllowed;
     if (ratio < 0.4) return { label: 'B', color: 'text-cyan-400', desc: 'OPERACIÓN ESTABLE' };
     if (ratio < 0.7) return { label: 'C', color: 'text-yellow-600', desc: 'OPERACIÓN ACEPTABLE' };
-    
-    return { label: 'D', color: 'text-zinc-500', desc: 'RIESGO OPERATIVO' };
+    return { label: 'D', color: 'text-orange-600', desc: 'RENDIMIENTO MARGINAL' };
 };

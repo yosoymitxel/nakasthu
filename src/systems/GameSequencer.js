@@ -84,15 +84,20 @@ class GameSequencer {
         if (this.currentStep >= 12) {
             console.log('%c[SEQUENCER] Secuencia completada. Fin del juego.', 'color: #ef4444;');
             state.gameStatus = 'GAME_OVER';
-            bus.emit('GAME_COMPLETE', { finalStep: 12 });
+            bus.emit('STORY_FINISHED', {});
             return false;
         }
 
         const nextStepIdx = this.currentStep + 1;
-        const nextConfig = STEPS_CONFIG[nextStepIdx];
 
         // Sincronizar con State
         state.startBatch();
+        
+        // Actualizar el paso máximo alcanzado para el selector de niveles
+        if (nextStepIdx > (state.maxStepReached || 0)) {
+            state.maxStepReached = nextStepIdx;
+            localStorage.setItem('nakasthu_max_step', nextStepIdx.toString());
+        }
 
         this.finalizeStepTransition(nextStepIdx);
         state.endBatch();
@@ -186,6 +191,7 @@ class GameSequencer {
 
         console.log('%c[SEQUENCER] Nivel reiniciado. Limpieza profunda completada.', 'color: #f59e0b;');
         bus.emit('LEVEL_RESET', { step: this.currentStep });
+        bus.emit('SYSTEM_LOG', { msg: 'NIVEL_REINICIADO: ESTADOS_NOMINALES' });
     }
 
     /**
@@ -233,6 +239,14 @@ class GameSequencer {
         // 2. Verificar si se completó la cuota del nivel
         if (state.processedCount >= state.quota) {
             const config = STEPS_CONFIG[this.currentStep];
+            
+            // Si es modo infinito, no avanzamos de paso
+            if (config.meta?.infinite) {
+                // Simplemente logueamos el progreso o emitimos evento
+                bus.emit('INFINITE_MILESTONE', { count: state.processedCount });
+                return;
+            }
+
             const metaResults = checkStepMeta(config.meta);
             
             if (!metaResults.success) {
@@ -293,6 +307,7 @@ class GameSequencer {
             bus.emit('UI_MODAL_CLOSE');
 
             console.log(`[SEQUENCER] Salto completado.`);
+            bus.emit('SYSTEM_LOG', { msg: `SALTO_SECUENCIA: PASO_${stepIndex} ACTIVADO` });
         }, 100);
     }
 

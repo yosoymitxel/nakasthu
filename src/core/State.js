@@ -68,6 +68,8 @@ const initialState = {
     focusMode: false, // Bloquea el resto de la UI durante diálogos profundos
     unlockedCommands: ['HELP', 'CLEAR', 'STATUS'], // Comandos iniciales
     hasSeenTutorial: localStorage.getItem('nakasthu_tutorial_seen') === 'true' || localStorage.getItem('nakasthu_skip_tutorials') === 'true',
+    maxStepReached: parseInt(localStorage.getItem('nakasthu_max_step') || '1'),
+    infiniteMode: false,
     requiredScan: 'BIOMETRIC', // Tipo de escaneo requerido para decisiones (rotativo)
     usedDialogueIds: []        // Memoria de diálogos para evitar repeticiones
 };

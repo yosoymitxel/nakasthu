@@ -7,6 +7,8 @@ import { html } from '../../utils/html.js';
 import { useGameState } from '../../hooks/useGameState.js';
 import { bus } from '../../../core/Bus.js';
 import { gameSequencer } from '../../../systems/GameSequencer.js';
+import { STEPS_CONFIG } from '../../../data/stepsConfig.js';
+import { factionSystem } from '../../../systems/FactionSystem.js';
 
 const { useState, useEffect, memo } = React;
 
@@ -15,7 +17,16 @@ export const CinematicScreen = memo(({ config }) => {
     const [isTyping, setIsTyping] = useState(true);
     const [showContinue, setShowContinue] = useState(false);
 
-    const content = config.briefingText || "";
+    // Si es el epílogo y no hay texto, buscar el final correspondiente
+    let content = config.briefingText;
+    
+    if (config.name === 'Epílogo' && !content) {
+        const dominance = factionSystem.getDominance();
+        const endings = STEPS_CONFIG[12]?.meta?.endings;
+        content = endings[dominance] || endings.orden; // Default a orden si algo falla
+    }
+    
+    content = content || "";
 
     useEffect(() => {
         setAnimatedText('');

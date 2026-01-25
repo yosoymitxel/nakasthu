@@ -4,6 +4,7 @@
  */
 import { bus } from '../core/Bus.js';
 import { state } from '../core/State.js';
+import { persistenceManager } from './PersistenceManager.js';
 
 class LoreSystem {
     constructor() {
@@ -33,6 +34,23 @@ class LoreSystem {
 
             this.loreDatabase = data.entries || {};
             
+            // Cargar lore guardado previamente
+            const savedLoreIds = persistenceManager.loadLore();
+            if (savedLoreIds.length > 0) {
+                savedLoreIds.forEach(id => {
+                    if (!state.loreArchive.some(entry => entry.loreId === id)) {
+                        const loreData = {
+                            loreId: id,
+                            text: this.loreDatabase[id] || `ENTRADA DE LORE RECUPERADA: ${id}`,
+                            timestamp: Date.now(),
+                            source: 'BACKUP_RECOVERY',
+                            type: 'ENIGMA'
+                        };
+                        state.loreArchive = [...state.loreArchive, loreData];
+                    }
+                });
+            }
+
             // Sincronizar entradas existentes en el archivo que puedan tener texto de fallback
             this.refreshArchiveTexts();
 
@@ -114,6 +132,11 @@ class LoreSystem {
         }];
         
         state.loreArchive = newArchive;
+
+        // Persistencia en localStorage
+        if (data.loreId) {
+            persistenceManager.saveLore(data.loreId);
+        }
         
         const logId = data.entityId || data.loreId || 'SISTEMA_GENERIC';
         console.log(`%c[LORE] Entrada archivada: ${logId}`, "color: #a78bfa; font-weight: bold;");

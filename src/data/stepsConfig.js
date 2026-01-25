@@ -107,5 +107,16 @@ export const STEPS_CONFIG = {
                 caos: 'Kamin empuja a Leina hacia la grieta. Las sombras devoran el Bastión. "El renacimiento nunca es sencillo", susurra antes de desvanecerse.'
             }
         }
+    },
+    13: {
+        type: 'gameplay',
+        mechanicType: 'DECISION',
+        name: 'Modo Infinito: El Bucle',
+        briefingText: 'El tiempo se ha colapsado. Las almas y los técnicos se mezclan en un flujo eterno. No hay final, solo el deber.',
+        subjectCount: Infinity,
+        meta: {
+            infinite: true,
+            coreColorOverride: 'zinc'
+        }
     }
 };
