@@ -211,9 +211,9 @@ export const GameModal = memo(({
                             ${isTutorial && !isTyping && html`
                                 <button 
                                     onClick=${() => {
-                bus.emit('TUTORIAL_SKIP_ALL', {});
-                bus.emit('STORY_MODAL_CLOSE', {});
-            }}
+                                        bus.emit('TUTORIAL_SKIP_ALL', {});
+                                        bus.emit('STORY_MODAL_CLOSE', {});
+                                    }}
                                     className="w-full py-2 border border-red-900/40 text-red-500/60 text-[10px] tracking-[0.2em] uppercase font-bold hover:bg-red-900/10 hover:text-red-400 transition-all"
                                 >
                                     OMITIR TODO EL TUTORIAL

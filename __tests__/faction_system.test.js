@@ -35,6 +35,13 @@ describe('FactionSystem Tests (faction_system.test.js)', () => {
         expect(factionSystem.getDominantFaction()).toBe('CAOS');
     });
 
+    it('getDominance debe retornar la facción líder en minúsculas', () => {
+        factionSystem.registerAction('ORDEN', 30);
+        factionSystem.registerAction('CAOS', 10);
+
+        expect(factionSystem.getDominance()).toBe('orden');
+    });
+
     it('debe detectar hitos de facción', () => {
         const spy = vi.spyOn(bus, 'emit');
 

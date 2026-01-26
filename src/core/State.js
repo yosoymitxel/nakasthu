@@ -63,6 +63,12 @@ const initialState = {
     isPaused: false,
     isModalOpen: false, // Bloquea el tick del motor si hay un modal activo
     isTutorialActive: false,
+    emergencies: {
+        resonance: false,
+        oxygen: false,
+        energy: false
+    },
+    o2Stabilized: false, // Bloquea el drenaje de O2 temporalmente
     activeTutorialId: null, // ID del tutorial activo actual
     tutorialStep: 0, // 0: No tutorial, 1-4: Pasos del tutorial
     focusMode: false, // Bloquea el resto de la UI durante diálogos profundos
@@ -87,19 +93,45 @@ const stateManager = {
     // Acción para rotar sujetos
     nextSubject() {
         console.log("%c[STATE] Limpiando cámara de contención...", "color: #fbbf24;");
+        
+        // REGLA: Cancelar escaneos activos al cambiar de sujeto (Fase 18)
+        if (this.activeScan) {
+            bus.emit('SCAN_CANCEL_REQUEST');
+            this.activeScan = null;
+        }
+
         this.currentEntity = generateSubject();
         bus.emit('NEW_SUBJECT_DETECTED', this.currentEntity);
     },
     // Reinicio total del sistema (Fase 11)
     resetState() {
-        this.startBatch();
+        console.log("%c[STATE] Iniciando REINICIO TOTAL del sistema...", "color: #ef4444; font-weight: bold;");
+        
+        // Usar deep clone para evitar referencias residuales
+        const freshState = JSON.parse(JSON.stringify(initialState));
         const tutorialSeen = this.hasSeenTutorial; // Preservar estado del tutorial
-        Object.keys(initialState).forEach(key => {
-            this[key] = initialState[key];
+        const maxStep = this.maxStepReached;      // Preservar progreso máximo
+
+        this.startBatch();
+        Object.keys(freshState).forEach(key => {
+            // No resetear flags persistentes
+            if (key === 'hasSeenTutorial' || key === 'maxStepReached') return;
+            this[key] = freshState[key];
         });
+        
+        // Asegurar limpieza de flags de sistema
+        this.mode = 'NORMAL';
+        this.eclipseTimer = 0;
+        this.isTutorialActive = false;
+        this.activeScan = null;
+        this.emergencies = { resonance: false, oxygen: false, energy: false };
+        
         this.hasSeenTutorial = tutorialSeen;
+        this.maxStepReached = maxStep;
         this.nextSubject();
         this.endBatch();
+        
+        bus.emit('SYSTEM_LOG', { msg: 'REINICIO_COMPLETO_ESTADO' });
         console.log("%c[STATE] Sistema reiniciado satisfactoriamente.", "color: #10b981;");
     }
 };
@@ -111,11 +143,9 @@ export const state = new Proxy(stateManager, {
             target.previousGameStatus = target.gameStatus;
         }
 
-        // Regla: Energía, Estabilidad y Ciclo Orbital NUNCA retornan decimales (Fase 18)
+        // Regla: Energía, Estabilidad y Ciclo Orbital se guardan con precisión decimal
+        // pero la UI los mostrará redondeados (Fase 18/Revisión Balance)
         let processedValue = value;
-        if (['energy', 'stability', 'orbitalCycle'].includes(property) && typeof value === 'number') {
-            processedValue = Math.floor(value);
-        }
 
         if (target[property] !== processedValue) {
             target[property] = processedValue;

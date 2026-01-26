@@ -47,9 +47,9 @@ describe('GameLoop Refactor Tests', () => {
 
         gameLoop.tick();
 
-        // Energy drain is 0.01 per tick in NORMAL, but State.js floors values!
-        // So 100 - 0.01 = 99.99 -> 99.
-        expect(state.energy).toBe(99);
+        // El drenaje ahora permite precisión decimal para suavizar la caída
+        // TICK_DRAIN NORMAL = 0.005
+        expect(state.energy).toBe(99.995);
         expect(MechanicManager.updateResonance).toHaveBeenCalled();
     });
 

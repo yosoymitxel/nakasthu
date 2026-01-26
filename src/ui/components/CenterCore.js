@@ -7,7 +7,7 @@ import { ModuleWrapper } from './MainLayout.js';
 import { Panel } from './Panel.js';
 import { HeaderNucleo } from './HeaderNucleo.js';
 import { Operations } from './Operations.js';
-import { Oscilloscope } from './Oscilloscope.js';
+import { EmergencyConsole } from './EmergencyConsole.js';
 
 import { getModuleName } from '../../systems/ModuleRegistry.js';
 import { useGameState } from '../hooks/useGameState.js';
@@ -43,7 +43,7 @@ export const CenterCore = ({ getModuleTutorialStatus, unlockedModules = new Set(
                 highlighted=${getModuleTutorialStatus('C_FOOTER').highlighted}
             >
                 <${Panel} title=${getModuleName('MOD-06', storyPath)} areaId="C_FOOTER" className="w-full h-full overflow-hidden" contentClassName="!p-0">
-                    <${Oscilloscope} />
+                    <${EmergencyConsole} />
                 <//>
             <//>
         <//>

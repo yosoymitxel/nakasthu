@@ -30,49 +30,17 @@
     position: relative;
 }
 
-.mod-L_UPPER {
-    grid-area: L_UPPER;
-}
-
-.mod-L_LOWER {
-    grid-area: L_LOWER;
-}
-
-.mod-C_HEADER {
-    grid-area: C_HEADER;
-}
-
-.mod-C_MAIN {
-    grid-area: C_MAIN;
-}
-
-.mod-C_FOOTER {
-    grid-area: C_FOOTER;
-}
-
-.mod-R_MIDDLE {
-    grid-area: R_MIDDLE;
-}
-
-.mod-R_BOTTOM {
-    grid-area: R_BOTTOM;
-}
-
-.mod-R_TOP {
-    grid-area: R_TOP;
-}
-
-.mod-R_UPPER {
-    grid-area: R_UPPER;
-}
-
-.mod-L_TOP {
-    grid-area: L_TOP;
-}
-
-.mod-L_BOTTOM {
-    grid-area: L_BOTTOM;
-}
+.mod-L_UPPER { grid-area: L_UPPER; }
+.mod-L_LOWER { grid-area: L_LOWER; }
+.mod-C_HEADER { grid-area: C_HEADER; }
+.mod-C_MAIN { grid-area: C_MAIN; }
+.mod-C_FOOTER { grid-area: C_FOOTER; }
+.mod-R_MIDDLE { grid-area: R_MIDDLE; }
+.mod-R_BOTTOM { grid-area: R_BOTTOM; }
+.mod-R_TOP { grid-area: R_TOP; }
+.mod-R_UPPER { grid-area: R_UPPER; }
+.mod-L_TOP { grid-area: L_TOP; }
+.mod-L_BOTTOM { grid-area: L_BOTTOM; }
 
 /* Global forced styles from Layout.js */
 body {
@@ -159,52 +127,41 @@ body {
  * UTILITY ANIMATIONS 
  */
 @keyframes pulse-slow {
-
-    0%,
-    100% {
-        opacity: 0.8;
-    }
-
-    50% {
-        opacity: 1;
-        border-color: currentColor;
-    }
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; border-color: currentColor; }
 }
 
 @keyframes flicker {
-    0% {
-        opacity: 0.8;
-    }
-
-    5% {
-        opacity: 0.1;
-    }
-
-    10% {
-        opacity: 0.9;
-    }
-
-    15% {
-        opacity: 0.2;
-    }
-
-    20% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 1;
-    }
+    0% { opacity: 0.8; }
+    5% { opacity: 0.1; }
+    10% { opacity: 0.9; }
+    15% { opacity: 0.2; }
+    20% { opacity: 1; }
+    100% { opacity: 1; }
 }
 
-@keyframes fade-in {
-    from {
-        opacity: 0;
-    }
+@keyframes glitch-red {
+    0%, 100% { background-color: rgba(153, 27, 27, 0.1); box-shadow: inset 0 0 10px rgba(153, 27, 27, 0.2); }
+    50% { background-color: rgba(153, 27, 27, 0.4); box-shadow: inset 0 0 20px rgba(220, 38, 38, 0.5); }
+    25%, 75% { transform: translateX(1px); }
+}
 
-    to {
-        opacity: 1;
-    }
+.emergency-glitch {
+    animation: glitch-red 0.3s infinite;
+    border: 1px solid #ef4444 !important;
+}
+
+.standby-module {
+    opacity: 0.4;
+    filter: grayscale(1);
+    transition: all 0.5s ease;
+    pointer-events: none; /* Bloquear interacción si está en standby */
+}
+
+.active-module {
+    opacity: 1;
+    filter: grayscale(0);
+    pointer-events: all;
 }
 
 .animate-pulse-slow {
@@ -213,6 +170,11 @@ body {
 
 .animate-flicker {
     animation: flicker 0.5s ease-out;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .animate-fade-in {

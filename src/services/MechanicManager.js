@@ -7,6 +7,8 @@
 import { bus } from '../core/Bus.js';
 import { state } from '../core/State.js';
 import { CONFIG } from '../data/gameConfig.js';
+import { PATH_CONFIGS } from '../data/pathConfigs.js';
+import { cancelScan } from '../systems/Scanner.js';
 import { calculateDecisionResult, calculateSyncStabilityEffect } from '../utils/gameplayUtils.js';
 
 class BaseMechanic {
@@ -76,10 +78,13 @@ class DecisionMechanic extends BaseMechanic {
         }
 
         const storyPath = state.storyPath || 0;
-        const labels = CONFIG.UI.LABELS[storyPath];
+        const pathConfig = PATH_CONFIGS[storyPath];
 
         // Calcular resultado usando utilidad
         const result = calculateDecisionResult(subject, 'authorize', CONFIG);
+
+        // Detener escaneos en curso para evitar contaminación del siguiente NPC (Fase 18)
+        cancelScan();
 
         state.startBatch();
         
@@ -92,12 +97,12 @@ class DecisionMechanic extends BaseMechanic {
             state.judgmentErrors++;
             if (result.flash) bus.emit('TRIGGER_FLASH', result.flash);
             bus.emit('TERMINAL_PRINT', {
-                text: `[ALERTA] ${labels.action3.toUpperCase()} FALLIDO: ENTIDAD CORRUPTA DETECTADA.`,
+                text: pathConfig.decisions.authorize.fail,
                 type: 'ERROR'
             });
         } else {
             bus.emit('TERMINAL_PRINT', {
-                text: `[SISTEMA] ${labels.action3.toUpperCase()} COMPLETADO: ENTIDAD PURA PROCESADA.`,
+                text: pathConfig.decisions.authorize.success,
                 type: 'SUCCESS'
             });
         }
@@ -109,9 +114,8 @@ class DecisionMechanic extends BaseMechanic {
         bus.emit('DECISION_MADE', { subject, action: 'authorize' });
         bus.emit('SESSION_TERMINATED');
 
-        setTimeout(() => {
-            if (state.gameStatus === 'PLAYING') state.nextSubject();
-        }, CONFIG.DELAYS.NEXT_SUBJECT);
+        // REGLA: Eliminado el nextSubject redundante. 
+        // GameSequencer.js maneja la llegada del siguiente sujeto basándose en la cuota.
     }
 
     handleSacrifice() {
@@ -130,10 +134,13 @@ class DecisionMechanic extends BaseMechanic {
         }
 
         const storyPath = state.storyPath || 0;
-        const labels = CONFIG.UI.LABELS[storyPath];
+        const pathConfig = PATH_CONFIGS[storyPath];
 
         // Calcular resultado usando utilidad
         const result = calculateDecisionResult(subject, 'sacrifice', CONFIG);
+
+        // Detener escaneos en curso para evitar contaminación del siguiente NPC (Fase 18)
+        cancelScan();
 
         state.startBatch();
         
@@ -146,26 +153,25 @@ class DecisionMechanic extends BaseMechanic {
             state.judgmentErrors++;
             if (result.flash) bus.emit('TRIGGER_FLASH', result.flash);
             bus.emit('TERMINAL_PRINT', {
-                text: `[ALERTA] ${labels.rejectLabel.toUpperCase()} ERRÓNEO: ENTIDAD PURA ELIMINADA.`,
+                text: pathConfig.decisions.sacrifice.fail,
                 type: 'ERROR'
             });
         } else {
             bus.emit('TERMINAL_PRINT', {
-                text: `[SISTEMA] ${labels.rejectLabel.toUpperCase()} EXITOSO: ENERGÍA RECUPERADA.`,
+                text: pathConfig.decisions.sacrifice.success,
                 type: 'SUCCESS'
             });
         }
         
         state.processedCount++;
         state.endBatch();
-
-        bus.emit('SACRIFICE_PEAK');
+        
+        bus.emit('SACRIFICE_EFFECT');
         bus.emit('DECISION_MADE', { subject, action: 'sacrifice' });
         bus.emit('SESSION_TERMINATED');
 
-        setTimeout(() => {
-            if (state.gameStatus === 'PLAYING') state.nextSubject();
-        }, CONFIG.DELAYS.NEXT_SUBJECT);
+        // REGLA: Eliminado el nextSubject redundante.
+        // GameSequencer.js maneja la llegada del siguiente sujeto basándose en la cuota.
     }
 }
 
@@ -181,8 +187,26 @@ const MECHANIC_REGISTRY = {
 
 export const MechanicManager = {
     currentMechanic: null,
+    initialized: false,
 
     init(stepConfig) {
+        if (!this.initialized) {
+            // Listeners para emergencias (Solo registrar una vez)
+            bus.on('EMERGENCY_START', ({ type }) => {
+                state.startBatch();
+                if (!state.emergencies) state.emergencies = {};
+                state.emergencies[type] = true;
+                state.endBatch();
+            });
+            bus.on('EMERGENCY_END', ({ type }) => {
+                state.startBatch();
+                if (!state.emergencies) state.emergencies = {};
+                state.emergencies[type] = false;
+                state.endBatch();
+            });
+            this.initialized = true;
+        }
+
         if (this.currentMechanic) {
             this.currentMechanic.destroy();
         }
@@ -193,6 +217,14 @@ export const MechanicManager = {
 
         this.currentMechanic.init();
         
+        // Caso especial: Si la mecánica principal es SYNC, activar módulo de resonancia
+        if (this.currentMechanic instanceof SyncMechanic) {
+            state.startBatch();
+            if (!state.emergencies) state.emergencies = {};
+            state.emergencies.resonance = true;
+            state.endBatch();
+        }
+
         if (mechanicType !== 'DEFAULT') {
             console.log(`[MECHANIC_MANAGER] Iniciada mecánica: ${mechanicType} (${this.currentMechanic.constructor.name})`);
         }

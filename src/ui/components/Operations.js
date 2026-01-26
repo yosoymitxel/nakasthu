@@ -8,8 +8,8 @@ import { dialogueEngine } from '../../systems/DialogueEngine.js';
 import { bus } from '../../core/Bus.js';
 import { state } from '../../core/State.js';
 import { CONFIG } from '../../data/gameConfig.js';
+import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 import { useGameState } from '../hooks/useGameState.js';
-import { useStoryLabels } from './MainLayout.js';
 import { gameSequencer } from '../../systems/GameSequencer.js';
 import { PortalScene } from './PortalScene.js';
 import { SubjectVisual } from './SubjectVisual.js';
@@ -34,8 +34,8 @@ export const Operations = () => {
     const currentEntity = useGameState('currentEntity');
     const currentStep = useGameState('currentStep');
     const storyPath = useGameState('storyPath') || 0;
-    const labels = CONFIG.UI.LABELS[storyPath].operations;
-    const storyLabels = useStoryLabels();
+    const pathConfig = PATH_CONFIGS[storyPath];
+    const labels = pathConfig.operations;
 
     // Verificar si el escaneo requerido ha sido completado
     const isScanComplete = currentEntity?.scannedTypes?.includes(requiredScan);
@@ -222,7 +222,7 @@ export const Operations = () => {
     };
 
     return html`
-        <div className=${`flex flex-col h-full w-full bg-transparent font-mono overflow-hidden relative transition-all duration-300`}>
+        <div className=${`flex flex-col h-full w-full bg-black/20 font-mono overflow-hidden relative transition-all duration-300 border border-zinc-800/50 shadow-[inset_0_0_30px_rgba(0,0,0,0.5)]`}>
             
             <!-- Local Flash Overlay -->
             ${flash && html`
@@ -232,19 +232,28 @@ export const Operations = () => {
                 ></div>
             `}
 
+            <!-- Scanline Overlay Decorativo -->
+            <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_2px,3px_100%]"></div>
+
             <!-- SECCIÓN SUPERIOR: VISUALIZADORES -->
-            <div className="flex-none h-[140px] w-full flex border-b border-zinc-800">
-                <div className="w-1/3 h-full border-r-[0.5px] border-zinc-800 relative overflow-hidden flex flex-col">
+            <div className="flex-none h-[140px] w-full flex border-b border-zinc-800/80">
+                <div className="w-1/3 h-full border-r border-zinc-800/80 relative overflow-hidden flex flex-col group bg-black/40">
+                    <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                     <${PortalScene} />
-                    <div className="absolute bottom-1 left-2 text-[12px] text-zinc-400 tracking-widest uppercase font-bold pointer-events-none">ORBITAL</div>
+                    <div className="absolute bottom-1 left-2 text-[10px] text-zinc-500 tracking-[0.2em] uppercase font-bold pointer-events-none z-20">ORBITAL</div>
+                    <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-cyan-500/20 pointer-events-none"></div>
                 </div>
 
-                <div className="w-1/3 h-full border-r-[0.5px] border-zinc-800 relative overflow-hidden flex flex-col">
+                <div className="w-1/3 h-full border-r border-zinc-800/80 relative overflow-hidden flex flex-col group bg-black/40">
+                    <div className="absolute inset-0 bg-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                     <${SubjectVisual} />
-                    <div className="absolute bottom-1 left-2 text-[12px] text-zinc-400 tracking-widest uppercase font-bold pointer-events-none">LIVE_FEED</div>
+                    <div className="absolute bottom-1 left-2 text-[10px] text-zinc-500 tracking-[0.2em] uppercase font-bold pointer-events-none z-20">LIVE_FEED</div>
+                    <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-amber-500/20 pointer-events-none"></div>
                 </div>
 
-                <div className="w-1/3 h-full flex flex-col justify-around px-3 py-2 bg-black/10">
+                <div className="w-1/3 h-full flex flex-col justify-around px-3 py-2 bg-black/60 relative">
+                    <!-- Detalle de fondo para cuota -->
+                    <div className="absolute inset-0 bg-[radial-gradient(#ffffff05_1px,transparent_1px)] bg-[size:8px_8px] pointer-events-none"></div>
                     <div className="flex flex-col items-center">
                         <span className="text-[12px] text-zinc-400 uppercase tracking-widest font-bold mb-1">
                             ${labels.quotaLabel}
@@ -271,9 +280,9 @@ export const Operations = () => {
             <${Coms} />
 
             <!-- SECCIÓN INFERIOR: ACTION MATRIX -->
-            <div className="flex-none border-t border-zinc-800 bg-black/40">
+            <div className="flex-none border-t border-zinc-800/80 bg-black/40 relative">
                 <!-- DIALOGUE OPTIONS -->
-                <div className="h-24 flex p-1 gap-1 border-b border-zinc-800/30">
+                <div className="h-24 flex p-1 gap-1 border-b border-zinc-800/30 bg-zinc-950/20">
                     ${activeDialogue ? html`
                         <div className="flex w-full gap-1">
                             <div className="flex-[4] flex gap-1">
@@ -282,22 +291,23 @@ export const Operations = () => {
                                         key=${idx}
                                         onClick=${() => handleOptionSelect(idx)}
                                         disabled=${isTyping || opt.used}
-                                        className=${`flex-1 border text-[11px] transition-all uppercase tracking-tighter font-bold p-1 leading-tight flex flex-col justify-center items-center text-center
+                                        className=${`flex-1 border text-[11px] transition-all uppercase tracking-tighter font-bold p-1 leading-tight flex flex-col justify-center items-center text-center relative group overflow-hidden
                                             ${opt.used
-                ? 'border-zinc-800 bg-zinc-900/10 text-zinc-700 cursor-not-allowed opacity-50'
-                : 'border-cyan-900/30 bg-cyan-950/10 hover:bg-cyan-900/20 text-cyan-600'}`}
+                                                ? 'border-zinc-800 bg-zinc-900/10 text-zinc-700 cursor-not-allowed opacity-50 shadow-none'
+                                                : 'border-cyan-500/30 bg-cyan-950/10 hover:bg-cyan-500/20 text-cyan-500/80 hover:text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.05)]'}`}
                                     >
-                                        <span className="line-clamp-2">${opt.text}</span>
-                                        <div className="text-[9px] text-zinc-500 mt-1">
+                                        <span className="line-clamp-2 relative z-10">${opt.text}</span>
+                                        <div className="text-[9px] text-zinc-500 mt-1 relative z-10">
                                             E: ${opt.energyCost} | S: ${opt.stabilityImpact}
                                         </div>
+                                        ${!opt.used && html`<div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>`}
                                     </button>
                                 `)}
                             </div>
                             <button 
                                 onClick=${handleEndDialogue}
                                 disabled=${isTyping}
-                                className="flex-1 border border-red-900/30 bg-red-950/10 hover:bg-red-900/20 text-red-700 text-[10px] transition-all uppercase tracking-tighter font-black p-1 leading-tight"
+                                className="flex-1 border border-red-500/30 bg-red-950/10 hover:bg-red-500/20 text-red-500/70 hover:text-red-400 text-[10px] transition-all uppercase tracking-tighter font-black p-1 leading-tight shadow-[0_0_10px_rgba(239,68,68,0.05)]"
                             >
                                 ${labels.interrogateEnd}
                             </button>
@@ -307,13 +317,16 @@ export const Operations = () => {
                             <button 
                                 onClick=${() => handleDialogueAction('INTERROGAR')}
                                 disabled=${isTyping}
-                                className=${`flex-1 border text-[12px] transition-all uppercase tracking-tighter font-bold
-                                    ${state.storyPath === 1 ? 'border-purple-900/30 bg-purple-950/10 hover:bg-purple-900/20 text-purple-600' : 'border-cyan-900/30 bg-cyan-950/10 hover:bg-cyan-900/20 text-cyan-600'}`}
+                                className=${`flex-1 border text-[12px] transition-all uppercase tracking-tighter font-bold relative group overflow-hidden
+                                    ${state.storyPath === 1 
+                                        ? 'border-purple-500/30 bg-purple-950/10 hover:bg-purple-500/20 text-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.1)]' 
+                                        : 'border-cyan-500/30 bg-cyan-950/10 hover:bg-cyan-500/20 text-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.1)]'}`}
                             >
-                                ${labels.interrogateBtn}
+                                <span className="relative z-10">${labels.interrogateBtn}</span>
+                                <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             </button>
                             <div className="flex-grow flex items-center justify-center p-2 text-center">
-                                <span className="text-[12px] text-zinc-500 uppercase italic">${labels.waitingSubject}</span>
+                                <span className="text-[12px] text-zinc-600 uppercase italic tracking-widest font-bold">${labels.waitingSubject}</span>
                             </div>
                         <//>
                     `}
@@ -322,50 +335,50 @@ export const Operations = () => {
                 <!-- SENTENCE BUTTONS -->
                 <div className="h-20 p-4 flex flex-col items-center justify-center bg-black/60 relative">
                     ${(isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') ? null : (isTutorialActive || !isScanComplete) ? html`
-                         <!-- Bloquear si NO estamos en tutorial de operaciones Y (estamos en otro tutorial O no hay scan completo) -->
-                         <!-- Espera, si estamos en TUTO_OPERATIONS queremos ver los botones. Si estamos en OTRO tutorial, Layout.js ya lo bloquea visualmente. -->
-                         <!-- Pero aqui bloqueamos interaction lógica si no hay scan. -->
                          ${(!isTutorialActive && !isScanComplete) ? html`
-                            <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center z-30 group/lock border-y border-red-900/20">
-                                <span className="text-[10px] text-red-500/80 font-mono tracking-[0.2em] uppercase animate-pulse text-center px-4 mb-1">
+                            <div className="absolute inset-0 bg-black/80 backdrop-blur-[2px] flex flex-col items-center justify-center z-30 border-y border-red-500/20">
+                                <div className="absolute inset-0 bg-red-500/5 animate-pulse pointer-events-none"></div>
+                                <span className="text-[10px] text-red-500 font-bold tracking-[0.2em] uppercase animate-pulse text-center px-4 mb-1 z-10">
                                     ${labels.pendingValidation}
                                 </span>
-                                <span className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest">
+                                <span className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest z-10">
                                     [${labels.scanRequired}: ${SCAN_TYPES[requiredScan]?.name || requiredScan}]
                                 </span>
                             </div>
                         `: null}
                     `: null}
                     
-                    <div className="flex items-center justify-center gap-6 w-full h-full">
+                    <div className="flex items-center justify-center gap-6 w-full h-full px-4">
                         <button 
                             onClick=${() => handleAction('SACRIFICE')}
                             disabled=${isTyping || kaminOverride || (!isTutorialActive && !isScanComplete)}
-                            className=${`flex-1 max-w-[180px] h-full relative group border-[0.5px] transition-all uppercase tracking-[0.3em] font-black text-[12px] 
+                            className=${`flex-1 max-w-[200px] h-full relative group border transition-all uppercase tracking-[0.3em] font-black text-[11px] 
                                 ${kaminOverride
-            ? 'border-purple-900/50 text-purple-500/60 animate-pulse cursor-not-allowed'
-            : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isTutorialActive && isScanComplete))
-                ? 'border-red-900/50 text-red-700/80 hover:bg-red-900/20 hover:border-red-600/50'
-                : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
+                                    ? 'border-purple-500/30 text-purple-500/40 animate-pulse cursor-not-allowed bg-purple-950/10'
+                                    : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isTutorialActive && isScanComplete))
+                                        ? 'border-red-500/40 text-red-500/70 hover:bg-red-500/10 hover:border-red-500 hover:text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.05)] hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] bg-red-950/5'
+                                        : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
                         >
+                            <div className="absolute inset-0 bg-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             ${kaminOverride
-            ? 'CRITICAL_ERROR: OVERRIDE BY EIDOLON'
-            : storyLabels.rejectLabel.toUpperCase()}
+                                ? 'ERR: OVERRIDE'
+                                : labels.rejectLabel.toUpperCase()}
                         </button>
                         
-                        <div className="w-[0.5px] h-6 bg-zinc-900/30"></div>
+                        <div className="w-px h-6 bg-zinc-800/50"></div>
 
                         <button 
                             onClick=${() => handleAction('AUTHORIZE')}
                             disabled=${isTyping || (!isTutorialActive && !isScanComplete)}
-                            className=${`flex-1 max-w-[180px] h-full relative group border-[0.5px] transition-all uppercase tracking-[0.3em] font-black text-[12px] 
+                            className=${`flex-1 max-w-[200px] h-full relative group border transition-all uppercase tracking-[0.3em] font-black text-[11px] 
                                 ${kaminOverride
-            ? 'border-purple-500/70 text-purple-400 bg-purple-900/20 hover:bg-purple-900/40 animate-pulse'
-            : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isTutorialActive && isScanComplete))
-                ? 'border-emerald-900/50 text-emerald-700/80 hover:bg-emerald-900/20 hover:border-emerald-600/50'
-                : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
+                                    ? 'border-purple-500 text-purple-400 bg-purple-900/30 hover:bg-purple-900/50 animate-pulse shadow-[0_0_20px_rgba(168,85,247,0.3)]'
+                                    : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isTutorialActive && isScanComplete))
+                                        ? 'border-emerald-500/40 text-emerald-500/70 hover:bg-emerald-500/10 hover:border-emerald-500 hover:text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.05)] hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] bg-emerald-950/5'
+                                        : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
                         >
-                            ${storyLabels.action3.toUpperCase()}
+                            <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            ${labels.authorizeLabel.toUpperCase()}
                         </button>
                     </div>
                 </div>

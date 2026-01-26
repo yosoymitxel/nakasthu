@@ -84,6 +84,10 @@ class FactionSystem {
         return 'NEUTRAL';
     }
 
+    getDominance() {
+        return this.getDominantFaction().toLowerCase();
+    }
+
     emitUpdate() {
         bus.emit('FACTION_UPDATE', {
             orden: this.alignments.ORDEN,

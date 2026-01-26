@@ -7,6 +7,7 @@ import { state } from './State.js';
 import { bus } from './Bus.js';
 import { MechanicManager } from '../services/MechanicManager.js';
 import { CONFIG } from '../data/gameConfig.js';
+import { PATH_CONFIGS } from '../data/pathConfigs.js';
 import { evaluateSystemStatus, calculateNextOrbitalState } from '../utils/systemUtils.js';
 
 class GameLoop {
@@ -57,20 +58,71 @@ class GameLoop {
     }
 
     handleWarnings() {
+        const pathConfig = PATH_CONFIGS[state.storyPath || 0];
+        const thresholds = pathConfig.thresholds;
+        
         // Energía
-        if (state.energy < CONFIG.SYSTEM.ENERGY_WARNING_THRESHOLD && !this.lastEnergyWarning) {
-            bus.emit('TERMINAL_PRINT', { text: '>>> WARNING: CRITICAL_POWER_LEVEL - SISTEMAS DE SOPORTE AL LÍMITE.', type: 'SYSTEM' });
+        if (state.energy < thresholds.energyWarning && !this.lastEnergyWarning) {
+            bus.emit('TERMINAL_PRINT', { 
+                text: pathConfig.emergencies.energy.warning, 
+                type: 'SYSTEM' 
+            });
             this.lastEnergyWarning = true;
-        } else if (state.energy >= CONFIG.SYSTEM.ENERGY_WARNING_THRESHOLD) {
+        } else if (state.energy >= thresholds.energyWarning) {
             this.lastEnergyWarning = false;
         }
 
         // Estabilidad
-        if (state.stability < CONFIG.SYSTEM.STABILITY_WARNING_THRESHOLD && !this.lastStabilityWarning) {
-            bus.emit('TERMINAL_PRINT', { text: '>>> ALERTA: INESTABILIDAD NEURAL CRÍTICA - BASTIÓN COMPROMETIDO.', type: 'SYSTEM' });
+        if (state.stability < thresholds.stabilityWarning && !this.lastStabilityWarning) {
+            bus.emit('TERMINAL_PRINT', { 
+                text: pathConfig.emergencies.stability.warning, 
+                type: 'SYSTEM' 
+            });
             this.lastStabilityWarning = true;
-        } else if (state.stability >= CONFIG.SYSTEM.STABILITY_WARNING_THRESHOLD) {
+        } else if (state.stability >= thresholds.stabilityWarning) {
             this.lastStabilityWarning = false;
+        }
+    }
+
+    checkEmergencies() {
+        // No hay emergencias durante diálogos o cinemáticas
+        if (state.isModalOpen || state.activeDialogue) return;
+
+        const pathConfig = PATH_CONFIGS[state.storyPath || 0];
+        const thresholds = pathConfig.thresholds;
+        const CHANCE = thresholds.emergencyChance;
+
+        // 1. Resonancia (Si estabilidad < threshold)
+        if (!state.emergencies.resonance && state.stability < thresholds.resonanceEmergency) {
+            if (Math.random() < CHANCE) {
+                bus.emit('EMERGENCY_START', { type: 'resonance' });
+                bus.emit('TERMINAL_PRINT', { 
+                    text: pathConfig.emergencies.resonance.alert, 
+                    type: 'ERROR' 
+                });
+            }
+        }
+
+        // 2. Oxígeno (Si energía < threshold)
+        if (!state.emergencies.oxygen && state.energy < thresholds.oxygenEmergency) {
+            if (Math.random() < CHANCE) {
+                bus.emit('EMERGENCY_START', { type: 'oxygen' });
+                bus.emit('TERMINAL_PRINT', { 
+                    text: pathConfig.emergencies.oxygen.alert, 
+                    type: 'ERROR' 
+                });
+            }
+        }
+
+        // 3. Energía (Si energía < threshold)
+        if (!state.emergencies.energy && state.energy < thresholds.energyEmergency) {
+            if (Math.random() < CHANCE) {
+                bus.emit('EMERGENCY_START', { type: 'energy' });
+                bus.emit('TERMINAL_PRINT', { 
+                    text: pathConfig.emergencies.energy.alert, 
+                    type: 'ERROR' 
+                });
+            }
         }
     }
 
@@ -98,6 +150,7 @@ class GameLoop {
         if (state.gameStatus === 'PLAYING' && !state.isTutorialActive) {
             this.checkSystemFailure();
             this.handleWarnings();
+            this.checkEmergencies();
         }
 
         // 2. Actualizar mecánicas activas
@@ -116,8 +169,9 @@ class GameLoop {
         const energyDrain = state.mode === 'ECLIPSE' ? CONFIG.ENERGY.ECLIPSE_DRAIN : CONFIG.ENERGY.TICK_DRAIN;
         state.energy = Math.max(0, state.energy - energyDrain);
 
-        if (!state.purgeActive) {
-            state.oxygen = Math.max(0, state.oxygen - CONFIG.SYSTEM.OXYGEN_DRAIN);
+        const thresholds = PATH_CONFIGS[state.storyPath || 0].thresholds;
+        if (!state.purgeActive && !state.o2Stabilized) {
+            state.oxygen = Math.max(0, state.oxygen - (thresholds.oxygenDrain || CONFIG.SYSTEM.OXYGEN_DRAIN));
         }
 
         state.endBatch();

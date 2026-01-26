@@ -26,11 +26,12 @@ const TUTORIAL_CONTENT = {
         ]
     },
     [MODULES.RESONANCE?.tutorial || 'TUTO_RESONANCE']: {
-        title: 'MÓDULO DESBLOQUEADO: RESONANCIA',
+        title: 'MÓDULO DESBLOQUEADO: CONSOLA DE EMERGENCIA',
         steps: [
-            "El [[MOD-06]] inferior gestiona el enlace neural directo.",
-            "Sincronice la frecuencia hasta superar el 85% para estabilizar la conexión.",
-            "Una conexión inestable aumentará el consumo de energía y riesgo de corrupción."
+            "El [[MOD-06]] es un sistema tri-modular de respuesta ante crisis críticas.",
+            "RESONANCIA: Sincronice frecuencia y fase (>90%) para estabilizar el enlace neural.",
+            "OXÍGENO: Siga la secuencia de válvulas (V-1 a V-4) para detener la asfixia del personal.",
+            "ENERGÍA: Trace un camino continuo en el Nexo de Energía para restaurar el suministro."
         ]
     },
     [MODULES.OPERATIONS?.tutorial || 'TUTO_OPERATIONS']: {
@@ -110,11 +111,12 @@ const TUTORIAL_CONTENT_SECTARIAN = {
         ]
     },
     [MODULES.RESONANCE?.tutorial || 'TUTO_RESONANCE']: {
-        title: 'REVELACIÓN: SINCRO-FE',
+        title: 'REVELACIÓN: ALTAR DE CRISIS',
         steps: [
-            "El [[MOD-06]] inferior es el nexo de sintonía espiritual.",
-            "Alinee las frecuencias del alma con el latido del Aitor hasta el 85%.",
-            "La falta de fe (desincronización) debilita nuestra conexión con lo sagrado."
+            "El [[MOD-06]] es el nexo donde la fe se pone a prueba ante el colapso.",
+            "SINCRO-FE: Alinee su alma con el Aitor (>90%) para sanar la estabilidad.",
+            "INVOCAR_ALIENTO: Repita el ritual de válvulas para devolver el aire a los elegidos.",
+            "CANAL_DE_ALMAS: Restablezca el flujo de esencia a través del Nexo Sagrado."
         ]
     },
     [MODULES.OPERATIONS?.tutorial || 'TUTO_OPERATIONS']: {
@@ -196,12 +198,18 @@ class TutorialController {
             }
         });
 
+        // Escuchar cuando termina una cinemática explícitamente
+        bus.on('CINEMATIC_END', () => {
+            console.log(`[TUTORIAL] Cinematic ended. Checking queue...`);
+            setTimeout(() => this.checkQueue(), 500);
+        });
+
         // Avance manual desde el modal
         bus.on('TUTORIAL_CONTINUE', () => {
             this.nextStep();
         });
 
-        // Cierre de modal
+        // Cierre de modal genérico
         bus.on('UI_MODAL_CLOSE', () => {
             this.isModalOpen = false;
             // Al cerrar cualquier modal, ver si hay algo en cola
@@ -211,6 +219,7 @@ class TutorialController {
         // Escuchar cierre de modal de historia (Briefing/Summary) para procesar la cola
         bus.on('STORY_MODAL_CLOSE', () => {
             console.log(`[TUTORIAL] Story modal closed. Checking queue...`);
+            this.isModalOpen = false;
             // Solo procesar si estamos en juego
             if (state.gameStatus === 'PLAYING') {
                 setTimeout(() => this.checkQueue(), 800);
@@ -246,32 +255,55 @@ class TutorialController {
     }
 
     /**
-     * Procesa la cola de tutoriales pendientes
+     * Verifica si es seguro mostrar un tutorial en este momento.
+     * Regla de Oro: Nunca interrumpir cinemáticas o menús.
      */
-    checkQueue() {
-        if (this.proposalQueue.length === 0 || this.isModalOpen || state.gameStatus !== 'PLAYING') {
-            return;
-        }
+    isSafeToShow() {
+        const isPlaying = state.gameStatus === 'PLAYING';
+        const isPaused = state.isPaused;
+        const hasActiveModal = state.isModalOpen || this.isModalOpen;
+        const isCinematic = state.gameStatus === 'CINEMATIC';
+        const isMechanic = state.gameStatus === 'MECHANIC';
 
-        const next = this.proposalQueue.shift();
-        console.log(`[TUTORIAL] Processing queued tutorial: ${next.moduleName}`);
-        this.proposeTutorial(next.moduleId, next.moduleName, next.tutorialId);
+        const safe = isPlaying && !isPaused && !hasActiveModal && !isCinematic && !isMechanic;
+        
+        if (!safe) {
+            console.log(`[TUTORIAL] Not safe to show: playing=${isPlaying}, paused=${isPaused}, modal=${hasActiveModal}, cinematic=${isCinematic}, mechanic=${isMechanic}`);
+        }
+        
+        return safe;
     }
 
     proposeTutorial(moduleId, moduleName, tutorialId) {
-        // REGLA: No mostrar tutoriales durante cinemáticas o si ya hay un modal abierto
-        if (state.gameStatus !== 'PLAYING' || this.isModalOpen) {
-            // Evitar duplicados en la cola
-            const exists = this.proposalQueue.some(p => p.tutorialId === tutorialId);
-            if (!exists) {
-                console.log(`[TUTORIAL] System busy (Status: ${state.gameStatus}). Queuing: ${moduleName}`);
-                this.proposalQueue.push({ moduleId, moduleName, tutorialId });
-            }
-            return;
+        // Si el jugador ha decidido omitir todos los tutoriales, no hacer nada
+        if (localStorage.getItem('nakasthu_skip_tutorials') === 'true') return;
+
+        console.log(`[TUTORIAL] Proponiendo tutorial para ${moduleName} (${tutorialId})`);
+        
+        // Añadir a la cola si no está ya
+        const exists = this.proposalQueue.some(p => p.tutorialId === tutorialId);
+        if (!exists) {
+            this.proposalQueue.push({ moduleId, moduleName, tutorialId });
         }
 
-        console.log(`[TUTORIAL] Proposing tutorial for: ${moduleName}`);
-        this.isModalOpen = true; // Marcar como ocupado inmediatamente
+        // Intentar procesar inmediatamente
+        this.checkQueue();
+    }
+
+    checkQueue() {
+        if (this.proposalQueue.length === 0) return;
+        if (this.activeTutorialId || !this.isSafeToShow()) return;
+
+        // Extraer el siguiente tutorial
+        const next = this.proposalQueue.shift();
+        this.showProposalModal(next.moduleId, next.moduleName, next.tutorialId);
+    }
+
+    showProposalModal(moduleId, moduleName, tutorialId) {
+        if (this.isModalOpen) return;
+        this.isModalOpen = true;
+
+        console.log(`[TUTORIAL] Mostrando propuesta para ${moduleName}`);
 
         bus.emit('UI_MODAL_OPEN', {
             title: 'NUEVO SISTEMA DETECTADO',
@@ -286,26 +318,33 @@ class TutorialController {
                 <div className="flex gap-2 w-full">
                     <button 
                         onClick=${() => {
-                    bus.emit('UI_MODAL_CLOSE'); // El controller escuchará esto y pondrá isModalOpen = false
-                    // Pequeño hack: marcamos isModalOpen true de nuevo inmediatamente para que el startModule lo tome
-                    this.isModalOpen = true;
-
-                    setTimeout(() => this.startModuleTutorial(tutorialId), 100);
-                }}
+                            bus.emit('UI_MODAL_CLOSE');
+                            this.isModalOpen = true;
+                            setTimeout(() => this.startModuleTutorial(tutorialId), 100);
+                        }}
                         className="flex-1 py-2 bg-emerald-900/30 border border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/20 transition-all uppercase tracking-widest text-xs"
                     >
                         INICIAR INSTRUCCIÓN
                     </button>
                     <button 
                         onClick=${() => {
-                    bus.emit('UI_MODAL_CLOSE');
-                    bus.emit('TERMINAL_PRINT', { text: `> Tutorial skipped for ${moduleName}. Use /help to review.`, type: 'INFO' });
-                }}
+                            bus.emit('UI_MODAL_CLOSE');
+                            bus.emit('TERMINAL_PRINT', { text: `> Tutorial skipped for ${moduleName}. Use /help to review.`, type: 'INFO' });
+                        }}
                         className="flex-1 py-2 bg-zinc-900 border border-zinc-700 text-zinc-500 hover:text-zinc-300 transition-all uppercase tracking-widest text-xs"
                     >
                         OMITIR
                     </button>
                 </div>
+                <button 
+                    onClick=${() => {
+                        bus.emit('TUTORIAL_SKIP_ALL', {});
+                        bus.emit('UI_MODAL_CLOSE', {});
+                    }}
+                    className="w-full py-2 border border-red-900/40 text-red-500/60 text-[10px] tracking-[0.2em] uppercase font-bold hover:bg-red-900/10 hover:text-red-400 transition-all mt-2"
+                >
+                    OMITIR TODO EL TUTORIAL
+                </button>
             `
         });
     }

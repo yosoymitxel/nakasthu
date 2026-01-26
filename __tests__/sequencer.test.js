@@ -57,6 +57,7 @@ describe('Narrative Sequencer Validations (sequencer.test.js)', () => {
         gameSequencer.init();
         gameSequencer.nextStep();
 
-        expect(bus.emit).toHaveBeenCalledWith('GAME_COMPLETE', expect.objectContaining({ finalStep: 12 }));
+        expect(state.gameStatus).toBe('GAME_OVER');
+        expect(bus.emit).toHaveBeenCalledWith('STORY_FINISHED', {});
     });
 });

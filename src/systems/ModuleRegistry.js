@@ -49,11 +49,11 @@ export const MODULES = {
     },
     RESONANCE: {
         id: 'MOD-06',
-        name: 'Sincronizador Neural',
-        sectarianName: 'Sincronía de Fe',
+        name: 'Consola de Emergencia',
+        sectarianName: 'Altar de Crisis',
         unlockStep: 4,
         tutorial: 'TUTO_RESONANCE',
-        description: 'Alineación de frecuencias para enlace estable.'
+        description: 'Interfaz tri-modular de respuesta ante fallos críticos.'
     },
     QUOTA_TRACKER: {
         id: 'MOD-07',

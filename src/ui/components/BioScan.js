@@ -7,6 +7,7 @@ import { executeScan, SCAN_TYPES } from '../../systems/Scanner.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { CONFIG } from '../../data/gameConfig.js';
 import { calculateScanCost } from '../../utils/scannerUtils.js';
+import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 
 export const BioScan = () => {
     const energy = useGameState('energy');
@@ -21,7 +22,8 @@ export const BioScan = () => {
 
     const isLocked = moduleLock && moduleLock.bioscan;
     const isSectarian = storyPath === 1;
-    const labels = CONFIG.UI.LABELS[storyPath];
+    const pathConfig = PATH_CONFIGS[storyPath];
+    const labels = pathConfig.bioscan;
 
     const startScan = async (type) => {
         const scanCount = currentEntity?.scanHistory?.[type.id] || 0;
@@ -36,7 +38,7 @@ export const BioScan = () => {
         return html`
             <div className="flex flex-col items-center justify-center h-full text-red-500 font-mono p-4 text-center border border-red-900/50 bg-red-950/20 overflow-hidden relative">
                 <div className="text-xl mb-2">⚠️</div>
-                <div className="text-[12px] font-bold tracking-widest uppercase mb-1">MOD-01 OFFLINE</div>
+                <div className="text-[12px] font-bold tracking-widest uppercase mb-1">${labels.offline}</div>
                 <div className="text-[12px] opacity-70">REBOOTING SYSTEMS...</div>
             </div>
         `;
@@ -47,7 +49,7 @@ export const BioScan = () => {
             <header className="border-b-[0.5px] border-zinc-800 pb-2">
                 <div className="flex justify-between items-center">
                     <h2 className="text-[12px] font-black text-zinc-400 uppercase tracking-[0.3em]">
-                        ${isSectarian ? 'ALTAR DE EXAMEN v4.02' : 'BIO-SCANNER v4.02'}
+                        ${labels.title}
                     </h2>
                     <div className="flex gap-1">
                         <div className=${`w-1 h-1 animate-pulse ${isSectarian ? 'bg-purple-600/50' : 'bg-cyan-600/50'}`}></div>
@@ -84,14 +86,14 @@ export const BioScan = () => {
                             <!-- Scan Count Indicator -->
                             ${scanCount > 0 ? html`
                                 <div className="absolute top-0 left-0 bg-zinc-900/80 px-1 border-r border-b border-zinc-800">
-                                    <span className="text-[8px] text-zinc-500 font-bold">${isSectarian ? 'RITUALES' : 'REPEATS'}: ${scanCount}</span>
+                                    <span className="text-[8px] text-zinc-500 font-bold">${labels.repeats}: ${scanCount}</span>
                                 </div>
                             ` : null}
 
                             <!-- Required Indicator Tag -->
                             ${isRequired ? html`
                                 <div className=${`absolute top-0 right-0 ${isSectarian ? 'bg-purple-600/20 text-purple-500 border-purple-900/30' : 'bg-amber-600/20 text-amber-500 border-amber-900/30'} text-[8px] px-1 font-bold tracking-tighter uppercase border-b border-l`}>
-                                    ${isSectarian ? 'SAGRADO' : 'Required'}
+                                    ${labels.required}
                                 </div>
                             ` : null}
 
@@ -113,7 +115,7 @@ export const BioScan = () => {
                                         ${labels.scans[type.id]}
                                     </span>
                                     <span className="text-[12px] text-zinc-400 mt-0.5 font-mono uppercase">
-                                        ${isActive ? (isSectarian ? 'Transmutando...' : 'Procesando...') : (canAfford ? (isSectarian ? 'Listo' : 'Ready') : (isSectarian ? 'Falta Ofrenda' : 'Insufficient Power'))}
+                                        ${isActive ? labels.scanning : (canAfford ? labels.ready : labels.insufficient)}
                                     </span>
                                 </div>
                                 <div className="flex flex-col items-end">

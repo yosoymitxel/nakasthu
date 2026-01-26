@@ -11,6 +11,28 @@ import { calculateScanCost, calculateAdjustedDuration } from '../utils/scannerUt
 
 export const SCAN_TYPES = CONFIG.SCANNER.TYPES;
 
+let activeInterval = null;
+let currentResolve = null;
+
+/**
+ * Cancela cualquier escaneo en curso.
+ */
+export const cancelScan = () => {
+    if (activeInterval) {
+        clearInterval(activeInterval);
+        activeInterval = null;
+    }
+    if (currentResolve) {
+        currentResolve(false);
+        currentResolve = null;
+    }
+    state.activeScan = null;
+    console.log("%c[SCANNER] Escaneo cancelado.", "color: #ff9900;");
+};
+
+// Listener global para cancelación
+bus.on('SCAN_CANCEL_REQUEST', cancelScan);
+
 /**
  * Ejecuta un escaneo consumiendo energía.
  * @param {string} typeId - ID del tipo de escaneo.
@@ -18,6 +40,9 @@ export const SCAN_TYPES = CONFIG.SCANNER.TYPES;
 export const executeScan = async (typeId) => {
     const scan = SCAN_TYPES[typeId];
     if (!scan || state.activeScan) return false;
+
+    // Cancelar cualquier intervalo previo por seguridad
+    if (activeInterval) clearInterval(activeInterval);
 
     // Calcular coste extra por repetición usando utilidad
     const scanCount = state.currentEntity?.scanHistory?.[typeId] || 0;
@@ -47,16 +72,32 @@ export const executeScan = async (typeId) => {
     );
 
     // Notificar inicio y establecer estado global
-    state.activeScan = { id: scan.id, progress: 0, name: scan.name };
+    state.activeScan = { 
+        id: scan.id, 
+        progress: 0, 
+        name: scan.name,
+        entityId: state.currentEntity?.id // Track current entity ID
+    };
     bus.emit('SCAN_STARTED', { type: scan });
     
     console.log(`%c[SCANNER] Iniciando ${scan.name}...`, "color: #00ffff; font-weight: bold;");
 
     // Simular proceso con actualización de progreso
     return new Promise((resolve) => {
+        currentResolve = resolve;
         let elapsedReal = 0;
-        const interval = setInterval(() => {
+        const startEntityId = state.currentEntity?.id;
+
+        activeInterval = setInterval(() => {
             if (state.isPaused) return;
+
+            // REGLA: Si la entidad ha cambiado o el escaneo se ha limpiado, cancelar
+            if (!state.currentEntity || 
+                state.currentEntity.id !== startEntityId || 
+                state.activeScan === null) {
+                cancelScan();
+                return;
+            }
 
             elapsedReal += CONFIG.SCANNER.SCAN_INTERVAL;
             const progress = Math.min((elapsedReal / adjustedDuration) * 100, 100);
@@ -65,12 +106,14 @@ export const executeScan = async (typeId) => {
             state.activeScan = { ...state.activeScan, progress };
 
             if (progress >= 100) {
-                clearInterval(interval);
+                clearInterval(activeInterval);
+                activeInterval = null;
+                currentResolve = null;
                 
                 console.log(`%c[SCANNER] ${scan.name} completado.`, "color: #00ff00;");
                 
                 // Notificar al MOD-05 (COMS) y otros
-                bus.emit('SCAN_COMPLETED', { 
+                bus.emit('SCAN_COMPLETED', {
                     type: scan, 
                     result: 'DATA_EXTRACTED',
                     subject: state.currentEntity,
@@ -105,6 +148,6 @@ export const executeScan = async (typeId) => {
                 state.activeScan = null;
                 resolve(true);
             }
-        }, 100); // Actualización cada 100ms para balancear fluidez y performance
+        }, CONFIG.SCANNER.SCAN_INTERVAL);
     });
 };

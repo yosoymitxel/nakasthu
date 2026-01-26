@@ -10,6 +10,7 @@ import { state } from '../core/State.js';
 import { html } from '../ui/utils/html.js';
 import { quotaTracker } from './QuotaTracker.js';
 import { factionSystem } from './FactionSystem.js';
+import { cancelScan } from './Scanner.js';
 import { CONFIG } from '../data/gameConfig.js';
 import { STEPS_CONFIG } from '../data/stepsConfig.js';
 import { MechanicManager } from '../services/MechanicManager.js';
@@ -38,6 +39,11 @@ class GameSequencer {
         if (this.decisionSub) this.decisionSub();
 
         this.decisionSub = bus.on('DECISION_MADE', ({ subject, action }) => {
+            console.log(`[SEQUENCER] Decision made: ${action} for subject ${subject.id}. Processed: ${state.processedCount + 1}/${state.quota}`);
+            
+            // REGLA: Cancelar cualquier escaneo residual al tomar una decisión
+            cancelScan();
+            
             this.registerSubjectResult(subject, action);
             this.checkGameStatus();
         });
@@ -56,6 +62,19 @@ class GameSequencer {
         
         // Inicializar manager de mecánicas para el paso actual
         MechanicManager.init(initialStepData.config);
+
+        // Caso especial: Paso 6 "La Urgencia" - Forzar emergencia inicial
+        if (this.currentStep === 6 && state.gameStatus === 'PLAYING') {
+            setTimeout(() => {
+                if (state.currentStep === 6) {
+                    bus.emit('EMERGENCY_START', { type: 'resonance' });
+                    bus.emit('TERMINAL_PRINT', { 
+                        text: '[ALERTA] PASO 6: LA URGENCIA - PROTOCOLO DE RESONANCIA REQUERIDO.', 
+                        type: 'SYSTEM' 
+                    });
+                }
+            }, 2000);
+        }
     }
 
     /**
@@ -108,17 +127,38 @@ class GameSequencer {
      * Finaliza la transición al nuevo paso (llamado tras decisión de tutorial o directamente)
      */
     finalizeStepTransition(stepIdx) {
+        const previousStatus = state.gameStatus;
         this.currentStep = stepIdx;
+        const currentConfig = STEPS_CONFIG[this.currentStep];
 
-        // Emitir evento de cambio de paso para el ModuleRegistry
-        bus.emit('STATE_CHANGE:step', this.currentStep);
+        // 1. Determinar el nuevo estado del juego ANTES de emitir cambios
+        let nextStatus = 'PLAYING';
+        if (this.currentStep >= 12 && state.gameStatus === 'GAME_OVER') {
+            nextStatus = 'GAME_OVER';
+        } else if (currentConfig.type === 'cinematic') {
+            nextStatus = 'CINEMATIC';
+        } else if (currentConfig.type === 'mechanic') {
+            nextStatus = 'MECHANIC';
+        }
 
+        // 2. Actualizar estado síncronamente
+        state.gameStatus = nextStatus;
         state.currentStep = this.currentStep;
 
-        const currentConfig = STEPS_CONFIG[this.currentStep];
+        // Si venimos de una cinemática y ahora estamos en otro estado, avisar al sistema de tutoriales
+        if (previousStatus === 'CINEMATIC' && nextStatus !== 'CINEMATIC') {
+            bus.emit('CINEMATIC_END');
+        }
+
+        // Actualizar el paso máximo alcanzado para el selector de niveles si avanzamos linealmente
+        if (this.currentStep > (state.maxStepReached || 0)) {
+            state.maxStepReached = this.currentStep;
+            localStorage.setItem('nakasthu_max_step', this.currentStep.toString());
+        }
+
         const stepData = this.getCurrentStepData();
 
-        console.log(`%c[SEQUENCER] Avanzando a paso ${this.currentStep}: ${stepData.config.name}`, 'color: #10b981;');
+        console.log(`%c[SEQUENCER] Avanzando a paso ${this.currentStep}: ${stepData.config.name} (Status: ${nextStatus})`, 'color: #10b981;');
 
         // Resetear contadores de progreso para el nuevo nivel
         state.processedCount = 0;
@@ -127,7 +167,14 @@ class GameSequencer {
         state.devotsRecruited = 0;
         state.influenceGathered = 0;
         state.utilidadOculta = 0;
+        state.worldTime = 0;
         state.quota = currentConfig.subjectCount || CONFIG.DEFAULT_QUOTA;
+        
+        // Limpiar sujeto actual para que el nuevo nivel empiece de cero
+        state.currentEntity = null;
+        if (currentConfig.type === 'gameplay') {
+            state.nextSubject();
+        }
 
         // Sincronizar QuotaTracker
         quotaTracker.setQuota(state.quota);
@@ -139,30 +186,25 @@ class GameSequencer {
             bus.emit('ACT_CHANGE', { newAct: this.storyPath });
         }
 
-        // Determine and set Game Status based on step type
-        if (state.gameStatus !== 'GAME_OVER') {
-            if (stepData.config.type === 'cinematic') {
-                state.gameStatus = 'CINEMATIC';
-            } else if (stepData.config.type === 'mechanic') {
-                state.gameStatus = 'MECHANIC';
-            } else {
-                state.gameStatus = 'PLAYING';
-            }
-        }
-
         bus.emit('STEP_CHANGE', stepData);
 
         // Inicializar manager de mecánicas para el nuevo paso
         MechanicManager.init(currentConfig);
 
-        // Mostrar modal de briefing SOLO para gameplay (Y si no hay tutorial activo)
-        if (stepData.config.type === 'gameplay' && !state.isTutorialActive) {
+        // Mostrar modal de briefing SOLO para gameplay
+        if (stepData.config.type === 'gameplay') {
+            state.isModalOpen = true; // Bloqueo preventivo
             bus.emit('STORY_MODAL_OPEN', {
                 mode: 'Briefing',
                 title: stepData.config.name,
                 content: stepData.config.briefingText
             });
         }
+
+        // Emitir evento de cambio de paso para el ModuleRegistry AL FINAL
+        // Esto asegura que si se desbloquean módulos con tutoriales, 
+        // el sistema ya sepa si hay un modal abierto o si estamos en cinemática.
+        bus.emit('STATE_CHANGE:step', this.currentStep);
     }
 
     /**
@@ -175,13 +217,31 @@ class GameSequencer {
         state.startBatch();
         state.energy = CONFIG.ENERGY.INITIAL;
         state.stability = CONFIG.STABILITY.INITIAL;
+        state.oxygen = 100;
+        state.worldTime = 0; // FIX: Reiniciar tiempo para limpiar eclipse (Fase 18)
+        state.mode = 'NORMAL';
+        state.phase = 'SOLAR';
+        state.eclipseTimer = 0;
+        state.orbitalCycle = 0;
         state.processedCount = 0;
         state.judgmentErrors = 0;
         state.techniciansRecruited = 0;
         state.devotsRecruited = 0;
         state.influenceGathered = 0;
         state.utilidadOculta = 0;
+        state.unrest = 0;
+        state.faith = 0;
+        state.activeScan = null;
         state.quota = currentConfig.subjectCount || CONFIG.DEFAULT_QUOTA;
+
+        // Limpiar estados de emergencia
+        state.emergencies = {
+            resonance: false,
+            oxygen: false,
+            energy: false
+        };
+        state.o2Stabilized = false;
+        state.currentEntity = null; // Limpiar entidad actual antes de pedir nueva
 
         // Sincronizar QuotaTracker
         quotaTracker.setQuota(state.quota);
@@ -225,6 +285,8 @@ class GameSequencer {
      * Verifica el estado global para transiciones o fallos críticos
      */
     checkGameStatus() {
+        console.log(`%c[SEQUENCER] Status Check - Step: ${this.currentStep}, Processed: ${state.processedCount}, Quota: ${state.quota}`, 'color: #3b82f6;');
+        
         // 1. Verificar Fallo Crítico (Errores de Juicio)
         if (state.judgmentErrors >= CONFIG.MAX_JUDGMENT_ERRORS) {
             console.log('%c[SEQUENCER] Límite de errores alcanzado. FALLO DE SISTEMA.', 'color: #ef4444; font-weight: bold;');
@@ -240,10 +302,10 @@ class GameSequencer {
         if (state.processedCount >= state.quota) {
             const config = STEPS_CONFIG[this.currentStep];
             
-            // Si es modo infinito, no avanzamos de paso
+            // Si es modo infinito, no avanzamos de paso, pero pedimos siguiente sujeto
             if (config.meta?.infinite) {
-                // Simplemente logueamos el progreso o emitimos evento
                 bus.emit('INFINITE_MILESTONE', { count: state.processedCount });
+                state.nextSubject();
                 return;
             }
 
@@ -259,6 +321,10 @@ class GameSequencer {
             }
             
             this.nextStep();
+        } else {
+            // REGLA: Solo pedir siguiente sujeto si la cuota NO se ha alcanzado
+            // Esto evita que lleguen más sujetos de los necesarios (Ej: Nivel 6)
+            state.nextSubject();
         }
     }
 

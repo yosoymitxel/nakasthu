@@ -8,11 +8,11 @@ export const CONFIG = {
     ENERGY: {
         INITIAL: 100,
         MAX: 100,
-        AUTHORIZE_COST: 15,
+        AUTHORIZE_COST: 10,
         SACRIFICE_CORRUPT_BONUS: 20,
         SACRIFICE_INOCENT_BONUS: 5,
-        TICK_DRAIN: 0.01,
-        ECLIPSE_DRAIN: 0.02,
+        TICK_DRAIN: 0.005,
+        ECLIPSE_DRAIN: 0.01,
         REPAIR_COST: 20
     },
     STABILITY: {

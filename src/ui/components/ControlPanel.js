@@ -6,13 +6,15 @@ import { html } from '../utils/html.js';
 import { state } from '../../core/State.js';
 import { bus } from '../../core/Bus.js';
 import { CONFIG } from '../../data/gameConfig.js';
+import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 import { useGameState } from '../hooks/useGameState.js';
 
 export const ControlPanel = () => {
     const isPaused = useGameState('isPaused');
     const isTutorialActive = useGameState('isTutorialActive');
     const storyPath = useGameState('storyPath') || 0;
-    const labels = CONFIG.UI.LABELS[storyPath].controlPanel;
+    const pathConfig = PATH_CONFIGS[storyPath];
+    const labels = pathConfig.controlPanel;
     const processedCount = useGameState('processedCount');
     const quota = useGameState('quota');
 
