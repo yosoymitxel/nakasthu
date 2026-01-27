@@ -45,8 +45,12 @@ class GameSequencer {
             cancelScan();
             
             state.startBatch();
+            
+            // Limpiar sujeto actual INMEDIATAMENTE tras la decisión para evitar duplicados
+            // Esto es crítico para evitar el bug de "sacrificios infinitos"
+            state.currentEntity = null;
+
             // Solo incrementar si NO hemos alcanzado la cuota. 
-            // Esto evita el error visual "6/5" si el usuario hace clic rápido o hay lag en el bus.
             if (state.processedCount < state.quota) {
                 state.processedCount++;
                 console.log(`[SEQUENCER] Cuota incrementada: ${state.processedCount}/${state.quota}`);
@@ -74,6 +78,13 @@ class GameSequencer {
         
         // Inicializar manager de mecánicas para el paso actual
         MechanicManager.init(initialStepData.config);
+
+        // Sincronizar color override si existe en el paso
+        if (initialStepData.config.meta?.coreColorOverride) {
+            state.coreColorOverride = initialStepData.config.meta.coreColorOverride;
+        } else {
+            state.coreColorOverride = null;
+        }
 
         // Caso especial: Paso 6 "La Urgencia" - Forzar emergencia inicial
         if (this.currentStep === 6 && state.gameStatus === 'PLAYING') {
@@ -168,6 +179,13 @@ class GameSequencer {
             localStorage.setItem('nakasthu_max_step', this.currentStep.toString());
         }
 
+        // Verificar si hay cambio de acto ANTES de generar stepData
+        if (currentConfig.meta?.actChange) {
+            this.storyPath = currentConfig.meta.newStoryPath;
+            state.storyPath = this.storyPath;
+            bus.emit('ACT_CHANGE', { newAct: this.storyPath });
+        }
+
         const stepData = this.getCurrentStepData();
 
         console.log(`%c[SEQUENCER] Avanzando a paso ${this.currentStep}: ${stepData.config.name} (Status: ${nextStatus})`, 'color: #10b981;');
@@ -191,11 +209,11 @@ class GameSequencer {
         // Sincronizar QuotaTracker
         quotaTracker.setQuota(state.quota);
 
-        // Verificar si hay cambio de acto
-        if (stepData.config.meta?.actChange) {
-            this.storyPath = stepData.config.meta.newStoryPath;
-            state.storyPath = this.storyPath;
-            bus.emit('ACT_CHANGE', { newAct: this.storyPath });
+        // Actualizar color override
+        if (currentConfig.meta?.coreColorOverride) {
+            state.coreColorOverride = currentConfig.meta.coreColorOverride;
+        } else {
+            state.coreColorOverride = null;
         }
 
         bus.emit('STEP_CHANGE', stepData);
@@ -330,7 +348,8 @@ class GameSequencer {
             // Si es modo infinito, no avanzamos de paso, pero pedimos siguiente sujeto
             if (config.meta?.infinite) {
                 bus.emit('INFINITE_MILESTONE', { count: state.processedCount });
-                state.nextSubject();
+                // Delay para que la UI respire
+                setTimeout(() => state.nextSubject(), 500);
                 return;
             }
 
@@ -350,8 +369,12 @@ class GameSequencer {
             this.nextStep();
         } else {
             // REGLA: Solo pedir siguiente sujeto si la cuota NO se ha alcanzado
-            // Esto evita que lleguen más sujetos de los necesarios (Ej: Nivel 6)
-            state.nextSubject();
+            // Añadimos un pequeño delay para que la UI registre la limpieza del sujeto anterior
+            setTimeout(() => {
+                if (state.gameStatus === 'PLAYING' && !state.currentEntity) {
+                    state.nextSubject();
+                }
+            }, 600);
         }
     }
 
@@ -380,10 +403,12 @@ class GameSequencer {
 
         // 3. Forzar parámetros del paso
         this.currentStep = stepIndex;
-        // Reset path only if jumping to early steps, otherwise keep? 
-        // For "independent module" testing, we assume path 0 default.
-        if (stepIndex <= 3) {
-            this.storyPath = 0;
+        // Asignación de ruta basada en el bloque narrativo
+        // REGLA: El paso 7 ya es parte del cambio de acto (Sectario)
+        if (stepIndex < 7) {
+            this.storyPath = 0; // Ruta Técnica (Operador)
+        } else {
+            this.storyPath = 1; // Ruta Religiosa (Sectario)
         }
 
         // 4. Inicializar transición como si fuera carga limpia

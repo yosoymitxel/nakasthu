@@ -31,7 +31,8 @@ export const STEPS_CONFIG = {
         subjectCount: 10,
         meta: {
             requiredTechnicians: 6,
-            hiddenGoal: 'Estabilizar el país con técnicos cualificados'
+            hiddenGoal: 'Estabilizar el país con técnicos cualificados',
+            coreColorOverride: 'cyan'
         }
     },
     5: {
@@ -49,7 +50,8 @@ export const STEPS_CONFIG = {
         meta: {
             kaminAppears: true,
             kaminPosition: 7,
-            timeMultiplier: 1.5
+            timeMultiplier: 1.5,
+            coreColorOverride: 'orange'
         }
     },
     7: {
@@ -66,7 +68,8 @@ export const STEPS_CONFIG = {
         subjectCount: 5,
         meta: {
             requiredInfluence: 3,
-            penaltyOnFail: 'sabotage'
+            penaltyOnFail: 'sabotage',
+            coreColorOverride: 'red'
         }
     },
     9: {

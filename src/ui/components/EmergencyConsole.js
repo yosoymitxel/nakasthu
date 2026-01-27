@@ -140,50 +140,68 @@ const ResonanceModule = ({ isActive, storyPath }) => {
     const barColorClass = primary === 'purple' ? 'bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.6)]' : 'bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.6)]';
 
     return html`
-        <div className=${`flex flex-col h-full p-3 border relative overflow-hidden group ${!forceActive ? 'grayscale opacity-40' : 'animate-flicker'} ${primaryColorClass}`}>
-            <!-- Título y Estado -->
-            <div className=${`absolute top-0 right-0 w-12 h-12 rotate-45 translate-x-6 -translate-y-6 pointer-events-none ${accentColorClass}`}></div>
+        <div className=${`flex flex-col h-full p-3 justify-between border relative overflow-hidden group ${!forceActive ? 'grayscale opacity-40' : 'animate-flicker'} ${primaryColorClass}`}>
+            <canvas 
+                ref=${canvasRef} 
+                width="400" 
+                height="120" 
+                className="w-full h-32 bg-black/40 border border-zinc-900/50 rounded-sm mb-2"
+            />
             
-            <canvas ref=${canvasRef} width="200" height="60" className=${`w-full h-16 bg-black/40 border transition-colors ${primary === 'purple' ? 'border-purple-800/50 group-hover:border-purple-500/30 shadow-[0_0_10px_rgba(168,85,247,0.1)]' : 'border-cyan-800/50 group-hover:border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.1)]'}`} />
-            <div className="flex flex-col gap-1">
-                <div className=${`flex justify-between text-[10px] uppercase font-mono ${textColorClass}`}>
-                    <span>${config.name}</span>
-                    <span className=${resonanceSync >= 90 ? 'text-emerald-400 animate-pulse' : (primary === 'purple' ? 'text-purple-400' : 'text-cyan-400')}>${Math.floor(resonanceSync)}%</span>
-                </div>
-                <div className=${`h-1 bg-zinc-900 border ${primary === 'purple' ? 'border-purple-900/50' : 'border-cyan-900/50'}`}>
-                    <div className=${`h-full transition-all duration-300 ${barColorClass}`} style=${{ width: `${resonanceSync}%` }} />
-                </div>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-                <div className="flex flex-col gap-0.5">
-                    <span className=${`text-[8px] uppercase font-bold tracking-widest ${isSectarian ? 'text-purple-400 animate-pulse' : (primary === 'purple' ? 'text-purple-600' : 'text-cyan-600')}`}>
-                        ${isSectarian ? 'Sintonía_del_Alma' : 'Frecuencia'}
+            <div className="flex flex-col gap-3 relative z-10 flex-1">
+                <div className="flex justify-between items-center px-1">
+                    <span className=${`text-[11px] uppercase font-mono font-black tracking-widest ${textColorClass}`}>
+                        ${config.name}
                     </span>
-                    <input type="range" min="0.1" max="60" step="0.1" value=${localFreq} 
-                        onChange=${(e) => adjust('localFrequency', parseFloat(e.target.value))}
-                        className=${`w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer transition-all ${isSectarian ? 'accent-purple-500 hover:accent-purple-400 shadow-[0_0_5px_rgba(168,85,247,0.5)]' : (primary === 'purple' ? 'accent-purple-500 hover:accent-purple-400' : 'accent-cyan-500 hover:accent-cyan-400')}`} />
-                </div>
-                <div className="flex flex-col gap-0.5">
-                    <span className=${`text-[8px] uppercase font-bold tracking-widest ${isSectarian ? 'text-red-400 animate-pulse' : (primary === 'purple' ? 'text-red-600' : 'text-purple-600')}`}>
-                        ${isSectarian ? 'Oscilación_del_Velo' : 'Fase'}
+                    <span className=${`text-[10px] font-mono font-bold ${resonanceSync > 85 ? 'text-emerald-500' : (primary === 'purple' ? 'text-purple-400' : 'text-cyan-400')}`}>
+                        SYNC: ${Math.floor(resonanceSync)}%
                     </span>
-                    <input type="range" min="0" max=${Math.PI * 2} step="0.1" value=${localPhase}
-                        onChange=${(e) => adjust('localPhase', parseFloat(e.target.value))}
-                        className=${`w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer transition-all ${isSectarian ? 'accent-red-500 hover:accent-red-400 shadow-[0_0_5px_rgba(239,68,68,0.5)]' : (primary === 'purple' ? 'accent-red-500 hover:accent-red-400' : 'accent-purple-500 hover:accent-purple-400')}`} />
                 </div>
-            </div>
 
-            <button 
-                onClick=${synchronize}
-                disabled=${resonanceSync < 90}
-                className=${`w-full py-1 text-[10px] font-bold border transition-all ${resonanceSync >= 90 ? 'bg-emerald-900/40 border-emerald-500 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-zinc-900/50 border-zinc-800 text-zinc-700'}`}
-            >
-                ${config.action}
-            </button>
+                <!-- Sliders más grandes y táctiles -->
+                <div className="space-y-4 px-1">
+                    <div className="flex flex-col gap-1">
+                        <div className="flex justify-between text-[8px] text-zinc-500 uppercase font-bold px-1">
+                            <span>${isSectarian ? 'Sintonía_del_Alma' : 'Frecuencia'}</span>
+                            <span>${localFreq.toFixed(1)}Hz</span>
+                        </div>
+                        <input 
+                            type="range" 
+                            min="0.1" 
+                            max="60" 
+                            step="0.1"
+                            value=${localFreq}
+                            onChange=${(e) => adjust('localFrequency', parseFloat(e.target.value))}
+                            className="w-full h-2 bg-zinc-900 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                        />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <div className="flex justify-between text-[8px] text-zinc-500 uppercase font-bold px-1">
+                            <span>${isSectarian ? 'Oscilación_del_Velo' : 'Fase'}</span>
+                            <span>${(localPhase / Math.PI).toFixed(2)}π</span>
+                        </div>
+                        <input 
+                            type="range" 
+                            min="0" 
+                            max=${Math.PI * 2} 
+                            step="0.1"
+                            value=${localPhase}
+                            onChange=${(e) => adjust('localPhase', parseFloat(e.target.value))}
+                            className="w-full h-2 bg-zinc-900 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                        />
+                    </div>
+                </div>
 
-            <div className=${`text-[9px] font-mono flex justify-between mt-auto ${primary === 'purple' ? 'text-purple-900' : 'text-cyan-900'}`}>
-                <span className="opacity-50">${config.module} // ${isSectarian ? 'ARMONÍA_ESPIRITUAL' : 'ENLACE_NEURAL'}</span>
+                <button 
+                    onClick=${synchronize}
+                    disabled=${resonanceSync < 90}
+                    className=${`w-full py-3 border-2 text-[12px] font-black tracking-[0.3em] transition-all uppercase mt-auto
+                        ${resonanceSync >= 90 
+                            ? 'border-emerald-500 bg-emerald-900/20 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:bg-emerald-500 hover:text-white' 
+                            : 'border-zinc-800 bg-zinc-900/50 text-zinc-700 cursor-not-allowed'}`}
+                >
+                    ${config.action}
+                </button>
             </div>
         </div>
     `;
@@ -363,150 +381,158 @@ const PowerGridModule = ({ isActive, storyPath }) => {
     const isLevel6 = currentStep === 6;
     const forceActive = isLevel6 || isActive;
 
-    const [grid, setGrid] = useState([]);
+    const [path, setPath] = useState([]);
     const [burned, setBurned] = useState(new Set());
+    const [isDragging, setIsDragging] = useState(false);
 
     const initGrid = () => {
         const newBurned = new Set();
-        // Reducción drástica de obstáculos para el sectario (Ruta 1)
-        const maxBurned = isSectarian ? 2 : 4; 
+        const maxBurned = isSectarian ? 6 : 10; 
         
         while (newBurned.size < maxBurned) {
             const idx = Math.floor(Math.random() * 72);
-            // No bloquear la primera ni la última columna para asegurar salida/entrada
             if (idx % 12 !== 0 && idx % 12 !== 11) {
                 newBurned.add(idx);
             }
         }
         setBurned(newBurned);
 
-        // Pre-activar las primeras DOS columnas para dar un "empujón" inicial al jugador
-        const initialGrid = new Array(72).fill(false);
-        for (let r = 0; r < 6; r++) {
-            const idx0 = r * 12;
-            const idx1 = r * 12 + 1;
-            if (!newBurned.has(idx0)) initialGrid[idx0] = true;
-            if (!newBurned.has(idx1) && !newBurned.has(idx0)) initialGrid[idx1] = true;
-        }
-        setGrid(initialGrid);
+        // Empezar con un nodo aleatorio en la primera columna
+        const startIdx = Math.floor(Math.random() * 6) * 12;
+        setPath([startIdx]);
     };
 
     useEffect(() => { initGrid(); }, []);
 
-    const toggleCell = (idx) => {
+    const handleInteraction = (idx) => {
         if (!forceActive || burned.has(idx)) return;
-        const newGrid = [...grid];
-        newGrid[idx] = !newGrid[idx];
-        setGrid(newGrid);
 
-        if (checkConnection(newGrid)) {
-            bus.emit('TERMINAL_PRINT', { text: config.success, type: 'SUCCESS' });
-            engineState.energy = Math.min(100, engineState.energy + 15);
-            bus.emit('EMERGENCY_END', { type: 'energy' });
-            initGrid();
+        const lastIdx = path[path.length - 1];
+        if (idx === lastIdx) return;
+
+        // Verificar si el nodo es adyacente al último
+        const r1 = Math.floor(lastIdx / 12), c1 = lastIdx % 12;
+        const r2 = Math.floor(idx / 12), c2 = idx % 12;
+        const isAdjacent = (Math.abs(r1 - r2) === 1 && c1 === c2) || (Math.abs(c1 - c2) === 1 && r1 === r2);
+
+        if (isAdjacent) {
+            const existingIdx = path.indexOf(idx);
+            if (existingIdx !== -1) {
+                setPath(path.slice(0, existingIdx + 1));
+            } else {
+                const newPath = [...path, idx];
+                setPath(newPath);
+
+                if (idx % 12 === 11) {
+                    bus.emit('TERMINAL_PRINT', { text: config.success, type: 'SUCCESS' });
+                    // No usamos global state.energy directamente aquí, emitimos el evento o usamos bus
+                    bus.emit('EMERGENCY_END', { type: 'energy' });
+                    setTimeout(() => initGrid(), 1000);
+                    setIsDragging(false);
+                }
+            }
+        } else if (idx % 12 === 0) {
+            setPath([idx]);
         }
     };
 
-    const checkConnection = (currentGrid) => {
-        const rows = 6;
-        const cols = 12;
-        const queue = [];
-        const visited = new Set();
-
-        for (let r = 0; r < rows; r++) {
-            const idx = r * cols;
-            if (currentGrid[idx]) {
-                queue.push(idx);
-                visited.add(idx);
-            }
+    const handleMouseDown = (idx) => {
+        if (path[path.length - 1] === idx || idx % 12 === 0) {
+            setIsDragging(true);
+            if (idx % 12 === 0) setPath([idx]);
         }
+    };
 
-        while (queue.length > 0) {
-            const curr = queue.shift();
-            const r = Math.floor(curr / cols);
-            const c = curr % cols;
-            if (c === cols - 1) return true;
-            const neighbors = [
-                { r: r - 1, c }, { r: r + 1, c },
-                { r, c: c - 1 }, { r, c: c + 1 }
-            ];
-            for (const n of neighbors) {
-                if (n.r >= 0 && n.r < rows && n.c >= 0 && n.c < cols) {
-                    const nIdx = n.r * cols + n.c;
-                    if (currentGrid[nIdx] && !visited.has(nIdx) && !burned.has(nIdx)) {
-                        visited.add(nIdx);
-                        queue.push(nIdx);
-                    }
-                }
-            }
-        }
-        return false;
+    const handleMouseEnter = (idx) => {
+        if (isDragging) handleInteraction(idx);
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    useEffect(() => {
+        window.addEventListener('mouseup', handleMouseUp);
+        return () => window.removeEventListener('mouseup', handleMouseUp);
+    }, []);
+
+    const getArrowDirection = (from, to) => {
+        const r1 = Math.floor(from / 12), c1 = from % 12;
+        const r2 = Math.floor(to / 12), c2 = to % 12;
+        if (r2 < r1) return '↑';
+        if (r2 > r1) return '↓';
+        if (c2 < c1) return '←';
+        if (c2 > c1) return '→';
+        return '';
     };
 
     const primaryColorClass = primary === 'purple' ? 'border-purple-500/20 bg-purple-950/5 shadow-[inset_0_0_15px_rgba(168,85,247,0.05)]' : 'border-emerald-500/20 bg-emerald-950/5 shadow-[inset_0_0_15px_rgba(16,185,129,0.05)]';
     const textColorClass = primary === 'purple' ? 'text-purple-600' : 'text-emerald-600';
     const statusColorClass = primary === 'purple' ? 'bg-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.5)]' : 'bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]';
-    const statusIdleColorClass = primary === 'purple' ? 'bg-purple-900/50' : 'bg-emerald-900/50';
-    const cellActiveColorClass = primary === 'purple' ? 'bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.6)] border-purple-400' : 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.6)] border-emerald-400';
+    const cellActiveColorClass = primary === 'purple' ? 'bg-purple-600 border-purple-400 text-white shadow-[0_0_15px_rgba(168,85,247,0.8)]' : 'bg-emerald-600 border-emerald-400 text-white shadow-[0_0_15px_rgba(16,185,129,0.8)]';
     const footerTextColorClass = primary === 'purple' ? 'text-purple-900/60' : 'text-emerald-900/60';
 
     return html`
-        <div className=${`flex flex-col h-full p-2 border relative overflow-hidden group ${!forceActive ? 'grayscale opacity-40' : 'animate-flicker'} ${primaryColorClass}`}>
-            ${isSectarian ? html`
-                <div className="absolute inset-0 bg-[radial-gradient(#a855f708_1px,transparent_1px)] bg-[size:15px_15px] pointer-events-none"></div>
-            ` : html`
-                <div className="absolute inset-0 bg-[radial-gradient(#10b98108_1px,transparent_1px)] bg-[size:10px_10px] pointer-events-none"></div>
-            `}
-            
+        <div className=${`flex flex-col h-full p-2 border relative overflow-hidden group select-none ${!forceActive ? 'grayscale opacity-40' : 'animate-flicker'} ${primaryColorClass}`}>
             <div className="flex justify-between items-center px-1 mb-1 relative z-10">
                 <span className=${`text-[10px] uppercase font-mono font-bold tracking-tighter ${textColorClass}`}>
                     ${config.name}
                 </span>
-                <div className="flex gap-1">
-                    <div className=${`w-1.5 h-1.5 rounded-full animate-pulse ${statusColorClass}`}></div>
-                    <div className=${`w-1.5 h-1.5 rounded-full ${statusIdleColorClass}`}></div>
+                <div className="flex gap-1 items-center">
+                    <span className="text-[8px] text-zinc-600 font-mono mr-1">LINK_ESTABLISHED</span>
+                    <div className=${`w-1.5 h-1.5 rounded-full ${path.length > 1 ? 'animate-pulse ' + statusColorClass : 'bg-zinc-800'}`}></div>
                 </div>
             </div>
 
-            <div className=${`grid grid-cols-12 grid-rows-6 gap-0.5 flex-1 bg-black/60 p-1 border border-zinc-800/50 shadow-[inner_0_0_10px_rgba(0,0,0,0.5)] relative overflow-hidden ${isSectarian ? 'rotate-0 rounded-lg' : ''}`}>
-                ${isSectarian && html`
-                    <!-- Ritual Overlay Background -->
-                    <div className="absolute inset-0 opacity-10 pointer-events-none flex items-center justify-center">
-                        <svg viewBox="0 0 100 100" className="w-3/4 h-3/4 animate-[spin_60s_linear_infinite]">
-                            <circle cx="50" cy="50" r="45" fill="none" stroke="#a855f7" strokeWidth="0.5" strokeDasharray="1 3" />
-                            <path d="M 50 5 L 95 50 L 50 95 L 5 50 Z" fill="none" stroke="#a855f7" strokeWidth="0.2" />
-                        </svg>
-                    </div>
-                `}
-                ${grid.map((active, i) => {
+            <div className="grid grid-cols-12 grid-rows-6 gap-0.5 flex-1 bg-black/80 p-1 border border-zinc-800/50 relative">
+                ${Array.from({ length: 72 }).map((_, i) => {
+                    const pathIndex = path.indexOf(i);
+                    const isActive = pathIndex !== -1;
+                    const isLast = pathIndex === path.length - 1 && path.length > 0;
                     const isBurned = burned.has(i);
+                    const isStart = i % 12 === 0;
+                    const isEnd = i % 12 === 11;
+
+                    let arrow = '';
+                    if (isActive && !isLast) {
+                        arrow = getArrowDirection(i, path[pathIndex + 1]);
+                    }
+
                     return html`
                         <div 
                             key=${i}
-                            onClick=${() => toggleCell(i)}
+                            onMouseDown=${() => handleMouseDown(i)}
+                            onMouseEnter=${() => handleMouseEnter(i)}
                             className=${`
-                                w-full h-full cursor-crosshair transition-all duration-300 border relative z-10
-                                ${isBurned ? (isSectarian ? 'bg-purple-900/10 border-purple-950 opacity-10 grayscale' : 'bg-red-950/60 border-red-900/40 opacity-40') : 
-                                  active ? cellActiveColorClass : 
-                                  (isSectarian ? 'bg-slate-950/40 border-slate-900/30 hover:bg-purple-900/20 hover:border-purple-800/40' : 'bg-zinc-900/80 border-zinc-800/50 hover:bg-emerald-900/40 hover:border-emerald-800/50')}
-                                ${!isBurned && active && 'animate-pulse'}
-                                ${isSectarian && !isBurned && !active ? 'rounded-[1px]' : ''}
-                                ${isSectarian && active ? 'scale-75 rotate-45 rounded-none' : ''}
+                                w-full h-full cursor-crosshair transition-all duration-200 border flex items-center justify-center font-bold text-[14px] relative
+                                ${isBurned ? 'bg-red-950/20 border-red-900/10 opacity-20 cursor-not-allowed' : 
+                                  isActive ? cellActiveColorClass : 
+                                  isStart ? 'bg-zinc-900 border-zinc-700 text-zinc-500 hover:bg-zinc-800' :
+                                  isEnd ? 'bg-zinc-900 border-zinc-700 text-zinc-500 hover:bg-zinc-800' :
+                                  'bg-zinc-950 border-zinc-900 hover:bg-zinc-900'}
+                                ${isLast && !isBurned ? 'ring-1 ring-white/50 z-20 scale-105' : ''}
                             `}
                         >
-                            ${isSectarian && active && html`<div className="w-full h-full bg-white/5 blur-[3px] animate-ping"></div>`}
+                            ${isActive && html`
+                                <span className=${`z-10 ${isLast ? 'animate-bounce' : ''}`}>
+                                    ${isLast ? (isEnd ? '✓' : '●') : arrow}
+                                </span>
+                            `}
+                            ${isStart && !isActive && !isBurned && html`<span className="text-[8px] opacity-30">IN</span>`}
+                            ${isEnd && !isActive && !isBurned && html`<span className="text-[8px] opacity-30">OUT</span>`}
                         </div>
                     `;
                 })}
             </div>
             
             <div className=${`text-[9px] font-mono flex justify-between px-1 mt-auto pt-1 ${footerTextColorClass}`}>
-                <span>${isSectarian ? 'CANAL_DE_ALMAS' : config.name.toUpperCase().replace(' ', '_')}</span>
-                <span className="opacity-50">${config.module}</span>
+                <span>${isSectarian ? 'CONEXIÓN_SANGUÍNEA' : 'ENERGY_NODE_SYSTEM'}</span>
+                <span className="opacity-50">${path.length} / 12 NODES</span>
             </div>
         </div>
     `;
 };
+
 
 /**
  * COMPONENTE PRINCIPAL: EMERGENCY CONSOLE

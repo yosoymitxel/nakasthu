@@ -12,12 +12,15 @@ const { useState, useEffect, memo } = React;
 
 export const Panel = memo(({ title, children, className = "", contentClassName = "", areaId = null }) => {
     const storyPath = useGameState('storyPath');
+    const colorOverride = useGameState('coreColorOverride');
     const [showTooltip, setShowTooltip] = useState(false);
 
-    // Tema basado en la ruta narrativa
+    // Tema basado en la ruta narrativa o override de nivel
     const isReligious = storyPath === 1;
-    const themeColor = isReligious ? 'purple' : 'cyan';
-    const accentColor = isReligious ? 'text-purple-400' : 'text-amber-500';
+    const themeColor = colorOverride || (isReligious ? 'purple' : 'cyan');
+    const accentColor = colorOverride 
+        ? (colorOverride === 'cyan' ? 'text-cyan-400' : (colorOverride === 'purple' ? 'text-purple-400' : 'text-zinc-400'))
+        : (isReligious ? 'text-purple-400' : 'text-amber-500');
 
     const tooltips = isReligious ? {
         'L_TOP': "Sello del Vacío y heráldica de la Orden.",

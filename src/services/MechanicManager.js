@@ -65,6 +65,10 @@ class DecisionMechanic extends BaseMechanic {
         const subject = state.currentEntity;
         if (!subject || state.gameStatus !== 'PLAYING') return;
 
+        // PREVENCIÓN: Evitar doble decisión sobre el mismo sujeto
+        if (subject._processed) return;
+        subject._processed = true;
+
         // BLOQUEO: Solo permitir tras escaneo específico
         const requiredType = state.requiredScan || 'BIOMETRIC';
         const hasRequiredScan = subject.scannedTypes && subject.scannedTypes.includes(requiredType);
@@ -121,6 +125,10 @@ class DecisionMechanic extends BaseMechanic {
         const subject = state.currentEntity;
         if (!subject || state.gameStatus !== 'PLAYING') return;
 
+        // PREVENCIÓN: Evitar doble decisión sobre el mismo sujeto
+        if (subject._processed) return;
+        subject._processed = true;
+
         const requiredType = state.requiredScan || 'BIOMETRIC';
         const hasRequiredScan = subject.scannedTypes && subject.scannedTypes.includes(requiredType);
 
@@ -147,6 +155,9 @@ class DecisionMechanic extends BaseMechanic {
         if (result.energyChange !== 0) state.energy = Math.max(0, Math.min(100, state.energy + result.energyChange));
         if (result.stabilityChange !== 0) state.stability = Math.max(0, Math.min(100, state.stability + result.stabilityChange));
         if (result.unrestChange !== 0) state.unrest = Math.max(0, Math.min(100, state.unrest + result.unrestChange));
+
+        // CRÍTICO: Limpiar sujeto actual para forzar la regeneración en el siguiente tick
+        state.currentEntity = null;
 
         if (result.isError) {
             state.judgmentErrors++;

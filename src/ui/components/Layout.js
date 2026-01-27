@@ -256,7 +256,8 @@ export const Layout = () => {
             const currentStats = {
                 errors: deathStats?.errors !== undefined ? deathStats.errors : judgmentErrors,
                 energy: deathStats?.energy !== undefined ? deathStats.energy : energy,
-                maxErrors: maxErrors || 3
+                maxErrors: maxErrors || 3,
+                processed: deathStats?.processed ?? processedCount
             };
             setStableRank(calculateRank(currentStats));
         } else if (stableRank) {
@@ -294,7 +295,8 @@ export const Layout = () => {
     const rank = calculateRank({
         errors: deathStats?.errors !== undefined ? deathStats.errors : judgmentErrors,
         energy: deathStats?.energy !== undefined ? deathStats.energy : energy,
-        maxErrors: maxErrors || 3
+        maxErrors: maxErrors || 3,
+        processed: deathStats?.processed ?? processedCount
     });
 
     // Estilo dinámico del borde del contenedor

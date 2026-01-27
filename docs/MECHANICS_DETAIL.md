@@ -27,7 +27,17 @@ Cuando un subsistema falla, se activa el modo de **Resonancia**. El jugador debe
 2.  Mantener la fase alineada mediante el control de pulso.
 3.  Alcanzar el 100% de sincronía para restablecer el servicio.
 
-## 3. Identificación de "Sombras" (Infiltrados de Kamin)
+## 3. Consola de Emergencia (Power Grid MOD-05)
+En situaciones de colapso energético, se activa el sistema de respaldo manual.
+
+### Protocolo de Reconexión de Cables
+- **Interfaz:** Un panel de 12x10 nodos donde la energía debe fluir desde el lado izquierdo (Entrada) al derecho (Salida).
+- **Mecánica (Click & Drag):** El jugador debe hacer clic en un nodo de entrada y arrastrar para crear una ruta continua de nodos adyacentes hasta la salida.
+- **Obstrucciones:** El panel presenta nodos "quemados" que bloquean el paso. El número de obstrucciones aumenta con la dificultad del nivel (hasta 10 nodos bloqueados).
+- **Validación:** El sistema solo permite conexiones entre nodos vecinos (arriba, abajo, izquierda, derecha). Si se suelta el clic antes de llegar a la salida, la conexión se pierde y debe reiniciarse.
+- **Resultado:** Una conexión exitosa restaura un +15% de energía al sistema central.
+
+## 4. Identificación de "Sombras" (Infiltrados de Kamin)
 Las Sombras son sujetos corruptos que intentan entrar en el Bastión para desestabilizarlo desde dentro.
 
 ### Pistas Sutiles en el BioScan

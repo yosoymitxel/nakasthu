@@ -194,14 +194,14 @@ class TutorialController {
             console.log(`[TUTORIAL] Game status changed to: ${status}. Checking queue...`);
             if (status === 'PLAYING') {
                 // Pequeño delay para dejar que la UI se asiente tras una cinemática
-                setTimeout(() => this.checkQueue(), 1000);
+                setTimeout(() => this.checkQueue(), 200);
             }
         });
 
         // Escuchar cuando termina una cinemática explícitamente
         bus.on('CINEMATIC_END', () => {
             console.log(`[TUTORIAL] Cinematic ended. Checking queue...`);
-            setTimeout(() => this.checkQueue(), 500);
+            setTimeout(() => this.checkQueue(), 100);
         });
 
         // Avance manual desde el modal
@@ -213,7 +213,7 @@ class TutorialController {
         bus.on('UI_MODAL_CLOSE', () => {
             this.isModalOpen = false;
             // Al cerrar cualquier modal, ver si hay algo en cola
-            setTimeout(() => this.checkQueue(), 500);
+            setTimeout(() => this.checkQueue(), 100);
         });
 
         // Escuchar cierre de modal de historia (Briefing/Summary) para procesar la cola
@@ -222,7 +222,7 @@ class TutorialController {
             this.isModalOpen = false;
             // Solo procesar si estamos en juego
             if (state.gameStatus === 'PLAYING') {
-                setTimeout(() => this.checkQueue(), 800);
+                setTimeout(() => this.checkQueue(), 200);
             }
         });
 
@@ -292,10 +292,21 @@ class TutorialController {
 
     checkQueue() {
         if (this.proposalQueue.length === 0) return;
-        if (this.activeTutorialId || !this.isSafeToShow()) return;
+        
+        if (this.activeTutorialId) {
+            console.log(`[TUTORIAL] Queue blocked by active tutorial: ${this.activeTutorialId}`);
+            return;
+        }
+
+        if (!this.isSafeToShow()) {
+            // Loguear por qué no es seguro para depuración
+            this.isSafeToShow(); 
+            return;
+        }
 
         // Extraer el siguiente tutorial
         const next = this.proposalQueue.shift();
+        console.log(`[TUTORIAL] Procesando tutorial de la cola: ${next.tutorialId}`);
         this.showProposalModal(next.moduleId, next.moduleName, next.tutorialId);
     }
 

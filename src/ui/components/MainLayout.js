@@ -28,7 +28,8 @@ export const useStoryLabels = () => {
  */
 export const MainLayout = memo(({ children }) => {
     const storyPath = useGameState('storyPath') || 0;
-    const themeColor = (PATH_CONFIGS[storyPath] || PATH_CONFIGS[0]).themeColor;
+    const colorOverride = useGameState('coreColorOverride');
+    const themeColor = colorOverride || (PATH_CONFIGS[storyPath] || PATH_CONFIGS[0]).theme.primary;
 
     return html`
         <div 

@@ -27,3 +27,4 @@ El juego se rige por un bucle de cuatro etapas críticas que deben ejecutarse ba
 - **Atmósfera Opresiva:** Uso de colores oscuros, efectos de glitch y una interfaz mecánica que se siente pesada y hostil.
 - **Dilema Moral:** ¿Sacrificar a un inocente para salvar la energía del Bastión o autorizar a un posible infiltrado para mantener la cuota de trabajo?
 - **Progresión Narrativa:** Un sistema de 12 pasos que escala desde la reconstrucción técnica hasta el juicio final entre el Orden (Talok) y el Caos (Kamin).
+- **Jerarquía de Atención:** El diseño visual prioriza la tensión de los subsistemas (como el MOD-06 de Resonancia) sobre la interfaz de decisión central. Esto refuerza la sensación de que el Operador es una pieza en un sistema mecánico mayor y propenso al fallo, donde la gestión técnica es tan crítica como el juicio moral.

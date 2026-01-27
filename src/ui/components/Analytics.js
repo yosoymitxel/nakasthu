@@ -8,6 +8,7 @@ import { bus } from '../../core/Bus.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { CONFIG } from '../../data/gameConfig.js';
 import { PATH_CONFIGS } from '../../data/pathConfigs.js';
+import { STEPS_CONFIG } from '../../data/stepsConfig.js';
 import { analyzeSubjectProbability, formatScanDetail } from '../../utils/scannerUtils.js';
 
 const { useState, useEffect, useMemo, memo } = React;
@@ -23,6 +24,7 @@ export const Analytics = memo(() => {
     const mode = useGameState('mode');
     const focusMode = useGameState('focusMode');
     const storyPath = useGameState('storyPath') || 0;
+    const currentStep = useGameState('currentStep') || 1;
 
     const resonanceSync = useGameState('resonanceSync');
     const localFrequency = useGameState('localFrequency');
@@ -35,6 +37,10 @@ export const Analytics = memo(() => {
 
     const isUnstable = stability < anaConstants.UNSTABLE_THRESHOLD;
     const isSectarian = storyPath === 1;
+
+    // Obtener color dinámico del paso actual
+    const stepConfig = STEPS_CONFIG[currentStep] || {};
+    const stepColor = stepConfig.meta?.coreColorOverride || (isSectarian ? 'purple' : 'cyan');
 
     // Sincronizar el promedio de corrupción cada vez que cambia el historial
     useEffect(() => {
@@ -205,8 +211,11 @@ export const Analytics = memo(() => {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className=${`text-3xl font-black font-mono tracking-tighter transition-all duration-700 ${
-                            isUnstable ? 'animate-glitch text-red-500' : 
-                            isSectarian ? 'text-purple-500' : 'text-cyan-500'
+                            isUnstable || (corruptionProb > anaConstants.PROB_CRITICAL) ? 'animate-glitch text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]' : 
+                            corruptionProb > anaConstants.PROB_WARNING ? 'text-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.4)]' :
+                            stepColor === 'purple' || stepColor === 'indigo' ? 'text-purple-500' :
+                            stepColor === 'zinc' || stepColor === 'slate' ? 'text-zinc-400' :
+                            'text-cyan-500'
                         }`}>
                             ${corruptionProb !== null ? (isSectarian ? (100 - corruptionProb) : corruptionProb) : '--'}%
                         </span>

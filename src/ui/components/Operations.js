@@ -9,6 +9,7 @@ import { bus } from '../../core/Bus.js';
 import { state } from '../../core/State.js';
 import { CONFIG } from '../../data/gameConfig.js';
 import { PATH_CONFIGS } from '../../data/pathConfigs.js';
+import { STEPS_CONFIG } from '../../data/stepsConfig.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { gameSequencer } from '../../systems/GameSequencer.js';
 import { PortalScene } from './PortalScene.js';
@@ -223,8 +224,16 @@ export const Operations = () => {
         }
     };
 
+    // Obtener color dinámico del paso actual directamente de la config
+    const stepConfig = STEPS_CONFIG?.[currentStep] || {};
+    
+    // Prioridad de colores:
+    // 1. coreColorOverride del paso (cyan, orange, red, purple)
+    // 2. Color por defecto según la ruta (Sectario: purple, Operario: cyan)
+    const stepColor = stepConfig.meta?.coreColorOverride || (isSectarian ? 'purple' : 'cyan');
+
     return html`
-        <div className=${`flex flex-col h-full w-full bg-black/20 font-mono overflow-hidden relative transition-all duration-300 border border-zinc-800/50 shadow-[inset_0_0_30px_rgba(0,0,0,0.5)] ${isSectarian ? 'border-purple-900/20' : ''}`}>
+        <div className="flex flex-col h-full w-full bg-black/20 font-mono overflow-hidden relative border border-zinc-800/50 shadow-[inset_0_0_30px_rgba(0,0,0,0.5)]">
             
             <!-- Local Flash Overlay -->
             ${flash && html`
@@ -235,7 +244,7 @@ export const Operations = () => {
             `}
 
             <!-- Scanline Overlay Decorativo -->
-            <div className=${`absolute inset-0 pointer-events-none z-10 ${isSectarian ? 'opacity-[0.05] bg-[radial-gradient(rgba(168,85,247,0.1)_1px,transparent_1px)] bg-[size:15px_15px]' : 'opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]'}`}></div>
+            <div className="absolute inset-0 pointer-events-none z-10 opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]"></div>
 
 
             <!-- SECCIÓN SUPERIOR: VISUALIZADORES -->
@@ -412,7 +421,13 @@ export const Operations = () => {
                                 : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isScanComplete ? false : true))
                                     ? isSectarian
                                         ? 'border-purple-500/40 text-purple-400/70 hover:bg-purple-500/10 hover:border-purple-500 hover:text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.05)] hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] bg-purple-950/5 rounded-br-xl rounded-tl-sm'
-                                        : 'border-emerald-500/40 text-emerald-500/70 hover:bg-emerald-500/10 hover:border-emerald-500 hover:text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.05)] hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] bg-emerald-950/5'
+                                        : (stepColor === 'orange' 
+                                            ? 'border-orange-500/40 text-orange-500/70 hover:bg-orange-500/10 hover:border-orange-500 hover:text-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.05)] hover:shadow-[0_0_20px_rgba(249,115,22,0.15)] bg-orange-950/5'
+                                            : stepColor === 'red'
+                                                ? 'border-red-500/40 text-red-500/70 hover:bg-red-500/10 hover:border-red-500 hover:text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.05)] hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] bg-red-950/5'
+                                                : stepColor === 'cyan'
+                                                    ? 'border-cyan-500/40 text-cyan-500/70 hover:bg-cyan-500/10 hover:border-cyan-500 hover:text-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.05)] hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] bg-cyan-950/5'
+                                                    : 'border-emerald-500/40 text-emerald-500/70 hover:bg-emerald-500/10 hover:border-emerald-500 hover:text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.05)] hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] bg-emerald-950/5')
                                     : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
                     >
                         <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSectarian ? 'bg-purple-500/5' : 'bg-emerald-500/5'}`}></div>

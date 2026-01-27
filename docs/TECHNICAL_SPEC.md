@@ -48,3 +48,18 @@ Para asegurar la integridad de las reglas de admisión, el proyecto cuenta con u
 
 ### Ejecución de Pruebas
 Los desarrolladores pueden verificar nuevas reglas añadiendo casos de prueba en `__tests__/logic.test.js` o `__tests__/sequencer.test.js`. Esto garantiza que la lógica del motor (Vanilla JS) permanezca aislada de errores de renderizado de la UI (React).
+
+## 4. Estándares de Interfaz y Diseño Visual
+
+### A. Botones de Acción (MOD-04 Operations)
+Para mantener la integridad estética "grotesca e industrial", los botones de decisión deben seguir estas reglas:
+- **Dimensiones:** Altura fija de `140px` (`h-[140px]`). No deben dominar visualmente el centro para no restar importancia a los módulos periféricos.
+- **Bordes:** `border-2` con colores temáticos (Zinc, Cyan para Orden; Purple para Caos). No usar bordes redondeados excesivos (`rounded-sm` como máximo).
+- **Sombras:** Evitar sombras exteriores brillantes que den un aspecto "moderno". Usar sombras internas o sutiles de color negro (`shadow-[0_0_20px_rgba(0,0,0,0.5)]`).
+- **Interactividad:** Escala suave al hacer clic (`active:scale-[0.98]`) y cambios de opacidad en el fondo al hacer hover.
+
+### B. Énfasis Visual y "Cables"
+El sistema NAKASTHU utiliza una jerarquía visual donde el peligro real reside en los subsistemas:
+- **MOD-06 (Resonancia):** Debe ser el elemento visualmente más complejo y de mayor tamaño cuando está activo. Los osciloscopios deben ocupar un área significativa (`h-32` o superior) para enfatizar la tensión de la sincronía.
+- **Conectores (Cables):** La representación visual de conexiones debe ser minimalista y técnica. Se utilizan líneas de 1px o bordes de contenedores para sugerir el flujo de datos entre módulos.
+- **Colores de Estado:** El porcentaje de corrupción y otros indicadores críticos deben usar el `stepColor` del estado global para reflejar la urgencia del nivel (Celeste -> Naranja -> Rojo).

@@ -11,8 +11,8 @@ export const CONFIG = {
         AUTHORIZE_COST: 10,
         SACRIFICE_CORRUPT_BONUS: 20,
         SACRIFICE_INOCENT_BONUS: 5,
-        TICK_DRAIN: 0.005,
-        ECLIPSE_DRAIN: 0.01,
+        TICK_DRAIN: 0.5,
+        ECLIPSE_DRAIN: 1.0,
         REPAIR_COST: 20
     },
     STABILITY: {

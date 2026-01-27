@@ -48,8 +48,8 @@ describe('GameLoop Refactor Tests', () => {
         gameLoop.tick();
 
         // El drenaje ahora permite precisión decimal para suavizar la caída
-        // TICK_DRAIN NORMAL = 0.005
-        expect(state.energy).toBe(99.995);
+        // El valor viene de CONFIG.ENERGY.TICK_DRAIN (actualmente 0.5)
+        expect(state.energy).toBe(100 - 0.5);
         expect(MechanicManager.updateResonance).toHaveBeenCalled();
     });
 

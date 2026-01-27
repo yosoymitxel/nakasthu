@@ -115,7 +115,7 @@ export const Coms = () => {
                     <div className="absolute inset-0">
                         ${[...Array(50)].map((_, i) => html`
                             <div 
-                                key=${i}
+                                key=${`particle-${i}`}
                                 className=${`absolute rounded-full animate-float ${i % 5 === 0 ? 'w-2 h-2 bg-purple-200/30' : i % 3 === 0 ? 'w-1.5 h-1.5 bg-indigo-300/40' : 'w-1 h-1 bg-purple-400/20'}`}
                                 style=${{
                                     left: `${Math.random() * 100}%`,
@@ -135,7 +135,7 @@ export const Coms = () => {
             `}
 
             ${messages.map((msg, i) => html`
-                <div key=${i} className=${`flex flex-col animate-fade-in relative z-10 ${msg.type === 'SYSTEM' 
+                <div key=${`msg-${msg.timestamp}-${i}`} className=${`flex flex-col animate-fade-in relative z-10 ${msg.type === 'SYSTEM' 
                     ? `border-l-2 ${isSectarian ? 'border-purple-600/40 bg-purple-900/5 backdrop-blur-[1px]' : 'border-zinc-800'} pl-3 py-1` :
                     msg.type === 'ACTION' 
                         ? `${isSectarian ? 'border-y border-purple-800/20 bg-purple-950/20 shadow-[inset_0_0_15px_rgba(147,51,234,0.1)]' : 'border-y border-zinc-900/30 bg-zinc-950/20'} py-2 my-1 items-center italic text-zinc-500 group` 

@@ -57,6 +57,7 @@ export const generateSubject = () => {
             truth: typeDialogues.truths[Math.floor(Math.random() * typeDialogues.truths.length)]
         },
         hasBeenInterrogated: false,
+        _processed: false, // Flag de control para evitar decisiones duplicadas
         scannedTypes: [], // Lista de tipos de escaneo realizados (THERMAL, NEURAL, etc.)
         // Datos ocultos para los escáneres
         scannedData: {
