@@ -28,115 +28,164 @@ export const processCommand = (input) => {
         return formatTerminalResponse(validation.error, 'error');
     }
 
-    if (cmd === '/status') {
+    const isSectarian = state.storyPath === 1;
+
+    // Aliases para Sectario
+    let effectiveCmd = cmd;
+    if (isSectarian) {
+        if (cmd === '/revelacion') effectiveCmd = '/scan';
+        if (cmd === '/purificar') effectiveCmd = '/repair';
+        if (cmd === '/comunion') effectiveCmd = '/interrogate';
+        if (cmd === '/sacrificio') effectiveCmd = '/overload';
+        if (cmd === '/codice') effectiveCmd = '/lore';
+        if (cmd === '/vision') effectiveCmd = '/status';
+    }
+
+    if (effectiveCmd === '/status') {
         const scanStatus = state.activeScan
-            ? ` | SCAN: ${state.activeScan.name} (${state.activeScan.progress.toFixed(0)}%)`
-            : " | SCAN: IDLE";
+            ? (isSectarian ? ` | REVELACIÓN: ${state.activeScan.name} (${state.activeScan.progress.toFixed(0)}%)` : ` | SCAN: ${state.activeScan.name} (${state.activeScan.progress.toFixed(0)}%)`)
+            : (isSectarian ? " | REVELACIÓN: NINGUNA" : " | SCAN: IDLE");
 
         return formatTerminalResponse(
-            `SYS_INFO: E:${Math.floor(state.energy)} S:${Math.floor(state.stability)}${scanStatus}`,
-            state.energy < CONFIG.SYSTEM.ENERGY_WARNING_THRESHOLD ? 'CRITICAL' : 'SYSTEM',
-            [
+            isSectarian 
+                ? `ESENCIA: E:${Math.floor(state.energy)} PUREZA:${Math.floor(state.stability)}${scanStatus}`
+                : `SYS_INFO: E:${Math.floor(state.energy)} S:${Math.floor(state.stability)}${scanStatus}`,
+            state.energy < CONFIG.SYSTEM.ENERGY_WARNING_THRESHOLD ? 'CRITICAL' : (isSectarian ? 'success' : 'SYSTEM'),
+            isSectarian ? [
+                { label: 'PURIFICAR', event: 'TERMINAL_INPUT', data: '/purificar' },
+                { label: 'REVELACION_ALMA', event: 'TERMINAL_INPUT', data: '/revelacion soul' }
+            ] : [
                 { label: 'REPAIR', event: 'TERMINAL_INPUT', data: '/repair' },
                 { label: 'SCAN_THERMAL', event: 'TERMINAL_INPUT', data: '/scan thermal' }
             ]
         );
     }
 
-    if (cmd === '/interrogate') {
+    if (effectiveCmd === '/interrogate') {
         state.energy -= 5;
         dialogueEngine.triggerRandomDialogue();
         return formatTerminalResponse(
-            `ENLACE NEURAL ESTABLECIDO. REVISAR MÓDULO COMS (MOD-05). | -5 ENERGY`,
+            isSectarian 
+                ? `COMUNIÓN ESTABLECIDA. LAS ALMAS SUSURRAN EN EL MÓDULO DE RITOS (MOD-05). | -5 ESENCIA`
+                : `ENLACE NEURAL ESTABLECIDO. REVISAR MÓDULO COMS (MOD-05). | -5 ENERGY`,
             'success'
         );
     }
 
-    if (cmd === '/repair') {
+    if (effectiveCmd === '/repair') {
         state.startBatch();
         state.stability = Math.min(100, state.stability + 10);
         state.energy = Math.max(0, state.energy - CONFIG.ENERGY.REPAIR_COST);
         state.endBatch();
         return formatTerminalResponse(
-            `PROTOCOL REPAIR: SUCCESS. +10 STABILITY | -${CONFIG.ENERGY.REPAIR_COST} ENERGY`,
+            isSectarian
+                ? `RITO DE PURIFICACIÓN: ÉXITO. +10 PUREZA | -${CONFIG.ENERGY.REPAIR_COST} ESENCIA`
+                : `PROTOCOL REPAIR: SUCCESS. +10 STABILITY | -${CONFIG.ENERGY.REPAIR_COST} ENERGY`,
             'success'
         );
     }
 
-    if (cmd === '/lore') {
+    if (effectiveCmd === '/lore') {
         state.gameStatus = 'LORE_ARCHIVE';
         return formatTerminalResponse(
-            "ACCEDIENDO AL ARCHIVO DE LORE... CONEXIÓN ESTABLECIDA.",
+            isSectarian
+                ? "ACCEDIENDO AL CÓDICE SAGRADO... LA VERDAD SE REVELA."
+                : "ACCEDIENDO AL ARCHIVO DE LORE... CONEXIÓN ESTABLECIDA.",
             'success'
         );
     }
 
-    if (cmd === '/overload') {
+    if (effectiveCmd === '/overload') {
         state.startBatch();
         state.stability = Math.min(100, state.stability + 50);
         state.moduleLock = { bioscan: true, subject: true };
         state.endBatch();
 
         bus.emit('TERMINAL_PRINT', formatTerminalResponse(
-            '[CRITICAL] SOBRECARGA ACTIVADA: RESTAURANDO ESTABILIDAD. MÓDULOS BIOSCAN/VISUALIZER DESACTIVADOS POR 15S.',
-            'SYSTEM'
+            isSectarian
+                ? '[SANTUARIO] SACRIFICIO ACEPTADO: RESTAURANDO PUREZA. VISIÓN/REVELACIÓN DESACTIVADAS POR 15S.'
+                : '[CRITICAL] SOBRECARGA ACTIVADA: RESTAURANDO ESTABILIDAD. MÓDULOS BIOSCAN/VISUALIZER DESACTIVADOS POR 15S.',
+            isSectarian ? 'success' : 'SYSTEM'
         ));
 
         setTimeout(() => {
             state.moduleLock = { bioscan: false, subject: false };
             bus.emit('TERMINAL_PRINT', formatTerminalResponse(
-                '[INFO] REINICIO DE MÓDULOS COMPLETADO. BIOSCAN/VISUALIZER ONLINE.',
-                'SYSTEM'
+                isSectarian
+                    ? '[SANTUARIO] EL VELO SE DESVANECE. VISIÓN/REVELACIÓN RESTAURADAS.'
+                    : '[INFO] REINICIO DE MÓDULOS COMPLETADO. BIOSCAN/VISUALIZER ONLINE.',
+                isSectarian ? 'success' : 'SYSTEM'
             ));
         }, 15000);
 
-        return "OVERLOAD PROTOCOL: EXECUTED. STABILITY RESTORED.";
+        return isSectarian ? "SACRIFICIO CONSUMADO. PUREZA RESTAURADA." : "OVERLOAD PROTOCOL: EXECUTED. STABILITY RESTORED.";
     }
 
-    if (cmd === '/scan') {
-        const typeId = args[1].toUpperCase();
+    if (effectiveCmd === '/scan') {
+        const typeId = args[1]?.toUpperCase();
         const scanType = SCAN_TYPES[typeId];
 
         if (!scanType) {
-            return formatTerminalResponse(`ERROR: TIPO DE ESCANEO '${args[1]}' NO RECONOCIDO.`, 'error');
+            return formatTerminalResponse(
+                isSectarian ? "ERROR: TIPO DE REVELACIÓN NO RECONOCIDO." : "ERROR: TIPO DE ESCANEO NO RECONOCIDO.", 
+                'error'
+            );
         }
 
-        executeScan(scanType.id);
-        return formatTerminalResponse(`INICIANDO PROTOCOLO ${scanType.name}...`, 'SYSTEM');
+        executeScan(scanType);
+        return formatTerminalResponse(
+            isSectarian 
+                ? `INICIANDO REVELACIÓN DE ${scanType.name}...`
+                : `INICIANDO ESCANEO: ${scanType.name}...`,
+            'success'
+        );
     }
 
-    if (cmd === '/help') {
+    if (effectiveCmd === '/help') {
         return formatTerminalResponse(
-            "COMANDOS AUTORIZADOS EN ZHYR_OS:",
-            'INFO',
-            getHelpLinks(state.unlockedCommands)
+            isSectarian ? "PLEGARIAS Y RITOS AUTORIZADOS:" : "COMANDOS AUTORIZADOS EN ZHYR_OS:",
+            isSectarian ? 'success' : 'INFO',
+            isSectarian ? [
+                { label: 'VISIÓN', event: 'TERMINAL_INPUT', data: '/vision' },
+                { label: 'REVELACIÓN', event: 'TERMINAL_INPUT', data: '/revelacion thermal' },
+                { label: 'PURIFICAR', event: 'TERMINAL_INPUT', data: '/purificar' },
+                { label: 'COMUNIÓN', event: 'TERMINAL_INPUT', data: '/comunion' },
+                { label: 'SACRIFICIO', event: 'TERMINAL_INPUT', data: '/sacrificio' },
+                { label: 'CÓDICE', event: 'TERMINAL_INPUT', data: '/codice' }
+            ] : getHelpLinks(state.unlockedCommands)
         );
     }
 
     // Comandos de Lore Desbloqueables
-    if (cmd === '/logs') {
-        if (!state.unlockedCommands?.includes('LOGS')) return formatTerminalResponse("ERROR: ACCESO DENEGADO. CREDENCIALES INSUFICIENTES.", 'error');
+    if (effectiveCmd === '/logs') {
+        if (!state.unlockedCommands?.includes('LOGS')) return formatTerminalResponse(isSectarian ? "ERROR: TU FE ES INSUFICIENTE PARA ESTA REVELACIÓN." : "ERROR: ACCESO DENEGADO. CREDENCIALES INSUFICIENTES.", 'error');
         return formatTerminalResponse(
-            "[ARCHIVO KRON-42] Orval reportó 1/3 de bajas. La realidad es que el Monolito seleccionó a los 'aptos'. Leina intentó advertir sobre la asimilación neural.",
-            'INFO'
+            isSectarian 
+                ? "[REVELACIÓN KRON-42] El Profeta vio a los elegidos. El Monolito no castiga, simplemente asimila a los que están listos para la Verdad."
+                : "[ARCHIVO KRON-42] Orval reportó 1/3 de bajas. La realidad es que el Monolito seleccionó a los 'aptos'. Leina intentó advertir sobre la asimilación neural.",
+            isSectarian ? 'success' : 'INFO'
         );
     }
 
-    if (cmd === '/zh-archive') {
-        if (!state.unlockedCommands?.includes('ZH_ARCHIVE')) return formatTerminalResponse("ERROR: ACCESO DENEGADO.", 'error');
+    if (effectiveCmd === '/zh-archive') {
+        if (!state.unlockedCommands?.includes('ZH_ARCHIVE')) return formatTerminalResponse(isSectarian ? "ERROR: EL SANTUARIO PERMANECE CERRADO." : "ERROR: ACCESO DENEGADO.", 'error');
         return formatTerminalResponse(
-            "[ZH_HISTORY] Zhyr: Planeta de clase X-9. Descubierto por la Orden. El Monolito no es nativo. Los símbolos en su superficie son un mapa de la red neural humana.",
-            'INFO'
+            isSectarian
+                ? "[GÉNESIS_ZHYR] Zhyr: Tierra Prometida. El Monolito es la llave. Los símbolos son el lenguaje de Dios, grabado en nuestra esencia."
+                : "[ZH_HISTORY] Zhyr: Planeta de clase X-9. Descubierto por la Orden. El Monolito no es nativo. Los símbolos en su superficie son un mapa de la red neural humana.",
+            isSectarian ? 'success' : 'INFO'
         );
     }
 
-    if (cmd === '/kamin-intel') {
-        if (!state.unlockedCommands?.includes('KAMIN_INTEL')) return formatTerminalResponse("ERROR: ACCESO DENEGADO.", 'error');
+    if (effectiveCmd === '/kamin-intel') {
+        if (!state.unlockedCommands?.includes('KAMIN_INTEL')) return formatTerminalResponse(isSectarian ? "ERROR: NO HAS SIDO LLAMADO POR EL MENSAJERO." : "ERROR: ACCESO DENEGADO.", 'error');
         return formatTerminalResponse(
-            "[INTEL_KAMIN] El Mensajero afirma haber cruzado. Informes de infiltrados sugieren que sus seguidores están grabando símbolos en su piel. El Bastión se está convirtiendo en un templo.",
-            'INFO'
+            isSectarian
+                ? "[SUSURROS_KAMIN] El Mensajero ha cruzado el Velo. Sus seguidores llevan la marca sagrada. El Bastión es ahora el centro de la Comunión."
+                : "[INTEL_KAMIN] El Mensajero afirma haber cruzado. Informes de infiltrados sugieren que sus seguidores están grabando símbolos en su piel. El Bastión se está convirtiendo en un templo.",
+            isSectarian ? 'success' : 'INFO'
         );
     }
 
-    return formatTerminalResponse(`ERROR: COMANDO '${cmd}' NO RECONOCIDO O NO AUTORIZADO.`, 'error');
+    return formatTerminalResponse(isSectarian ? "PLEGARIA NO RECONOCIDA. ENTONA /HELP PARA GUÍA." : "COMANDO NO RECONOCIDO. ESCRIBA /HELP PARA LISTADO.", 'error');
 };

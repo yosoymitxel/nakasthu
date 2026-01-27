@@ -40,70 +40,88 @@ export const LoreArchive = () => {
 
     return html`
         <div 
-            className="flex flex-col h-full w-full bg-[#0a0a0b] font-mono p-3 overflow-hidden cursor-pointer group/archive relative"
+            className=${`flex flex-col h-full w-full font-mono p-3 overflow-hidden cursor-pointer group/archive relative transition-colors duration-1000 ${isSectarian ? 'bg-[#0c0a12]' : 'bg-[#0a0a0b]'}`}
             onClick=${openLoreScreen}
         >
+            ${isSectarian && html`
+                <!-- Efecto Onírico: Textura de Pergamino/Sombra -->
+                <div className="absolute inset-0 pointer-events-none opacity-20">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(88,28,135,0.1)_0%,transparent_100%)]"></div>
+                    <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-900/50 to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-900/50 to-transparent"></div>
+                </div>
+            `}
+
             <!-- Overlay interactivo visual -->
             <div className=${`absolute inset-0 ${isSectarian ? 'bg-purple-500/0 group-hover/archive:bg-purple-500/5' : 'bg-cyan-500/0 group-hover/archive:bg-cyan-500/5'} transition-colors z-20 flex items-center justify-center pointer-events-none`}>
-                <span className=${`text-[10px] ${isSectarian ? 'text-purple-400 border-purple-500/30' : 'text-cyan-400 border-cyan-500/30'} opacity-0 group-hover/archive:opacity-100 transition-opacity tracking-[0.3em] uppercase font-black bg-black/80 px-4 py-2 border`}>
-                    ${isSectarian ? 'Abrir Códice' : 'Expandir Archivo'}
+                <span className=${`text-[10px] ${isSectarian ? 'text-purple-400 border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.2)]' : 'text-cyan-400 border-cyan-500/30'} opacity-0 group-hover/archive:opacity-100 transition-opacity tracking-[0.3em] uppercase font-black bg-black/80 px-4 py-2 border`}>
+                    ${isSectarian ? 'Escudriñar_el_Velo' : 'Expandir Archivo'}
                 </span>
             </div>
 
-            <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2">
+            <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2 relative z-10">
                 ${sortedArchive.length === 0 ? html`
                     <div className="h-full flex flex-col items-center justify-center opacity-30">
-                        <div className="w-8 h-8 border-2 border-zinc-900 mb-4 flex items-center justify-center">
-                            <div className="w-4 h-0.5 bg-zinc-900 animate-pulse"></div>
+                        <div className=${`w-8 h-8 border-2 mb-4 flex items-center justify-center ${isSectarian ? 'border-purple-900/40' : 'border-zinc-900'}`}>
+                            <div className=${`w-4 h-0.5 animate-pulse ${isSectarian ? 'bg-purple-500' : 'bg-zinc-900'}`}></div>
                         </div>
-                        <div className="text-[12px] text-zinc-400 uppercase tracking-[0.4em] font-black text-center leading-loose">
+                        <div className=${`text-[12px] uppercase tracking-[0.4em] font-black text-center leading-loose ${isSectarian ? 'text-purple-400/60' : 'text-zinc-400'}`}>
                             ${isSectarian ? 'SANTUARIO SIN<br/>ILUMINACIÓN' : 'SISTEMA DE ARCHIVO<br/>VACÍO'}
                         </div>
                     </div>
                 ` : sortedArchive.map((entry, i) => html`
-                    <div key=${entry.id || i} className=${`p-3 border-l-2 transition-all group relative overflow-hidden bg-zinc-950/40 ${isSectarian ? 'border-purple-900/30 hover:bg-purple-950/10' : 'border-cyan-900/30 hover:bg-cyan-950/10'}`}>
+                    <div key=${entry.id || i} className=${`p-3 border-l-2 transition-all group relative overflow-hidden ${isSectarian ? 'bg-indigo-950/5 border-purple-800/40 hover:bg-indigo-950/20' : 'bg-zinc-950/40 border-cyan-900/30 hover:bg-cyan-950/10'}`}>
+                        <!-- Decoración Sectaria -->
+                        ${isSectarian && html`
+                            <div className="absolute top-0 right-0 w-8 h-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <svg viewBox="0 0 40 40" className="w-full h-full text-purple-500">
+                                    <path d="M0 0 L40 0 L40 40 Z" fill="currentColor" />
+                                </svg>
+                            </div>
+                        `}
+                        
                         <!-- Glitch background effect -->
                         <div className=${`absolute top-0 right-0 w-16 h-full bg-gradient-to-l from-transparent opacity-0 group-hover:opacity-100 transition-opacity ${isSectarian ? 'from-purple-500/5' : 'from-cyan-500/5'}`}></div>
                         
                         <div className="flex justify-between items-center mb-1.5 relative z-10">
-                            <span className=${`text-[12px] font-black uppercase tracking-widest transition-colors ${isSectarian ? 'text-purple-700/60 group-hover:text-purple-500' : 'text-cyan-700/60 group-hover:text-cyan-500'}`}>
+                            <span className=${`text-[12px] font-black uppercase tracking-widest transition-colors ${isSectarian ? 'text-purple-400/60 group-hover:text-purple-400' : 'text-cyan-700/60 group-hover:text-cyan-500'}`}>
                                 ${entry.loreId || entry.id || (isSectarian ? 'FRAGMENTO_FE' : 'DATA_FRAG')}
                             </span>
-                            <span className="text-[12px] text-zinc-400 font-bold tabular-nums">
+                            <span className=${`text-[12px] font-bold tabular-nums ${isSectarian ? 'text-purple-900/60' : 'text-zinc-400'}`}>
                                 ${new Date(entry.timestamp || entry.date).toLocaleTimeString([], { hour12: false })}
                             </span>
                         </div>
                         
                         <div className="relative z-10">
-                            <p className="text-[12px] text-zinc-400 leading-relaxed group-hover:text-zinc-300 transition-colors font-medium">
-                                ${entry.text || (isSectarian ? `REVELACIÓN DESBLOQUEADA. ORIGEN: ${entry.source || 'EL PROFETA'}.` : `ENTRADA DE LORE DESBLOQUEADA. ORIGEN: ${entry.source || 'UNKNOWN'}.`)}
+                            <p className=${`text-[12px] leading-relaxed transition-colors ${isSectarian ? 'text-zinc-400 group-hover:text-purple-200 font-serif' : 'text-zinc-400 group-hover:text-zinc-300 font-medium'}`}>
+                                ${entry.text || (isSectarian ? `SUSURRO_RECIBIDO. ORIGEN: ${entry.source || 'EL PROFETA'}.` : `ENTRADA DE LORE DESBLOQUEADA. ORIGEN: ${entry.source || 'UNKNOWN'}.`)}
                             </p>
                         </div>
 
                         <!-- Status bar indicator -->
                         <div className="mt-2 flex items-center gap-2">
-                            <div className="h-[2px] flex-1 bg-zinc-900">
-                                <div className=${`h-full w-full animate-loading-bar ${isSectarian ? 'bg-purple-900/40' : 'bg-cyan-900/40'}`}></div>
+                            <div className=${`h-[2px] flex-1 ${isSectarian ? 'bg-purple-950' : 'bg-zinc-900'}`}>
+                                <div className=${`h-full w-full animate-loading-bar ${isSectarian ? 'bg-purple-500/20' : 'bg-cyan-900/40'}`}></div>
                             </div>
-                            <span className="text-[12px] text-zinc-400 font-bold uppercase tracking-tighter">
-                                ${isSectarian ? 'PRESERVADO' : 'SECURED'}
+                            <span className=${`text-[12px] font-bold uppercase tracking-tighter ${isSectarian ? 'text-purple-500/40' : 'text-zinc-400'}`}>
+                                ${isSectarian ? 'CONSAGRADO' : 'SECURED'}
                             </span>
                         </div>
                     </div>
                 `)}
             </div>
-            <div className="mt-3 pt-2 border-t border-zinc-800 flex justify-between items-center bg-black/20 px-2 py-1">
+            <div className=${`mt-3 pt-2 border-t flex justify-between items-center px-2 py-1 ${isSectarian ? 'border-purple-900/30 bg-purple-950/10' : 'border-zinc-800 bg-black/20'}`}>
                 <div className="flex flex-col">
-                    <span className="text-[12px] text-zinc-400 uppercase tracking-[0.2em] font-bold">
-                        ${isSectarian ? 'VOLÚMENES_SANTOS' : 'REGISTROS_ACTIVOS'}
+                    <span className=${`text-[12px] uppercase tracking-[0.2em] font-bold ${isSectarian ? 'text-purple-500/60' : 'text-zinc-400'}`}>
+                        ${isSectarian ? 'REVELACIONES_SANTAS' : 'REGISTROS_ACTIVOS'}
                     </span>
-                    <span className=${`text-[12px] font-black font-mono ${isSectarian ? 'text-purple-900/60' : 'text-cyan-900/60'}`}>
+                    <span className=${`text-[12px] font-black font-mono ${isSectarian ? 'text-purple-400' : 'text-cyan-900/60'}`}>
                         ${loreArchive.length.toString().padStart(3, '0')}
                     </span>
                 </div>
                 <div className="flex gap-1">
-                    <div className=${`w-1.5 h-1.5 animate-pulse ${isSectarian ? 'bg-purple-900/20' : 'bg-cyan-900/20'}`}></div>
-                    <div className="w-1.5 h-1.5 bg-zinc-900"></div>
+                    <div className=${`w-1.5 h-1.5 animate-pulse ${isSectarian ? 'bg-purple-500/40' : 'bg-cyan-900/20'}`}></div>
+                    <div className=${`w-1.5 h-1.5 ${isSectarian ? 'bg-purple-900/40' : 'bg-zinc-900'}`}></div>
                 </div>
             </div>
         </div>

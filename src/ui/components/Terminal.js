@@ -6,16 +6,19 @@ import { html } from '../utils/html.js';
 import { processCommand } from '../../systems/CommandEngine.js';
 import { bus } from '../../core/Bus.js';
 import { CONFIG } from '../../data/gameConfig.js';
+import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 
 import { useGameState } from '../hooks/useGameState.js';
 
-const { useState, useRef, useEffect } = React;
+const { useState, useRef, useEffect, memo } = React;
 
-export const Terminal = () => {
+export const Terminal = memo(() => {
     const isPaused = useGameState('isPaused');
     const isTutorialActive = useGameState('isTutorialActive');
     const storyPath = useGameState('storyPath') || 0;
-    const labels = CONFIG.UI.LABELS[storyPath].terminal;
+    const isSectarian = storyPath === 1;
+    const pathConfig = PATH_CONFIGS[storyPath];
+    const labels = pathConfig.terminal;
 
     const [history, setHistory] = useState([
         { type: 'sys', text: labels.welcome }
@@ -99,7 +102,7 @@ export const Terminal = () => {
                         <button 
                             key=${link.label}
                             onClick=${() => handleLinkClick(link)}
-                            className="px-1.5 py-0.5 bg-cyan-900/30 border border-cyan-700/50 text-[10px] text-cyan-400 hover:bg-cyan-500 hover:text-black transition-colors uppercase font-bold"
+                            className=${`px-1.5 py-0.5 border text-[10px] transition-colors uppercase font-bold ${isSectarian ? 'bg-purple-900/30 border-purple-700/50 text-purple-400 hover:bg-purple-500 hover:text-black' : 'bg-cyan-900/30 border-cyan-700/50 text-cyan-400 hover:bg-cyan-500 hover:text-black'}`}
                         >
                             [${link.label}]
                         </button>
@@ -111,11 +114,11 @@ export const Terminal = () => {
 
     const getLineStyle = (line) => {
         let base = "text-[12px] leading-tight break-all font-mono ";
-        if (line.type === 'user') return base + "text-cyan-600";
+        if (line.type === 'user') return base + (isSectarian ? "text-purple-600" : "text-cyan-600");
         if (line.type === 'error' || line.type === 'CRITICAL') return base + "text-red-500 font-bold animate-pulse";
-        if (line.type === 'success' || line.type === 'SYSTEM') return base + "text-emerald-500";
+        if (line.type === 'success' || line.type === 'SYSTEM') return base + (isSectarian ? "text-purple-500" : "text-emerald-500");
         if (line.type === 'warning' || line.type === 'INFO') return base + "text-amber-500";
-        return base + "text-zinc-400";
+        return base + (isSectarian ? "text-purple-400/70" : "text-zinc-400");
     };
 
     const handleKeyDown = (e) => {
@@ -124,14 +127,14 @@ export const Terminal = () => {
             if (!cmdInput) return;
 
             // Vínculo Terminal -> Grid (Fase 18)
-            if (cmdInput.toLowerCase().includes('/scan')) {
-                bus.emit('HIGHLIGHT_MODULE', { areas: ['L_UPPER'], color: '#06b6d4', duration: 1000 });
+            if (cmdInput.toLowerCase().includes('/scan') || cmdInput.toLowerCase().includes('/revelacion')) {
+                bus.emit('HIGHLIGHT_MODULE', { areas: ['L_UPPER'], color: isSectarian ? '#a855f7' : '#06b6d4', duration: 1000 });
             }
-            if (cmdInput.toLowerCase().includes('/repair')) {
-                bus.emit('HIGHLIGHT_MODULE', { areas: ['R_MIDDLE', 'C_FOOTER'], color: '#06b6d4', duration: 1000 });
+            if (cmdInput.toLowerCase().includes('/repair') || cmdInput.toLowerCase().includes('/purificar')) {
+                bus.emit('HIGHLIGHT_MODULE', { areas: ['R_MIDDLE', 'C_FOOTER'], color: isSectarian ? '#a855f7' : '#06b6d4', duration: 1000 });
             }
 
-            if (cmdInput.toLowerCase() === '/clear') {
+            if (cmdInput.toLowerCase() === '/clear' || cmdInput.toLowerCase() === '/limpiar') {
                 setHistory([{ type: 'sys', text: labels.clear }]);
                 setCurrentInput('');
                 return;
@@ -141,7 +144,7 @@ export const Terminal = () => {
             
             setHistory(prev => [
                 ...prev, 
-                { type: 'user', text: `> ${cmdInput}` },
+                { type: 'user', text: `${isSectarian ? 'ψ' : '>'} ${cmdInput}` },
                 typeof response === 'string' 
                     ? { type: 'sys', text: response }
                     : { ...response, type: response.type || 'sys' }
@@ -164,13 +167,22 @@ export const Terminal = () => {
     return html`
         <div 
             onClick=${handleContainerClick}
-            className="flex flex-col h-full bg-[#0a0a0b] cursor-text overflow-hidden"
+            className=${`flex flex-col h-full cursor-text overflow-hidden relative ${isSectarian ? 'bg-[#0a0812] shadow-[inset_0_0_40px_rgba(168,85,247,0.1)]' : 'bg-[#0a0a0b]'}`}
         >
+            ${isSectarian && html`
+                <!-- Efecto Onírico: Bruma Terminal -->
+                <div className="absolute inset-0 pointer-events-none opacity-20 overflow-hidden z-0">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(88,28,135,0.05)_0%,transparent_100%)]"></div>
+                    <div className="absolute bottom-0 right-0 w-48 h-48 bg-purple-900/10 blur-[40px] animate-pulse"></div>
+                </div>
+            `}
             <!-- Header Interno Sticky -->
-            <div className="flex justify-between items-center border-b border-zinc-800 p-3 bg-black/40 sticky top-0 z-10">
+            <div className=${`flex justify-between items-center border-b p-3 sticky top-0 z-20 ${isSectarian ? 'border-purple-900/30 bg-purple-950/30' : 'border-zinc-800 bg-black/40'}`}>
                 <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-cyan-500 animate-pulse"></div>
-                    <span className="text-[12px] text-zinc-300 font-bold tracking-[0.2em]">${labels.header}</span>
+                    <div className=${`w-2 h-2 animate-pulse ${isSectarian ? 'bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]' : 'bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.5)]'}`}></div>
+                    <span className=${`text-[12px] font-bold tracking-[0.2em] uppercase ${isSectarian ? 'text-purple-400' : 'text-zinc-300'}`}>
+                        ${isSectarian ? '† ALTAR DE SUSURROS †' : labels.header}
+                    </span>
                 </div>
                 <span className="text-[10px] text-zinc-500 font-mono tracking-widest">${labels.version}</span>
             </div>
@@ -194,8 +206,10 @@ export const Terminal = () => {
             </div>
 
             <!-- Línea de Input Fija al Final -->
-            <div className="flex items-center gap-2 border-t border-zinc-800 p-3 bg-black/20">
-                <span className="text-cyan-500 text-[12px] font-black animate-pulse">></span>
+            <div className=${`flex items-center gap-2 border-t p-3 transition-colors ${isSectarian ? 'border-purple-900/30 bg-purple-950/10' : 'border-zinc-800 bg-black/20'}`}>
+                <span className=${`text-[12px] font-black animate-pulse ${isSectarian ? 'text-purple-500' : 'text-cyan-500'}`}>
+                    ${isSectarian ? 'ψ' : '>'}
+                </span>
                 <input 
                     ref=${inputRef}
                     type="text"
@@ -203,11 +217,11 @@ export const Terminal = () => {
                     onChange=${(e) => setCurrentInput(e.target.value)}
                     onKeyDown=${handleKeyDown}
                     disabled=${isPaused || isTutorialActive}
-                    className="flex-1 bg-transparent border-none outline-none text-[12px] text-cyan-400 placeholder-zinc-700 tracking-wider"
-                    placeholder=${isPaused ? labels.paused : isTutorialActive ? labels.tutorial : labels.placeholder}
+                    className=${`flex-1 bg-transparent border-none outline-none text-[12px] placeholder-zinc-700 tracking-wider uppercase ${isSectarian ? 'text-purple-400' : 'text-cyan-400'}`}
+                    placeholder=${isPaused ? labels.paused : isTutorialActive ? labels.tutorial : (isSectarian ? 'Entona tu plegaria...' : labels.placeholder)}
                     autoFocus
                 />
             </div>
         </div>
     `;
-};
+});

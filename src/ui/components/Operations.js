@@ -34,11 +34,13 @@ export const Operations = () => {
     const currentEntity = useGameState('currentEntity');
     const currentStep = useGameState('currentStep');
     const storyPath = useGameState('storyPath') || 0;
+    const isSectarian = storyPath === 1;
     const pathConfig = PATH_CONFIGS[storyPath];
     const labels = pathConfig.operations;
 
     // Verificar si el escaneo requerido ha sido completado
-    const isScanComplete = currentEntity?.scannedTypes?.includes(requiredScan);
+    // Si no hay entidad o no hay escaneo requerido, se considera incompleto por defecto
+    const isScanComplete = !!(currentEntity && requiredScan && currentEntity.scannedTypes?.includes(requiredScan));
 
     const [flash, setFlash] = useState(null);
 
@@ -94,7 +96,7 @@ export const Operations = () => {
         };
 
         const onDialogueOptionSelected = async (data) => {
-            // Emitir elección del operador
+            // Emitir elección del inquisidor/operador
             bus.emit('DIALOGUE_EMITTED', {
                 sender: labels.operatorSender,
                 text: `> ${data.option}`,
@@ -222,7 +224,7 @@ export const Operations = () => {
     };
 
     return html`
-        <div className=${`flex flex-col h-full w-full bg-black/20 font-mono overflow-hidden relative transition-all duration-300 border border-zinc-800/50 shadow-[inset_0_0_30px_rgba(0,0,0,0.5)]`}>
+        <div className=${`flex flex-col h-full w-full bg-black/20 font-mono overflow-hidden relative transition-all duration-300 border border-zinc-800/50 shadow-[inset_0_0_30px_rgba(0,0,0,0.5)] ${isSectarian ? 'border-purple-900/20' : ''}`}>
             
             <!-- Local Flash Overlay -->
             ${flash && html`
@@ -233,43 +235,66 @@ export const Operations = () => {
             `}
 
             <!-- Scanline Overlay Decorativo -->
-            <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_2px,3px_100%]"></div>
+            <div className=${`absolute inset-0 pointer-events-none z-10 ${isSectarian ? 'opacity-[0.05] bg-[radial-gradient(rgba(168,85,247,0.1)_1px,transparent_1px)] bg-[size:15px_15px]' : 'opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]'}`}></div>
+
 
             <!-- SECCIÓN SUPERIOR: VISUALIZADORES -->
             <div className="flex-none h-[140px] w-full flex border-b border-zinc-800/80">
-                <div className="w-1/3 h-full border-r border-zinc-800/80 relative overflow-hidden flex flex-col group bg-black/40">
-                    <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                <div className=${`w-1/3 h-full border-r border-zinc-800/80 relative overflow-hidden flex flex-col group ${isSectarian ? 'bg-purple-950/20' : 'bg-black/40'}`}>
+                    <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ${isSectarian ? 'bg-purple-500/5' : 'bg-cyan-500/5'}`}></div>
                     <${PortalScene} />
-                    <div className="absolute bottom-1 left-2 text-[10px] text-zinc-500 tracking-[0.2em] uppercase font-bold pointer-events-none z-20">ORBITAL</div>
-                    <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-cyan-500/20 pointer-events-none"></div>
+                    <div className="absolute bottom-1 left-2 text-[10px] text-zinc-500 tracking-[0.2em] uppercase font-bold pointer-events-none z-20">
+                        ${labels.viewLabels.portal}
+                    </div>
+                    <div className=${`absolute top-0 right-0 w-8 h-8 border-t border-r pointer-events-none ${isSectarian ? 'border-purple-500/20' : 'border-cyan-500/20'}`}></div>
                 </div>
 
-                <div className="w-1/3 h-full border-r border-zinc-800/80 relative overflow-hidden flex flex-col group bg-black/40">
-                    <div className="absolute inset-0 bg-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                <div className=${`w-1/3 h-full border-r border-zinc-800/80 relative overflow-hidden flex flex-col group ${isSectarian ? 'bg-indigo-950/20' : 'bg-black/40'}`}>
+                    <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ${isSectarian ? 'bg-purple-500/5' : 'bg-amber-500/5'}`}></div>
                     <${SubjectVisual} />
-                    <div className="absolute bottom-1 left-2 text-[10px] text-zinc-500 tracking-[0.2em] uppercase font-bold pointer-events-none z-20">LIVE_FEED</div>
-                    <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-amber-500/20 pointer-events-none"></div>
+                    <div className="absolute bottom-1 left-2 text-[10px] text-zinc-500 tracking-[0.2em] uppercase font-bold pointer-events-none z-20">
+                        ${labels.viewLabels.subject}
+                    </div>
+                    <div className=${`absolute top-0 right-0 w-8 h-8 border-t border-r pointer-events-none ${isSectarian ? 'border-indigo-500/20' : 'border-amber-500/20'}`}></div>
                 </div>
 
-                <div className="w-1/3 h-full flex flex-col justify-around px-3 py-2 bg-black/60 relative">
+                <div className=${`w-1/3 h-full flex flex-col justify-around px-3 py-2 relative ${isSectarian ? 'bg-purple-950/40 shadow-[inset_0_0_20px_rgba(168,85,247,0.1)]' : 'bg-black/60'}`}>
                     <!-- Detalle de fondo para cuota -->
-                    <div className="absolute inset-0 bg-[radial-gradient(#ffffff05_1px,transparent_1px)] bg-[size:8px_8px] pointer-events-none"></div>
+                    <div className=${`absolute inset-0 pointer-events-none ${isSectarian ? 'bg-[radial-gradient(rgba(168,85,247,0.05)_1px,transparent_1px)] bg-[size:10px_10px]' : 'bg-[radial-gradient(#ffffff05_1px,transparent_1px)] bg-[size:8px_8px]'}`}></div>
                     <div className="flex flex-col items-center">
                         <span className="text-[12px] text-zinc-400 uppercase tracking-widest font-bold mb-1">
                             ${labels.quotaLabel}
                         </span>
-                        <span className=${`text-2xl font-black font-mono ${state.storyPath === 1 ? 'text-purple-600/70' : 'text-emerald-600/70'}`}>
-                            ${processedCount} / ${quota}
-                        </span>
+                        <div className="flex items-center gap-3">
+                            ${isSectarian && html`<span className="text-purple-900/40 text-xl">✧</span>`}
+                            <span className=${`text-2xl font-black font-mono ${isSectarian ? 'text-purple-500/80 [text-shadow:0_0_10px_rgba(168,85,247,0.3)]' : 'text-emerald-600/70'}`}>
+                                ${processedCount} / ${quota}
+                            </span>
+                            ${isSectarian && html`<span className="text-purple-900/40 text-xl">✧</span>`}
+                        </div>
                     </div>
-                    <div className="w-full bg-zinc-950 h-3 relative overflow-hidden border border-zinc-800/30">
-                        <div 
-                            className=${`h-full transition-all duration-1000 ${state.storyPath === 1 ? 'bg-purple-600/40' : 'bg-emerald-600/40'}`}
-                            style=${{ width: `${Math.min((processedCount / quota) * 100, 100)}%` }}
-                        ></div>
-                    </div>
+                    
+                    ${isSectarian ? html`
+                        <!-- Visualización de Cosecha de Almas (Sectario) -->
+                        <div className="flex justify-center gap-1.5 h-4 items-center">
+                            ${Array.from({ length: quota }).map((_, i) => html`
+                                <div 
+                                    key=${i}
+                                    className=${`w-2 h-2 rotate-45 border transition-all duration-700 ${i < processedCount ? 'bg-purple-500 border-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.6)]' : 'border-purple-900/30 bg-transparent'}`}
+                                ></div>
+                            `)}
+                        </div>
+                    ` : html`
+                        <!-- Barra de Cuota Estándar (Operario) -->
+                        <div className="w-full bg-zinc-950 h-3 relative overflow-hidden border border-zinc-800/30">
+                            <div 
+                                className="h-full bg-emerald-600/40 transition-all duration-1000"
+                                style=${{ width: `${Math.min((processedCount / quota) * 100, 100)}%` }}
+                            ></div>
+                        </div>
+                    `}
                     <div className="flex justify-center">
-                        <span className=${`text-[12px] font-bold font-mono uppercase ${judgmentErrors >= (maxErrors || 3) - 1 ? 'text-red-500 animate-pulse' : (state.storyPath === 1 ? 'text-purple-900/60' : 'text-zinc-600')}`}>
+                        <span className=${`text-[12px] font-bold font-mono uppercase ${judgmentErrors >= (maxErrors || 3) - 1 ? 'text-red-500 animate-pulse' : (isSectarian ? 'text-purple-900/60' : 'text-zinc-600')}`}>
                             ${labels.errorLabel}: ${judgmentErrors} / ${maxErrors || 3}
                         </span>
                     </div>
@@ -294,20 +319,25 @@ export const Operations = () => {
                                         className=${`flex-1 border text-[11px] transition-all uppercase tracking-tighter font-bold p-1 leading-tight flex flex-col justify-center items-center text-center relative group overflow-hidden
                                             ${opt.used
                                                 ? 'border-zinc-800 bg-zinc-900/10 text-zinc-700 cursor-not-allowed opacity-50 shadow-none'
-                                                : 'border-cyan-500/30 bg-cyan-950/10 hover:bg-cyan-500/20 text-cyan-500/80 hover:text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.05)]'}`}
+                                        : (isSectarian 
+                                            ? 'border-purple-500/30 bg-purple-950/10 hover:bg-purple-500/20 text-purple-500/80 hover:text-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.05)]'
+                                                    : 'border-cyan-500/30 bg-cyan-950/10 hover:bg-cyan-500/20 text-cyan-500/80 hover:text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.05)]')}`}
                                     >
                                         <span className="line-clamp-2 relative z-10">${opt.text}</span>
-                                        <div className="text-[9px] text-zinc-500 mt-1 relative z-10">
-                                            E: ${opt.energyCost} | S: ${opt.stabilityImpact}
+                                        <div className="text-[9px] text-zinc-500 mt-1 relative z-10 font-mono">
+                                            ${labels.statLabels.energy}: ${opt.energyCost} | ${labels.statLabels.stability}: ${opt.stabilityImpact}
                                         </div>
-                                        ${!opt.used && html`<div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>`}
+                                        ${!opt.used && html`<div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSectarian ? 'bg-purple-500/5' : 'bg-cyan-500/5'}`}></div>`}
                                     </button>
                                 `)}
                             </div>
                             <button 
                                 onClick=${handleEndDialogue}
                                 disabled=${isTyping}
-                                className="flex-1 border border-red-500/30 bg-red-950/10 hover:bg-red-500/20 text-red-500/70 hover:text-red-400 text-[10px] transition-all uppercase tracking-tighter font-black p-1 leading-tight shadow-[0_0_10px_rgba(239,68,68,0.05)]"
+                                className=${`flex-1 border text-[10px] transition-all uppercase tracking-tighter font-black p-1 leading-tight shadow-[0_0_10px_rgba(239,68,68,0.05)]
+                                    ${isSectarian 
+                                        ? 'border-red-900/50 bg-red-950/20 hover:bg-red-900/40 text-red-500'
+                                        : 'border-red-500/30 bg-red-950/10 hover:bg-red-500/20 text-red-500/70 hover:text-red-400'}`}
                             >
                                 ${labels.interrogateEnd}
                             </button>
@@ -318,7 +348,7 @@ export const Operations = () => {
                                 onClick=${() => handleDialogueAction('INTERROGAR')}
                                 disabled=${isTyping}
                                 className=${`flex-1 border text-[12px] transition-all uppercase tracking-tighter font-bold relative group overflow-hidden
-                                    ${state.storyPath === 1 
+                                    ${isSectarian 
                                         ? 'border-purple-500/30 bg-purple-950/10 hover:bg-purple-500/20 text-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.1)]' 
                                         : 'border-cyan-500/30 bg-cyan-950/10 hover:bg-cyan-500/20 text-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.1)]'}`}
                             >
@@ -342,45 +372,57 @@ export const Operations = () => {
                                     ${labels.pendingValidation}
                                 </span>
                                 <span className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest z-10">
-                                    [${labels.scanRequired}: ${SCAN_TYPES[requiredScan]?.name || requiredScan}]
+                                    [${labels.scanRequired}: ${pathConfig.bioscan.scans[requiredScan] || (SCAN_TYPES[requiredScan]?.name || requiredScan)}]
                                 </span>
                             </div>
                         `: null}
                     `: null}
                     
                     <div className="flex items-center justify-center gap-6 w-full h-full px-4">
-                        <button 
-                            onClick=${() => handleAction('SACRIFICE')}
-                            disabled=${isTyping || kaminOverride || (!isTutorialActive && !isScanComplete)}
-                            className=${`flex-1 max-w-[200px] h-full relative group border transition-all uppercase tracking-[0.3em] font-black text-[11px] 
-                                ${kaminOverride
-                                    ? 'border-purple-500/30 text-purple-500/40 animate-pulse cursor-not-allowed bg-purple-950/10'
-                                    : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isTutorialActive && isScanComplete))
-                                        ? 'border-red-500/40 text-red-500/70 hover:bg-red-500/10 hover:border-red-500 hover:text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.05)] hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] bg-red-950/5'
-                                        : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
-                        >
-                            <div className="absolute inset-0 bg-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <button 
+                        onClick=${() => handleAction('SACRIFICE')}
+                        disabled=${isTyping || kaminOverride || (!isTutorialActive && !isScanComplete)}
+                        className=${`flex-1 max-w-[200px] h-full relative group border transition-all uppercase tracking-[0.3em] font-black text-[11px] 
                             ${kaminOverride
-                                ? 'ERR: OVERRIDE'
-                                : labels.rejectLabel.toUpperCase()}
-                        </button>
-                        
-                        <div className="w-px h-6 bg-zinc-800/50"></div>
+                                ? 'border-purple-500/30 text-purple-500/40 animate-pulse cursor-not-allowed bg-purple-950/10'
+                                : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isScanComplete ? false : true))
+                                    ? isSectarian 
+                                        ? 'border-indigo-500/40 text-indigo-400/70 hover:bg-indigo-500/10 hover:border-indigo-500 hover:text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.05)] hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] bg-indigo-950/5 rounded-tl-xl rounded-br-sm'
+                                        : 'border-red-500/40 text-red-500/70 hover:bg-red-500/10 hover:border-red-500 hover:text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.05)] hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] bg-red-950/5'
+                                    : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
+                    >
+                        <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSectarian ? 'bg-indigo-500/5' : 'bg-red-500/5'}`}></div>
+                        ${isSectarian && html`
+                            <div className="absolute top-1 left-1 w-1.5 h-1.5 bg-indigo-500/30 rotate-45 group-hover:bg-indigo-400 transition-colors"></div>
+                            <div className="absolute bottom-1 right-1 w-1.5 h-1.5 bg-indigo-500/30 rotate-45 group-hover:bg-indigo-400 transition-colors"></div>
+                        `}
+                        ${kaminOverride
+                            ? labels.overrideLabel
+                            : labels.rejectLabel.toUpperCase()}
+                    </button>
+                    
+                    <div className=${`w-px h-6 ${isSectarian ? 'bg-indigo-900/30' : 'bg-zinc-800/50'}`}></div>
 
-                        <button 
-                            onClick=${() => handleAction('AUTHORIZE')}
-                            disabled=${isTyping || (!isTutorialActive && !isScanComplete)}
-                            className=${`flex-1 max-w-[200px] h-full relative group border transition-all uppercase tracking-[0.3em] font-black text-[11px] 
-                                ${kaminOverride
-                                    ? 'border-purple-500 text-purple-400 bg-purple-900/30 hover:bg-purple-900/50 animate-pulse shadow-[0_0_20px_rgba(168,85,247,0.3)]'
-                                    : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isTutorialActive && isScanComplete))
-                                        ? 'border-emerald-500/40 text-emerald-500/70 hover:bg-emerald-500/10 hover:border-emerald-500 hover:text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.05)] hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] bg-emerald-950/5'
-                                        : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
-                        >
-                            <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            ${labels.authorizeLabel.toUpperCase()}
-                        </button>
-                    </div>
+                    <button 
+                        onClick=${() => handleAction('AUTHORIZE')}
+                        disabled=${isTyping || (!isTutorialActive && !isScanComplete)}
+                        className=${`flex-1 max-w-[200px] h-full relative group border transition-all uppercase tracking-[0.3em] font-black text-[11px] 
+                            ${kaminOverride
+                                ? 'border-purple-500 text-purple-400 bg-purple-900/30 hover:bg-purple-900/50 animate-pulse shadow-[0_0_20px_rgba(168,85,247,0.3)]'
+                                : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isScanComplete ? false : true))
+                                    ? isSectarian
+                                        ? 'border-purple-500/40 text-purple-400/70 hover:bg-purple-500/10 hover:border-purple-500 hover:text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.05)] hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] bg-purple-950/5 rounded-br-xl rounded-tl-sm'
+                                        : 'border-emerald-500/40 text-emerald-500/70 hover:bg-emerald-500/10 hover:border-emerald-500 hover:text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.05)] hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] bg-emerald-950/5'
+                                    : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
+                    >
+                        <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSectarian ? 'bg-purple-500/5' : 'bg-emerald-500/5'}`}></div>
+                        ${isSectarian && html`
+                            <div className="absolute top-1 left-1 w-1.5 h-1.5 border border-purple-500/30 rotate-45 group-hover:border-purple-400 transition-colors"></div>
+                            <div className="absolute bottom-1 right-1 w-1.5 h-1.5 border border-purple-500/30 rotate-45 group-hover:border-purple-400 transition-colors"></div>
+                        `}
+                        ${labels.authorizeLabel.toUpperCase()}
+                    </button>
+                </div>
                 </div>
             </div>
         </div>

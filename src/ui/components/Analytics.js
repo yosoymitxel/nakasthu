@@ -7,11 +7,12 @@ import { html } from '../utils/html.js';
 import { bus } from '../../core/Bus.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { CONFIG } from '../../data/gameConfig.js';
+import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 import { analyzeSubjectProbability, formatScanDetail } from '../../utils/scannerUtils.js';
 
-const { useState, useEffect, useMemo } = React;
+const { useState, useEffect, useMemo, memo } = React;
 
-export const Analytics = () => {
+export const Analytics = memo(() => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [lines, setLines] = useState([]); // Array de { text, color }
     const [corruptionProb, setCorruptionProb] = useState(null);
@@ -26,9 +27,11 @@ export const Analytics = () => {
     const resonanceSync = useGameState('resonanceSync');
     const localFrequency = useGameState('localFrequency');
 
-    const labels = useMemo(() => CONFIG.UI.LABELS[storyPath], [storyPath]);
-    const anaLabels = labels.analytics;
+    const pathConfig = PATH_CONFIGS[storyPath];
+    const anaLabels = pathConfig.analytics;
     const anaConstants = anaLabels.CONSTANTS;
+    const bioLabels = pathConfig.bioscan;
+    const opsLabels = pathConfig.operations;
 
     const isUnstable = stability < anaConstants.UNSTABLE_THRESHOLD;
     const isSectarian = storyPath === 1;
@@ -50,7 +53,7 @@ export const Analytics = () => {
     useEffect(() => {
         const onScanStart = (data) => {
             setIsProcessing(true);
-            const scanName = labels.scans[data.type.id] || data.type.name;
+            const scanName = bioLabels.scans[data.type.id] || data.type.name;
             setLines(prev => [{ text: `> ${anaLabels.invokingTrace}: ${scanName}`, color: 'text-zinc-500' }, ...prev]);
         };
 
@@ -91,9 +94,15 @@ export const Analytics = () => {
                     }
                 }
 
-                const scanName = labels.scans[data.type.id] || data.type.name;
-                const dataString = `> SCAN: ${scanName} | RESULT: [${detail}] | PROB: ${newProb || '??'}%`;
-                setLines(prev => [{ text: dataString, color: trendColor }, ...prev]);
+                const scanName = bioLabels.scans[data.type.id] || data.type.name;
+                const dataString = isSectarian 
+                    ? `† AUSPICIO: ${scanName} | MANIFESTACIÓN: [${detail}] | PUREZA: ${100 - (newProb || 0)}%`
+                    : `> SCAN: ${scanName} | RESULT: [${detail}] | PROB: ${newProb || '??'}%`;
+
+                // Añadir decoración ritual a las líneas del sectario
+                const lineText = isSectarian ? `✧ ${dataString} ✧` : dataString;
+                
+                setLines(prev => [{ text: lineText, color: trendColor }, ...prev]);
 
                 // ENVIAR A LORE (MOD-09)
                 bus.emit('LORE_DATA_EMITTED', {
@@ -109,7 +118,7 @@ export const Analytics = () => {
         const onNewSubject = (entity) => {
             setLines([
                 { text: `> ${anaLabels.monitoring}: ENTIDAD_${entity.id}_DETECTADA`, color: isSectarian ? 'text-purple-400' : 'text-cyan-400' },
-                { text: `> ANALISIS_INICIAL: [PROCESANDO...]`, color: 'text-zinc-500' }
+                { text: isSectarian ? `✧ ANALIZANDO ESENCIA...` : `> ANALISIS_INICIAL: [PROCESANDO...]`, color: 'text-zinc-500' }
             ]);
             setCorruptionProb(null);
             setPrevProb(null);
@@ -117,8 +126,8 @@ export const Analytics = () => {
 
         const onDialogueStarted = () => {
             setLines(prev => [
-                { text: `> ${labels.operations.interrogateBtn.split('[')[0].trim()}: ${anaLabels.monitoring}`, color: isSectarian ? 'text-purple-600' : 'text-cyan-600' },
-                { text: `> ${anaLabels.linkActive}`, color: isSectarian ? 'text-purple-500' : 'text-cyan-500' }, 
+                { text: `> ${opsLabels.interrogateBtn.split('[')[0].trim()}: ${anaLabels.monitoring}`, color: isSectarian ? 'text-purple-600' : 'text-cyan-600' },
+                { text: isSectarian ? `✧ COMUNIÓN ESTABLECIDA` : `> ${anaLabels.linkActive}`, color: isSectarian ? 'text-purple-500' : 'text-cyan-500' }, 
                 ...prev
             ].slice(0, 50));
         };
@@ -127,19 +136,19 @@ export const Analytics = () => {
             const { corruptionImpact, stabilityImpact } = data;
             
             let impactStr = '';
-            if (corruptionImpact !== 0) impactStr += ` | CORR: ${corruptionImpact > 0 ? '+' : ''}${corruptionImpact}%`;
-            if (stabilityImpact !== 0) impactStr += ` | STAB: ${stabilityImpact > 0 ? '+' : ''}${stabilityImpact}%`;
+            if (corruptionImpact !== 0) impactStr += ` | ${isSectarian ? 'MANCHA' : 'CORR'}: ${corruptionImpact > 0 ? '+' : ''}${corruptionImpact}%`;
+            if (stabilityImpact !== 0) impactStr += ` | ${isSectarian ? 'PAZ' : 'STAB'}: ${stabilityImpact > 0 ? '+' : ''}${stabilityImpact}%`;
 
             setLines(prev => [
-                { text: `> ${labels.operations.operatorSender}: ${data.option}`, color: 'text-zinc-400' },
-                { text: `> ANALISIS_INTERACCION: [${impactStr.trim() || 'NOMINAL'}]`, color: impactStr.includes('+') ? 'text-red-400' : 'text-cyan-500' },
+                { text: `> ${opsLabels.operatorSender}: ${data.option}`, color: 'text-zinc-400' },
+                { text: `${isSectarian ? '✧ IMPACTO EN EL VELO' : '> ANALISIS_INTERACCION'}: [${impactStr.trim() || 'NOMINAL'}]`, color: impactStr.includes('+') ? 'text-red-400' : 'text-cyan-500' },
                 ...prev
             ].slice(0, 50));
         };
 
         const onDialogueEnded = () => {
             setLines(prev => [
-                { text: `> ${anaLabels.statusLabel}: ENLACE_CERRADO`, color: 'text-zinc-600' },
+                { text: isSectarian ? `✧ COMUNIÓN FINALIZADA` : `> ${anaLabels.statusLabel}: ENLACE_CERRADO`, color: 'text-zinc-600' },
                 ...prev
             ].slice(0, 50));
         };
@@ -158,77 +167,79 @@ export const Analytics = () => {
             bus.off('DIALOGUE_OPTION_SELECTED', onDialogueOptionSelected);
             bus.off('DIALOGUE_ENDED', onDialogueEnded);
         };
-    }, [currentEntity, mode, localFrequency, isSectarian, anaLabels, labels]);
+    }, [currentEntity, mode, localFrequency, isSectarian, anaLabels, bioLabels, opsLabels]);
 
     return html`
-        <div className="flex flex-col h-full bg-transparent font-mono overflow-hidden">
-            <header className="p-3 border-b border-zinc-800 flex justify-between items-center bg-black/20">
-                <h2 className="text-[11px] font-black text-zinc-500 tracking-[0.3em] uppercase">
-                    ${anaLabels.header}
-                </h2>
-                <div className="flex gap-1">
-                    <div className=${`w-2 h-0.5 ${isProcessing ? 'animate-pulse bg-amber-500' : 'bg-zinc-800'}`}></div>
-                    <div className=${`w-2 h-0.5 ${isProcessing ? 'animate-pulse bg-amber-500' : 'bg-zinc-800'}`}></div>
+        <div className=${`flex flex-col h-full w-full bg-[#0a0a0b] font-mono p-3 overflow-hidden relative ${isSectarian ? 'shadow-[inset_0_0_30px_rgba(168,85,247,0.1)]' : ''}`}>
+            ${isSectarian && html`
+                <!-- Efecto Onírico: Bruma Púrpura -->
+                <div className="absolute inset-0 pointer-events-none opacity-20 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-b from-purple-950/20 via-transparent to-transparent" />
+                    <div className="absolute -bottom-10 left-0 w-full h-32 bg-indigo-900/10 blur-[40px] animate-pulse" />
+                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,_rgba(88,28,135,0.05)_0%,_transparent_100%)]"></div>
                 </div>
-            </header>
+            `}
+            <!-- Header decorativo -->
+            <div className="flex justify-between items-center mb-3 pb-2 border-b border-zinc-900">
+                <div className="flex items-center gap-2">
+                    <div className=${`w-2 h-2 rounded-full animate-pulse ${isSectarian ? 'bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]' : 'bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.5)]'}`}></div>
+                    <span className="text-[12px] text-zinc-400 font-black uppercase tracking-[0.2em]">
+                        ${isSectarian ? 'Visión Trascendental' : 'Data Analytics'}
+                    </span>
+                </div>
+                ${isProcessing && html`
+                    <span className=${`text-[10px] animate-pulse font-bold uppercase ${isSectarian ? 'text-purple-400' : 'text-cyan-400'}`}>
+                        ${isSectarian ? 'Canalizando...' : 'Processing...'}
+                    </span>
+                `}
+            </div>
 
-            <div className="p-3 flex-1 flex flex-col min-h-0">
-                <!-- Probabilidad de Corrupción (Main Display) -->
-                <div className="mb-4">
-                    <div className="flex justify-between items-end mb-1">
-                        <span className="text-[12px] text-zinc-400 uppercase tracking-[0.2em] font-bold">
-                            ${anaLabels.probabilityLabel}
+            <!-- Probabilidad Central -->
+            <div className="flex-none mb-4 flex items-center justify-center h-16 bg-black/40 border border-zinc-900/50 relative overflow-hidden group">
+                ${isSectarian && html`
+                    <div className="absolute inset-0 bg-purple-500/5 animate-pulse pointer-events-none"></div>
+                `}
+                <div className="flex flex-col items-center">
+                    <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest mb-1">
+                        ${isSectarian ? 'Nivel de Pureza' : 'Avg. Corruption Prob.'}
+                    </span>
+                    <div className="flex items-baseline gap-2">
+                        <span className=${`text-3xl font-black font-mono tracking-tighter transition-all duration-700 ${
+                            isUnstable ? 'animate-glitch text-red-500' : 
+                            isSectarian ? 'text-purple-500' : 'text-cyan-500'
+                        }`}>
+                            ${corruptionProb !== null ? (isSectarian ? (100 - corruptionProb) : corruptionProb) : '--'}%
                         </span>
-                        <div className="flex items-center gap-2">
-                            ${prevProb !== null && corruptionProb !== null && html`
-                                <span className=${`text-[10px] font-bold ${corruptionProb > prevProb ? 'text-red-500' : (corruptionProb < prevProb ? 'text-emerald-500' : 'text-zinc-500')}`}>
-                                    ${corruptionProb > prevProb ? '▲' : (corruptionProb < prevProb ? '▼' : '=')}
-                                </span>
-                            `}
-                            <span className=${`text-[24px] font-black leading-none ${
-                                corruptionProb === null ? 'text-zinc-800' : 
-                                corruptionProb > anaConstants.PROB_CRITICAL ? 'text-red-500' : 
-                                corruptionProb > anaConstants.PROB_WARNING ? 'text-orange-400' : (isSectarian ? 'text-purple-400' : 'text-cyan-400')
+                        ${prevProb !== null && html`
+                            <span className=${`text-[10px] font-bold ${
+                                (isSectarian ? (100 - corruptionProb) > (100 - prevProb) : corruptionProb > prevProb) 
+                                ? 'text-red-500' : 'text-green-500'
                             }`}>
-                                ${corruptionProb === null ? '--%' : `${corruptionProb}%`}
+                                ${isSectarian ? ((100 - corruptionProb) > (100 - prevProb) ? '↑' : '↓') : (corruptionProb > prevProb ? '↑' : '↓')}
                             </span>
-                        </div>
+                        `}
                     </div>
-                    <div className="h-[4px] w-full bg-zinc-900 relative overflow-hidden">
-                        <div 
-                            className=${`h-full transition-all duration-[${anaConstants.TRANSITION_MS}ms] ${
-                                corruptionProb > anaConstants.PROB_CRITICAL ? 'bg-red-500/60' : 
-                                corruptionProb > anaConstants.PROB_WARNING ? 'bg-orange-400/60' : (isSectarian ? 'bg-purple-400/60' : 'bg-cyan-400/60')
-                            }`}
-                            style=${{ width: `${corruptionProb || 0}%` }}
-                        ></div>
-                    </div>
-                </div>
-
-                <!-- Log de Datos Recuperados -->
-                <div className="flex-1 flex flex-col gap-1 overflow-y-auto custom-scrollbar pr-2">
-                    <div className="text-[12px] text-zinc-500 uppercase tracking-widest mb-2 border-b border-zinc-800 pb-1 font-bold flex justify-between">
-                        <span>${anaLabels.logLabel}</span>
-                        ${focusMode && html`<span className=${`${isSectarian ? 'text-purple-600' : 'text-cyan-600'} animate-pulse text-[10px]`}>${anaLabels.traceActive}</span>`}
-                    </div>
-                    ${lines.map((line, i) => html`
-                        <div key=${i} className=${`text-[10px] leading-tight animate-in fade-in slide-in-from-left-1 duration-300 ${line.color}`}>
-                            ${line.text}
-                        </div>
-                    `)}
                 </div>
             </div>
 
-            <!-- Status de Procesador -->
-            <div className="mt-auto p-3 pt-2 border-t border-zinc-800 flex justify-between items-center bg-black/10">
-                <div className="flex gap-2 items-center">
-                    <div className=${`w-2 h-2 ${isProcessing ? (isSectarian ? 'bg-purple-500 animate-ping' : 'bg-cyan-500 animate-ping') : 'bg-zinc-800'}`}></div>
-                    <span className="text-[12px] text-zinc-500 uppercase tracking-tighter">${anaLabels.statusLabel} ${isProcessing ? anaLabels.active : anaLabels.ready}</span>
-                </div>
-                <span className=${`text-[12px] font-bold ${isUnstable ? 'text-amber-500 animate-pulse' : 'text-zinc-600'}`}>
-                    ${isUnstable ? anaLabels.warn : anaLabels.nominal}
-                </span>
+            <!-- Listado de trazas -->
+            <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1">
+                ${lines.length === 0 ? html`
+                    <div className="h-full flex flex-col items-center justify-center opacity-20">
+                        <div className=${`w-12 h-0.5 mb-2 ${isSectarian ? 'bg-purple-900' : 'bg-cyan-900'}`}></div>
+                        <span className="text-[10px] uppercase tracking-widest">${isSectarian ? 'Silencio Sagrado' : 'No Data Captured'}</span>
+                    </div>
+                ` : lines.map((line, i) => html`
+                    <div 
+                        key=${i} 
+                        className=${`text-[11px] leading-tight break-all border-l-2 pl-2 py-1 transition-all ${line.color} 
+                            ${isSectarian ? 'border-purple-900/30 bg-purple-950/5' : 'border-cyan-900/30 bg-cyan-950/5'} 
+                            ${i === 0 ? 'animate-fade-in translate-x-1' : ''}`}
+                    >
+                        ${line.text}
+                    </div>
+                `)}
             </div>
         </div>
     `;
-};
+});

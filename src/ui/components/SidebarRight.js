@@ -32,7 +32,17 @@ export const SidebarRight = ({ getModuleTutorialStatus, unlockedModules = new Se
 
     return html`
         <${React.Fragment}>
+            ${isSectarian && html`
+                <${React.Fragment} key="sectarian-fx-r">
+                    <!-- Efecto de bruma onírica para el lateral derecho -->
+                    <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+                        <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_100%_50%,_rgba(168,85,247,0.05)_0%,_transparent_50%)]"></div>
+                        <div className="absolute bottom-0 right-0 w-full h-1/2 bg-gradient-to-t from-purple-950/10 to-transparent"></div>
+                    </div>
+                <//>
+            `}
             <${ModuleWrapper} 
+                key="R_TOP"
                 area="R_TOP"
                 locked=${getModuleTutorialStatus('R_TOP').locked}
                 highlighted=${getModuleTutorialStatus('R_TOP').highlighted}
@@ -43,6 +53,7 @@ export const SidebarRight = ({ getModuleTutorialStatus, unlockedModules = new Se
             <//>
 
             <${ModuleWrapper} 
+                key="R_UPPER"
                 area="R_UPPER"
                 locked=${getModuleTutorialStatus('R_UPPER').locked}
                 highlighted=${getModuleTutorialStatus('R_UPPER').highlighted}
@@ -53,19 +64,21 @@ export const SidebarRight = ({ getModuleTutorialStatus, unlockedModules = new Se
             <//>
 
             <${ModuleWrapper} 
+                key="R_MIDDLE"
                 area="R_MIDDLE"
                 locked=${getModuleTutorialStatus('R_MIDDLE').locked}
                 highlighted=${getModuleTutorialStatus('R_MIDDLE').highlighted}
             >
                 <${Panel} title=${rMiddleTitle} areaId="R_MIDDLE" className="w-full h-full overflow-hidden">
                     <div className="flex flex-col h-full gap-2">
-                        ${isFactionActive && html`<${FactionTracker} />`}
-                        <${Terminal} />
+                        ${isFactionActive && html`<${FactionTracker} key="faction-tracker" />`}
+                        <${Terminal} key="terminal" />
                     </div>
                 <//>
             <//>
 
             <${ModuleWrapper} 
+                key="R_BOTTOM"
                 area="R_BOTTOM"
                 locked=${getModuleTutorialStatus('R_BOTTOM').locked}
                 highlighted=${getModuleTutorialStatus('R_BOTTOM').highlighted}

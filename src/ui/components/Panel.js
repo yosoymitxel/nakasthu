@@ -19,7 +19,19 @@ export const Panel = memo(({ title, children, className = "", contentClassName =
     const themeColor = isReligious ? 'purple' : 'cyan';
     const accentColor = isReligious ? 'text-purple-400' : 'text-amber-500';
 
-    const tooltips = {
+    const tooltips = isReligious ? {
+        'L_TOP': "Sello del Vacío y heráldica de la Orden.",
+        'L_UPPER': "Lectura del alma y detección de impurezas biológicas.",
+        'L_LOWER': "Análisis de resonancia espiritual y probabilidad de corrupción.",
+        'L_BOTTOM': "Enlace con el éter de datos.",
+        'C_HEADER': "Estado del Santuario: Fe, Estabilidad y Ciclo Orbital.",
+        'C_MAIN': "Altar del Vacío: Observación del sujeto.",
+        'C_FOOTER': "Ajusta la resonancia para evitar el colapso del velo.",
+        'R_TOP': "Ritos de purificación y seguimiento de sacrificios.",
+        'R_UPPER': "Libros de sabiduría y registros de la Orden.",
+        'R_MIDDLE': "Altar de comandos RITUAL_OS.",
+        'R_BOTTOM': "Referencia rápida de ritos del sistema."
+    } : {
         'L_TOP': "Identificador de sesión y logo corporativo.",
         'L_UPPER': "Escaneo biológico y detección de anomalías.",
         'L_LOWER': "Análisis de datos y probabilidad de corrupción.",
@@ -34,19 +46,28 @@ export const Panel = memo(({ title, children, className = "", contentClassName =
     };
 
     return html`
-        <div className=${`relative flex flex-col h-full w-full overflow-hidden ${className}`}>
+        <div className=${`relative flex flex-col h-full w-full overflow-hidden ${className} ${isReligious ? 'bg-indigo-950/5' : ''}`}>
             
+            ${isReligious && html`
+                <div className="absolute top-0 right-0 p-1 pointer-events-none opacity-20">
+                    <svg width="12" height="12" viewBox="0 0 12 12" className="text-purple-500">
+                        <path d="M0 6 L12 6 M6 0 L6 12" stroke="currentColor" strokeWidth="0.5" />
+                        <circle cx="6" cy="6" r="3" fill="none" stroke="currentColor" strokeWidth="0.5" />
+                    </svg>
+                </div>
+            `}
+
             <!-- Header del Panel -->
             <div 
                 onMouseEnter=${() => setShowTooltip(true)}
                 onMouseLeave=${() => setShowTooltip(false)}
                 className=${`
                     px-2 py-1 flex justify-between items-center bg-black/40 border-b border-zinc-800/40 relative z-10
-                    ${isReligious ? 'border-purple-900/20' : ''}
+                    ${isReligious ? 'border-purple-900/30 bg-indigo-950/20' : ''}
                 `}
             >
                 <div className="flex items-center gap-2">
-                    <div className=${`w-1.5 h-1.5 rounded-full ${isReligious ? 'bg-purple-500' : 'bg-amber-600'} opacity-40`}></div>
+                    <div className=${`w-1.5 h-1.5 rounded-full ${isReligious ? 'bg-purple-500 animate-pulse' : 'bg-amber-600'} opacity-40`}></div>
                     <span className=${`text-[11px] font-bold uppercase tracking-[0.2em] font-mono ${accentColor}`}>
                         ${title}
                     </span>
@@ -55,7 +76,7 @@ export const Panel = memo(({ title, children, className = "", contentClassName =
                 <!-- Indicador de señal -->
                 <div className="flex gap-0.5">
                     ${[1, 2, 3].map(i => html`
-                        <div key=${i} className=${`w-1 h-3 ${isReligious ? 'bg-purple-900/30' : 'bg-zinc-800'}`}></div>
+                        <div key=${i} className=${`w-1 h-3 ${isReligious ? 'bg-purple-800/40 border-l border-purple-500/20' : 'bg-zinc-800'}`}></div>
                     `)}
                 </div>
 

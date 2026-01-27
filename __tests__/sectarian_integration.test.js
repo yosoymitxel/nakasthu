@@ -26,8 +26,8 @@ describe('Sectarian Path Integration Tests (sectarian_integration.test.js)', () 
         it('debe devolver nombres sectarios cuando storyPath es 1', () => {
             state.storyPath = 1;
             expect(getModuleName(MODULES.BIOSCAN, state.storyPath)).toBe('Altar de Examen');
-            expect(getModuleName(MODULES.OPERATIONS, state.storyPath)).toBe('Altar de Consagración');
-            expect(getModuleName(MODULES.UNREST_METER, state.storyPath)).toBe('Monitor de Agitación');
+            expect(getModuleName(MODULES.OPERATIONS, state.storyPath)).toBe('Altar de Consagración');      
+            expect(getModuleName(MODULES.UNREST_METER, state.storyPath)).toBe('Efervescencia Profana');     
         });
     });
 

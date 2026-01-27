@@ -39,12 +39,24 @@ class GameSequencer {
         if (this.decisionSub) this.decisionSub();
 
         this.decisionSub = bus.on('DECISION_MADE', ({ subject, action }) => {
-            console.log(`[SEQUENCER] Decision made: ${action} for subject ${subject.id}. Processed: ${state.processedCount + 1}/${state.quota}`);
+            console.log(`[SEQUENCER] Decision made: ${action} for subject ${subject.id}. Current Processed: ${state.processedCount}/${state.quota}`);
             
             // REGLA: Cancelar cualquier escaneo residual al tomar una decisión
             cancelScan();
             
+            state.startBatch();
+            // Solo incrementar si NO hemos alcanzado la cuota. 
+            // Esto evita el error visual "6/5" si el usuario hace clic rápido o hay lag en el bus.
+            if (state.processedCount < state.quota) {
+                state.processedCount++;
+                console.log(`[SEQUENCER] Cuota incrementada: ${state.processedCount}/${state.quota}`);
+            } else {
+                console.warn(`[SEQUENCER] Bloqueo de cuota: Intento de exceder ${state.quota}.`);
+            }
+            
             this.registerSubjectResult(subject, action);
+            state.endBatch();
+
             this.checkGameStatus();
         });
 
@@ -168,7 +180,7 @@ class GameSequencer {
         state.influenceGathered = 0;
         state.utilidadOculta = 0;
         state.worldTime = 0;
-        state.quota = currentConfig.subjectCount || CONFIG.DEFAULT_QUOTA;
+        state.quota = currentConfig.subjectCount || currentConfig.quota || CONFIG.DEFAULT_QUOTA;
         
         // Limpiar sujeto actual para que el nuevo nivel empiece de cero
         state.currentEntity = null;
@@ -285,6 +297,9 @@ class GameSequencer {
      * Verifica el estado global para transiciones o fallos críticos
      */
     checkGameStatus() {
+        // Evitar múltiples llamadas simultáneas si ya estamos transicionando
+        if (state.gameStatus === 'LOADING' || state.gameStatus === 'CINEMATIC') return;
+
         console.log(`%c[SEQUENCER] Status Check - Step: ${this.currentStep}, Processed: ${state.processedCount}, Quota: ${state.quota}`, 'color: #3b82f6;');
         
         // 1. Verificar Fallo Crítico (Errores de Juicio)
@@ -295,6 +310,16 @@ class GameSequencer {
                 reason: 'EXCESSIVE_ERRORS',
                 errors: state.judgmentErrors
             });
+            return;
+        }
+
+        // SI HAY UNA EMERGENCIA ACTIVA, NO AVANZAR DE NIVEL
+        if (state.emergencies.resonance || state.emergencies.oxygen || state.emergencies.energy) {
+            console.warn('[SEQUENCER] Nivel bloqueado por emergencia activa.');
+            // REGLA: No pedir más sujetos si ya se alcanzó la cuota, incluso en emergencia (Fix 6/5)
+            if (!state.currentEntity && state.processedCount < state.quota) {
+                state.nextSubject();
+            }
             return;
         }
 
@@ -320,6 +345,8 @@ class GameSequencer {
                 console.log('%c[SEQUENCER] Cuota completada exitosamente.', 'color: #10b981;');
             }
             
+            // Bloqueo preventivo de estado para evitar múltiples disparos de nextStep
+            state.gameStatus = 'LOADING';
             this.nextStep();
         } else {
             // REGLA: Solo pedir siguiente sujeto si la cuota NO se ha alcanzado

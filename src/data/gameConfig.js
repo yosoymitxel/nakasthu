@@ -239,6 +239,11 @@ export const CONFIG = {
                         authorize: { label: 'AUTORIZAR:', text: 'Permite el paso de sujetos puros (-10 Energía, +10 Estabilidad). Error si es corrupto (-30 Estabilidad).' },
                         resonance: { label: 'RESONANCIA:', text: 'Sincroniza frecuencia y fase para evitar degradación de estabilidad.' }
                     }
+                },
+                specialMechanic: {
+                    header: 'SINCRONIZACIÓN NEURAL',
+                    instruction: '[ MANTÉN ESPACIO PARA SINCRONIZAR ]',
+                    complete: '[ ENLACE ESTABLECIDO ]'
                 }
             },
             1: { // Ruta Religioso/Líder
@@ -249,11 +254,11 @@ export const CONFIG = {
                 utilityLabel: 'Fe Acumulada',
                 themeColor: 'purple',
                 scans: {
-                    THERMAL: 'GRADO_HUMANO',
-                    NEURAL: 'COMUNIÓN',
-                    NAKARA: 'SONDA_ALMA',
-                    BIOMETRIC: 'LECTURA_AURA',
-                    RESONANCE: 'RESONANCIA'
+                    THERMAL: 'ALIENTO ÍGNEO',
+                    NEURAL: 'PULSACIÓN DEL ALMA',
+                    NAKARA: 'PROFUNDIDAD DEL VACÍO',
+                    BIOMETRIC: 'RASTRO DE SANGRE',
+                    RESONANCE: 'RESONANCIA ETERNA'
                 },
                 terminal: {
                     header: 'SINTONÍA_ESPIRITUAL: ESTABLE',
@@ -276,39 +281,39 @@ export const CONFIG = {
                     }
                 },
                 operations: {
-                    quotaLabel: 'COSECHA_DE_ALMAS',
+                    quotaLabel: 'COSECHA DE ALMAS',
                     errorLabel: 'CISMA',
-                    interrogateBtn: 'INICIAR COMUNIÓN [INTERROGAR]',
-                    interrogateEnd: 'TERMINAR INTERROGATORIO',
+                    interrogateBtn: 'INICIAR COMUNIÓN ESPIRITUAL',
+                    interrogateEnd: 'FINALIZAR RITO',
                     waitingSubject: 'Alma en espera de purificación...',
-                    pendingValidation: 'CONSAGRACIÓN PENDIENTE DE VALIDACIÓN RITUAL',
+                    pendingValidation: 'TRANSICIÓN PENDIENTE DE LECTURA DE AURA',
                     scanRequired: 'SE REQUIERE REVELACIÓN',
-                    systemSender: 'SISTEMA',
-                    operatorSender: 'LÍDER',
-                    subjectSender: 'ALMA',
-                    newSubjectMsg: 'NUEVA ALMA DETECTADA EN EL CÍRCULO.',
-                    anomalyMsg: '>>> ALERTA: LA VOLUNTAD DEL AITOR INTERFIERE.',
+                    systemSender: 'EL_VACÍO',
+                    operatorSender: 'INQUISIDOR',
+                    subjectSender: 'ESENCIA',
+                    newSubjectMsg: 'UNA NUEVA ESENCIA HA LLEGADO AL UMBRAL.',
+                    anomalyMsg: '>>> ADVERTENCIA: INTERFERENCIA EN EL VELO.',
                     linkClosedMsg: 'COMUNIÓN FINALIZADA.',
-                    scanReportMsg: '[REVELACIÓN ALMICA] {name} COMPLETADA. ESENCIA REGISTRADA.',
+                    scanReportMsg: '[REVELACIÓN ALMICA] {name} COMPLETADA.',
                     neuralConnectionMsg: 'ESTABLECIENDO SINTONÍA ESPIRITUAL...',
                     energyErrorMsg: '[CRÍTICO] Fe insuficiente para la comunión.',
-                    noSubjectMsg: 'ERROR: NO HAY ALMA EN EL CÍRCULO.',
+                    noSubjectMsg: 'ERROR: EL UMBRAL SE ENCUENTRA VACÍO.',
                     overrideBlockedMsg: 'VOLUNTAD DIVINA: ACCIÓN RESTRINGIDA POR EL EIDOLON',
                     receivingMsg: 'CANALIZANDO VOZ...'
                 },
                 analytics: {
-                    header: 'MOD-02: ANALÍTICA_DE_FE',
-                    probabilityLabel: 'Pureza_del_Alma',
-                    logLabel: 'Lectura_de_Emanaciones',
-                    traceActive: 'COMUNIÓN_ACTIVA',
-                    invokingTrace: 'INVOCANDO_TRAZA',
-                    linkActive: 'VÍNCULO_ESPIRITUAL_ACTIVO',
-                    monitoring: 'SINTONIZANDO_SUSURROS_ALMA',
-                    statusLabel: 'SANTUARIO:',
-                    active: 'EN_RITUAL',
-                    ready: 'EN_ESPERA',
-                    warn: 'AGITACIÓN_DETECTADA',
-                    nominal: 'ARMONÍA_DIVINA',
+                    header: 'ALTAR DE VISIONES',
+                    probabilityLabel: 'Pureza de la Esencia',
+                    logLabel: 'Emanaciones del Velo',
+                    traceActive: 'VISIÓN ACTIVA',
+                    invokingTrace: 'INVOCANDO TRAZA',
+                    linkActive: 'VÍNCULO ESPIRITUAL',
+                    monitoring: 'Sintonizando susurros del alma',
+                    statusLabel: 'ESTADO:',
+                    active: 'EN RITUAL',
+                    ready: 'EN ESPERA',
+                    warn: 'AGITACIÓN',
+                    nominal: 'ARMONÍA',
                     CONSTANTS: {
                         UNSTABLE_THRESHOLD: 40,
                         PROB_CRITICAL: 75,
@@ -318,10 +323,10 @@ export const CONFIG = {
                     results: {
                         BIOMETRIC: 'AURA: {val}%',
                         NEURAL: 'COMUNIÓN: {val}%',
-                        THERMAL: 'GRADO_HUMANO: {val}λ',
-                        NAKARA: 'PROFUNDIDAD_ALMA: {val}m',
-                        RESONANCE: 'SANTUARIO: {val}Hz',
-                        DEFAULT: 'GRACIA_RECIBIDA: OK'
+                        THERMAL: 'ALIENTO: {val}λ',
+                        NAKARA: 'VACÍO: {val}m',
+                        RESONANCE: 'ARMONÍA: {val}Hz',
+                        DEFAULT: 'GRACIA: OK'
                     }
                 },
                 controlPanel: {
@@ -335,6 +340,11 @@ export const CONFIG = {
                         authorize: { label: 'CONSAGRAR:', text: 'Acepta a los elegidos (-10 Fe, +10 Agitación). Error si es impuro (-30 Agitación).' },
                         resonance: { label: 'COMUNIÓN:', text: 'Sincroniza la fe con el vacío para evitar el colapso del santuario.' }
                     }
+                },
+                specialMechanic: {
+                    header: 'COMUNIÓN ONÍRICA',
+                    instruction: '[ MANTÉN EL ALIENTO PARA EL RITUAL ]',
+                    complete: '[ EL VACÍO HA RESPONDIDO ]'
                 }
             }
         },

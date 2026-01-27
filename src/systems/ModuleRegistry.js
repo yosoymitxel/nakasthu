@@ -50,7 +50,7 @@ export const MODULES = {
     RESONANCE: {
         id: 'MOD-06',
         name: 'Consola de Emergencia',
-        sectarianName: 'Altar de Crisis',
+        sectarianName: 'Altar de Penitencia',
         unlockStep: 4,
         tutorial: 'TUTO_RESONANCE',
         description: 'Interfaz tri-modular de respuesta ante fallos críticos.'
@@ -58,7 +58,7 @@ export const MODULES = {
     QUOTA_TRACKER: {
         id: 'MOD-07',
         name: 'Gestor de Cuotas',
-        sectarianName: 'Cosecha de Adeptos',
+        sectarianName: 'Cosecha de Almas',
         unlockStep: 1,
         tutorial: 'TUTO_QUOTA',
         description: 'Monitoreo de objetivos de procesamiento.'
@@ -83,7 +83,7 @@ export const MODULES = {
     UNREST_METER: {
         id: 'MOD-10',
         name: 'Medidor de Disturbios',
-        sectarianName: 'Monitor de Agitación',
+        sectarianName: 'Efervescencia Profana',
         unlockStep: 5,
         tutorial: 'TUTO_UNREST',
         description: 'Monitoreo de estabilidad social en sectores.'

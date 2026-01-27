@@ -99,6 +99,15 @@ export const Oscilloscope = () => {
             const midY = height / 2;
 
             ctx.clearRect(0, 0, width, height);
+
+            if (isSectarian) {
+                // Fondo onírico suave para Sectario
+                const gradient = ctx.createRadialGradient(width/2, midY, 0, width/2, midY, width/2);
+                gradient.addColorStop(0, 'rgba(40, 10, 60, 0.1)');
+                gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+            }
             
             // Incrementar tiempo para animación si no está pausado
             if (!isPaused) {
@@ -115,45 +124,116 @@ export const Oscilloscope = () => {
             const glitchIntensity = (100 - stability) / 100;
             const isCritical = stability < 20;
             
-            // Dibujar Rejilla
-            ctx.strokeStyle = isCritical ? 'rgba(153, 27, 27, 0.1)' : (isSectarian ? 'rgba(147, 51, 234, 0.05)' : 'rgba(20, 20, 20, 0.3)');
+            // Dibujar rejilla (Sectario: Romboide / Operario: Cuadrícula)
+            ctx.beginPath();
+            ctx.strokeStyle = isCritical ? 'rgba(153, 27, 27, 0.1)' : (isSectarian ? 'rgba(168, 85, 247, 0.05)' : 'rgba(20, 20, 20, 0.3)');
             ctx.lineWidth = 1;
-            for (let i = 0; i < width; i += 40) {
-                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke();
+
+            if (isSectarian) {
+                // Rejilla ritualística (diagonales)
+                for (let x = -width; x < width * 2; x += 40) {
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x + height, height);
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x - height, height);
+                }
+            } else {
+                // Rejilla técnica (cuadrícula)
+                for (let i = 0; i < width; i += 40) {
+                    ctx.moveTo(i, 0);
+                    ctx.lineTo(i, height);
+                }
+                for (let i = 0; i < height; i += 20) {
+                    ctx.moveTo(0, i);
+                    ctx.lineTo(width, i);
+                }
             }
-            for (let i = 0; i < height; i += 20) {
-                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(width, i); ctx.stroke();
+            ctx.stroke();
+
+            // Dibujar línea central
+            ctx.beginPath();
+            ctx.strokeStyle = isSectarian ? 'rgba(168, 85, 247, 0.15)' : 'rgba(20, 20, 20, 0.15)';
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(0, midY);
+            ctx.lineTo(width, midY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Efecto de Bruma Onírica (Sectario)
+            if (isSectarian && !isPaused) {
+                // Bruma central
+                ctx.fillStyle = 'rgba(139, 92, 246, 0.03)';
+                ctx.beginPath();
+                ctx.arc(width/2 + Math.sin(timeA * 0.5) * 40, midY + Math.cos(timeA * 0.5) * 20, 80, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Destellos aleatorios
+                if (Math.random() > 0.95) {
+                    ctx.fillStyle = 'rgba(216, 180, 254, 0.1)';
+                    ctx.beginPath();
+                    ctx.arc(Math.random() * width, Math.random() * height, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             }
 
             // Onda A: SUJETO (Referencia con tiempo)
             ctx.beginPath();
-            ctx.strokeStyle = isCritical ? 'rgba(153, 27, 27, 0.4)' : (isSectarian ? 'rgba(147, 51, 234, 0.3)' : 'rgba(6, 182, 212, 0.4)');
-            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = isCritical ? 'rgba(153, 27, 27, 0.4)' : (isSectarian ? 'rgba(168, 85, 247, 0.35)' : 'rgba(6, 182, 212, 0.4)');
+            ctx.lineWidth = isSectarian ? 3.5 : 1.5;
+            
+            if (isSectarian) {
+                ctx.setLineDash([12, 18]); // Línea punteada más ritualista y espaciada
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = 'rgba(168, 85, 247, 0.3)';
+            }
+
             for (let x = 0; x < width; x++) {
-                const glitch = isPaused ? 0 : (Math.random() - 0.5) * 5 * Math.pow(glitchIntensity, 2);
-                // Escalar frecuencia para visualización y añadir tiempo
-                const y = midY + Math.sin(x * (targetFreq * 0.02) + targetPhase + timeA) * 25 + glitch;
+                const glitch = isPaused ? 0 : (Math.random() - 0.5) * 8 * Math.pow(glitchIntensity, 2);
+                // Movimiento más fluido y onírico para la onda del sujeto
+                const waveY = Math.sin(x * (targetFreq * 0.02) + targetPhase + timeA);
+                const secondWave = isSectarian ? Math.sin(x * 0.01 + timeA * 0.5) * 5 : 0;
+                const y = midY + waveY * 35 + secondWave + glitch;
+                
                 if (x === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             }
             ctx.stroke();
+            ctx.setLineDash([]); 
+            ctx.shadowBlur = 0;
 
             // Onda B: JUGADOR (Controlada con tiempo)
             const normalColor = isSectarian ? '#a855f7' : '#06b6d4';
-            const syncColor = isSectarian ? '#d8b4fe' : '#06b6d4';
+            const syncColor = isSectarian ? '#d8b4fe' : '#22d3ee';
             const mismatchColor = isSectarian ? '#7e22ce' : '#f59e0b';
             
             const waveColor = isCritical ? '#ef4444' : resonanceSync > 90 ? syncColor : mismatchColor;
             ctx.beginPath();
             ctx.strokeStyle = waveColor;
-            ctx.lineWidth = 2.5;
-            ctx.shadowBlur = resonanceSync > 80 ? 15 : 0;
+            ctx.lineWidth = isSectarian ? 5 : 2.5;
+            ctx.shadowBlur = resonanceSync > 80 ? (isSectarian ? 40 : 15) : (isSectarian ? 20 : 0);
             ctx.shadowColor = waveColor;
 
+            if (isSectarian) {
+                // Efecto de aura pulsante más fuerte alrededor de la onda
+                ctx.save();
+                ctx.globalAlpha = 0.2 + Math.sin(timeB * 3) * 0.1;
+                ctx.lineWidth = 15;
+                ctx.filter = 'blur(4px)';
+                ctx.beginPath();
+                for (let x = 0; x < width; x++) {
+                    const y = midY + Math.sin(x * (localFreq * 0.02) + localPhase + timeB) * 35;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            ctx.beginPath();
             for (let x = 0; x < width; x++) {
                 const glitch = isPaused ? 0 : (Math.random() - 0.5) * 10 * Math.pow(glitchIntensity, 2);
                 // Escalar frecuencia para visualización y añadir tiempo
-                const y = midY + Math.sin(x * (localFreq * 0.02) + localPhase + timeB) * 25 + glitch;
+                const y = midY + Math.sin(x * (localFreq * 0.02) + localPhase + timeB) * 35 + glitch;
                 if (x === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             }

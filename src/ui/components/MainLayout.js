@@ -10,6 +10,7 @@
 import { html } from '../utils/html.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { CONFIG } from '../../data/gameConfig.js';
+import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 
 const { memo } = React;
 
@@ -17,8 +18,8 @@ const { memo } = React;
  * Hook para obtener las etiquetas actuales según storyPath
  */
 export const useStoryLabels = () => {
-    const storyPath = useGameState('storyPath');
-    return CONFIG.UI.LABELS[storyPath] || CONFIG.UI.LABELS[0];
+    const storyPath = useGameState('storyPath') || 0;
+    return PATH_CONFIGS[storyPath] || PATH_CONFIGS[0];
 };
 
 /**
@@ -26,8 +27,8 @@ export const useStoryLabels = () => {
  * El "Embudo" Nivel 3: El Contenedor Estructural
  */
 export const MainLayout = memo(({ children }) => {
-    const storyPath = useGameState('storyPath');
-    const themeColor = (CONFIG.UI.LABELS[storyPath] || CONFIG.UI.LABELS[0]).themeColor;
+    const storyPath = useGameState('storyPath') || 0;
+    const themeColor = (PATH_CONFIGS[storyPath] || PATH_CONFIGS[0]).themeColor;
 
     return html`
         <div 
@@ -50,13 +51,15 @@ MainLayout.displayName = 'MainLayout';
  */
 export const ModuleWrapper = memo(({ area, children, className = "", locked = false, highlighted = false }) => {
     const storyPath = useGameState('storyPath');
-    const themeColor = (CONFIG.UI.LABELS[storyPath] || CONFIG.UI.LABELS[0]).themeColor;
+    const labels = useStoryLabels();
+    const isSectarian = storyPath === 1;
+    const themeColor = isSectarian ? 'purple' : 'cyan';
 
     const focusMode = useGameState('focusMode');
     const isShielded = focusMode && area !== 'C_MAIN' && area !== 'C_HEADER' && area !== 'L_LOWER';
 
     const highlightStyle = highlighted ? {
-        boxShadow: `0 0 20px rgba(${themeColor === 'cyan' ? '6, 182, 212' : '147, 51, 234'}, 0.4)`,
+        boxShadow: `0 0 20px rgba(${isSectarian ? '147, 51, 234' : '6, 182, 212'}, 0.4)`,
         zIndex: 50
     } : {};
 
@@ -65,16 +68,25 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
             style=${highlightStyle}
             className=${`
                 mod-container mod-${area} 
-                border border-zinc-800/50 transition-all duration-[1200ms] ease-in-out
+                border transition-all duration-[1200ms] ease-in-out
+                ${isSectarian ? 'border-indigo-900/20' : 'border-zinc-800/50'}
                 ${(locked || isShielded) ? 'opacity-20 pointer-events-none grayscale' : 'opacity-100'}
-                ${highlighted ? `border-${themeColor}-500/60 ring-1 ring-${themeColor}-500/30 bg-${themeColor}-950/5 animate-pulse-slow` : 'bg-transparent'}
+                ${highlighted ? `border-${themeColor}-500/60 ring-1 ring-${themeColor}-500/30 ${isSectarian ? 'bg-indigo-950/10' : 'bg-cyan-950/5'} animate-pulse-slow` : 'bg-transparent'}
                 ${isShielded ? 'scale-[0.98]' : 'scale-100'}
                 ${className}
             `}
         >
-            <!-- Borde Industrial -->
-            <div className=${`absolute top-0 left-0 w-full h-full pointer-events-none border border-zinc-900/10 z-10`}></div>
+            <!-- Borde Temático -->
+            <div className=${`absolute top-0 left-0 w-full h-full pointer-events-none z-10 ${isSectarian ? 'border border-purple-500/5 opacity-10' : 'border border-zinc-900/10'}`}></div>
             
+            ${isSectarian && html`
+                <${React.Fragment} key="sectarian-decor">
+                    <!-- Elemento Onírico: Esquina Ritual -->
+                    <div key="corner-tl" className="absolute top-0 left-0 w-2 h-2 border-t border-l border-purple-500/20 z-20 pointer-events-none"></div>
+                    <div key="corner-br" className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-purple-500/20 z-20 pointer-events-none"></div>
+                <//>
+            `}
+
             <!-- Contenido del Bloque (Componentes Nivel 1) -->
             <div className="w-full h-full relative z-0">
                 ${children}
@@ -86,9 +98,9 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
             <!-- Indicador de Bloqueo -->
             ${locked && !isShielded && html`
                 <div className="absolute inset-0 flex items-center justify-center z-40 bg-black/40 backdrop-blur-[1px]">
-                    <div className="transform -rotate-12 border border-red-900/50 bg-black/80 px-4 py-1">
-                        <span className="text-[10px] text-red-500 font-black tracking-[0.2em] uppercase">
-                            Locked_Access
+                    <div className=${`transform -rotate-12 border bg-black/80 px-4 py-1 ${isSectarian ? 'border-purple-900/50 shadow-[0_0_10px_rgba(147,51,234,0.1)]' : 'border-red-900/50'}`}>
+                        <span className=${`text-[10px] font-black tracking-[0.2em] uppercase ${isSectarian ? 'text-purple-400' : 'text-red-500'}`}>
+                            ${labels.layout.lockedLabel}
                         </span>
                     </div>
                 </div>
@@ -148,7 +160,7 @@ export const InvisibleUtilityBar = memo(({ value = 0, max = 100 }) => {
         <div className="invisible-utility-bar w-full">
             <div className="flex justify-between items-center mb-1">
                 <span className="text-zinc-600 text-[10px] uppercase tracking-widest">
-                    ${labels.utilityLabel}
+                    ${labels.layout.utilityLabel}
                 </span>
                 <!-- Sin número exacto, solo indicador visual -->
                 <span className="text-zinc-700 text-[10px]">

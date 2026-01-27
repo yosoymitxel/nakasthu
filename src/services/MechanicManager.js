@@ -107,15 +107,14 @@ class DecisionMechanic extends BaseMechanic {
             });
         }
         
-        state.processedCount++;
+        // REGLA: El incremento de processedCount ahora lo gestiona GameSequencer.js
+        // para centralizar la validación de cuota y evitar el error 6/5.
+        
         state.endBatch();
         
         bus.emit('AUTHORIZE_EFFECT');
         bus.emit('DECISION_MADE', { subject, action: 'authorize' });
         bus.emit('SESSION_TERMINATED');
-
-        // REGLA: Eliminado el nextSubject redundante. 
-        // GameSequencer.js maneja la llegada del siguiente sujeto basándose en la cuota.
     }
 
     handleSacrifice() {
@@ -163,15 +162,13 @@ class DecisionMechanic extends BaseMechanic {
             });
         }
         
-        state.processedCount++;
+        // REGLA: El incremento de processedCount ahora lo gestiona GameSequencer.js
+        
         state.endBatch();
         
         bus.emit('SACRIFICE_EFFECT');
         bus.emit('DECISION_MADE', { subject, action: 'sacrifice' });
         bus.emit('SESSION_TERMINATED');
-
-        // REGLA: Eliminado el nextSubject redundante.
-        // GameSequencer.js maneja la llegada del siguiente sujeto basándose en la cuota.
     }
 }
 

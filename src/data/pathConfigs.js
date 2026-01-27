@@ -78,20 +78,39 @@ export const PATH_CONFIGS = {
             noSubjectMsg: '[ERROR] NO SE DETECTA BIOMASA EN EL ÁREA DE INTERACCIÓN.',
             rejectLabel: 'SACRIFICAR',
             authorizeLabel: 'AUTORIZAR',
-            overrideBlockedMsg: '>>> ERROR: PROTOCOLO DE SACRIFICIO BLOQUEADO POR KAMIN.'
+            overrideBlockedMsg: '>>> ERROR: PROTOCOLO DE SACRIFICIO BLOQUEADO POR KAMIN.',
+            overrideLabel: 'ERR: OVERRIDE',
+            errorLabel: 'FALLOS',
+            quotaLabel: 'CUOTA_DIARIA',
+            statLabels: {
+                energy: 'E',
+                stability: 'S'
+            },
+            viewLabels: {
+                portal: 'ORBITAL',
+                subject: 'LIVE_FEED'
+            }
+        },
+        specialMechanic: {
+            header: 'SINCRONIZACIÓN NEURAL',
+            instruction: 'MANTENGA [ESPACIO] PARA SINCRONIZAR',
+            complete: 'SINCRONIZACIÓN COMPLETADA',
+            statusSyncing: '◆ SINCRONIZANDO... ◆',
+            statusComplete: '◆ SINCRONIZADO ◆',
+            statusWaiting: '◇ EN ESPERA ◇'
         },
         bioscan: {
-            title: 'BIO-SCANNER v4.02',
-            repeats: 'REPEATS',
-            required: 'REQUIRED',
-            offline: 'MOD-01 OFFLINE',
-            scanning: 'Procesando...',
-            ready: 'Ready',
-            insufficient: 'Insufficient Power',
+            title: 'BIOSCANNER_UNIT',
+            repeats: 'REPETICIONES',
+            required: 'REQUERIDO',
+            offline: 'OFFLINE',
+            scanning: 'Escaneando...',
+            ready: 'Listo',
+            insufficient: 'Energía Insuficiente',
             scans: {
                 THERMAL: 'TÉRMICO',
                 NEURAL: 'NEURAL',
-                NAKARA: 'NAKARA',
+                NAKARA: 'SONDA_NAKARA',
                 BIOMETRIC: 'BIOMÉTRICO',
                 RESONANCE: 'RESONANCIA'
             }
@@ -99,14 +118,63 @@ export const PATH_CONFIGS = {
         controlPanel: {
             title: 'Centro de Control',
             status: 'Link_Active',
-            manualTitle: 'OPERATIONAL_MANUAL',
-            skipTutorialMsg: '[SISTEMA] INDUCCIÓN ABORTADA. PROCEDIENDO A OPERACIONES ESTÁNDAR.',
+            quotaLabel: 'QUOTA_SYS',
+            manualTitle: 'MANUAL DE OPERACIONES NAKASTHU',
+            manualQuote: '"La eficiencia es el único bastión contra el Caos de Kamin. No dude. No sienta. Solo procese."',
+            skipTutorialMsg: '[SISTEMA] INDUCCIÓN ABORTADA. PROCEDIENDO a OPERACIONES ESTÁNDAR.',
             manual: {
-                objective: { label: 'OBJETIVO:', text: 'Procesar biomasa según criterios de pureza.' },
-                sacrifice: { label: 'SACRIFICAR:', text: 'Elimina sujetos corruptos (+30 Energía). Error si es puro (-25 Estabilidad).' },
-                authorize: { label: 'AUTORIZAR:', text: 'Permite el paso de sujetos puros (-10 Energía, +10 Estabilidad). Error si es corrupto (-30 Estabilidad).' },
-                resonance: { label: 'RESONANCIA:', text: 'Mantiene la estabilidad del núcleo neural.' }
+                objective: { label: 'PROTOCOLO:', text: 'Identificar y procesar biomasa. El Motor Polimórfico adapta la interfaz a su perfil técnico.' },
+                sacrifice: { label: 'SACRIFICIO:', text: 'Elimina sujetos con rastro de Kamin (+30 Energía). Error en sujeto puro: -25 Estabilidad.' },
+                authorize: { label: 'AUTORIZAR:', text: 'Permite el paso de sujetos puros (+10 Estabilidad, -10 Energía). Error en sujeto corrupto: -30 Estabilidad.' },
+                resonance: { label: 'RESONANCIA:', text: 'Sincronice frecuencia y fase con el Monolito para evitar el colapso del núcleo neural y recuperar estabilidad.' },
+                scanning: { label: 'BIO-SCAN (MOD-01):', text: 'Inspección obligatoria. Use Térmico, Neural, Nakara, Biométrico y Resonancia para detectar anomalías.' },
+                resources: { label: 'SISTEMAS:', text: 'Energía (Combustible), Estabilidad (Integridad del Bastión) y Oxígeno (Soporte Vital). Si uno llega a 0, la misión termina.' },
+                economy: { label: 'ECONOMÍA:', text: 'Los sacrificios generan cristales de Nakasthu. Las autorizaciones consumen energía pero mantienen la paz social.' }
             }
+        },
+        layout: {
+            lockedLabel: 'Locked_Access',
+            utilityLabel: 'UTILIDAD'
+        },
+        factions: {
+            order: 'ORDEN',
+            chaos: 'CAOS',
+            statusLabel: 'EQUILIBRIO_IDEOLÓGICO',
+            descriptions: {
+                neutral_status: 'EN_EQUILIBRIO',
+                order: 'La estructura de Nakasthu prevalece. La eficiencia técnica es absoluta.',
+                chaos: 'La influencia de Kamin se filtra por las grietas. La entropía aumenta.',
+                neutral: 'Balance operativo nominal. Sin desviaciones ideológicas detectadas.'
+            }
+        },
+        analytics: {
+            invokingTrace: 'INVOCANDO_TRAZA',
+            monitoring: 'MONITOREO',
+            linkActive: 'ENLACE_ACTIVO',
+            statusLabel: 'ESTADO',
+            results: {
+                BIOMETRIC: 'Firma Biométrica: {val}',
+                NEURAL: 'Sincronía Neural: {val}%',
+                THERMAL: 'Firma Térmica: {val}°C',
+                NAKARA: 'Profundidad Nakara: {val}',
+                RESONANCE: 'Frecuencia de Resonancia: {val}Hz',
+                DEFAULT: 'Dato capturado: {val}'
+            },
+            CONSTANTS: {
+                UNSTABLE_THRESHOLD: 30,
+                PROB_CRITICAL: 75,
+                PROB_WARNING: 50
+            }
+        },
+        terminal: {
+            header: 'ZHYR_OS TERMINAL v2.04',
+            version: 'BUILD_88.4',
+            welcome: 'ZHYR_OS v2.0.4 - SISTEMA DE CONTROL DE BASTIÓN ONLINE. ESCRIBA /HELP PARA COMANDOS.',
+            placeholder: 'Ingrese comando...',
+            paused: 'SISTEMA EN PAUSA...',
+            tutorial: 'MODO INDUCCIÓN ACTIVO...',
+            clear: 'TERMINAL LIMPIA.',
+            reset: 'SESIÓN TERMINADA. REINICIANDO ENTORNO...'
         }
     },
     1: { // SECTARIO (Religioso)
@@ -128,10 +196,10 @@ export const PATH_CONFIGS = {
         },
         emergencies: {
             resonance: {
-                name: 'DISONANCIA',
+                name: 'DISONANCIA DEL VELO',
                 module: 'MOD-06-S',
-                alert: '[ALERTA] DISONANCIA DE ALMAS: EL VELO SE DESGARRRA.',
-                success: '[SISTEMA] ALMAS UNIFICADAS. ESTABILIDAD RECUPERADA (+10).',
+                alert: '[ALERTA] DISONANCIA DEL VELO: LAS ALMAS SUSURRAN.',
+                success: '[SISTEMA] EL VELO SE HA ESTABILIZADO. (+10).',
                 action: 'UNIFICAR'
             },
             oxygen: {
@@ -147,7 +215,6 @@ export const PATH_CONFIGS = {
                 name: 'CANAL DE ALMAS',
                 module: 'MOD-05-S',
                 alert: '[ALERTA] CANALIZACIÓN INTERRUMPIDA: LAS ALMAS SE ESCAPAN.',
-                warning: '>>> ADVERTENCIA: EL FLUJO DE ALMAS SE DEBILITA. LA NAKARA TIEMBLA.',
                 success: '[SISTEMA] CANAL DE ALMAS RECONECTADO (+15%)',
                 action: 'CANALIZAR',
                 status: ['RUPTURA', 'FLUIDO']
@@ -167,14 +234,14 @@ export const PATH_CONFIGS = {
             }
         },
         operations: {
-            interrogateBtn: 'INICIAR COMUNIÓN [INTERROGAR]',
-            interrogateEnd: 'TERMINAR INTERROGATORIO',
+            interrogateBtn: 'INICIAR COMUNIÓN ESPIRITUAL',
+            interrogateEnd: 'FINALIZAR RITO',
             waitingSubject: 'Alma en espera de purificación...',
             pendingValidation: 'TRANSICIÓN PENDIENTE DE LECTURA DE AURA',
             scanRequired: 'SE REQUIERE REVELACIÓN',
             newSubjectMsg: 'UNA NUEVA ESENCIA HA LLEGADO AL UMBRAL.',
             anomalyMsg: '>>> ADVERTENCIA: INTERFERENCIA EN EL VELO. PRESENCIA NO DESEADA.',
-            systemSender: 'NAKARA_VOX',
+            systemSender: 'EL_VACÍO',
             subjectSender: 'ESENCIA',
             operatorSender: 'INQUISIDOR',
             linkClosedMsg: 'COMUNIÓN FINALIZADA.',
@@ -182,7 +249,26 @@ export const PATH_CONFIGS = {
             noSubjectMsg: '[ERROR] EL UMBRAL SE ENCUENTRA VACÍO.',
             rejectLabel: 'PURGAR',
             authorizeLabel: 'CONSAGRAR',
-            overrideBlockedMsg: '>>> ERROR: EL SACRIFICIO HA SIDO INTERCEPTADO POR KAMIN.'
+            overrideBlockedMsg: '>>> ERROR: EL SACRIFICIO HA SIDO INTERCEPTADO POR KAMIN.',
+            overrideLabel: 'VELO: INTERFERENCIA',
+            errorLabel: 'PROFANO',
+            quotaLabel: 'COSECHA',
+            statLabels: {
+                energy: 'F',
+                stability: 'P'
+            },
+            viewLabels: {
+                portal: 'VELO_ASTRAL',
+                subject: 'VISIÓN_MORTAL'
+            }
+        },
+        specialMechanic: {
+            header: 'COMUNIÓN ONÍRICA',
+            instruction: 'MANTENGA [ESPACIO] PARA COMULGAR',
+            complete: 'ASCENSIÓN COMPLETADA',
+            statusSyncing: '◆ COMULGANDO... ◆',
+            statusComplete: '◆ ASCENSIÓN ◆',
+            statusWaiting: '◇ EN ESPERA ◇'
         },
         bioscan: {
             title: 'ALTAR DE EXAMEN v4.02',
@@ -193,24 +279,73 @@ export const PATH_CONFIGS = {
             ready: 'Listo',
             insufficient: 'Falta Ofrenda',
             scans: {
-                THERMAL: 'CALOR VITAL',
-                NEURAL: 'VÍNCULO',
-                NAKARA: 'ESENCIA',
-                BIOMETRIC: 'MARCA',
-                RESONANCE: 'ARMONÍA'
+                THERMAL: 'ALIENTO ÍGNEO',
+                NEURAL: 'PULSACIÓN DEL ALMA',
+                NAKARA: 'PROFUNDIDAD DEL VACÍO',
+                BIOMETRIC: 'RASTRO DE SANGRE',
+                RESONANCE: 'RESONANCIA ETERNA'
             }
         },
         controlPanel: {
             title: 'Altar de Almas',
             status: 'Soul_Linked',
-            manualTitle: 'DOGMA_ESPIRITUAL',
+            quotaLabel: 'COSECHA',
+            manualTitle: 'DOGMA DE LA NAKARA',
+            manualQuote: '"La fe es el único velo contra la mentira de Drexler. No cuestione. No dude. Solo purifique."',
             skipTutorialMsg: '[RITUAL] INDUCCIÓN ABORTADA. PROCEDIENDO A LA COMUNIÓN.',
             manual: {
-                objective: { label: 'MISIÓN:', text: 'Separar el trigo de la paja para alimentar la Nakara.' },
-                sacrifice: { label: 'PURGAR:', text: 'Libera almas corruptas para alimentar el fuego (+30 Energía). Error si es devoto (-25 Estabilidad).' },
-                authorize: { label: 'CONSAGRAR:', text: 'Permite la ascensión de devotos puros (-10 Energía, +10 Estabilidad). Error si es corrupto (-30 Estabilidad).' },
-                resonance: { label: 'RESONANCIA:', text: 'Mantiene la armonía con el velo espiritual.' }
+                objective: { label: 'DOGMA:', text: 'Separar el trigo de la paja. La Nakara revela la verdad a través del Altar de Examen.' },
+                sacrifice: { label: 'PURGAR:', text: 'Libera almas corruptas por Kamin para alimentar el fuego (+30 Energía). Error en devoto: -25 Estabilidad.' },
+                authorize: { label: 'CONSAGRAR:', text: 'Permite la ascensión de devotos puros (+10 Estabilidad, -10 Energía). Error en corrupto: -30 Estabilidad.' },
+                resonance: { label: 'ARMONÍA:', text: 'Unifique las almas en disonancia con la vibración del Velo para recuperar la paz espiritual.' },
+                scanning: { label: 'REVELACIÓN (MOD-01):', text: 'Rito de examen obligatorio. Use los cinco ritos para detectar la mancha de Kamin.' },
+                resources: { label: 'ESENCIAS:', text: 'Fe (Energía), Paz (Estabilidad) y Aliento (Oxígeno). El vacío aguarda si alguno se extingue.' },
+                economy: { label: 'OFRENDA:', text: 'El sacrificio de lo impuro alimenta el Altar de Examen. La consagración purifica el Bastión.' }
             }
+        },
+        layout: {
+            lockedLabel: 'Velo_Cerrado',
+            utilityLabel: 'PUREZA'
+        },
+        factions: {
+            order: 'DOGMA',
+            chaos: 'ENTROPÍA',
+            statusLabel: 'ARMONÍA_ESPIRITUAL',
+            descriptions: {
+                neutral_status: 'VACÍO_PRIMORDIAL',
+                order: 'El Dogma de Nakasthu se impone. La fe es inquebrantable.',
+                chaos: 'La Entropía de Kamin corroe el espíritu. El Velo se debilita.',
+                neutral: 'Equilibrio en el vacío. Las almas aguardan su destino.'
+            }
+        },
+        analytics: {
+            invokingTrace: 'INVOCANDO_REVELACIÓN',
+            monitoring: 'CONTEMPLACIÓN',
+            linkActive: 'COMUNIÓN_ACTIVA',
+            statusLabel: 'VOLUNTAD',
+            results: {
+                BIOMETRIC: 'Rastro de Sangre: {val}',
+                NEURAL: 'Pulsación del Alma: {val}%',
+                THERMAL: 'Aliento Ígneo: {val}°C',
+                NAKARA: 'Profundidad del Vacío: {val}',
+                RESONANCE: 'Resonancia Eterna: {val}Hz',
+                DEFAULT: 'Esencia capturada: {val}'
+            },
+            CONSTANTS: {
+                UNSTABLE_THRESHOLD: 40,
+                PROB_CRITICAL: 80,
+                PROB_WARNING: 60
+            }
+        },
+        terminal: {
+            header: '† ALTAR DE SUSURROS †',
+            version: 'AETHER_v4',
+            welcome: 'EL VELO SE ABRE. LAS ALMAS SUSURRAN TU NOMBRE. ENTONA /HELP PARA RITOS.',
+            placeholder: 'Entona tu plegaria...',
+            paused: 'EL TIEMPO SE DETIENE...',
+            tutorial: 'LA ILUMINACIÓN REQUIERE PACIENCIA...',
+            clear: 'EL UMBRAL HA SIDO PURIFICADO.',
+            reset: 'LA COMUNIÓN HA TERMINADO. EL VACÍO AGUARDA...'
         }
     }
 };

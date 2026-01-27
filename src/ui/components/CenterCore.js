@@ -18,6 +18,7 @@ export const CenterCore = ({ getModuleTutorialStatus, unlockedModules = new Set(
     return html`
         <${React.Fragment}>
             <${ModuleWrapper} 
+                key="C_HEADER"
                 area="C_HEADER"
                 locked=${getModuleTutorialStatus('C_HEADER').locked}
                 highlighted=${getModuleTutorialStatus('C_HEADER').highlighted}
@@ -28,6 +29,7 @@ export const CenterCore = ({ getModuleTutorialStatus, unlockedModules = new Set(
             <//>
 
             <${ModuleWrapper} 
+                key="C_MAIN"
                 area="C_MAIN"
                 locked=${getModuleTutorialStatus('C_MAIN').locked}
                 highlighted=${getModuleTutorialStatus('C_MAIN').highlighted}
@@ -38,6 +40,7 @@ export const CenterCore = ({ getModuleTutorialStatus, unlockedModules = new Set(
             <//>
 
             <${ModuleWrapper} 
+                key="C_FOOTER"
                 area="C_FOOTER"
                 locked=${getModuleTutorialStatus('C_FOOTER').locked}
                 highlighted=${getModuleTutorialStatus('C_FOOTER').highlighted}

@@ -128,7 +128,6 @@ const stateManager = {
         
         this.hasSeenTutorial = tutorialSeen;
         this.maxStepReached = maxStep;
-        this.nextSubject();
         this.endBatch();
         
         bus.emit('SYSTEM_LOG', { msg: 'REINICIO_COMPLETO_ESTADO' });

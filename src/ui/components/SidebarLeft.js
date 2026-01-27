@@ -15,10 +15,21 @@ import { getModuleName } from '../../systems/ModuleRegistry.js';
 
 export const SidebarLeft = ({ getModuleTutorialStatus, unlockedModules = new Set() }) => {
     const storyPath = useGameState('storyPath');
+    const isSectarian = storyPath === 1;
 
     return html`
         <${React.Fragment}>
+            ${isSectarian && html`
+                <${React.Fragment} key="sectarian-fx">
+                    <!-- Efecto de bruma onírica para el lateral -->
+                    <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_0%_50%,_rgba(168,85,247,0.05)_0%,_transparent_50%)]"></div>
+                        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-purple-950/10 to-transparent"></div>
+                    </div>
+                <//>
+            `}
             <${ModuleWrapper} 
+                key="L_TOP"
                 area="L_TOP"
                 locked=${getModuleTutorialStatus('L_TOP').locked}
                 highlighted=${getModuleTutorialStatus('L_TOP').highlighted}
@@ -29,6 +40,7 @@ export const SidebarLeft = ({ getModuleTutorialStatus, unlockedModules = new Set
             <//>
 
             <${ModuleWrapper} 
+                key="L_UPPER"
                 area="L_UPPER"
                 locked=${getModuleTutorialStatus('L_UPPER').locked}
                 highlighted=${getModuleTutorialStatus('L_UPPER').highlighted}
@@ -39,6 +51,7 @@ export const SidebarLeft = ({ getModuleTutorialStatus, unlockedModules = new Set
             <//>
 
             <${ModuleWrapper} 
+                key="L_LOWER"
                 area="L_LOWER"
                 locked=${getModuleTutorialStatus('L_LOWER').locked}
                 highlighted=${getModuleTutorialStatus('L_LOWER').highlighted}
@@ -49,6 +62,7 @@ export const SidebarLeft = ({ getModuleTutorialStatus, unlockedModules = new Set
             <//>
 
             <${ModuleWrapper} 
+                key="L_BOTTOM"
                 area="L_BOTTOM"
                 locked=${getModuleTutorialStatus('L_BOTTOM').locked}
                 highlighted=${getModuleTutorialStatus('L_BOTTOM').highlighted}

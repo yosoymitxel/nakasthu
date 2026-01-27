@@ -10,7 +10,9 @@ const { useRef, useEffect } = React;
 export const PortalScene = () => {
     const mode = useGameState('mode');
     const orbitalCycle = useGameState('orbitalCycle');
-    const isEclipse = mode === 'ECLIPSE';
+    const storyPath = useGameState('storyPath') || 0;
+    const isSectarian = storyPath === 1;
+    const isEclipse = mode === 'ECLIPSE' || isSectarian;
     
     const prevCycleRef = useRef(orbitalCycle);
     const isJump = Math.abs(prevCycleRef.current - orbitalCycle) > 50;
@@ -42,11 +44,42 @@ export const PortalScene = () => {
                         <feGaussianBlur stdDeviation="6" result="blur" />
                         <feColorMatrix in="blur" type="matrix" values="0.6 0 0 0 0  0.2 0 0 0 0  0.9 0 0 0 0  0 0 0 1 0" />
                     </filter>
+
+                    <!-- Altar Sagrado (Sectario) -->
+                    <filter id="altarGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="8" result="blur" />
+                        <feDropShadow dx="0" dy="0" stdDeviation="10" floodColor="#7c3aed" floodOpacity="0.5" />
+                    </filter>
                 </defs>
 
                 <!-- El Sol / Portal (Maximizado r=60) -->
                 <g transform="translate(100, 100)">
-                    ${!isEclipse ? html`
+                    ${isSectarian ? html`
+                        <!-- MODO SECTARIO: EL ALTAR DEL VACÍO -->
+                        <g className="animate-slow-spin origin-center">
+                            <!-- Aura Exterior -->
+                            <circle 
+                                r="70" 
+                                fill="none" 
+                                stroke="#7c3aed" 
+                                strokeWidth="0.5" 
+                                strokeDasharray="1,10"
+                                className="opacity-40"
+                            />
+                            <!-- El Vacío -->
+                            <circle 
+                                r="55" 
+                                fill="black" 
+                                filter="url(#altarGlow)"
+                            />
+                            <!-- Símbolos Sagrados (Heptagrama Ritual) -->
+                            <g className="opacity-40" stroke="#7c3aed" strokeWidth="0.8" fill="none">
+                                <path d="M0,-50 L11.5,-15 L47.5,-15 L18,8 L28,45 L0,22 L-28,45 L-18,8 L-47.5,-15 L-11.5,-15 Z" />
+                                <circle r="50" strokeDasharray="2,2" />
+                                <circle r="35" strokeDasharray="5,5" className="animate-pulse" />
+                            </g>
+                        </g>
+                    ` : !isEclipse ? html`
                         <!-- MODO SOLAR -->
                         <circle 
                             r="60" 

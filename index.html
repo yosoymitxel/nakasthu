@@ -47,8 +47,20 @@
                         'pulse-border-critical': 'pulse-border-critical 2s ease-in-out infinite',
                         'fade-in': 'fade-in 0.5s ease-out forwards',
                         'spin-slow': 'spin 10s linear infinite',
+                        'slow-spin': 'spin 15s linear infinite',
+                        'ritual-glow': 'ritual-glow 4s ease-in-out infinite',
+                        'whisper-flow': 'whisper-flow 8s ease-in-out infinite',
+                        'float-slow': 'float 10s ease-in-out infinite',
                     },
                     keyframes: {
+                        'ritual-glow': {
+                            '0%, 100%': { opacity: '0.3', filter: 'blur(5px) brightness(1)' },
+                            '50%': { opacity: '0.7', filter: 'blur(10px) brightness(1.5)' },
+                        },
+                        'whisper-flow': {
+                            '0%, 100%': { transform: 'translateX(-5%) translateY(0)', opacity: '0.2' },
+                            '50%': { transform: 'translateX(5%) translateY(-10px)', opacity: '0.5' },
+                        },
                         'fade-in': {
                             '0%': { opacity: '0', transform: 'scale(0.98)' },
                             '100%': { opacity: '1', transform: 'scale(1)' },

@@ -21,6 +21,7 @@ const ResonanceModule = ({ isActive, storyPath }) => {
     const pathConfig = PATH_CONFIGS[storyPath || 0];
     const { primary, emergency } = pathConfig.theme;
     const config = pathConfig.emergencies.resonance;
+    const isSectarian = storyPath === 1;
     
     // REGLA: En el nivel 6 ("La Urgencia"), el módulo debe ser interactuable siempre
     const isLevel6 = currentStep === 6;
@@ -51,38 +52,74 @@ const ResonanceModule = ({ isActive, storyPath }) => {
             ctx.clearRect(0, 0, width, height);
             if (!isPaused) time += 0.05;
 
-            // Dibujar rejilla tenue
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-            ctx.lineWidth = 1;
-            for (let i = 0; i < width; i += 20) {
-                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke();
-            }
+            if (isSectarian) {
+                // Dibujar aura mística para el sectario
+                ctx.globalCompositeOperation = 'screen';
+                
+                // Fondo pulsante
+                const pulse = Math.sin(time * 2) * 0.05 + 0.1;
+                ctx.fillStyle = `rgba(147, 51, 234, ${pulse})`;
+                ctx.fillRect(0, 0, width, height);
 
-            // Onda Objetivo
-            ctx.beginPath();
-            ctx.strokeStyle = primary === 'purple' ? 'rgba(147, 51, 234, 0.3)' : 'rgba(6, 182, 212, 0.3)';
-            for (let x = 0; x < width; x++) {
-                const y = midY + Math.sin(x * (targetFreq * 0.02) + targetPhase + time) * 15;
-                if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-            }
-            ctx.stroke();
+                // Representación de almas (partículas o líneas fluidas)
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = 'rgba(147, 51, 234, 0.4)';
+                ctx.beginPath();
+                for (let x = 0; x < width; x += 5) {
+                    const offset = Math.sin(x * 0.05 + time) * 5;
+                    ctx.moveTo(x, midY + offset - 10);
+                    ctx.lineTo(x, midY + offset + 10);
+                }
+                ctx.stroke();
 
-            // Onda Local
-            ctx.beginPath();
-            ctx.strokeStyle = resonanceSync > 85 ? '#10b981' : (primary === 'purple' ? '#a855f7' : '#06b6d4');
-            ctx.lineWidth = 2;
-            for (let x = 0; x < width; x++) {
-                const y = midY + Math.sin(x * (localFreq * 0.02) + localPhase + time) * 15;
-                if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                // Línea de unión (Velo)
+                ctx.beginPath();
+                ctx.strokeStyle = resonanceSync > 85 ? '#10b981' : '#a855f7';
+                ctx.lineWidth = 2;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = ctx.strokeStyle;
+                for (let x = 0; x < width; x++) {
+                    const targetY = midY + Math.sin(x * (targetFreq * 0.02) + targetPhase + time) * 15;
+                    const localY = midY + Math.sin(x * (localFreq * 0.02) + localPhase + time) * 15;
+                    const y = localY + (targetY - localY) * (resonanceSync / 100);
+                    if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            } else {
+                // Dibujar rejilla tenue (Operario)
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+                ctx.lineWidth = 1;
+                for (let i = 0; i < width; i += 20) {
+                    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke();
+                }
+
+                // Onda Objetivo
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(6, 182, 212, 0.3)';
+                for (let x = 0; x < width; x++) {
+                    const y = midY + Math.sin(x * (targetFreq * 0.02) + targetPhase + time) * 15;
+                    if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+
+                // Onda Local
+                ctx.beginPath();
+                ctx.strokeStyle = resonanceSync > 85 ? '#10b981' : '#06b6d4';
+                ctx.lineWidth = 2;
+                for (let x = 0; x < width; x++) {
+                    const y = midY + Math.sin(x * (localFreq * 0.02) + localPhase + time) * 15;
+                    if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
             }
-            ctx.stroke();
 
             animationFrameId = requestAnimationFrame(render);
         };
 
         render();
         return () => cancelAnimationFrame(animationFrameId);
-    }, [forceActive, targetFreq, targetPhase, localFreq, localPhase, resonanceSync, isPaused, primary]);
+    }, [forceActive, targetFreq, targetPhase, localFreq, localPhase, resonanceSync, isPaused, primary, isSectarian]);
 
     const adjust = (type, val) => {
         engineState[type] = val;
@@ -107,11 +144,11 @@ const ResonanceModule = ({ isActive, storyPath }) => {
             <!-- Título y Estado -->
             <div className=${`absolute top-0 right-0 w-12 h-12 rotate-45 translate-x-6 -translate-y-6 pointer-events-none ${accentColorClass}`}></div>
             
-            <canvas ref=${canvasRef} width="200" height="60" className=${`w-full h-16 bg-black/40 border shadow-[0_0_10px_rgba(6,182,212,0.1)] transition-colors ${primary === 'purple' ? 'border-purple-800/50 group-hover:border-purple-500/30' : 'border-cyan-800/50 group-hover:border-cyan-500/30'}`} />
+            <canvas ref=${canvasRef} width="200" height="60" className=${`w-full h-16 bg-black/40 border transition-colors ${primary === 'purple' ? 'border-purple-800/50 group-hover:border-purple-500/30 shadow-[0_0_10px_rgba(168,85,247,0.1)]' : 'border-cyan-800/50 group-hover:border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.1)]'}`} />
             <div className="flex flex-col gap-1">
                 <div className=${`flex justify-between text-[10px] uppercase font-mono ${textColorClass}`}>
                     <span>${config.name}</span>
-                    <span className=${resonanceSync >= 90 ? 'text-emerald-400 animate-pulse' : (primary === 'purple' ? 'text-purple-400' : 'text-cyan-400')}>${resonanceSync}%</span>
+                    <span className=${resonanceSync >= 90 ? 'text-emerald-400 animate-pulse' : (primary === 'purple' ? 'text-purple-400' : 'text-cyan-400')}>${Math.floor(resonanceSync)}%</span>
                 </div>
                 <div className=${`h-1 bg-zinc-900 border ${primary === 'purple' ? 'border-purple-900/50' : 'border-cyan-900/50'}`}>
                     <div className=${`h-full transition-all duration-300 ${barColorClass}`} style=${{ width: `${resonanceSync}%` }} />
@@ -120,16 +157,20 @@ const ResonanceModule = ({ isActive, storyPath }) => {
 
             <div className="flex flex-col gap-1.5">
                 <div className="flex flex-col gap-0.5">
-                    <span className=${`text-[8px] uppercase font-bold tracking-widest ${primary === 'purple' ? 'text-purple-600' : 'text-cyan-600'}`}>Frecuencia</span>
+                    <span className=${`text-[8px] uppercase font-bold tracking-widest ${isSectarian ? 'text-purple-400 animate-pulse' : (primary === 'purple' ? 'text-purple-600' : 'text-cyan-600')}`}>
+                        ${isSectarian ? 'Sintonía_del_Alma' : 'Frecuencia'}
+                    </span>
                     <input type="range" min="0.1" max="60" step="0.1" value=${localFreq} 
                         onChange=${(e) => adjust('localFrequency', parseFloat(e.target.value))}
-                        className=${`w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer transition-all ${primary === 'purple' ? 'accent-purple-500 hover:accent-purple-400' : 'accent-cyan-500 hover:accent-cyan-400'}`} />
+                        className=${`w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer transition-all ${isSectarian ? 'accent-purple-500 hover:accent-purple-400 shadow-[0_0_5px_rgba(168,85,247,0.5)]' : (primary === 'purple' ? 'accent-purple-500 hover:accent-purple-400' : 'accent-cyan-500 hover:accent-cyan-400')}`} />
                 </div>
                 <div className="flex flex-col gap-0.5">
-                    <span className=${`text-[8px] uppercase font-bold tracking-widest ${primary === 'purple' ? 'text-red-600' : 'text-purple-600'}`}>Fase</span>
+                    <span className=${`text-[8px] uppercase font-bold tracking-widest ${isSectarian ? 'text-red-400 animate-pulse' : (primary === 'purple' ? 'text-red-600' : 'text-purple-600')}`}>
+                        ${isSectarian ? 'Oscilación_del_Velo' : 'Fase'}
+                    </span>
                     <input type="range" min="0" max=${Math.PI * 2} step="0.1" value=${localPhase}
                         onChange=${(e) => adjust('localPhase', parseFloat(e.target.value))}
-                        className=${`w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer transition-all ${primary === 'purple' ? 'accent-red-500 hover:accent-red-400' : 'accent-purple-500 hover:accent-purple-400'}`} />
+                        className=${`w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer transition-all ${isSectarian ? 'accent-red-500 hover:accent-red-400 shadow-[0_0_5px_rgba(239,68,68,0.5)]' : (primary === 'purple' ? 'accent-red-500 hover:accent-red-400' : 'accent-purple-500 hover:accent-purple-400')}`} />
                 </div>
             </div>
 
@@ -142,7 +183,7 @@ const ResonanceModule = ({ isActive, storyPath }) => {
             </button>
 
             <div className=${`text-[9px] font-mono flex justify-between mt-auto ${primary === 'purple' ? 'text-purple-900' : 'text-cyan-900'}`}>
-                <span className="opacity-50">${config.module} // NEURAL_LINK</span>
+                <span className="opacity-50">${config.module} // ${isSectarian ? 'ARMONÍA_ESPIRITUAL' : 'ENLACE_NEURAL'}</span>
             </div>
         </div>
     `;
@@ -157,6 +198,7 @@ const OxygenModule = ({ isActive, storyPath }) => {
     const pathConfig = PATH_CONFIGS[storyPath || 0];
     const { primary, emergency } = pathConfig.theme;
     const config = pathConfig.emergencies.oxygen;
+    const isSectarian = storyPath === 1;
 
     // REGLA: En el nivel 6 ("La Urgencia"), el módulo debe ser interactuable siempre
     const isLevel6 = currentStep === 6;
@@ -172,8 +214,9 @@ const OxygenModule = ({ isActive, storyPath }) => {
         setUserInput([]);
         setIsGenerating(true);
         
+        const sequenceLabels = newSeq.map(n => config.labels[n-1]);
         bus.emit('TERMINAL_PRINT', { 
-            text: `${config.alert} SECUENCIA: ${newSeq.join('-')}`, 
+            text: `${config.alert} ORDEN: ${sequenceLabels.join(' ➔ ')}`, 
             type: 'SYSTEM' 
         });
 
@@ -223,9 +266,13 @@ const OxygenModule = ({ isActive, storyPath }) => {
     return html`
         <div className=${`flex flex-col h-full p-2 justify-between border relative overflow-hidden group ${!forceActive ? 'grayscale opacity-40' : 'animate-flicker'} ${primaryColorClass}`}>
             <!-- Warning stripe detail -->
-            <div className="absolute top-0 left-0 w-full h-1 bg-[repeating-linear-gradient(45deg,#450a0a,#450a0a_10px,#7f1d1d_10px,#7f1d1d_20px)] opacity-20"></div>
+            ${isSectarian ? html`
+                <div className="absolute top-0 left-0 w-full h-1 bg-[repeating-linear-gradient(45deg,#2e1065,#2e1065_10px,#4c1d95_10px,#4c1d95_20px)] opacity-40"></div>
+            ` : html`
+                <div className="absolute top-0 left-0 w-full h-1 bg-[repeating-linear-gradient(45deg,#450a0a,#450a0a_10px,#7f1d1d_10px,#7f1d1d_20px)] opacity-20"></div>
+            `}
             
-            <div className="flex flex-col gap-1 mb-2">
+            <div className="flex flex-col gap-1 mb-2 relative z-10">
                 <div className="flex justify-between items-center">
                     <span className=${`text-[10px] uppercase font-mono font-bold tracking-tighter ${textColorClass}`}>
                         ${config.name}
@@ -234,40 +281,67 @@ const OxygenModule = ({ isActive, storyPath }) => {
                         STATUS: ${statusText}
                     </span>
                 </div>
-                <div className=${`h-0.5 w-full relative overflow-hidden ${primary === 'purple' ? 'bg-purple-900/30' : 'bg-red-900/30'}`}>
+                <div className=${`h-0.5 w-full relative overflow-hidden ${isSectarian ? 'bg-purple-900/30' : 'bg-red-900/30'}`}>
                     <div className=${`absolute inset-0 animate-pulse ${barColorClass}`}></div>
                 </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-2">
+            <div className=${`relative ${isSectarian ? 'h-32 w-32 mx-auto mt-2' : 'grid grid-cols-2 gap-2'} relative z-10`}>
                 ${[1, 2, 3, 4].map(num => {
                     const isPressed = userInput.includes(num);
                     const label = symbols[num - 1];
+                    
+                    // Posicionamiento en rombo para el sectario
+                    const sectarianPos = [
+                        'top-0 left-1/2 -translate-x-1/2',    // 1: Norte
+                        'top-1/2 right-0 -translate-y-1/2',   // 2: Este
+                        'bottom-0 left-1/2 -translate-x-1/2', // 3: Sur
+                        'top-1/2 left-0 -translate-y-1/2'     // 4: Oeste
+                    ][num-1];
+
                     return html`
                         <button 
                             key=${num}
                             onClick=${() => handlePress(num)}
-                            className=${`h-10 border font-mono text-[8px] transition-all flex items-center justify-center relative overflow-hidden
+                            className=${`border font-mono text-[9px] transition-all flex items-center justify-center relative overflow-hidden
                                 ${isPressed ? buttonActiveColorClass : buttonIdleColorClass}
-                                hover:border-red-600 hover:bg-red-900/20 active:scale-95
+                                ${isSectarian ? 
+                                    `absolute w-10 h-10 rotate-45 ${sectarianPos} border-purple-500/30 hover:bg-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]` : 
+                                    'h-10 hover:border-red-600 hover:bg-red-900/20 active:scale-95'}
                             `}
                         >
-                            <span className=${isPressed ? 'animate-pulse z-10' : 'z-10'}>${label}</span>
-                            ${isPressed && html`<div className=${`absolute inset-0 animate-flicker ${primary === 'purple' ? 'bg-purple-500/10' : 'bg-red-500/10'}`}></div>`}
+                            <span className=${`z-10 ${isSectarian ? '-rotate-45 tracking-[0.1em] font-black text-[7px]' : ''} ${isPressed ? 'animate-pulse' : ''}`}>
+                                ${label}
+                            </span>
+                            ${isPressed && html`<div className=${`absolute inset-0 animate-flicker ${isSectarian ? 'bg-purple-500/20' : 'bg-red-500/10'}`}></div>`}
                         </button>
                     `;
                 })}
+                ${isSectarian && html`
+                    <!-- Botón de Inicio Integrado en el Centro para el Sectario -->
+                    <button 
+                        onClick=${startMinigame}
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-purple-500/40 bg-purple-950/40 hover:bg-purple-500/20 transition-all z-20 flex items-center justify-center group/btn"
+                    >
+                        <div className="w-1.5 h-1.5 bg-purple-400 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.8)] animate-pulse group-hover/btn:scale-125 transition-transform"></div>
+                        <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[7px] font-black text-purple-400/60 whitespace-nowrap tracking-[0.2em] group-hover/btn:text-purple-400">
+                            ${config.action}
+                        </span>
+                    </button>
+                `}
             </div>
 
-            <button 
-                onClick=${startMinigame}
-                className=${`w-full mt-4 py-1.5 border text-[9px] font-bold tracking-widest transition-all uppercase shadow-[0_0_10px_rgba(153,27,27,0.2)] ${mainButtonColorClass}`}
-            >
-                ${config.action}
-            </button>
+            ${!isSectarian && html`
+                <button 
+                    onClick=${startMinigame}
+                    className=${`w-full mt-4 py-1.5 border text-[9px] font-bold tracking-widest transition-all uppercase shadow-[0_0_10px_rgba(153,27,27,0.2)] ${mainButtonColorClass}`}
+                >
+                    ${config.action}
+                </button>
+            `}
 
             <div className=${`text-[9px] font-mono flex justify-between mt-auto pt-2 ${primary === 'purple' ? 'text-purple-900/60' : 'text-red-900/60'}`}>
-                <span>${primary === 'purple' ? 'SACRIFICIO_VITAL' : 'OXYGEN_LEVEL'}</span>
+                <span>${isSectarian ? 'ALIENTO_VITAL' : 'OXYGEN_LEVEL'}</span>
                 <span className="opacity-50">${config.module}</span>
             </div>
         </div>
@@ -283,6 +357,7 @@ const PowerGridModule = ({ isActive, storyPath }) => {
     const pathConfig = PATH_CONFIGS[storyPath || 0];
     const { primary } = pathConfig.theme;
     const config = pathConfig.emergencies.energy;
+    const isSectarian = storyPath === 1;
 
     // REGLA: En el nivel 6 ("La Urgencia"), el módulo debe ser interactuable siempre
     const isLevel6 = currentStep === 6;
@@ -293,11 +368,27 @@ const PowerGridModule = ({ isActive, storyPath }) => {
 
     const initGrid = () => {
         const newBurned = new Set();
-        for (let i = 0; i < 15; i++) {
-            newBurned.add(Math.floor(Math.random() * 72));
+        // Reducción drástica de obstáculos para el sectario (Ruta 1)
+        const maxBurned = isSectarian ? 2 : 4; 
+        
+        while (newBurned.size < maxBurned) {
+            const idx = Math.floor(Math.random() * 72);
+            // No bloquear la primera ni la última columna para asegurar salida/entrada
+            if (idx % 12 !== 0 && idx % 12 !== 11) {
+                newBurned.add(idx);
+            }
         }
         setBurned(newBurned);
-        setGrid(new Array(72).fill(false));
+
+        // Pre-activar las primeras DOS columnas para dar un "empujón" inicial al jugador
+        const initialGrid = new Array(72).fill(false);
+        for (let r = 0; r < 6; r++) {
+            const idx0 = r * 12;
+            const idx1 = r * 12 + 1;
+            if (!newBurned.has(idx0)) initialGrid[idx0] = true;
+            if (!newBurned.has(idx1) && !newBurned.has(idx0)) initialGrid[idx1] = true;
+        }
+        setGrid(initialGrid);
     };
 
     useEffect(() => { initGrid(); }, []);
@@ -361,7 +452,11 @@ const PowerGridModule = ({ isActive, storyPath }) => {
 
     return html`
         <div className=${`flex flex-col h-full p-2 border relative overflow-hidden group ${!forceActive ? 'grayscale opacity-40' : 'animate-flicker'} ${primaryColorClass}`}>
-            <div className="absolute inset-0 bg-[radial-gradient(#10b98108_1px,transparent_1px)] bg-[size:10px_10px] pointer-events-none"></div>
+            ${isSectarian ? html`
+                <div className="absolute inset-0 bg-[radial-gradient(#a855f708_1px,transparent_1px)] bg-[size:15px_15px] pointer-events-none"></div>
+            ` : html`
+                <div className="absolute inset-0 bg-[radial-gradient(#10b98108_1px,transparent_1px)] bg-[size:10px_10px] pointer-events-none"></div>
+            `}
             
             <div className="flex justify-between items-center px-1 mb-1 relative z-10">
                 <span className=${`text-[10px] uppercase font-mono font-bold tracking-tighter ${textColorClass}`}>
@@ -373,7 +468,16 @@ const PowerGridModule = ({ isActive, storyPath }) => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-12 grid-rows-6 gap-0.5 flex-1 bg-black/60 p-1 border border-zinc-800/50 shadow-[inner_0_0_10px_rgba(0,0,0,0.5)]">
+            <div className=${`grid grid-cols-12 grid-rows-6 gap-0.5 flex-1 bg-black/60 p-1 border border-zinc-800/50 shadow-[inner_0_0_10px_rgba(0,0,0,0.5)] relative overflow-hidden ${isSectarian ? 'rotate-0 rounded-lg' : ''}`}>
+                ${isSectarian && html`
+                    <!-- Ritual Overlay Background -->
+                    <div className="absolute inset-0 opacity-10 pointer-events-none flex items-center justify-center">
+                        <svg viewBox="0 0 100 100" className="w-3/4 h-3/4 animate-[spin_60s_linear_infinite]">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#a855f7" strokeWidth="0.5" strokeDasharray="1 3" />
+                            <path d="M 50 5 L 95 50 L 50 95 L 5 50 Z" fill="none" stroke="#a855f7" strokeWidth="0.2" />
+                        </svg>
+                    </div>
+                `}
                 ${grid.map((active, i) => {
                     const isBurned = burned.has(i);
                     return html`
@@ -381,19 +485,23 @@ const PowerGridModule = ({ isActive, storyPath }) => {
                             key=${i}
                             onClick=${() => toggleCell(i)}
                             className=${`
-                                w-full h-full cursor-crosshair transition-all duration-300 border
-                                ${isBurned ? 'bg-red-950/60 border-red-900/40 opacity-40' : 
+                                w-full h-full cursor-crosshair transition-all duration-300 border relative z-10
+                                ${isBurned ? (isSectarian ? 'bg-purple-900/10 border-purple-950 opacity-10 grayscale' : 'bg-red-950/60 border-red-900/40 opacity-40') : 
                                   active ? cellActiveColorClass : 
-                                  'bg-zinc-900/80 border-zinc-800/50 hover:bg-emerald-900/40 hover:border-emerald-800/50'}
+                                  (isSectarian ? 'bg-slate-950/40 border-slate-900/30 hover:bg-purple-900/20 hover:border-purple-800/40' : 'bg-zinc-900/80 border-zinc-800/50 hover:bg-emerald-900/40 hover:border-emerald-800/50')}
                                 ${!isBurned && active && 'animate-pulse'}
+                                ${isSectarian && !isBurned && !active ? 'rounded-[1px]' : ''}
+                                ${isSectarian && active ? 'scale-75 rotate-45 rounded-none' : ''}
                             `}
-                        />
+                        >
+                            ${isSectarian && active && html`<div className="w-full h-full bg-white/5 blur-[3px] animate-ping"></div>`}
+                        </div>
                     `;
                 })}
             </div>
             
             <div className=${`text-[9px] font-mono flex justify-between px-1 mt-auto pt-1 ${footerTextColorClass}`}>
-                <span>${config.name.toUpperCase().replace(' ', '_')}</span>
+                <span>${isSectarian ? 'CANAL_DE_ALMAS' : config.name.toUpperCase().replace(' ', '_')}</span>
                 <span className="opacity-50">${config.module}</span>
             </div>
         </div>
