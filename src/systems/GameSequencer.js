@@ -23,22 +23,11 @@ class GameSequencer {
     constructor() {
         this.currentStep = 1;
         this.storyPath = 0; // 0: Técnico, 1: Religioso
-        this.decisionSub = null;
+        this.registerCoreListeners();
     }
 
-    /**
-     * Inicializa el secuenciador sincronizando con State
-     */
-    init() {
-        this.currentStep = state.currentStep || 1;
-        this.storyPath = state.storyPath || 0;
-
-        console.log('%c[SEQUENCER] Sistema narrativo inicializado en paso ' + this.currentStep, 'color: #9333ea; font-weight: bold;');
-
-        // Suscribirse a eventos de procesamiento - Limpiar previa si existe
-        if (this.decisionSub) this.decisionSub();
-
-        this.decisionSub = bus.on('DECISION_MADE', ({ subject, action }) => {
+    registerCoreListeners() {
+        bus.on('DECISION_MADE', ({ subject, action }) => {
             console.log(`[SEQUENCER] Decision made: ${action} for subject ${subject.id}. Current Processed: ${state.processedCount}/${state.quota}`);
 
             // REGLA: Cancelar cualquier escaneo residual al tomar una decisión
@@ -64,6 +53,16 @@ class GameSequencer {
 
             this.checkGameStatus();
         });
+    }
+
+    /**
+     * Inicializa el secuenciador sincronizando con State
+     */
+    init() {
+        this.currentStep = state.currentStep || 1;
+        this.storyPath = state.storyPath || 0;
+
+        console.log('%c[SEQUENCER] Sistema narrativo inicializado en paso ' + this.currentStep, 'color: #9333ea; font-weight: bold;');
 
         // Set initial status based on step type
         const initialStepData = this.getCurrentStepData();
