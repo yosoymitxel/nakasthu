@@ -40,14 +40,15 @@ class GameSequencer {
 
         this.decisionSub = bus.on('DECISION_MADE', ({ subject, action }) => {
             console.log(`[SEQUENCER] Decision made: ${action} for subject ${subject.id}. Current Processed: ${state.processedCount}/${state.quota}`);
-            
+
             // REGLA: Cancelar cualquier escaneo residual al tomar una decisión
             cancelScan();
-            
+
             state.startBatch();
-            
+
             // Limpiar sujeto actual INMEDIATAMENTE tras la decisión para evitar duplicados
             // Esto es crítico para evitar el bug de "sacrificios infinitos"
+            // NOTA: También se limpia en MechanicManager por seguridad, pero este es el punto central
             state.currentEntity = null;
 
             // Solo incrementar si NO hemos alcanzado la cuota. 
@@ -57,7 +58,7 @@ class GameSequencer {
             } else {
                 console.warn(`[SEQUENCER] Bloqueo de cuota: Intento de exceder ${state.quota}.`);
             }
-            
+
             this.registerSubjectResult(subject, action);
             state.endBatch();
 
@@ -75,7 +76,7 @@ class GameSequencer {
         }
 
         bus.emit('STEP_CHANGE', initialStepData);
-        
+
         // Inicializar manager de mecánicas para el paso actual
         MechanicManager.init(initialStepData.config);
 
@@ -91,9 +92,9 @@ class GameSequencer {
             setTimeout(() => {
                 if (state.currentStep === 6) {
                     bus.emit('EMERGENCY_START', { type: 'resonance' });
-                    bus.emit('TERMINAL_PRINT', { 
-                        text: '[ALERTA] PASO 6: LA URGENCIA - PROTOCOLO DE RESONANCIA REQUERIDO.', 
-                        type: 'SYSTEM' 
+                    bus.emit('TERMINAL_PRINT', {
+                        text: '[ALERTA] PASO 6: LA URGENCIA - PROTOCOLO DE RESONANCIA REQUERIDO.',
+                        type: 'SYSTEM'
                     });
                 }
             }, 2000);
@@ -134,7 +135,7 @@ class GameSequencer {
 
         // Sincronizar con State
         state.startBatch();
-        
+
         // Actualizar el paso máximo alcanzado para el selector de niveles
         if (nextStepIdx > (state.maxStepReached || 0)) {
             state.maxStepReached = nextStepIdx;
@@ -199,7 +200,7 @@ class GameSequencer {
         state.utilidadOculta = 0;
         state.worldTime = 0;
         state.quota = currentConfig.subjectCount || currentConfig.quota || CONFIG.DEFAULT_QUOTA;
-        
+
         // Limpiar sujeto actual para que el nuevo nivel empiece de cero
         state.currentEntity = null;
         if (currentConfig.type === 'gameplay') {
@@ -319,7 +320,7 @@ class GameSequencer {
         if (state.gameStatus === 'LOADING' || state.gameStatus === 'CINEMATIC') return;
 
         console.log(`%c[SEQUENCER] Status Check - Step: ${this.currentStep}, Processed: ${state.processedCount}, Quota: ${state.quota}`, 'color: #3b82f6;');
-        
+
         // 1. Verificar Fallo Crítico (Errores de Juicio)
         if (state.judgmentErrors >= CONFIG.MAX_JUDGMENT_ERRORS) {
             console.log('%c[SEQUENCER] Límite de errores alcanzado. FALLO DE SISTEMA.', 'color: #ef4444; font-weight: bold;');
@@ -331,20 +332,27 @@ class GameSequencer {
             return;
         }
 
+
         // SI HAY UNA EMERGENCIA ACTIVA, NO AVANZAR DE NIVEL
         if (state.emergencies.resonance || state.emergencies.oxygen || state.emergencies.energy) {
             console.warn('[SEQUENCER] Nivel bloqueado por emergencia activa.');
             // REGLA: No pedir más sujetos si ya se alcanzó la cuota, incluso en emergencia (Fix 6/5)
+            // IMPORTANTE: Delay para permitir que el batch update complete antes de generar nuevo sujeto
             if (!state.currentEntity && state.processedCount < state.quota) {
-                state.nextSubject();
+                setTimeout(() => {
+                    if (state.gameStatus === 'PLAYING' && !state.currentEntity) {
+                        state.nextSubject();
+                    }
+                }, 300); // Más corto que el normal (600ms) para respuesta rápida en emergencias
             }
             return;
         }
 
+
         // 2. Verificar si se completó la cuota del nivel
         if (state.processedCount >= state.quota) {
             const config = STEPS_CONFIG[this.currentStep];
-            
+
             // Si es modo infinito, no avanzamos de paso, pero pedimos siguiente sujeto
             if (config.meta?.infinite) {
                 bus.emit('INFINITE_MILESTONE', { count: state.processedCount });
@@ -354,7 +362,7 @@ class GameSequencer {
             }
 
             const metaResults = checkStepMeta(config.meta);
-            
+
             if (!metaResults.success) {
                 console.log('%c[SEQUENCER] Cuota completada pero metas no alcanzadas.', 'color: #f59e0b;');
                 if (metaResults.messages.some(m => m.includes('Influencia'))) {
@@ -363,18 +371,25 @@ class GameSequencer {
             } else {
                 console.log('%c[SEQUENCER] Cuota completada exitosamente.', 'color: #10b981;');
             }
-            
+
             // Bloqueo preventivo de estado para evitar múltiples disparos de nextStep
             state.gameStatus = 'LOADING';
             this.nextStep();
         } else {
             // REGLA: Solo pedir siguiente sujeto si la cuota NO se ha alcanzado
             // Añadimos un pequeño delay para que la UI registre la limpieza del sujeto anterior
+            const currentProcessed = state.processedCount; // Capturar para evitar race conditions
             setTimeout(() => {
-                if (state.gameStatus === 'PLAYING' && !state.currentEntity) {
+                // Verificar que seguimos en PLAYING y que no se generó ya un sujeto
+                // También verificar que no avanzamos de nivel mientras esperábamos
+                if (state.gameStatus === 'PLAYING' &&
+                    !state.currentEntity &&
+                    state.processedCount === currentProcessed &&
+                    state.processedCount < state.quota) {
+                    console.log(`[SEQUENCER] Generando siguiente sujeto tras delay (${currentProcessed}/${state.quota})`);
                     state.nextSubject();
                 }
-            }, 600);
+            }, 400); // Reducido de 600ms a 400ms para mejor respuesta
         }
     }
 

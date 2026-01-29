@@ -88,7 +88,7 @@ export const Layout = () => {
         };
         bus.on('MODULE_UNLOCKED', onModuleUnlock);
         bus.on('ACT_CHANGE', onModuleUnlock);
-        
+
         // Ejecutar inicialmente para sincronizar estado si ya hay módulos
         onModuleUnlock();
 
@@ -116,10 +116,10 @@ export const Layout = () => {
     // Lógica de bloqueo visual
     const getModuleTutorialStatus = (areaId) => {
         const storyPath = state.storyPath || 0;
-        
+
         // 0. Determinar el ModuleId correcto para el área según la ruta
         let moduleId = AREA_TO_MODULE[areaId];
-        
+
         // Excepción para R_MIDDLE que depende de la ruta
         if (areaId === 'R_MIDDLE') {
             moduleId = storyPath === 1 ? AREA_TO_MODULE.R_MIDDLE_SECT : AREA_TO_MODULE.R_MIDDLE_TECH;
@@ -212,7 +212,7 @@ export const Layout = () => {
             if (data.reason === 'ENERGY_DEPLETED') reasonLabel = 'ERROR CRÍTICO: Agotamiento de Energía';
             if (data.reason === 'STABILITY_COLLAPSED') reasonLabel = 'SUJETO DESCONTROLADO: Inestabilidad Neural';
             if (data.reason === 'EXCESSIVE_ERRORS') reasonLabel = 'FALLO OPERATIVO: Exceso de Errores';
-            
+
             setDeathReason(reasonLabel);
             setDeathDetails(data.details || data.text);
             setDeathStats(data.stats);
@@ -385,28 +385,28 @@ export const Layout = () => {
             <div className=${`death-screen ${isGameOver ? 'active' : ''}`}>
                 <div className="flex flex-col items-center space-y-8 max-w-4xl text-center px-4 overflow-y-auto max-h-screen py-12 custom-scrollbar">
                     ${(() => {
-                        const isFinal = deathReason && deathReason.includes('FINAL');
-                        const isProtocol = deathReason && deathReason.includes('PROTOCOL');
-                        const isErrors = deathReason && deathReason.includes('EXCESSIVE');
-                        
-                        let headerText = 'BASTIÓN COMPROMETIDO';
-                        let headerColor = 'text-red-600';
-                        
-                        if (isFinal) {
-                            headerText = 'PROTOCOLOS COMPLETADOS';
-                            headerColor = 'text-cyan-500';
-                        } else if (isProtocol) {
-                            headerText = 'DESEMPEÑO INSUFICIENTE';
-                            headerColor = 'text-amber-500';
-                        } else if (isErrors) {
-                            headerText = 'OPERADOR RELEVADO';
-                            headerColor = 'text-red-800';
-                        }
+            const isFinal = deathReason && deathReason.includes('FINAL');
+            const isProtocol = deathReason && deathReason.includes('PROTOCOL');
+            const isErrors = deathReason && deathReason.includes('EXCESSIVE');
 
-                        return html`<h1 className=${`font-mono text-4xl tracking-[0.3em] uppercase font-black ${headerColor}`}>
+            let headerText = 'BASTIÓN COMPROMETIDO';
+            let headerColor = 'text-red-600';
+
+            if (isFinal) {
+                headerText = 'PROTOCOLOS COMPLETADOS';
+                headerColor = 'text-cyan-500';
+            } else if (isProtocol) {
+                headerText = 'DESEMPEÑO INSUFICIENTE';
+                headerColor = 'text-amber-500';
+            } else if (isErrors) {
+                headerText = 'OPERADOR RELEVADO';
+                headerColor = 'text-red-800';
+            }
+
+            return html`<h1 className=${`font-mono text-4xl tracking-[0.3em] uppercase font-black ${headerColor}`}>
                             ${headerText}
                         </h1>`;
-                    })()}
+        })()}
                     
                     <div className="space-y-6 w-full max-w-2xl">
                         <div className=${`p-4 border bg-zinc-950/40 ${deathReason && (deathReason.includes('FINAL') || deathReason.includes('PROTOCOL')) ? 'border-cyan-900/30' : 'border-red-900/30'}`}>
@@ -433,7 +433,7 @@ export const Layout = () => {
                             </div>
                             <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
                                 <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Estabilidad Final</span>
-                                <span className="text-xl font-bold text-red-400">${deathStats?.stability ?? stability}%</span>
+                                <span className="text-xl font-bold text-red-400">${Math.round(deathStats?.stability ?? stability)}%</span>
                             </div>
                             <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
                                 <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Inocentes Sacrificados</span>
@@ -507,37 +507,37 @@ export const Layout = () => {
                         <div className="grid grid-cols-2 gap-3 pt-6 border-t border-cyan-900/30">
                             <button 
                                 onClick=${() => {
-                                    gameSequencer.resetLevel();
-                                    state.isPaused = false;
-                                }}
+                gameSequencer.resetLevel();
+                state.isPaused = false;
+            }}
                                 className="px-4 py-2 border border-amber-900/30 text-amber-600 hover:bg-amber-900/10 transition-all uppercase tracking-widest text-[10px]"
                             >
                                 Reiniciar Nivel
                             </button>
                             <button 
                                 onClick=${() => {
-                                    persistenceManager.saveGame(state);
-                                    state.isPaused = false;
-                                }}
+                persistenceManager.saveGame(state);
+                state.isPaused = false;
+            }}
                                 className="px-4 py-2 border border-emerald-900/30 text-emerald-600 hover:bg-emerald-900/10 transition-all uppercase tracking-widest text-[10px]"
                             >
                                 Guardar Partida
                             </button>
                             <button 
                                 onClick=${() => {
-                                    state.resetState();
-                                    state.isPaused = false;
-                                }}
+                state.resetState();
+                state.isPaused = false;
+            }}
                                 className="px-4 py-2 border border-zinc-800 text-zinc-500 hover:bg-zinc-900/40 transition-all uppercase tracking-widest text-[10px]"
                             >
                                 Reiniciar Juego
                             </button>
                             <button 
                                 onClick=${() => {
-                                    state.resetState();
-                                    state.gameStatus = 'START_MENU';
-                                    state.isPaused = false;
-                                }}
+                state.resetState();
+                state.gameStatus = 'START_MENU';
+                state.isPaused = false;
+            }}
                                 className="px-4 py-2 border border-red-900/30 text-red-700 hover:bg-red-900/10 transition-all uppercase tracking-widest text-[10px]"
                             >
                                 Salir al Menú

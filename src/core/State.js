@@ -93,20 +93,32 @@ const stateManager = {
     // Acción para rotar sujetos
     nextSubject() {
         console.log("%c[STATE] Limpiando cámara de contención...", "color: #fbbf24;");
-        
+
         // REGLA: Cancelar escaneos activos al cambiar de sujeto (Fase 18)
         if (this.activeScan) {
             bus.emit('SCAN_CANCEL_REQUEST');
             this.activeScan = null;
         }
 
-        this.currentEntity = generateSubject();
-        bus.emit('NEW_SUBJECT_DETECTED', this.currentEntity);
+        const newSubject = generateSubject();
+        this.currentEntity = newSubject;
+
+        // CRÍTICO: Emitir eventos FUERA del batch para garantizar que React se actualice
+        // Si estamos en batch, el proxy de State.js suprimirá STATE_CHANGE, 
+        // pero NEW_SUBJECT_DETECTED no está suprimido
+        bus.emit('NEW_SUBJECT_DETECTED', newSubject);
+
+        // Forzar actualización de currentEntity incluso durante batch
+        if (!isBatching) {
+            bus.emit('STATE_CHANGE:currentEntity', newSubject);
+        }
+
+        console.log(`%c[STATE] Nuevo sujeto generado: ${newSubject.id}`, "color: #10b981;");
     },
     // Reinicio total del sistema (Fase 11)
     resetState() {
         console.log("%c[STATE] Iniciando REINICIO TOTAL del sistema...", "color: #ef4444; font-weight: bold;");
-        
+
         // Usar deep clone para evitar referencias residuales
         const freshState = JSON.parse(JSON.stringify(initialState));
         const tutorialSeen = this.hasSeenTutorial; // Preservar estado del tutorial
@@ -118,18 +130,18 @@ const stateManager = {
             if (key === 'hasSeenTutorial' || key === 'maxStepReached') return;
             this[key] = freshState[key];
         });
-        
+
         // Asegurar limpieza de flags de sistema
         this.mode = 'NORMAL';
         this.eclipseTimer = 0;
         this.isTutorialActive = false;
         this.activeScan = null;
         this.emergencies = { resonance: false, oxygen: false, energy: false };
-        
+
         this.hasSeenTutorial = tutorialSeen;
         this.maxStepReached = maxStep;
         this.endBatch();
-        
+
         bus.emit('SYSTEM_LOG', { msg: 'REINICIO_COMPLETO_ESTADO' });
         console.log("%c[STATE] Sistema reiniciado satisfactoriamente.", "color: #10b981;");
     }

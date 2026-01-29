@@ -15,8 +15,8 @@ class BaseMechanic {
     constructor(config) {
         this.config = config;
     }
-    init() {}
-    update(data) {}
+    init() { }
+    update(data) { }
     destroy() {
         // Para ser sobrescrito por subclases
     }
@@ -91,12 +91,12 @@ class DecisionMechanic extends BaseMechanic {
         cancelScan();
 
         state.startBatch();
-        
+
         // Aplicar cambios
         if (result.energyChange !== 0) state.energy = Math.max(0, Math.min(100, state.energy + result.energyChange));
         if (result.stabilityChange !== 0) state.stability = Math.max(0, Math.min(100, state.stability + result.stabilityChange));
         if (result.unrestChange !== 0) state.unrest = Math.max(0, Math.min(100, state.unrest + result.unrestChange));
-        
+
         if (result.isError) {
             state.judgmentErrors++;
             if (result.flash) bus.emit('TRIGGER_FLASH', result.flash);
@@ -110,12 +110,12 @@ class DecisionMechanic extends BaseMechanic {
                 type: 'SUCCESS'
             });
         }
-        
+
         // REGLA: El incremento de processedCount ahora lo gestiona GameSequencer.js
         // para centralizar la validación de cuota y evitar el error 6/5.
-        
+
         state.endBatch();
-        
+
         bus.emit('AUTHORIZE_EFFECT');
         bus.emit('DECISION_MADE', { subject, action: 'authorize' });
         bus.emit('SESSION_TERMINATED');
@@ -150,13 +150,14 @@ class DecisionMechanic extends BaseMechanic {
         cancelScan();
 
         state.startBatch();
-        
+
         // Aplicar cambios
         if (result.energyChange !== 0) state.energy = Math.max(0, Math.min(100, state.energy + result.energyChange));
         if (result.stabilityChange !== 0) state.stability = Math.max(0, Math.min(100, state.stability + result.stabilityChange));
         if (result.unrestChange !== 0) state.unrest = Math.max(0, Math.min(100, state.unrest + result.unrestChange));
 
         // CRÍTICO: Limpiar sujeto actual para forzar la regeneración en el siguiente tick
+        // NOTA: GameSequencer también limpia esto, pero lo hacemos aquí por seguridad de doble-check
         state.currentEntity = null;
 
         if (result.isError) {
@@ -172,11 +173,11 @@ class DecisionMechanic extends BaseMechanic {
                 type: 'SUCCESS'
             });
         }
-        
+
         // REGLA: El incremento de processedCount ahora lo gestiona GameSequencer.js
-        
+
         state.endBatch();
-        
+
         bus.emit('SACRIFICE_EFFECT');
         bus.emit('DECISION_MADE', { subject, action: 'sacrifice' });
         bus.emit('SESSION_TERMINATED');
@@ -224,7 +225,7 @@ export const MechanicManager = {
         this.currentMechanic = new MechanicClass(stepConfig);
 
         this.currentMechanic.init();
-        
+
         // Caso especial: Si la mecánica principal es SYNC, activar módulo de resonancia
         if (this.currentMechanic instanceof SyncMechanic) {
             state.startBatch();
@@ -269,7 +270,7 @@ export const MechanicManager = {
 
         // Cálculo de diferencia de frecuencia (0-60)
         const freqDiff = Math.abs(targetFreq - localFreq);
-        
+
         // Cálculo de diferencia de fase (0 - 2PI)
         // Normalizamos la diferencia de fase para que esté entre 0 y PI
         let phaseDiff = Math.abs(targetPhase - localPhase) % (Math.PI * 2);
@@ -277,7 +278,7 @@ export const MechanicManager = {
 
         // Cálculo de sync base: Frecuencia es el 80%, Fase el 20%
         // Sensibilidad ajustada: freqDiff de 40Hz = 0% sync (antes era 20Hz)
-        const freqScore = Math.max(0, 100 - (freqDiff * 2.5)); 
+        const freqScore = Math.max(0, 100 - (freqDiff * 2.5));
         const phaseScore = Math.max(0, 100 - (phaseDiff * (100 / Math.PI)));
 
         const syncPercent = Math.floor((freqScore * 0.8) + (phaseScore * 0.2));
