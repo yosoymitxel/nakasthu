@@ -65,9 +65,9 @@ export const Coms = () => {
         };
 
         const onNewSubject = () => {
-            setMessages([{ 
-                sender: labels.systemSender, 
-                text: labels.newSubjectMsg, 
+            setMessages([{
+                sender: labels.systemSender,
+                text: labels.newSubjectMsg,
                 type: 'SYSTEM',
                 timestamp: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
             }]);
@@ -118,13 +118,13 @@ export const Coms = () => {
                                 key=${`particle-${i}`}
                                 className=${`absolute rounded-full animate-float ${i % 5 === 0 ? 'w-2 h-2 bg-purple-200/30' : i % 3 === 0 ? 'w-1.5 h-1.5 bg-indigo-300/40' : 'w-1 h-1 bg-purple-400/20'}`}
                                 style=${{
-                                    left: `${Math.random() * 100}%`,
-                                    top: `${Math.random() * 100}%`,
-                                    animationDelay: `${Math.random() * 10}s`,
-                                    animationDuration: `${20 + Math.random() * 30}s`,
-                                    filter: `blur(${Math.random() * 4}px)`,
-                                    opacity: 0.2 + Math.random() * 0.5
-                                }}
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 10}s`,
+            animationDuration: `${20 + Math.random() * 30}s`,
+            filter: `blur(${Math.random() * 4}px)`,
+            opacity: 0.2 + Math.random() * 0.5
+        }}
                             />
                         `)}
                     </div>
@@ -135,12 +135,12 @@ export const Coms = () => {
             `}
 
             ${messages.map((msg, i) => html`
-                <div key=${`msg-${msg.timestamp}-${i}`} className=${`flex flex-col animate-fade-in relative z-10 ${msg.type === 'SYSTEM' 
-                    ? `border-l-2 ${isSectarian ? 'border-purple-600/40 bg-purple-900/5 backdrop-blur-[1px]' : 'border-zinc-800'} pl-3 py-1` :
-                    msg.type === 'ACTION' 
-                        ? `${isSectarian ? 'border-y border-purple-800/20 bg-purple-950/20 shadow-[inset_0_0_15px_rgba(147,51,234,0.1)]' : 'border-y border-zinc-900/30 bg-zinc-950/20'} py-2 my-1 items-center italic text-zinc-500 group` 
-                        : 'group'
-                }`}>
+                <div key=${`msg-${msg.timestamp}-${i}`} className=${`flex flex-col animate-fade-in relative z-10 ${msg.type === 'SYSTEM'
+                ? `border-l-2 ${isSectarian ? 'border-purple-600/40 bg-purple-900/5 backdrop-blur-[1px]' : 'border-zinc-800'} pl-3 py-1` :
+                msg.type === 'ACTION'
+                    ? `${isSectarian ? 'border-y border-purple-800/20 bg-purple-950/20 shadow-[inset_0_0_15px_rgba(147,51,234,0.1)]' : 'border-y border-zinc-900/30 bg-zinc-950/20'} py-2 my-1 items-center italic text-zinc-500 group`
+                    : 'group'
+            }`}>
                     ${isSectarian && msg.type !== 'ACTION' && html`
                         <!-- Resplandor sutil para mensajes en modo sectario -->
                         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
@@ -153,21 +153,21 @@ export const Coms = () => {
                     `}
 
                     <div className=${`flex justify-between items-center mb-1 ${msg.type === 'ACTION' ? 'hidden' : ''}`}>
-                        <span className=${`text-[10px] font-bold tracking-[0.2em] uppercase ${msg.type === 'SYSTEM' 
-                            ? (isSectarian ? 'text-purple-400/70' : 'text-zinc-500') 
-                            : (isSectarian ? (msg.sender === labels.operatorSender ? 'text-indigo-300' : 'text-purple-300') : (msg.type === 'SUBJECT' ? 'text-cyan-600/80' : 'text-emerald-600/80'))
-                        } ${isSectarian ? 'drop-shadow-[0_0_2px_rgba(168,85,247,0.4)]' : ''}`}>
+                        <span className=${`text-[10px] font-bold tracking-[0.2em] uppercase ${msg.type === 'SYSTEM'
+                ? (isSectarian ? 'text-purple-400/70' : 'text-zinc-500')
+                : (isSectarian ? (msg.sender === labels.operatorSender ? 'text-indigo-300' : 'text-purple-300') : (msg.type === 'SUBJECT' ? 'text-cyan-600/80' : 'text-emerald-600/80'))
+            } ${isSectarian ? 'drop-shadow-[0_0_2px_rgba(168,85,247,0.4)]' : ''}`}>
                             ${msg.sender}
                         </span>
                         <span className="text-[8px] text-zinc-600 font-mono opacity-50">${msg.timestamp}</span>
                     </div>
                     
-                    <p className=${`text-[12px] leading-relaxed tracking-wide ${msg.type === 'SYSTEM' 
-                        ? 'text-zinc-400 italic' : 
-                        msg.type === 'ACTION' 
-                            ? (isSectarian ? 'text-purple-200/50' : 'text-zinc-500') : 
-                            (isSectarian ? 'text-zinc-300 group-hover:text-purple-100 transition-colors duration-700' : (msg.type === 'SUBJECT' ? 'text-zinc-300' : 'text-emerald-500/80 font-bold'))
-                    }`}>
+                    <p className=${`text-[12px] leading-relaxed tracking-wide ${msg.type === 'SYSTEM'
+                ? 'text-zinc-400 italic' :
+                msg.type === 'ACTION'
+                    ? (isSectarian ? 'text-purple-200/50' : 'text-zinc-500') :
+                    (isSectarian ? 'text-zinc-300 group-hover:text-purple-100 transition-colors duration-700' : (msg.type === 'SUBJECT' ? 'text-zinc-300' : 'text-emerald-500/80 font-bold'))
+            }`}>
                         ${msg.type === 'ACTION' ? (isSectarian ? `✧ ${msg.text} ✧` : `◆ ${msg.text} ◆`) : msg.text}
                     </p>
                 </div>
@@ -178,13 +178,13 @@ export const Coms = () => {
                     ${isSectarian ? html`
                         <div className="text-[10px] text-purple-400/70 font-mono tracking-[0.3em] italic animate-pulse">EL_VACÍO_SUSURRA...</div>
                         <div className="flex gap-2">
-                            <div className="w-1.5 h-1.5 bg-purple-500/40 rounded-full animate-ping shadow-[0_0_5px_rgba(168,85,247,0.5)]"></div>
-                            <div className="w-1.5 h-1.5 bg-indigo-500/40 rounded-full animate-ping delay-500 shadow-[0_0_5px_rgba(99,102,241,0.5)]"></div>
+                            <div key="typing-dot-1" className="w-1.5 h-1.5 bg-purple-500/40 rounded-full animate-ping shadow-[0_0_5px_rgba(168,85,247,0.5)]"></div>
+                            <div key="typing-dot-2" className="w-1.5 h-1.5 bg-indigo-500/40 rounded-full animate-ping delay-500 shadow-[0_0_5px_rgba(99,102,241,0.5)]"></div>
                         </div>
                     ` : html`
-                        <div className="w-1 h-1 rounded-full bg-cyan-500"></div>
-                        <div className="w-1 h-1 rounded-full bg-cyan-500 delay-100"></div>
-                        <div className="w-1 h-1 rounded-full bg-cyan-500 delay-200"></div>
+                        <div key="typing-dot-a" className="w-1 h-1 rounded-full bg-cyan-500"></div>
+                        <div key="typing-dot-b" className="w-1 h-1 rounded-full bg-cyan-500 delay-100"></div>
+                        <div key="typing-dot-c" className="w-1 h-1 rounded-full bg-cyan-500 delay-200"></div>
                     `}
                 </div>
             `}

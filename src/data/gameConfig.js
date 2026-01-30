@@ -8,12 +8,12 @@ export const CONFIG = {
     ENERGY: {
         INITIAL: 100,
         MAX: 100,
-        AUTHORIZE_COST: 10,
+        AUTHORIZE_COST: 5,
         SACRIFICE_CORRUPT_BONUS: 20,
         SACRIFICE_INOCENT_BONUS: 5,
         TICK_DRAIN: 0.5,
         ECLIPSE_DRAIN: 1.0,
-        REPAIR_COST: 20
+        REPAIR_COST: 10
     },
     STABILITY: {
         INITIAL: 100,
@@ -236,7 +236,7 @@ export const CONFIG = {
                     manual: {
                         objective: { label: 'OBJETIVO:', text: 'Procesar biomasa según criterios de pureza.' },
                         sacrifice: { label: 'SACRIFICAR:', text: 'Elimina sujetos corruptos (+30 Energía). Error si es puro (-25 Estabilidad).' },
-                        authorize: { label: 'AUTORIZAR:', text: 'Permite el paso de sujetos puros (-10 Energía, +10 Estabilidad). Error si es corrupto (-30 Estabilidad).' },
+                        authorize: { label: 'AUTORIZAR:', text: 'Permite el paso de sujetos puros (-5 Energía, +10 Estabilidad). Error si es corrupto (-30 Estabilidad).' },
                         resonance: { label: 'RESONANCIA:', text: 'Sincroniza frecuencia y fase para evitar degradación de estabilidad.' }
                     }
                 },
@@ -337,7 +337,7 @@ export const CONFIG = {
                     manual: {
                         objective: { label: 'MISIÓN:', text: 'Recuperar almas para el Aitor.' },
                         sacrifice: { label: 'PURGAR:', text: 'Elimina impuros (+30 Fe). Error si es devoto (-25 Agitación).' },
-                        authorize: { label: 'CONSAGRAR:', text: 'Acepta a los elegidos (-10 Fe, +10 Agitación). Error si es impuro (-30 Agitación).' },
+                        authorize: { label: 'CONSAGRAR:', text: 'Acepta a los elegidos (-5 Fe, +10 Agitación). Error si es impuro (-30 Agitación).' },
                         resonance: { label: 'COMUNIÓN:', text: 'Sincroniza la fe con el vacío para evitar el colapso del santuario.' }
                     }
                 },

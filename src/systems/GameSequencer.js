@@ -197,6 +197,12 @@ class GameSequencer {
         state.devotsRecruited = 0;
         state.influenceGathered = 0;
         state.utilidadOculta = 0;
+        // Resetear indicadores básicos al cambiar de nivel
+        state.energy = CONFIG.ENERGY.INITIAL;
+        state.stability = CONFIG.STABILITY.INITIAL;
+        state.oxygen = 100;
+        state.unrest = 0; // También reiniciar agitación al cambiar de acto/nivel
+
         state.worldTime = 0;
         state.quota = currentConfig.subjectCount || currentConfig.quota || CONFIG.DEFAULT_QUOTA;
 
