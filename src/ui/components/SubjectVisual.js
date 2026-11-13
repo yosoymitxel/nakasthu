@@ -129,11 +129,12 @@ export const SubjectVisual = () => {
                     `}>
                         <!-- Retrato píxel determinista por id -->
                     <${PixelPortrait}
+                        key=${id}
                         seed=${id}
                         morph=${morphFor(species, id)}
                         hooded=${isSectarian}
                         corrupt=${isCorrupted}
-                        className=${`h-[92%] select-none transition-all duration-1000 ${isCorrupted ? 'saturate-150' : ''} ${isSectarian ? 'drop-shadow-[0_0_10px_rgba(168,85,247,0.4)]' : ''}`}
+                        className=${`feel-enter h-[92%] select-none transition-all duration-1000 ${isCorrupted ? 'saturate-150' : ''} ${isSectarian ? 'drop-shadow-[0_0_10px_rgba(168,85,247,0.4)]' : ''}`}
                     />
                         
                         <!-- Capas de glitch aleatorio -->

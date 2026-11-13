@@ -28,6 +28,7 @@ import { calculateRank } from '../../utils/systemUtils.js';
 
 import { LevelSelectorModal } from './LevelSelectorModal.js';
 import { Backdrop3D } from './Backdrop3D.js';
+import { FeelLayer, fxReduced, setFxReduced } from './FeelLayer.js';
 import { persistenceManager } from '../../systems/PersistenceManager.js';
 
 const { useState, useEffect } = React;
@@ -602,6 +603,15 @@ export const Layout = () => {
                                             ${isFS ? 'Salir Pantalla Completa' : 'Entrar Pantalla Completa'}
                                         </button>
                                     </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-zinc-500 uppercase tracking-widest text-[10px]">Sacudidas y sellos</span>
+                                        <button
+                                            onClick=${() => { setFxReduced(!fxReduced()); setModal({ ...modal }); }}
+                                            className="px-4 py-1 border border-cyan-900/50 text-cyan-500 text-[10px] hover:bg-cyan-500/10 transition-all uppercase tracking-widest"
+                                        >
+                                            ${fxReduced() ? 'Reducidos' : 'Completos'}
+                                        </button>
+                                    </div>
                                     <div className="flex justify-between items-center opacity-50">
                                         <span className="text-zinc-600 uppercase tracking-widest text-[10px]">Calidad_Neural</span>
                                         <span className="text-zinc-700 text-[10px]">MÁXIMA</span>
@@ -637,6 +647,8 @@ export const Layout = () => {
                     </div>
                 </div>
             `}
+
+            <${FeelLayer} />
 
             <!-- CRT Overlay Global -->
             <div className="pointer-events-none fixed inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] bg-[length:100%_4px,3px_100%]"></div>

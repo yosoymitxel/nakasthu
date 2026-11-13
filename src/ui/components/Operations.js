@@ -282,7 +282,7 @@ export const Operations = () => {
                         <div className="flex items-center gap-3">
                             ${isSectarian && html`<span className="text-purple-900/40 text-xl">✧</span>`}
                             <span className=${`text-2xl font-black font-mono ${isSectarian ? 'text-purple-500/80 [text-shadow:0_0_10px_rgba(168,85,247,0.3)]' : 'text-emerald-600/70'}`}>
-                                ${processedCount} / ${finiteQuota ? quota : '∞'}
+                                <span key=${processedCount} className="feel-pop">${processedCount}</span> / ${finiteQuota ? quota : '∞'}
                             </span>
                             ${isSectarian && html`<span className="text-purple-900/40 text-xl">✧</span>`}
                         </div>
