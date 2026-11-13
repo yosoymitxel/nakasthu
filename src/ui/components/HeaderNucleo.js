@@ -100,7 +100,7 @@ export const HeaderNucleo = () => {
                 
                 <div className=${`flex-1 h-3 bg-black/40 relative border transition-all duration-300 ${activeHighlights.energy ? (isSectarian ? 'border-purple-500/50 shadow-[0_0_10px_rgba(147,51,234,0.2)]' : 'border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.2)]') : 'border-zinc-800/50'}`}>
                     <div 
-                        className=${`absolute h-full transition-all duration-1000 ${isSectarian ? 'bg-gradient-to-r from-purple-900 via-purple-600 to-indigo-500 shadow-[0_0_15px_rgba(147,51,234,0.4)]' : 'bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.4)]'}`}
+                        className=${`absolute h-full overflow-hidden transition-all duration-1000 ${isSectarian ? 'bg-gradient-to-r from-purple-900 via-purple-600 to-indigo-500 shadow-[0_0_15px_rgba(147,51,234,0.4)]' : 'bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.4)]'}`}
                         style=${{ width: `${Math.floor(energy)}%` }}
                     >
                         ${isSectarian ? html`
@@ -128,7 +128,7 @@ export const HeaderNucleo = () => {
                 
                 <div className=${`flex-1 h-3 bg-black/40 relative border transition-all duration-300 ${activeHighlights.stability ? (isSectarian ? 'border-purple-600/50 shadow-[0_0_10px_rgba(147,51,234,0.2)]' : 'border-red-500/50 shadow-[0_0_10px_rgba(220,38,38,0.2)]') : 'border-zinc-800/50'}`}>
                     <div 
-                        className=${`absolute h-full transition-all duration-1000 ${isSectarian ? 'bg-gradient-to-r from-indigo-900 via-purple-800 to-purple-600 shadow-[0_0_15px_rgba(147,51,234,0.3)]' : 'bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.4)]'}`}
+                        className=${`absolute h-full overflow-hidden transition-all duration-1000 ${isSectarian ? 'bg-gradient-to-r from-indigo-900 via-purple-800 to-purple-600 shadow-[0_0_15px_rgba(147,51,234,0.3)]' : 'bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.4)]'}`}
                         style=${{ width: `${Math.floor(stability)}%` }}
                     >
                         ${isSectarian ? html`
@@ -156,7 +156,7 @@ export const HeaderNucleo = () => {
 
                 <div className=${`flex-1 h-3 bg-black/40 relative border transition-all duration-300 ${activeHighlights.orbital ? (isEclipse ? 'border-purple-500/50 shadow-[0_0_10px_rgba(147,51,234,0.2)]' : 'border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.2)]') : 'border-zinc-800/50'}`}>
                     <div 
-                        className=${`absolute h-full transition-all duration-1000 ${isSectarian || isEclipse ? 'bg-gradient-to-r from-purple-900 to-indigo-600 shadow-[0_0_15px_rgba(147,51,234,0.4)]' : 'bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]'}`}
+                        className=${`absolute h-full overflow-hidden transition-all duration-1000 ${isSectarian || isEclipse ? 'bg-gradient-to-r from-purple-900 to-indigo-600 shadow-[0_0_15px_rgba(147,51,234,0.4)]' : 'bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]'}`}
                         style=${{ width: `${Math.floor(orbitalCycle)}%` }}
                     >
                         <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.2)_50%,transparent_100%)] w-20 animate-scanline-h" style=${{ animationDelay: '2s' }}></div>
