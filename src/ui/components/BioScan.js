@@ -52,11 +52,11 @@ export const BioScan = () => {
     }
 
     return html`
-        <div className="flex flex-col h-full p-3 gap-3 bg-transparent relative">
+        <div className="flex flex-col h-full p-2 gap-2 bg-transparent relative">
             ${isSectarian && html`
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(168,85,247,0.02)_0%,_transparent_70%)] pointer-events-none"></div>
             `}
-            <header className="border-b-[0.5px] border-zinc-800 pb-2 relative z-10">
+            <header className="border-b-[0.5px] border-zinc-800 pb-1 relative z-10">
                 <div className="flex justify-between items-center">
                     <h2 className=${`text-[12px] font-black uppercase tracking-[0.3em] ${isSectarian ? 'text-purple-400' : 'text-zinc-400'}`}>
                         ${labels.title}
@@ -68,7 +68,7 @@ export const BioScan = () => {
                 </div>
             </header>
 
-            <div className="flex-1 flex flex-col gap-2 overflow-y-auto pr-1 custom-scrollbar relative z-10">
+            <div className="flex-1 min-h-0 flex flex-col gap-1 overflow-y-auto pr-1 custom-scrollbar relative z-10">
                 ${Object.values(SCAN_TYPES).map((type, idx) => {
                     const isActive = activeScan && activeScan.id === type.id;
                     const isRequired = requiredScan === type.id;
@@ -89,7 +89,7 @@ export const BioScan = () => {
                             onClick=${() => startScan(type)}
                             disabled=${activeScan || !canAfford || (isTutorialActive && tutorialStep === 2 && type.id !== 'THERMAL')}
                             className=${`
-                                relative overflow-hidden border-[0.5px] p-3 text-left transition-all duration-300 group
+                                relative shrink-0 overflow-hidden border-[0.5px] px-2 py-1 text-left transition-all duration-300 group
                                 ${isActive ? (isSectarian ? 'bg-purple-950/20 shadow-[0_0_15px_rgba(168,85,247,0.2)]' : 'border-cyan-600/50 bg-cyan-950/10') : 
                                   isRequired ? (isSectarian ? 'border-purple-500/50 bg-purple-950/5 animate-pulse-slow' : 'border-amber-500/50 bg-amber-950/5 animate-pulse-slow') : `${borderColorClass} bg-black/20 hover:border-zinc-700/50`}
                                 ${(activeScan || !canAfford || (isTutorialActive && tutorialStep === 2 && type.id !== 'THERMAL')) && !isActive ? 'border-red-900/20 opacity-40 cursor-not-allowed' : (activeScan && !isActive ? 'opacity-40' : 'cursor-pointer')}
@@ -136,17 +136,17 @@ export const BioScan = () => {
                                 </div>
                             ` : null}
 
-                            <div key="content-container" className="flex justify-between items-start relative z-10">
-                                <div className="flex flex-col">
-                                    <span className=${`text-[12px] font-bold uppercase tracking-wider ${isActive ? (isSectarian ? 'text-purple-500' : 'text-cyan-500') : 'text-zinc-400 group-hover:text-amber-600/70'}`}>
+                            <div key="content-container" className=${`flex justify-between items-baseline gap-2 relative z-10 ${isRequired ? 'pr-16' : ''} ${scanCount > 0 ? 'mt-2' : ''}`}>
+                                <div className="flex items-baseline gap-2 min-w-0">
+                                    <span className=${`text-[11px] font-bold uppercase tracking-wider truncate ${isActive ? (isSectarian ? 'text-purple-500' : 'text-cyan-500') : 'text-zinc-400 group-hover:text-amber-600/70'}`}>
                                         ${isSectarian && html`<span className="mr-1.5 opacity-40 group-hover:opacity-100 transition-opacity">✧</span>`}
                                         ${labels.scans[type.id]}
                                     </span>
-                                    <span className=${`text-[10px] mt-0.5 font-mono uppercase ${isSectarian ? 'text-purple-400/50' : 'text-zinc-400'}`}>
+                                    <span className=${`text-[9px] font-mono uppercase whitespace-nowrap ${isSectarian ? 'text-purple-400/50' : 'text-zinc-400'}`}>
                                         ${isActive ? labels.scanning : (canAfford ? labels.ready : labels.insufficient)}
                                     </span>
                                 </div>
-                                <div className="flex flex-col items-end">
+                                <div className="flex items-baseline gap-1 flex-row-reverse whitespace-nowrap">
                                     <span className=${`text-[12px] font-mono font-bold ${canAfford ? (isSectarian ? 'text-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.3)]' : 'text-zinc-400') : 'text-red-900/50'}`}>
                                         ${isSectarian ? '✧'.repeat(Math.ceil(finalCost / 10)) : Math.floor(finalCost)}
                                     </span>
@@ -158,7 +158,7 @@ export const BioScan = () => {
     })}
             </div>
 
-            <footer className="mt-auto pt-2 border-t-[0.5px] border-zinc-800 flex justify-between items-center text-[12px] font-mono text-zinc-400 uppercase tracking-widest relative z-10">
+            <footer className="mt-auto pt-1 border-t-[0.5px] border-zinc-800 flex justify-between items-center text-[10px] whitespace-nowrap font-mono text-zinc-400 uppercase tracking-widest relative z-10">
                 <div className="flex items-center gap-2">
                     <div className=${`w-1 h-1 ${isSectarian ? 'bg-purple-900' : 'bg-zinc-900'}`}></div>
                     <span>${isSectarian ? 'ALTAR-EXAM-01' : 'NAK-BIOS-01'}</span>

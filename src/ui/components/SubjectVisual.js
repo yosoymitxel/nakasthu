@@ -5,6 +5,7 @@
 import { html } from '../utils/html.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { bus } from '../../core/Bus.js';
+import { PixelPortrait } from './PixelPortrait.js';
 
 const { useState, useEffect } = React;
 
@@ -108,7 +109,7 @@ export const SubjectVisual = () => {
 
             <!-- Silueta o Representación Visual (Maximizado 80%) -->
                 <div className=${`
-                    relative w-[85%] h-[85%] border flex items-center justify-center overflow-hidden transition-all duration-500
+                    relative w-[85%] flex-1 min-h-0 mt-1 border flex items-center justify-center overflow-hidden transition-all duration-500
                     ${isSectarian ? 'border-purple-500/20 rounded-full shadow-[0_0_40px_rgba(168,85,247,0.1)] bg-purple-950/10' : 'border-zinc-800'}
                     ${isCorrupted ? 'hue-rotate-90 border-red-500/50 scale-105' : ''}
                     ${isPaused ? 'transition-none' : ''}
@@ -126,10 +127,12 @@ export const SubjectVisual = () => {
                         ${visual.glitch === 'CHROMATIC' || isCorrupted ? 'shadow-[inset_0_0_15px_rgba(255,0,0,0.2)]' : ''}
                         ${visual.glitch === 'VOID' ? 'grayscale opacity-50' : ''}
                     `}>
-                        <!-- Placeholder de silueta (Maximizado text-7xl) -->
-                    <span className=${`text-7xl select-none transition-all duration-1000 ${isCorrupted ? 'text-red-600' : (isSectarian ? 'text-purple-400 opacity-30 blur-[2px] drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]' : 'text-zinc-400 opacity-30')}`}>
-                        ${type === 'EIDOLON' ? (isSectarian ? '🕈' : '◈') : (isSectarian ? '†' : '👤')}
-                    </span>
+                        <!-- Retrato píxel determinista por id -->
+                    <${PixelPortrait}
+                        seed=${id}
+                        variant=${type === 'EIDOLON' ? (isSectarian ? 'sect-eidolon' : 'eidolon') : (isSectarian ? 'sect' : 'human')}
+                        className=${`h-[92%] select-none transition-all duration-1000 ${isCorrupted ? 'saturate-150' : ''} ${isSectarian ? 'drop-shadow-[0_0_10px_rgba(168,85,247,0.4)]' : ''}`}
+                    />
                         
                         <!-- Capas de glitch aleatorio -->
                         ${visual.glitch !== 'NONE' && html`
@@ -154,13 +157,13 @@ export const SubjectVisual = () => {
                 </div>
 
             <!-- Etiquetas de Estado -->
-            <div className="mt-2 flex flex-col items-center gap-1">
-                <span className=${`text-[12px] tracking-[0.3em] uppercase ${isSectarian ? 'text-purple-400 font-black' : 'text-zinc-400'}`}>
+            <div className="flex-none py-1 flex flex-wrap items-center justify-center gap-x-2 leading-tight w-full px-1 whitespace-nowrap">
+                <span className=${`text-[10px] tracking-[0.1em] uppercase ${isSectarian ? 'text-purple-400 font-black' : 'text-zinc-400'}`}>
                     ${isSectarian && type === 'EIDOLON' ? 'CORRUPTO' : (isSectarian && type === 'HUMAN' ? 'DEVOTO' : type)}
                 </span>
-                <div className="flex gap-1">
+                <div className="flex gap-1 items-center">
                     <div className=${`w-1 h-1 rounded-full ${visual.glitch === 'NONE' ? 'bg-green-500' : 'bg-red-500'} ${isSectarian ? 'shadow-[0_0_5px_currentColor]' : ''}`}></div>
-                    <span className=${`text-[12px] font-mono ${isSectarian ? 'text-purple-400' : 'text-zinc-400'}`}>
+                    <span className=${`text-[10px] font-mono ${isSectarian ? 'text-purple-400' : 'text-zinc-400'}`}>
                         ${isSectarian ? 'SINTONÍA' : 'SYNC'}: ${subject.scannedData.neuralSync}%
                     </span>
                 </div>

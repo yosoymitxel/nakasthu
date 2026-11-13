@@ -34,7 +34,7 @@ export const SidebarLeft = ({ getModuleTutorialStatus, unlockedModules = new Set
                 locked=${getModuleTutorialStatus('L_TOP').locked}
                 highlighted=${getModuleTutorialStatus('L_TOP').highlighted}
             >
-                <${Panel} title=${getModuleName('MOD-00', storyPath)} areaId="L_TOP" className="w-full h-full overflow-hidden">
+                <${Panel} title=${isSectarian ? 'Sello de la Orden' : 'Núcleo Bastión'} areaId="L_TOP" className="w-full h-full overflow-hidden">
                     <${Logo} />
                 <//>
             <//>

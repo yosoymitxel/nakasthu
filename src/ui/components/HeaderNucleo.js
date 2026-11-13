@@ -25,7 +25,7 @@ export const HeaderNucleo = () => {
 
     // MENU INVISIBLE (Utilidad de Sujetos)
     const invisibleMenu = (currentStep >= 4) ? html`
-        <div className="px-4 mt-2 border-t border-zinc-800/30 pt-2">
+        <div className="pr-28 pt-1 border-t border-zinc-800/30 relative z-10">
             <${InvisibleUtilityBar} value=${utilidadOculta || 0} max=${100} />
         </div>
     ` : null;
@@ -70,7 +70,7 @@ export const HeaderNucleo = () => {
     };
 
     return html`
-        <div className="relative flex flex-col h-full w-full bg-transparent p-2 justify-center gap-1 overflow-hidden">
+        <div className="relative flex flex-col h-full w-full bg-transparent px-2 py-1 justify-center gap-1 overflow-hidden">
             ${isSectarian && html`
                 <!-- Efecto Onírico: Aura de Fondo -->
                 <div className="absolute inset-0 pointer-events-none opacity-20">
@@ -86,14 +86,14 @@ export const HeaderNucleo = () => {
 
             <!-- Barra 1: ENERGÍA (Amarillo/Amber -> Púrpura en Secta) -->
             <div 
-                className="flex items-center gap-3 pr-16 cursor-help group/energy relative z-10"
+                className="flex items-center gap-3 pr-28 cursor-help group/energy relative z-10"
                 onClick=${handleEnergyClick}
             >
-                <div className="flex flex-col w-24">
-                    <span className=${`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${activeHighlights.energy ? (isSectarian ? 'text-purple-400' : 'text-amber-400') : (isSectarian ? 'text-purple-700' : 'text-amber-700')}`}>
+                <div className="flex items-baseline justify-between gap-2 w-[11.5rem] max-[820px]:w-[9.5rem] shrink-0">
+                    <span className=${`text-[9px] font-black uppercase tracking-[0.1em] whitespace-nowrap transition-colors ${activeHighlights.energy ? (isSectarian ? 'text-purple-400' : 'text-amber-400') : (isSectarian ? 'text-purple-700' : 'text-amber-700')}`}>
                         ${isSectarian ? 'Esencia_Vital' : 'System_Power'}
                     </span>
-                    <span className=${`text-[14px] font-mono font-bold leading-none ${activeHighlights.energy ? (isSectarian ? 'text-purple-300' : 'text-amber-300') : (isSectarian ? 'text-purple-600' : 'text-amber-600')}`}>
+                    <span className=${`text-[12px] font-mono font-bold leading-none whitespace-nowrap ${activeHighlights.energy ? (isSectarian ? 'text-purple-300' : 'text-amber-300') : (isSectarian ? 'text-purple-600' : 'text-amber-600')}`}>
                         ${isSectarian ? '✧' : '⚡'} ${Math.floor(energy)}%
                     </span>
                 </div>
@@ -114,14 +114,14 @@ export const HeaderNucleo = () => {
 
             <!-- Barra 2: ESTABILIDAD (Rojo -> Púrpura Profundo en Secta) -->
             <div 
-                className="flex items-center gap-3 pr-16 cursor-help group/stability relative z-10"
+                className="flex items-center gap-3 pr-28 cursor-help group/stability relative z-10"
                 onClick=${handleStabilityClick}
             >
-                <div className="flex flex-col w-24">
-                    <span className=${`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${activeHighlights.stability ? (isSectarian ? 'text-purple-400' : 'text-red-500') : (isSectarian ? 'text-purple-800' : 'text-red-900')}`}>
+                <div className="flex items-baseline justify-between gap-2 w-[11.5rem] max-[820px]:w-[9.5rem] shrink-0">
+                    <span className=${`text-[9px] font-black uppercase tracking-[0.1em] whitespace-nowrap transition-colors ${activeHighlights.stability ? (isSectarian ? 'text-purple-400' : 'text-red-500') : (isSectarian ? 'text-purple-800' : 'text-red-900')}`}>
                         ${isSectarian ? 'Paz_Espiritual' : 'Neural_Integrity'}
                     </span>
-                    <span className=${`text-[14px] font-mono font-bold leading-none ${activeHighlights.stability ? (isSectarian ? 'text-purple-300' : 'text-red-400') : (isSectarian ? 'text-purple-600' : 'text-red-600')}`}>
+                    <span className=${`text-[12px] font-mono font-bold leading-none whitespace-nowrap ${activeHighlights.stability ? (isSectarian ? 'text-purple-300' : 'text-red-400') : (isSectarian ? 'text-purple-600' : 'text-red-600')}`}>
                         ${isSectarian ? '†' : '⚓'} ${Math.floor(stability)}%
                     </span>
                 </div>
@@ -142,14 +142,14 @@ export const HeaderNucleo = () => {
 
             <!-- Barra 3: CICLO ORBITAL (Cian / Lila en Eclipse) -->
             <div 
-                className="flex items-center gap-3 pr-16 cursor-help group/orbital relative z-10"
+                className="flex items-center gap-3 pr-28 cursor-help group/orbital relative z-10"
                 onClick=${handleOrbitalClick}
             >
-                <div className="flex flex-col w-24">
-                    <span className=${`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${activeHighlights.orbital ? (isEclipse ? 'text-purple-400' : 'text-cyan-400') : (isEclipse ? 'text-purple-700' : 'text-cyan-700')}`}>
+                <div className="flex items-baseline justify-between gap-2 w-[11.5rem] max-[820px]:w-[9.5rem] shrink-0">
+                    <span className=${`text-[9px] font-black uppercase tracking-[0.1em] whitespace-nowrap transition-colors ${activeHighlights.orbital ? (isEclipse ? 'text-purple-400' : 'text-cyan-400') : (isEclipse ? 'text-purple-700' : 'text-cyan-700')}`}>
                         ${isSectarian ? 'Velo_Cósmico' : 'Orbital_Sync'}
                     </span>
-                    <span className=${`text-[14px] font-mono font-bold leading-none ${activeHighlights.orbital ? (isEclipse ? 'text-purple-300' : 'text-cyan-300') : (isEclipse ? 'text-purple-600' : 'text-cyan-600')}`}>
+                    <span className=${`text-[12px] font-mono font-bold leading-none whitespace-nowrap ${activeHighlights.orbital ? (isEclipse ? 'text-purple-300' : 'text-cyan-300') : (isEclipse ? 'text-purple-600' : 'text-cyan-600')}`}>
                         ${isSectarian ? '🌑' : '🌑'} ${Math.floor(orbitalCycle)}%
                     </span>
                 </div>
