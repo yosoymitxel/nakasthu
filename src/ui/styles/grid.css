@@ -412,3 +412,31 @@ button:not(:disabled):active { scale: 0.97; }
     button:not(:disabled):active { scale: 1; }
     .animate-vibrate-subtle, .animate-glitch { animation: none; }
 }
+
+/* LOGROS: aviso y panel "Expediente" */
+.ach-toasts { position: fixed; top: 12px; right: 12px; z-index: 1100; display: flex; flex-direction: column; gap: 8px; pointer-events: none; max-width: min(320px, calc(100vw - 24px)); }
+.ach-toast { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; background: #0b0b0d; border: 1px solid rgba(245, 158, 11, 0.6); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8); animation: ach-in 4.2s var(--ease-out) forwards; }
+@keyframes ach-in { 0% { opacity: 0; translate: 24px 0; } 6% { opacity: 1; translate: 0 0; } 90% { opacity: 1; translate: 0 0; } 100% { opacity: 0; translate: 0 -6px; } }
+.ach-mark { color: #f59e0b; font-size: 14px; line-height: 1.2; flex: none; }
+.ach-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ach-kicker { color: #a16207; font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; }
+.ach-name { color: #f4f4f5; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.ach-desc { color: #a1a1aa; font-size: 11px; line-height: 1.35; }
+.ach-prog { color: #22d3ee; font-size: 10px; letter-spacing: 0.1em; }
+.ach-panel { width: min(760px, 94vw); max-height: 88dvh; display: flex; flex-direction: column; background: #0b0b0d; border: 1px solid #27272a; }
+.ach-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 16px 18px 10px; }
+.ach-title { color: #f4f4f5; font-size: 16px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; }
+.ach-close { color: #71717a; padding: 6px 10px; border: 1px solid #27272a; }
+.ach-close:focus-visible, .mobile-tabs button:focus-visible, .flow-step:focus-visible, .cine-next:focus-visible { outline: 2px solid #22d3ee; outline-offset: 2px; }
+.ach-bar { height: 3px; margin: 0 18px; background: #18181b; }
+.ach-bar i { display: block; height: 100%; background: #f59e0b; }
+.ach-scroll { overflow-y: auto; padding: 6px 18px 18px; }
+.ach-group { margin: 14px 0 6px; color: #71717a; font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; }
+.ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 6px; }
+.ach-card { display: flex; gap: 10px; padding: 9px 11px; border: 1px solid #1f1f23; background: rgba(0, 0, 0, 0.35); }
+.ach-card .ach-mark { color: #3f3f46; }
+.ach-card .ach-name { color: #71717a; }
+.ach-card.got { border-color: rgba(245, 158, 11, 0.35); }
+.ach-card.got .ach-mark { color: #f59e0b; }
+.ach-card.got .ach-name { color: #f4f4f5; }
+@media (prefers-reduced-motion: reduce) { .ach-toast { animation: stamp-fade 4.2s linear forwards; } }
