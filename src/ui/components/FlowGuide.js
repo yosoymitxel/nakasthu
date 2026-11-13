@@ -6,7 +6,7 @@
 import { html } from '../utils/html.js';
 import { bus } from '../../core/Bus.js';
 
-export const FlowGuide = ({ isSectarian, hasSubject, scanDone, scanName, talking, onInterrogate }) => {
+export const FlowGuide = ({ isSectarian, hasSubject, scanDone, scanName, talking }) => {
     const color = isSectarian ? '#a855f7' : '#f59e0b';
     const words = isSectarian
         ? { scan: 'Revelar', talk: 'Comulgar', judge: 'Dictamen', scanDone: 'Esencia leída', talkHint: 'Opcional · gasta dogma', judgeWait: 'Falta la revelación', judgeGo: 'Purgar o consagrar', empty: 'Sin alma en el altar' }
@@ -23,7 +23,7 @@ export const FlowGuide = ({ isSectarian, hasSubject, scanDone, scanName, talking
             name: words.talk,
             hint: words.talkHint,
             state: talking ? 'now' : '',
-            go: () => { bus.emit('UI_FOCUS_AREA', { area: 'C_MAIN', color }); if (hasSubject && !talking) onInterrogate(); }
+            go: () => bus.emit('UI_FOCUS_AREA', { area: 'C_MAIN', color })
         },
         {
             name: words.judge,

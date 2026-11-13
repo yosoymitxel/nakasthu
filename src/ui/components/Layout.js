@@ -250,6 +250,8 @@ export const Layout = () => {
     const isStartMenu = gameStatus === 'START_MENU';
     const isLoreArchive = gameStatus === 'LORE_ARCHIVE';
     const isPaused = state.isPaused;
+    // Cinemáticas y mecánicas piden su plano de cámara a la escena 3D
+    const sceneShot = (!isStartMenu && !isGameOver && !isLoreArchive && stepConfig?.type !== 'gameplay') ? stepConfig?.shot : null;
 
     // Capturar el rango final para evitar parpadeo al reiniciar el nivel
     useEffect(() => {
@@ -315,7 +317,11 @@ export const Layout = () => {
     return html`
         <div className=${`relative min-h-screen bg-[#0b0b0d] text-zinc-300 overflow-hidden cursor-default select-none font-mono transition-all duration-[1000ms] ${isPaused ? 'grayscale' : ''} ${criticalClass}`}>
             
-            <${Backdrop3D} dim=${!isStartMenu} sect=${storyPath === 1} />
+            <${Backdrop3D}
+                dim=${!isStartMenu && !sceneShot}
+                sect=${storyPath === 1}
+                shot=${sceneShot}
+            />
 
             <!-- Bordes de Emergencia (Degradado y Vibración) -->
             ${(isCriticalEnergy || isCriticalStability) && html`

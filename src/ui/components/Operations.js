@@ -266,7 +266,7 @@ export const Operations = () => {
                 <div className=${`w-1/3 h-full border-r border-zinc-800/80 relative overflow-hidden flex flex-col group ${isSectarian ? 'bg-indigo-950/20' : 'bg-black/40'}`}>
                     <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ${isSectarian ? 'bg-purple-500/5' : 'bg-amber-500/5'}`}></div>
                     <${SubjectVisual} />
-                    <div className="absolute top-1 right-2 text-[9px] text-zinc-500 tracking-[0.2em] uppercase font-bold pointer-events-none z-20">
+                    <div className="absolute top-1 right-2 max-[820px]:hidden text-[9px] text-zinc-500 tracking-[0.2em] uppercase font-bold pointer-events-none z-20">
                         ${labels.viewLabels.subject}
                     </div>
                     <div className=${`absolute top-0 right-0 w-8 h-8 border-t border-r pointer-events-none ${isSectarian ? 'border-indigo-500/20' : 'border-amber-500/20'}`}></div>
@@ -321,7 +321,6 @@ export const Operations = () => {
                 scanDone=${isScanComplete}
                 scanName=${scanName}
                 talking=${!!activeDialogue}
-                onInterrogate=${() => handleDialogueAction('INTERROGAR')}
             />
 
             <!-- SECCIÓN CENTRAL: CHAT / LOG (MOD-05) -->
@@ -389,7 +388,7 @@ export const Operations = () => {
                 <div className="h-16 p-2 flex flex-col items-center justify-center bg-black/60 relative">
                     ${(isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') ? null : (isTutorialActive || !isScanComplete) ? html`
                          ${(!isTutorialActive && !isScanComplete) ? html`
-                            <button onClick=${() => bus.emit('UI_FOCUS_AREA', { area: 'L_UPPER', color: isSectarian ? '#a855f7' : '#f59e0b' })} className="absolute inset-0 w-full bg-black/80 backdrop-blur-[2px] flex flex-col items-center justify-center z-30 border-y border-red-500/20">
+                            <button onClick=${() => bus.emit('UI_FOCUS_AREA', { area: 'L_UPPER', color: isSectarian ? '#a855f7' : '#f59e0b' })} className="absolute inset-0 w-full bg-zinc-950 flex flex-col items-center justify-center z-30 border-y border-red-500/20">
                                 <div className="absolute inset-0 bg-red-500/5 animate-pulse pointer-events-none"></div>
                                 <span className="text-[10px] text-red-500 font-bold tracking-[0.2em] uppercase animate-pulse text-center px-4 mb-1 z-10">
                                     ${labels.pendingValidation}
@@ -401,7 +400,7 @@ export const Operations = () => {
                         `: null}
                     `: null}
                     
-                    <div className="flex items-center justify-center gap-6 w-full h-full px-4">
+                    <div className=${`flex items-center justify-center gap-6 w-full h-full px-4 ${(!isTutorialActive && !isScanComplete) ? 'invisible' : ''}`}>
                     <button 
                         onClick=${() => handleAction('SACRIFICE')}
                         disabled=${isTyping || kaminOverride || (!isTutorialActive && !isScanComplete)}

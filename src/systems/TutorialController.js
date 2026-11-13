@@ -204,6 +204,11 @@ class TutorialController {
             setTimeout(() => this.checkQueue(), 100);
         });
 
+        // Hacer lo que pide el paso también lo da por visto: escanear avanza el tutorial del escáner
+        bus.on('SCAN_COMPLETED', () => {
+            if (this.activeTutorialId === MODULES.BIOSCAN?.tutorial && this.currentStepIndex === 1) this.nextStep();
+        });
+
         // Avance manual desde el modal
         bus.on('TUTORIAL_CONTINUE', () => {
             this.nextStep();

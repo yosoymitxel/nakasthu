@@ -25,7 +25,7 @@ export const HeaderNucleo = () => {
 
     // MENU INVISIBLE (Utilidad de Sujetos)
     const invisibleMenu = (currentStep >= 4) ? html`
-        <div className="pr-28 pt-1 border-t border-zinc-800/30 relative z-10">
+        <div className="pr-28 max-[820px]:pr-1 pt-1 border-t border-zinc-800/30 relative z-10">
             <${InvisibleUtilityBar} value=${utilidadOculta || 0} max=${100} />
         </div>
     ` : null;
@@ -80,16 +80,16 @@ export const HeaderNucleo = () => {
             `}
 
             <!-- CONTADOR SOLAR (Top Right) -->
-            <div className=${`absolute top-2 right-4 text-[12px] font-mono tracking-tighter ${isSectarian ? 'text-purple-400/60' : 'text-zinc-400'}`}>
+            <div className=${`absolute top-2 right-4 max-[820px]:hidden text-[12px] font-mono tracking-tighter ${isSectarian ? 'text-purple-400/60' : 'text-zinc-400'}`}>
                 ${isSectarian ? 'CONJUNCIÓN' : (isEclipse ? 'ECLIPSE' : 'SOLAR')} ${Math.floor(orbitalCycle)}/100
             </div>
 
             <!-- Barra 1: ENERGÍA (Amarillo/Amber -> Púrpura en Secta) -->
             <div 
-                className="flex items-center gap-3 pr-28 cursor-help group/energy relative z-10"
+                className="flex items-center gap-3 pr-28 max-[820px]:pr-1 cursor-help group/energy relative z-10"
                 onClick=${handleEnergyClick}
             >
-                <div className="flex items-baseline justify-between gap-2 w-[11.5rem] max-[820px]:w-[9.5rem] shrink-0">
+                <div className="flex items-baseline justify-between gap-2 w-[164px] shrink-0">
                     <span className=${`text-[9px] font-black uppercase tracking-[0.1em] whitespace-nowrap transition-colors ${activeHighlights.energy ? (isSectarian ? 'text-purple-400' : 'text-amber-400') : (isSectarian ? 'text-purple-700' : 'text-amber-700')}`}>
                         ${isSectarian ? 'Esencia_Vital' : 'System_Power'}
                     </span>
@@ -114,10 +114,10 @@ export const HeaderNucleo = () => {
 
             <!-- Barra 2: ESTABILIDAD (Rojo -> Púrpura Profundo en Secta) -->
             <div 
-                className="flex items-center gap-3 pr-28 cursor-help group/stability relative z-10"
+                className="flex items-center gap-3 pr-28 max-[820px]:pr-1 cursor-help group/stability relative z-10"
                 onClick=${handleStabilityClick}
             >
-                <div className="flex items-baseline justify-between gap-2 w-[11.5rem] max-[820px]:w-[9.5rem] shrink-0">
+                <div className="flex items-baseline justify-between gap-2 w-[164px] shrink-0">
                     <span className=${`text-[9px] font-black uppercase tracking-[0.1em] whitespace-nowrap transition-colors ${activeHighlights.stability ? (isSectarian ? 'text-purple-400' : 'text-red-500') : (isSectarian ? 'text-purple-800' : 'text-red-900')}`}>
                         ${isSectarian ? 'Paz_Espiritual' : 'Neural_Integrity'}
                     </span>
@@ -142,10 +142,10 @@ export const HeaderNucleo = () => {
 
             <!-- Barra 3: CICLO ORBITAL (Cian / Lila en Eclipse) -->
             <div 
-                className="flex items-center gap-3 pr-28 cursor-help group/orbital relative z-10"
+                className="flex items-center gap-3 pr-28 max-[820px]:pr-1 cursor-help group/orbital relative z-10"
                 onClick=${handleOrbitalClick}
             >
-                <div className="flex items-baseline justify-between gap-2 w-[11.5rem] max-[820px]:w-[9.5rem] shrink-0">
+                <div className="flex items-baseline justify-between gap-2 w-[164px] shrink-0">
                     <span className=${`text-[9px] font-black uppercase tracking-[0.1em] whitespace-nowrap transition-colors ${activeHighlights.orbital ? (isEclipse ? 'text-purple-400' : 'text-cyan-400') : (isEclipse ? 'text-purple-700' : 'text-cyan-700')}`}>
                         ${isSectarian ? 'Velo_Cósmico' : 'Orbital_Sync'}
                     </span>

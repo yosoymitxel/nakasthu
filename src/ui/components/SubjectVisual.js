@@ -5,7 +5,7 @@
 import { html } from '../utils/html.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { bus } from '../../core/Bus.js';
-import { PixelPortrait } from './PixelPortrait.js';
+import { PixelPortrait, morphFor } from './PixelPortrait.js';
 
 const { useState, useEffect } = React;
 
@@ -75,10 +75,10 @@ export const SubjectVisual = () => {
         </div>
     `;
 
-    const { visual, type, id } = subject;
+    const { visual, type, id, species } = subject;
     
     // Regla 3: Si es EIDOLON y estabilidad < 40, aplicar filtro de corrupción
-    const isCorrupted = type === 'EIDOLON' && stability < 40;
+    const isCorrupted = species === 'EIDOLON' && stability < 40;
 
     return html`
         <div 
@@ -130,7 +130,9 @@ export const SubjectVisual = () => {
                         <!-- Retrato píxel determinista por id -->
                     <${PixelPortrait}
                         seed=${id}
-                        variant=${type === 'EIDOLON' ? (isSectarian ? 'sect-eidolon' : 'eidolon') : (isSectarian ? 'sect' : 'human')}
+                        morph=${morphFor(species, id)}
+                        hooded=${isSectarian}
+                        corrupt=${isCorrupted}
                         className=${`h-[92%] select-none transition-all duration-1000 ${isCorrupted ? 'saturate-150' : ''} ${isSectarian ? 'drop-shadow-[0_0_10px_rgba(168,85,247,0.4)]' : ''}`}
                     />
                         

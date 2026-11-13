@@ -150,7 +150,7 @@ export const BioScan = () => {
                                     <span className=${`text-[12px] font-mono font-bold ${canAfford ? (isSectarian ? 'text-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.3)]' : 'text-zinc-400') : 'text-red-900/50'}`}>
                                         ${isSectarian ? '✧'.repeat(Math.ceil(finalCost / 10)) : Math.floor(finalCost)}
                                     </span>
-                                    <span className="text-[8px] text-zinc-600 uppercase tracking-tighter font-black">${isSectarian ? 'DOGMA' : 'ENERGY_COST'}</span>
+                                    ${!isRequired && html`<span className="text-[8px] text-zinc-600 uppercase tracking-tighter font-black">${isSectarian ? 'DOGMA' : 'ENERGY_COST'}</span>`}
                                 </div>
                             </div>
                         </button>

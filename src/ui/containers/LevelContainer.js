@@ -34,7 +34,7 @@ export const LevelContainer = ({ stepConfig, getModuleTutorialStatus, unlockedMo
             ${renderScreen()}
             
             ${stepConfig.meta?.infinite && html`
-                <div className="absolute top-1 left-1/2 -translate-x-1/2 max-[820px]:left-auto max-[820px]:right-8 max-[820px]:translate-x-0 z-[90] pointer-events-none">
+                <div className="absolute top-1 left-1/2 -translate-x-1/2 max-[820px]:hidden z-[150] pointer-events-none">
                     <div className="bg-zinc-950/80 border border-zinc-800 px-2 py-0.5 flex items-center gap-3">
                         <span className="text-[10px] text-zinc-500 tracking-[0.3em] uppercase">MODO_INFINITO</span>
                         <div className="w-1 h-1 bg-cyan-500 animate-pulse"></div>

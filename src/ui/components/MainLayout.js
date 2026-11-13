@@ -192,7 +192,7 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
 
             <!-- Indicador de Sincronización (Analytics en Focus Mode) -->
             ${focusMode && area === 'L_LOWER' && html`
-                <div className="absolute top-0 right-0 p-2 z-40 pointer-events-none animate-pulse-slow">
+                <div className="absolute top-7 right-0 p-1 z-40 pointer-events-none animate-pulse-slow">
                     <div className="flex items-center gap-2 border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 backdrop-blur-sm">
                         <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_5px_rgba(34,211,238,0.8)]"></div>
                         <span className="text-[8px] text-cyan-400 font-bold uppercase tracking-widest">Neural_Monitor</span>

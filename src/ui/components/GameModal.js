@@ -11,6 +11,8 @@ import { state } from '../../core/State.js';
 import { CONFIG } from '../../data/gameConfig.js';
 import { getRandomFragment, calculateRank } from '../../utils/systemUtils.js';
 
+import { MODULES } from '../../systems/ModuleRegistry.js';
+
 const { useState, useEffect, memo } = React;
 
 /**
@@ -75,7 +77,7 @@ export const GameModal = memo(({
                         key=${`mod-link-${i}`}
                         onClick=${(e) => {
                         e.stopPropagation();
-                        bus.emit('HIGHLIGHT_MODULE', { area: areaId });
+                        bus.emit('UI_FOCUS_AREA', { area: areaId });
                     }}
                         className="text-amber-500 font-bold hover:text-amber-400 underline decoration-amber-500/30 underline-offset-4 transition-colors px-1 bg-amber-500/5 rounded"
                     >
@@ -87,16 +89,30 @@ export const GameModal = memo(({
         });
     };
 
+    // El tutorial se acopla al lado contrario del módulo que explica, para no taparlo
+    const tutoModule = isTutorial && Object.values(MODULES).find(m => m.tutorial === stats?.activeTutorialId);
+    const tutoArea = tutoModule ? CONFIG.UI.MOD_MAP[tutoModule.id] : null;
+    useEffect(() => {
+        if (visible && tutoArea) bus.emit('UI_FOCUS_AREA', { area: tutoArea });
+    }, [visible, tutoArea, title]);
+
     if (!visible) {
         return null;
     }
 
+    const dock = !isTutorial ? 'items-center justify-center bg-black/95 backdrop-blur-sm'
+        : `pointer-events-none max-[820px]:items-end max-[820px]:justify-center max-[820px]:pb-14 ${
+            tutoArea?.startsWith('L_') ? 'items-center justify-end min-[821px]:pr-[6%]'
+            : tutoArea?.startsWith('R_') ? 'items-center justify-start min-[821px]:pl-[6%]'
+            : tutoArea === 'C_FOOTER' ? 'items-start justify-center min-[821px]:pt-[4%]'
+            : 'items-end justify-center min-[821px]:pb-[3%]'}`;
+
     const rank = calculateRank(stats);
 
     return html`
-        <div className=${`game-modal-overlay fixed inset-0 z-[800] flex items-center justify-center p-4 transition-all duration-500 ${isTutorial ? 'bg-black/30' : 'bg-black/90'}`}>
+        <div className=${`game-modal-overlay fixed inset-0 z-[800] flex p-4 transition-all duration-500 ${dock}`}>
             <!-- Contenedor principal con borde ámbar -->
-            <div className=${`game-modal relative w-full max-w-lg border border-amber-900/40 shadow-2xl transition-all duration-300 ${isTutorial ? 'bg-[#0a0a0a]/60 backdrop-blur-md ring-1 ring-amber-500/10' : 'bg-[#0a0a0a]/95'}`}>
+            <div className=${`game-modal relative w-full max-w-lg border border-amber-900/40 shadow-2xl transition-all duration-300 ${isTutorial ? 'pointer-events-auto max-w-md bg-[#0a0a0a] ring-1 ring-amber-500/40 shadow-[0_0_40px_rgba(0,0,0,0.9)]' : 'bg-[#0a0a0a]/95'}`}>
                 
                 <!-- Esquinas decorativas -->
                 <div className="absolute -top-px -left-px w-4 h-4 border-t-2 border-l-2 border-amber-500/60" />
