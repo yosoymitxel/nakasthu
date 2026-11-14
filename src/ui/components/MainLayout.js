@@ -13,6 +13,7 @@ import { CONFIG } from '../../data/gameConfig.js';
 import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 
 import { bus } from '../../core/Bus.js';
+import { state } from '../../core/State.js';
 
 const { memo, useState, useEffect } = React;
 
@@ -46,6 +47,16 @@ export const MainLayout = memo(({ children }) => {
     const currentEntity = useGameState('currentEntity');
     const scanPending = !!(currentEntity && requiredScan && !currentEntity.scannedTypes?.includes(requiredScan));
 
+    // El motor cambia `emergencies` sin reemplazar el objeto: se sigue por eventos
+    const [emergencyActive, setEmergencyActive] = useState(false);
+    useEffect(() => {
+        const sync = () => setTimeout(() => setEmergencyActive(Object.values(state.emergencies || {}).some(Boolean)), 0);
+        const events = ['EMERGENCY_START', 'EMERGENCY_END', 'STEP_CHANGE', 'LEVEL_RESET'];
+        events.forEach(e => bus.on(e, sync));
+        sync();
+        return () => events.forEach(e => bus.off(e, sync));
+    }, []);
+
     useEffect(() => {
         const onFocus = ({ area }) => { if (AREA_TAB[area]) setTab(AREA_TAB[area]); };
         bus.on('UI_FOCUS_AREA', onFocus);
@@ -72,6 +83,7 @@ export const MainLayout = memo(({ children }) => {
                     <button key=${id} className=${tab === id ? 'on' : ''} onClick=${() => setTab(id)}>
                         ${label}
                         ${id === 'escaner' && scanPending && tab !== id && html`<span className="tab-dot"></span>`}
+                        ${id === 'sistemas' && emergencyActive && tab !== id && html`<span className="tab-dot alert"></span>`}
                     </button>
                 `)}
             </nav>

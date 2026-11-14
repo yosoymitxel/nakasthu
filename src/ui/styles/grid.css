@@ -295,8 +295,9 @@ body {
         display: flex;
         flex-direction: column;
         height: 100dvh;
-        padding: 4px 4px 52px;
+        padding: 4px 4px 0;
         scroll-padding-bottom: 60px;
+        overscroll-behavior: contain;
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -313,9 +314,13 @@ body {
     .main-layout-grid[data-tab="registro"] > .mod-R_UPPER { display: block; height: 260px; order: 2; }
 
     .mobile-tabs {
+        /* sticky y no fixed: la rejilla lleva translate (sacudida) y eso descoloca a los fixed */
         display: flex;
-        position: fixed;
-        left: 0; right: 0; bottom: 0;
+        position: sticky;
+        bottom: 0;
+        order: 99;
+        flex: none;
+        margin: auto -4px 0;
         height: 48px;
         z-index: 200;
         background: #0b0b0d;
@@ -329,6 +334,7 @@ body {
         border-right: 1px solid #18181b;
     }
     .mobile-tabs button.on { color: var(--tab-color, #22d3ee); box-shadow: inset 0 2px 0 var(--tab-color, #22d3ee); background: rgba(255, 255, 255, 0.03); }
+    .mobile-tabs .tab-dot.alert { background: #ef4444; animation-duration: 0.7s; }
     .mobile-tabs .tab-dot { position: absolute; top: 8px; right: 14%; width: 6px; height: 6px; background: #f59e0b; animation: pulse-slow 1.2s ease-in-out infinite; }
 }
 
