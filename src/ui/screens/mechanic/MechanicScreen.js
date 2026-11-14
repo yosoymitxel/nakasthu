@@ -30,18 +30,18 @@ export const MechanicScreen = memo(({ config }) => {
         const recommendation = calculateJudgmentRecommendation();
 
         return html`
-            <div className="mechanic-screen fixed inset-0 bg-[#050505] flex items-center justify-center z-[450] p-8">
-                <div className="w-full max-w-6xl flex flex-col items-center gap-12">
+            <div className="mechanic-screen fixed inset-0 bg-black/75 flex items-center justify-center z-[450] p-3 sm:p-8 overflow-y-auto">
+                <div className="w-full max-w-6xl flex flex-col items-center gap-4 sm:gap-12 my-auto">
                     
                     <div className="text-center space-y-4">
                         <h2 className="text-zinc-600 text-[10px] tracking-[1em] uppercase">PASO 11 // EL JUICIO FINAL</h2>
                         <h1 className="text-3xl font-bold text-zinc-100 uppercase tracking-widest">${config.name}</h1>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-8 w-full h-[400px]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-8 w-full sm:h-[400px]">
                         <!-- Lado Izquierdo: ORDEN (Leina) -->
                         <div 
-                            className=${`relative border border-cyan-900/40 bg-cyan-950/5 p-8 flex flex-col items-center justify-center gap-8 transition-all hover:bg-cyan-950/10 ${judgmentChoice === 'orden' ? 'ring-2 ring-cyan-500' : ''}`}
+                            className=${`relative border border-cyan-900/40 bg-cyan-950/5 p-4 pt-8 sm:p-8 flex flex-col items-center justify-center gap-4 sm:gap-8 transition-all hover:bg-cyan-950/10 ${judgmentChoice === 'orden' ? 'ring-2 ring-cyan-500' : ''}`}
                             onClick=${() => setJudgmentChoice('orden')}
                         >
                             <div className="absolute top-4 left-4 text-[10px] text-cyan-600 font-bold tracking-widest uppercase">FACTION: ORDER</div>
@@ -62,7 +62,7 @@ export const MechanicScreen = memo(({ config }) => {
 
                         <!-- Lado Derecho: CAOS (Kamin) -->
                         <div 
-                            className=${`relative border border-purple-900/40 bg-purple-950/5 p-8 flex flex-col items-center justify-center gap-8 transition-all hover:bg-purple-950/10 ${judgmentChoice === 'caos' ? 'ring-2 ring-purple-500' : ''}`}
+                            className=${`relative border border-purple-900/40 bg-purple-950/5 p-4 pt-8 sm:p-8 flex flex-col items-center justify-center gap-4 sm:gap-8 transition-all hover:bg-purple-950/10 ${judgmentChoice === 'caos' ? 'ring-2 ring-purple-500' : ''}`}
                             onClick=${() => setJudgmentChoice('caos')}
                         >
                             <div className="absolute top-4 right-4 text-[10px] text-purple-600 font-bold tracking-widest uppercase text-right">FACTION: CHAOS</div>

@@ -84,7 +84,7 @@ export const LevelSelectorModal = ({ isOpen, onClose }) => {
     };
 
     return html`
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4">
             <div className="bg-zinc-950 border border-zinc-800 w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden shadow-2xl">
                 <!-- Header -->
                 <header className="p-6 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/20">

@@ -7,6 +7,7 @@ export const STEPS_CONFIG = {
     1: {
         type: 'cinematic',
         name: 'La Avanzadilla',
+        shot: 'descent',
         briefingText: 'Kael, Deyar y Alexia. Tres sombras modificadas descendieron a Zhyr. No buscaban gloria, buscaban la Piedra. Pero la Piedra los encontró primero.',
         meta: null
     },
@@ -14,12 +15,14 @@ export const STEPS_CONFIG = {
         type: 'mechanic',
         mechanicType: 'SYNC',
         name: 'El Contacto',
+        shot: 'monolith',
         briefingText: 'La sincronización neural con el Bastión requiere contacto absoluto. El Monolito pulsa. Mantén la conexión o el sistema colapsa.',
         meta: { syncRequired: 100 }
     },
     3: {
         type: 'cinematic',
         name: 'El Gran Desvío',
+        shot: 'awakening',
         briefingText: 'La Piedra despertó. Un tercio de la humanidad se desvaneció en un parpadeo. El caos reina en las Distribuciones. Tú eres el Operador del Bastión, el último filtro entre el orden y la extinción.',
         meta: null
     },
@@ -38,6 +41,7 @@ export const STEPS_CONFIG = {
     5: {
         type: 'cinematic',
         name: 'La Grieta Social',
+        shot: 'riot',
         briefingText: 'Las plazas de Dispay arden. La gente no quiere trabajar, quiere a sus desaparecidos. En el BioScan, las lecturas empiezan a mostrar algo más que carne: muestran ecos, susurros de los que se fueron.',
         meta: null
     },
@@ -57,6 +61,7 @@ export const STEPS_CONFIG = {
     7: {
         type: 'cinematic',
         name: 'El Mensajero de Aitor',
+        shot: 'messenger',
         briefingText: 'Kamin no habla de odio, habla de esperanza. Dice que el portal es un regalo, un Renacimiento. Su voz calma el zumbido de las máquinas. La gente empieza a escucharlo.',
         meta: { actChange: true, newStoryPath: 1 }
     },
@@ -75,6 +80,7 @@ export const STEPS_CONFIG = {
     9: {
         type: 'cinematic',
         name: 'La Fe Ciega',
+        shot: 'faith',
         briefingText: 'Ya no hay ciudadanos, solo devotos. El Bastión hiede a incienso y aceite de máquina. La fe es el nuevo combustible de la Nakara.',
         meta: null
     },
@@ -93,6 +99,7 @@ export const STEPS_CONFIG = {
         type: 'mechanic',
         mechanicType: 'DECISION',
         name: 'El Juicio Final',
+        shot: 'portal',
         briefingText: 'El terminal se divide. Leina intenta cerrar la brecha. Kamin exige el sacrificio final. Tu desempeño determinará el destino.',
         meta: {
             dualChoice: true,
@@ -103,6 +110,7 @@ export const STEPS_CONFIG = {
     12: {
         type: 'cinematic',
         name: 'Epílogo',
+        shot: 'portal',
         briefingText: null, // Se determina según el final elegido
         meta: {
             endings: {

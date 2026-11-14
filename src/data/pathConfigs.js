@@ -93,7 +93,7 @@ export const PATH_CONFIGS = {
         },
         specialMechanic: {
             header: 'SINCRONIZACIÓN NEURAL',
-            instruction: 'MANTENGA [ESPACIO] PARA SINCRONIZAR',
+            instruction: 'MANTÉN PULSADO EL MONOLITO (O ESPACIO) PARA SINCRONIZAR',
             complete: 'SINCRONIZACIÓN COMPLETADA',
             statusSyncing: '◆ SINCRONIZANDO... ◆',
             statusComplete: '◆ SINCRONIZADO ◆',

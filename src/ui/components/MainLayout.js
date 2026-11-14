@@ -12,7 +12,16 @@ import { useGameState } from '../hooks/useGameState.js';
 import { CONFIG } from '../../data/gameConfig.js';
 import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 
-const { memo } = React;
+import { bus } from '../../core/Bus.js';
+
+const { memo, useState, useEffect } = React;
+
+const AREA_TAB = {
+    C_MAIN: 'mando', C_HEADER: 'mando',
+    L_UPPER: 'escaner', L_LOWER: 'escaner',
+    C_FOOTER: 'sistemas', L_BOTTOM: 'sistemas', R_BOTTOM: 'sistemas',
+    R_TOP: 'registro', R_UPPER: 'registro', R_MIDDLE: 'registro'
+};
 
 /**
  * Hook para obtener las etiquetas actuales según storyPath
@@ -31,12 +40,41 @@ export const MainLayout = memo(({ children }) => {
     const colorOverride = useGameState('coreColorOverride');
     const themeColor = colorOverride || (PATH_CONFIGS[storyPath] || PATH_CONFIGS[0]).theme.primary;
 
+    // Pestañas (solo visibles en pantalla estrecha, ver grid.css)
+    const [tab, setTab] = useState('mando');
+    const requiredScan = useGameState('requiredScan');
+    const currentEntity = useGameState('currentEntity');
+    const scanPending = !!(currentEntity && requiredScan && !currentEntity.scannedTypes?.includes(requiredScan));
+
+    useEffect(() => {
+        const onFocus = ({ area }) => { if (AREA_TAB[area]) setTab(AREA_TAB[area]); };
+        bus.on('UI_FOCUS_AREA', onFocus);
+        return () => bus.off('UI_FOCUS_AREA', onFocus);
+    }, []);
+
+    const sect = storyPath === 1;
+    const tabs = [
+        ['mando', sect ? 'Altar' : 'Mando'],
+        ['escaner', sect ? 'Examen' : 'Escáner'],
+        ['sistemas', sect ? 'Ritos' : 'Sistemas'],
+        ['registro', sect ? 'Crónicas' : 'Registro']
+    ];
+
     return html`
-        <div 
+        <div
             className=${`main-layout-grid theme-${themeColor} relative`}
             data-story-path=${storyPath}
+            data-tab=${tab}
         >
             ${children}
+            <nav className="mobile-tabs" style=${{ '--tab-color': sect ? '#a855f7' : '#22d3ee' }}>
+                ${tabs.map(([id, label]) => html`
+                    <button key=${id} className=${tab === id ? 'on' : ''} onClick=${() => setTab(id)}>
+                        ${label}
+                        ${id === 'escaner' && scanPending && tab !== id && html`<span className="tab-dot"></span>`}
+                    </button>
+                `)}
+            </nav>
             <!-- Grid Debugger Overlay (Opcional, se puede activar via CSS) -->
             <div className="grid-debug-overlay pointer-events-none absolute inset-0 z-0 opacity-5 border border-zinc-500/10"></div>
         </div>
@@ -59,16 +97,40 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
     const focusMode = useGameState('focusMode');
     const isShielded = focusMode && area !== 'C_MAIN' && area !== 'C_HEADER' && area !== 'L_LOWER';
 
-    const highlightStyle = highlighted ? {
+    // Foco pedido por otro panel: fijo (HIGHLIGHT_MODULE) o breve (UI_FOCUS_AREA)
+    const [focusColor, setFocusColor] = useState(null);
+    useEffect(() => {
+        let timer;
+        const onHighlight = (d) => {
+            if (d.areas?.includes(area)) setFocusColor(d.color || '#f59e0b');
+            if (d.clear?.includes(area)) setFocusColor(null);
+        };
+        const onFocus = (d) => {
+            if (d.area !== area) return;
+            setFocusColor(d.color || '#f59e0b');
+            clearTimeout(timer);
+            timer = setTimeout(() => setFocusColor(null), 1800);
+        };
+        bus.on('HIGHLIGHT_MODULE', onHighlight);
+        bus.on('UI_FOCUS_AREA', onFocus);
+        return () => {
+            clearTimeout(timer);
+            bus.off('HIGHLIGHT_MODULE', onHighlight);
+            bus.off('UI_FOCUS_AREA', onFocus);
+        };
+    }, [area]);
+
+    const highlightStyle = focusColor ? { '--focus-color': focusColor } : highlighted ? {
         boxShadow: `0 0 20px rgba(${isSectarian ? '147, 51, 234' : '6, 182, 212'}, 0.4)`,
         zIndex: 50
     } : {};
 
     return html`
-        <div 
+        <div
             style=${highlightStyle}
             className=${`
-                mod-container mod-${area} 
+                mod-container mod-${area} ${focusColor ? 'mod-focus' : ''}
+
                 border transition-all duration-[1200ms] ease-in-out
                 ${isSectarian ? 'border-indigo-900/20' : 'border-zinc-800/50'}
                 ${(locked || isShielded) ? 'opacity-20 pointer-events-none grayscale' : 'opacity-100'}
@@ -130,7 +192,7 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
 
             <!-- Indicador de Sincronización (Analytics en Focus Mode) -->
             ${focusMode && area === 'L_LOWER' && html`
-                <div className="absolute top-0 right-0 p-2 z-40 pointer-events-none animate-pulse-slow">
+                <div className="absolute top-7 right-0 p-1 z-40 pointer-events-none animate-pulse-slow">
                     <div className="flex items-center gap-2 border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 backdrop-blur-sm">
                         <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_5px_rgba(34,211,238,0.8)]"></div>
                         <span className="text-[8px] text-cyan-400 font-bold uppercase tracking-widest">Neural_Monitor</span>

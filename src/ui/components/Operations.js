@@ -15,6 +15,7 @@ import { gameSequencer } from '../../systems/GameSequencer.js';
 import { PortalScene } from './PortalScene.js';
 import { SubjectVisual } from './SubjectVisual.js';
 import { Coms } from './Coms.js';
+import { FlowGuide } from './FlowGuide.js';
 import { SCAN_TYPES } from '../../systems/Scanner.js';
 
 const { useState, useEffect, useRef } = React;
@@ -232,6 +233,10 @@ export const Operations = () => {
     // 2. Color por defecto según la ruta (Sectario: purple, Operario: cyan)
     const stepColor = stepConfig.meta?.coreColorOverride || (isSectarian ? 'purple' : 'cyan');
 
+    const scanName = pathConfig.bioscan.scans[requiredScan] || SCAN_TYPES[requiredScan]?.name || requiredScan || '—';
+    // En modo infinito la cuota no tiene fin: nada de Array.from(Infinity)
+    const finiteQuota = Number.isFinite(quota);
+
     return html`
         <div className="flex flex-col h-full w-full bg-black/20 font-mono overflow-hidden relative border border-zinc-800/50 shadow-[inset_0_0_30px_rgba(0,0,0,0.5)]">
             
@@ -261,7 +266,7 @@ export const Operations = () => {
                 <div className=${`w-1/3 h-full border-r border-zinc-800/80 relative overflow-hidden flex flex-col group ${isSectarian ? 'bg-indigo-950/20' : 'bg-black/40'}`}>
                     <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ${isSectarian ? 'bg-purple-500/5' : 'bg-amber-500/5'}`}></div>
                     <${SubjectVisual} />
-                    <div className="absolute bottom-1 left-2 text-[10px] text-zinc-500 tracking-[0.2em] uppercase font-bold pointer-events-none z-20">
+                    <div className="absolute top-1 right-2 max-[820px]:hidden text-[9px] text-zinc-500 tracking-[0.2em] uppercase font-bold pointer-events-none z-20">
                         ${labels.viewLabels.subject}
                     </div>
                     <div className=${`absolute top-0 right-0 w-8 h-8 border-t border-r pointer-events-none ${isSectarian ? 'border-indigo-500/20' : 'border-amber-500/20'}`}></div>
@@ -277,7 +282,7 @@ export const Operations = () => {
                         <div className="flex items-center gap-3">
                             ${isSectarian && html`<span className="text-purple-900/40 text-xl">✧</span>`}
                             <span className=${`text-2xl font-black font-mono ${isSectarian ? 'text-purple-500/80 [text-shadow:0_0_10px_rgba(168,85,247,0.3)]' : 'text-emerald-600/70'}`}>
-                                ${processedCount} / ${quota}
+                                <span key=${processedCount} className="feel-pop">${processedCount}</span> / ${finiteQuota ? quota : '∞'}
                             </span>
                             ${isSectarian && html`<span className="text-purple-900/40 text-xl">✧</span>`}
                         </div>
@@ -286,7 +291,7 @@ export const Operations = () => {
                     ${isSectarian ? html`
                         <!-- Visualización de Cosecha de Almas (Sectario) -->
                         <div className="flex justify-center gap-1.5 h-4 items-center">
-                            ${Array.from({ length: quota }).map((_, i) => html`
+                            ${Array.from({ length: finiteQuota ? Math.min(quota, 24) : 0 }).map((_, i) => html`
                                 <div 
                                     key=${i}
                                     className=${`w-2 h-2 rotate-45 border transition-all duration-700 ${i < processedCount ? 'bg-purple-500 border-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.6)]' : 'border-purple-900/30 bg-transparent'}`}
@@ -298,7 +303,7 @@ export const Operations = () => {
                         <div className="w-full bg-zinc-950 h-3 relative overflow-hidden border border-zinc-800/30">
                             <div 
                                 className="h-full bg-emerald-600/40 transition-all duration-1000"
-                                style=${{ width: `${Math.min((processedCount / quota) * 100, 100)}%` }}
+                                style=${{ width: `${finiteQuota ? Math.min((processedCount / quota) * 100, 100) : 100}%` }}
                             ></div>
                         </div>
                     `}
@@ -310,13 +315,21 @@ export const Operations = () => {
                 </div>
             </div>
 
+            <${FlowGuide}
+                isSectarian=${isSectarian}
+                hasSubject=${!!currentEntity}
+                scanDone=${isScanComplete}
+                scanName=${scanName}
+                talking=${!!activeDialogue}
+            />
+
             <!-- SECCIÓN CENTRAL: CHAT / LOG (MOD-05) -->
             <${Coms} />
 
             <!-- SECCIÓN INFERIOR: ACTION MATRIX -->
             <div className="flex-none border-t border-zinc-800/80 bg-black/40 relative">
                 <!-- DIALOGUE OPTIONS -->
-                <div className="h-24 flex p-1 gap-1 border-b border-zinc-800/30 bg-zinc-950/20">
+                <div className="h-[72px] flex p-1 gap-1 border-b border-zinc-800/30 bg-zinc-950/20">
                     ${activeDialogue ? html`
                         <div className="flex w-full gap-1">
                             <div className="flex-[4] flex gap-1">
@@ -356,7 +369,7 @@ export const Operations = () => {
                             <button 
                                 onClick=${() => handleDialogueAction('INTERROGAR')}
                                 disabled=${isTyping}
-                                className=${`flex-1 border text-[12px] transition-all uppercase tracking-tighter font-bold relative group overflow-hidden
+                                className=${`flex-1 min-w-[42%] px-2 leading-tight border text-[12px] transition-all uppercase tracking-tighter font-bold relative group overflow-hidden
                                     ${isSectarian 
                                         ? 'border-purple-500/30 bg-purple-950/10 hover:bg-purple-500/20 text-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.1)]' 
                                         : 'border-cyan-500/30 bg-cyan-950/10 hover:bg-cyan-500/20 text-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.1)]'}`}
@@ -364,30 +377,30 @@ export const Operations = () => {
                                 <span className="relative z-10">${labels.interrogateBtn}</span>
                                 <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             </button>
-                            <div className="flex-grow flex items-center justify-center p-2 text-center">
-                                <span className="text-[12px] text-zinc-600 uppercase italic tracking-widest font-bold">${labels.waitingSubject}</span>
+                            <div className="flex-1 min-w-0 flex items-center justify-center p-2 text-center">
+                                <span className="text-[11px] text-zinc-600 uppercase italic tracking-wider font-bold">${labels.waitingSubject}</span>
                             </div>
                         <//>
                     `}
                 </div>
 
                 <!-- SENTENCE BUTTONS -->
-                <div className="h-20 p-4 flex flex-col items-center justify-center bg-black/60 relative">
+                <div className="h-16 p-2 flex flex-col items-center justify-center bg-black/60 relative">
                     ${(isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') ? null : (isTutorialActive || !isScanComplete) ? html`
                          ${(!isTutorialActive && !isScanComplete) ? html`
-                            <div className="absolute inset-0 bg-black/80 backdrop-blur-[2px] flex flex-col items-center justify-center z-30 border-y border-red-500/20">
+                            <button onClick=${() => bus.emit('UI_FOCUS_AREA', { area: 'L_UPPER', color: isSectarian ? '#a855f7' : '#f59e0b' })} className="absolute inset-0 w-full bg-zinc-950 flex flex-col items-center justify-center z-30 border-y border-red-500/20">
                                 <div className="absolute inset-0 bg-red-500/5 animate-pulse pointer-events-none"></div>
                                 <span className="text-[10px] text-red-500 font-bold tracking-[0.2em] uppercase animate-pulse text-center px-4 mb-1 z-10">
                                     ${labels.pendingValidation}
                                 </span>
                                 <span className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest z-10">
-                                    [${labels.scanRequired}: ${pathConfig.bioscan.scans[requiredScan] || (SCAN_TYPES[requiredScan]?.name || requiredScan)}]
+                                    [${labels.scanRequired}: ${scanName}] ▸
                                 </span>
-                            </div>
+                            </button>
                         `: null}
                     `: null}
                     
-                    <div className="flex items-center justify-center gap-6 w-full h-full px-4">
+                    <div className=${`flex items-center justify-center gap-6 w-full h-full px-4 ${(!isTutorialActive && !isScanComplete) ? 'invisible' : ''}`}>
                     <button 
                         onClick=${() => handleAction('SACRIFICE')}
                         disabled=${isTyping || kaminOverride || (!isTutorialActive && !isScanComplete)}

@@ -27,6 +27,9 @@ import { toggleFullScreen, isFullScreen } from '../utils/fullscreen.js';
 import { calculateRank } from '../../utils/systemUtils.js';
 
 import { LevelSelectorModal } from './LevelSelectorModal.js';
+import { Backdrop3D } from './Backdrop3D.js';
+import { FeelLayer, fxReduced, setFxReduced } from './FeelLayer.js';
+import { AchievementToast, AchievementsPanel } from './AchievementsUI.js';
 import { persistenceManager } from '../../systems/PersistenceManager.js';
 
 const { useState, useEffect } = React;
@@ -69,6 +72,7 @@ export const Layout = () => {
     const [isFS, setIsFS] = useState(isFullScreen());
 
     const [isLevelSelectorOpen, setIsLevelSelectorOpen] = useState(false);
+    const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
 
     // Listener para pantalla completa
     useEffect(() => {
@@ -249,6 +253,8 @@ export const Layout = () => {
     const isStartMenu = gameStatus === 'START_MENU';
     const isLoreArchive = gameStatus === 'LORE_ARCHIVE';
     const isPaused = state.isPaused;
+    // Cinemáticas y mecánicas piden su plano de cámara a la escena 3D
+    const sceneShot = (!isStartMenu && !isGameOver && !isLoreArchive && stepConfig?.type !== 'gameplay') ? stepConfig?.shot : null;
 
     // Capturar el rango final para evitar parpadeo al reiniciar el nivel
     useEffect(() => {
@@ -312,8 +318,14 @@ export const Layout = () => {
     const stabilityAlertClass = isCriticalStability ? 'shadow-[inset_0_0_100px_rgba(220,38,38,0.4)]' : '';
 
     return html`
-        <div className=${`relative min-h-screen bg-[#1a1a1c] text-zinc-300 overflow-hidden cursor-default select-none font-mono transition-all duration-[1000ms] ${isPaused ? 'grayscale' : ''} ${criticalClass}`}>
+        <div className=${`relative min-h-screen bg-[#0b0b0d] text-zinc-300 overflow-hidden cursor-default select-none font-mono transition-all duration-[1000ms] ${isPaused ? 'grayscale' : ''} ${criticalClass}`}>
             
+            <${Backdrop3D}
+                dim=${!isStartMenu && !sceneShot}
+                sect=${storyPath === 1}
+                shot=${sceneShot}
+            />
+
             <!-- Bordes de Emergencia (Degradado y Vibración) -->
             ${(isCriticalEnergy || isCriticalStability) && html`
                 <div className=${`absolute inset-0 pointer-events-none z-[100] border-transparent transition-all duration-1000 animate-pulse-border-critical ${isCriticalEnergy ? 'border-amber-600/30 ' + energyAlertClass : 'border-red-600/30 ' + stabilityAlertClass}`}></div>
@@ -339,11 +351,11 @@ export const Layout = () => {
             <div className=${`start-menu ${isStartMenu ? 'active' : ''}`}>
                 <div className="flex flex-col items-center space-y-12">
                     <div className="text-center space-y-4">
-                        <h1 className="text-5xl font-bold tracking-[1em] text-zinc-100 opacity-90">NAKASTHU</h1>
-                        <p className="text-[12px] text-zinc-400 tracking-[0.3em] uppercase">SISTEMA DE GESTIÓN DE BIOMASA v.15.0</p>
+                        <h1 className="menu-title font-bold text-zinc-100 opacity-90">NAKASTHU</h1>
+                        <p className="text-[11px] text-zinc-400 tracking-[0.2em] uppercase px-4">SISTEMA DE GESTIÓN DE BIOMASA v.15.0</p>
                     </div>
                     
-                    <div className="flex flex-col gap-4 w-64">
+                    <div className="flex flex-col gap-4 w-64 max-w-[80vw]">
                         <button 
                             onClick=${() => {
             bus.emit('GAME_START');
@@ -368,6 +380,13 @@ export const Layout = () => {
                             Archivo de Lore
                         </button>
                         
+                        <button 
+                            onClick=${() => setIsAchievementsOpen(true)}
+                            className="border border-zinc-800 bg-zinc-900/60 px-8 py-2 text-zinc-400 font-mono text-xs hover:text-zinc-200 hover:border-amber-500/30 transition-all uppercase tracking-widest"
+                        >
+                            Expediente
+                        </button>
+
                         <button 
                             onClick=${() => bus.emit('UI_MODAL_OPEN', { title: 'CONFIGURACIÓN', content: 'AJUSTES TÉCNICOS DEL NÚCLEO BASTIÓN.' })}
                             className="border border-zinc-800 bg-zinc-900/60 px-8 py-2 text-zinc-400 font-mono text-xs hover:text-zinc-200 transition-all uppercase tracking-widest"
@@ -403,7 +422,7 @@ export const Layout = () => {
                 headerColor = 'text-red-800';
             }
 
-            return html`<h1 className=${`font-mono text-4xl tracking-[0.3em] uppercase font-black ${headerColor}`}>
+            return html`<h1 className=${`font-mono text-2xl sm:text-4xl tracking-[0.15em] sm:tracking-[0.3em] uppercase font-black ${headerColor}`}>
                             ${headerText}
                         </h1>`;
         })()}
@@ -451,7 +470,7 @@ export const Layout = () => {
                         </div>
                     </div>
 
-                    <div className="flex gap-6 mt-4">
+                    <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mt-4">
                         <button 
                             onClick=${() => {
             setDeathReason(null);
@@ -460,7 +479,7 @@ export const Layout = () => {
             gameSequencer.resetLevel();
             state.gameStatus = 'PLAYING';
         }}
-                            className="group relative px-10 py-4 border border-red-600/50 text-red-400 font-mono text-sm hover:bg-red-900/20 transition-all uppercase tracking-[0.2em] font-bold"
+                            className="group relative px-6 sm:px-10 py-4 border border-red-600/50 text-red-400 font-mono text-sm hover:bg-red-900/20 transition-all uppercase tracking-[0.2em] font-bold"
                         >
                             <span className="relative z-10">Reiniciar Nivel</span>
                             <div className="absolute inset-0 bg-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -472,7 +491,7 @@ export const Layout = () => {
             setDeathStats(null);
             state.resetState();
         }}
-                            className="px-10 py-4 border border-zinc-800 text-zinc-500 font-mono text-sm hover:bg-zinc-900/40 transition-all uppercase tracking-[0.2em]"
+                            className="px-6 sm:px-10 py-4 border border-zinc-800 text-zinc-500 font-mono text-sm hover:bg-zinc-900/40 transition-all uppercase tracking-[0.2em]"
                         >
                             Ir al Inicio
                         </button>
@@ -494,7 +513,7 @@ export const Layout = () => {
             <!-- Modal de Pausa -->
             ${isPaused && html`
                 <div className="modal-overlay z-[700]">
-                    <div className="bg-zinc-950 border border-cyan-900/50 p-12 text-center space-y-6">
+                    <div className="bg-zinc-950 border border-cyan-900/50 p-6 sm:p-12 max-w-[94vw] text-center space-y-6">
                         <h2 className="text-cyan-500 font-mono text-2xl tracking-[0.5em] animate-pulse">SISTEMA EN ESPERA</h2>
                         <p className="text-zinc-500 text-[10px] tracking-widest uppercase">INTERRUPCIÓN DE FLUJO NEURAL DETECTADA</p>
                         <button 
@@ -545,8 +564,15 @@ export const Layout = () => {
                         </div>
 
                         <button 
+                            onClick=${() => setIsAchievementsOpen(true)}
+                            className="w-full mt-4 px-6 py-2 border border-zinc-800 text-zinc-500 hover:text-amber-500 hover:border-amber-500/30 transition-all uppercase tracking-widest text-[10px]"
+                        >
+                            Expediente (logros)
+                        </button>
+
+                        <button 
                             onClick=${toggleFullScreen}
-                            className="w-full mt-4 px-6 py-2 border border-zinc-800 text-zinc-500 hover:text-cyan-500 hover:border-cyan-500/30 transition-all uppercase tracking-widest text-[10px]"
+                            className="w-full mt-2 px-6 py-2 border border-zinc-800 text-zinc-500 hover:text-cyan-500 hover:border-cyan-500/30 transition-all uppercase tracking-widest text-[10px]"
                         >
                             ${isFS ? 'Desactivar Fullscreen' : 'Activar Fullscreen'}
                         </button>
@@ -573,9 +599,9 @@ export const Layout = () => {
             />
 
             <!-- Sistema de Modales Antiguo (Compatibilidad UI) -->
-            ${modal && html`
+            ${modal && !gameModalState.visible && html`
                 <div className="modal-overlay" onClick=${() => setModal(null)}>
-                    <div className="bg-[#1a1a1c] border border-zinc-800 p-6 w-[500px] shadow-2xl relative" onClick=${e => e.stopPropagation()}>
+                    <div className="bg-[#1a1a1c] border border-zinc-800 p-6 w-[500px] max-w-[94vw] max-h-[90dvh] overflow-y-auto shadow-2xl relative" onClick=${e => e.stopPropagation()}>
                         <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
                             <h2 className="text-zinc-300 font-bold tracking-widest uppercase text-sm">${modal.title}</h2>
                             <button onClick=${() => setModal(null)} className="text-zinc-500 hover:text-zinc-300">✕</button>
@@ -591,6 +617,15 @@ export const Layout = () => {
                                             className="px-4 py-1 border border-cyan-900/50 text-cyan-500 text-[10px] hover:bg-cyan-500/10 transition-all uppercase tracking-widest"
                                         >
                                             ${isFS ? 'Salir Pantalla Completa' : 'Entrar Pantalla Completa'}
+                                        </button>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-zinc-500 uppercase tracking-widest text-[10px]">Sacudidas y sellos</span>
+                                        <button
+                                            onClick=${() => { setFxReduced(!fxReduced()); setModal({ ...modal }); }}
+                                            className="px-4 py-1 border border-cyan-900/50 text-cyan-500 text-[10px] hover:bg-cyan-500/10 transition-all uppercase tracking-widest"
+                                        >
+                                            ${fxReduced() ? 'Reducidos' : 'Completos'}
                                         </button>
                                     </div>
                                     <div className="flex justify-between items-center opacity-50">
@@ -628,6 +663,10 @@ export const Layout = () => {
                     </div>
                 </div>
             `}
+
+            <${AchievementsPanel} isOpen=${isAchievementsOpen} onClose=${() => setIsAchievementsOpen(false)} />
+            <${AchievementToast} />
+            <${FeelLayer} />
 
             <!-- CRT Overlay Global -->
             <div className="pointer-events-none fixed inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] bg-[length:100%_4px,3px_100%]"></div>

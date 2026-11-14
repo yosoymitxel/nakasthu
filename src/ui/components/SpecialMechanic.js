@@ -141,7 +141,7 @@ export const SpecialMechanic = memo(({ onComplete, syncKey = ' ' }) => {
     };
 
     return html`
-        <div className="special-mechanic-container fixed inset-0 z-[600] bg-black/95 flex flex-col items-center justify-center">
+        <div className="special-mechanic-container fixed inset-0 z-[600] bg-black/60 flex flex-col items-center justify-center">
             
             <!-- Fondo con ruido estático o niebla onírica -->
             ${isSectarian ? html`
