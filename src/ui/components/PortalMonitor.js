@@ -5,6 +5,7 @@
 import { html } from '../utils/html.js';
 import { bus } from '../../core/Bus.js';
 import { useGameState } from '../hooks/useGameState.js';
+import { CONFIG } from '../../data/gameConfig.js';
 
 const { useState, useEffect } = React;
 
@@ -14,6 +15,7 @@ export const PortalMonitor = () => {
     
     const storyPath = useGameState('storyPath');
     const isSectarian = storyPath === 1;
+    const energy = useGameState('energy');
     
     useEffect(() => {
         const onUpdate = (data) => {
@@ -161,6 +163,16 @@ export const PortalMonitor = () => {
                     </div>
                 `}
             </div>
+
+            <!-- La única acción del monitor: gastar energía para cerrar la brecha -->
+            <button
+                onClick=${() => bus.emit('PORTAL_STABILIZE')}
+                disabled=${flux.stability >= 100 || energy < CONFIG.PORTAL.STABILIZE_COST}
+                className=${`portal-fix relative z-10 ${flux.stability < 40 ? 'urgent' : ''}`}
+            >
+                <span>${isSectarian ? 'Sellar el velo' : 'Estabilizar'}</span>
+                <span className="portal-fix-hint">−${CONFIG.PORTAL.STABILIZE_COST}⚡ +${CONFIG.PORTAL.STABILIZE_AMOUNT}%</span>
+            </button>
 
             ${combinedStability < 30 && html`
                 <div className="mt-2 text-[8px] text-red-500 animate-pulse font-bold uppercase text-center border border-red-900/30 py-1 relative z-10">

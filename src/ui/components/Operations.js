@@ -16,6 +16,7 @@ import { PortalScene } from './PortalScene.js';
 import { SubjectVisual } from './SubjectVisual.js';
 import { Coms } from './Coms.js';
 import { FlowGuide } from './FlowGuide.js';
+import { VerdictLogButton } from './Verdicts.js';
 import { SCAN_TYPES } from '../../systems/Scanner.js';
 
 const { useState, useEffect, useRef } = React;
@@ -45,6 +46,19 @@ export const Operations = () => {
     const isScanComplete = !!(currentEntity && requiredScan && currentEntity.scannedTypes?.includes(requiredScan));
 
     const [flash, setFlash] = useState(null);
+
+    // Atajos: A autoriza, S sacrifica, I interroga. Nunca mientras se escribe ni con un modal abierto.
+    const keyActions = useRef({});
+    keyActions.current = { a: () => handleAction('AUTHORIZE'), s: () => handleAction('SACRIFICE'), i: () => handleDialogueAction('INTERROGAR') };
+    useEffect(() => {
+        const onKey = (e) => {
+            if (e.repeat || e.ctrlKey || e.metaKey || e.altKey || /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+            if (state.isModalOpen || state.isPaused || document.querySelector('.modal-overlay, .game-modal-overlay')) return;
+            keyActions.current[e.key.toLowerCase()]?.();
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, []);
 
     useEffect(() => {
         const onDialogue = (data) => {
@@ -307,6 +321,7 @@ export const Operations = () => {
                             ></div>
                         </div>
                     `}
+                    <${VerdictLogButton} step=${currentStep} />
                     <div className="flex justify-center">
                         <span className=${`text-[12px] font-bold font-mono uppercase ${judgmentErrors >= (maxErrors || 3) - 1 ? 'text-red-500 animate-pulse' : (isSectarian ? 'text-purple-900/60' : 'text-zinc-600')}`}>
                             ${labels.errorLabel}: ${judgmentErrors} / ${maxErrors || 3}
@@ -374,7 +389,7 @@ export const Operations = () => {
                                         ? 'border-purple-500/30 bg-purple-950/10 hover:bg-purple-500/20 text-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.1)]' 
                                         : 'border-cyan-500/30 bg-cyan-950/10 hover:bg-cyan-500/20 text-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.1)]'}`}
                             >
-                                <span className="relative z-10">${labels.interrogateBtn}</span>
+                                <span className="relative z-10">${labels.interrogateBtn}</span><kbd className="key-hint">I</kbd>
                                 <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             </button>
                             <div className="flex-1 min-w-0 flex items-center justify-center p-2 text-center">
@@ -421,6 +436,7 @@ export const Operations = () => {
                         ${kaminOverride
                             ? labels.overrideLabel
                             : labels.rejectLabel.toUpperCase()}
+                        <kbd className="key-hint">S</kbd>
                     </button>
                     
                     <div className=${`w-px h-6 ${isSectarian ? 'bg-indigo-900/30' : 'bg-zinc-800/50'}`}></div>
@@ -449,6 +465,7 @@ export const Operations = () => {
                             <div className="absolute bottom-1 right-1 w-1.5 h-1.5 border border-purple-500/30 rotate-45 group-hover:border-purple-400 transition-colors"></div>
                         `}
                         ${labels.authorizeLabel.toUpperCase()}
+                        <kbd className="key-hint">A</kbd>
                     </button>
                 </div>
                 </div>

@@ -12,6 +12,7 @@ import { CONFIG } from '../../data/gameConfig.js';
 import { getRandomFragment, calculateRank } from '../../utils/systemUtils.js';
 
 import { MODULES } from '../../systems/ModuleRegistry.js';
+import { VerdictPips } from './Verdicts.js';
 
 const { useState, useEffect, memo } = React;
 
@@ -167,6 +168,8 @@ export const GameModal = memo(({
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="flex justify-center"><${VerdictPips} step=${stats?.currentStep} max=${40} /></div>
 
                             ${stats && html`
                                 <div className="grid grid-cols-2 gap-3 text-xs font-mono">

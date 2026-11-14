@@ -3,14 +3,16 @@
  * Lógica de gameplay pura para puntuaciones, recomendaciones y metas.
  */
 import { state } from '../core/State.js';
+import { factionSystem } from '../systems/FactionSystem.js';
 import { CONFIG } from '../data/gameConfig.js';
 
 /**
  * Calcula la recomendación del sistema para el Juicio Final basada en reclutamiento.
  */
 export const calculateJudgmentRecommendation = () => {
-    const techScore = (state.techniciansRecruited / (CONFIG.JUDGMENT?.MAX_TECH || 10)) * 100;
-    const faithScore = (state.devotsRecruited / (CONFIG.JUDGMENT?.MAX_FAITH || 10)) * 100;
+    // Los contadores de reclutas se reinician en cada paso; la facción acumula toda la partida
+    const techScore = (factionSystem.alignments.ORDEN / (CONFIG.JUDGMENT?.MAX_TECH || 10)) * 100;
+    const faithScore = (factionSystem.alignments.CAOS / (CONFIG.JUDGMENT?.MAX_FAITH || 10)) * 100;
 
     const weightedTech = techScore * (CONFIG.JUDGMENT?.WEIGHT_TECH || 0.6);
     const weightedFaith = faithScore * (CONFIG.JUDGMENT?.WEIGHT_FAITH || 0.4);

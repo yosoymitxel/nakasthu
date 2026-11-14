@@ -47,3 +47,23 @@ describe('PortalFlux Tests (portal_flux.test.js)', () => {
         expect(spy).toHaveBeenCalledWith('PORTAL_ANOMALY', expect.anything());
     });
 });
+
+describe('Portal: activación y coste de estabilizar', () => {
+    it('se activa con el id real del módulo (MOD-11)', () => {
+        portalFlux.reset();
+        bus.emit('MODULE_UNLOCKED', { id: 'MOD-11' });
+        expect(portalFlux.isActive).toBe(true);
+    });
+
+    it('estabilizar gasta energía y no actúa si no alcanza', () => {
+        portalFlux.isActive = true;
+        portalFlux.stability = 50;
+        state.energy = 3;
+        bus.emit('PORTAL_STABILIZE');
+        expect(portalFlux.stability).toBe(50);
+        state.energy = 20;
+        bus.emit('PORTAL_STABILIZE');
+        expect(portalFlux.stability).toBe(60);
+        expect(state.energy).toBe(15);
+    });
+});

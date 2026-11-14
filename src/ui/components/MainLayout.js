@@ -13,6 +13,7 @@ import { CONFIG } from '../../data/gameConfig.js';
 import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 
 import { bus } from '../../core/Bus.js';
+import { state } from '../../core/State.js';
 
 const { memo, useState, useEffect } = React;
 
@@ -46,6 +47,16 @@ export const MainLayout = memo(({ children }) => {
     const currentEntity = useGameState('currentEntity');
     const scanPending = !!(currentEntity && requiredScan && !currentEntity.scannedTypes?.includes(requiredScan));
 
+    // El motor cambia `emergencies` sin reemplazar el objeto: se sigue por eventos
+    const [emergencyActive, setEmergencyActive] = useState(false);
+    useEffect(() => {
+        const sync = () => setTimeout(() => setEmergencyActive(Object.values(state.emergencies || {}).some(Boolean)), 0);
+        const events = ['EMERGENCY_START', 'EMERGENCY_END', 'STEP_CHANGE', 'LEVEL_RESET'];
+        events.forEach(e => bus.on(e, sync));
+        sync();
+        return () => events.forEach(e => bus.off(e, sync));
+    }, []);
+
     useEffect(() => {
         const onFocus = ({ area }) => { if (AREA_TAB[area]) setTab(AREA_TAB[area]); };
         bus.on('UI_FOCUS_AREA', onFocus);
@@ -72,6 +83,7 @@ export const MainLayout = memo(({ children }) => {
                     <button key=${id} className=${tab === id ? 'on' : ''} onClick=${() => setTab(id)}>
                         ${label}
                         ${id === 'escaner' && scanPending && tab !== id && html`<span className="tab-dot"></span>`}
+                        ${id === 'sistemas' && emergencyActive && tab !== id && html`<span className="tab-dot alert"></span>`}
                     </button>
                 `)}
             </nav>
@@ -97,12 +109,29 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
     const focusMode = useGameState('focusMode');
     const isShielded = focusMode && area !== 'C_MAIN' && area !== 'C_HEADER' && area !== 'L_LOWER';
 
+    // Al desbloquearse, el módulo "arranca" en vez de aparecer sin más
+    const [booting, setBooting] = useState(false);
+    const wasLocked = React.useRef(locked);
+    useEffect(() => {
+        if (wasLocked.current && !locked && !highlighted) {
+            setBooting(true);
+            const t = setTimeout(() => setBooting(false), 900);
+            wasLocked.current = locked;
+            return () => clearTimeout(t);
+        }
+        wasLocked.current = locked;
+    }, [locked]);
+
     // Foco pedido por otro panel: fijo (HIGHLIGHT_MODULE) o breve (UI_FOCUS_AREA)
     const [focusColor, setFocusColor] = useState(null);
     useEffect(() => {
         let timer;
         const onHighlight = (d) => {
-            if (d.areas?.includes(area)) setFocusColor(d.color || '#f59e0b');
+            if (d.areas?.includes(area)) {
+                setFocusColor(d.color || '#f59e0b');
+                // Con duración es un destello; sin ella queda fijo hasta el `clear`
+                if (d.duration) { clearTimeout(timer); timer = setTimeout(() => setFocusColor(null), d.duration); }
+            }
             if (d.clear?.includes(area)) setFocusColor(null);
         };
         const onFocus = (d) => {
@@ -129,7 +158,7 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
         <div
             style=${highlightStyle}
             className=${`
-                mod-container mod-${area} ${focusColor ? 'mod-focus' : ''}
+                mod-container mod-${area} ${focusColor ? 'mod-focus' : ''} ${booting ? 'mod-boot' : ''}
 
                 border transition-all duration-[1200ms] ease-in-out
                 ${isSectarian ? 'border-indigo-900/20' : 'border-zinc-800/50'}

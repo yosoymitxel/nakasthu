@@ -226,6 +226,11 @@ export const MechanicManager = {
 
         this.currentMechanic.init();
 
+        // Cada paso arranca sin emergencias: la resonancia del Monolito se quedaba encendida al pasar a la partida
+        state.startBatch();
+        state.emergencies = { resonance: false, oxygen: false, energy: false };
+        state.endBatch();
+
         // Caso especial: Si la mecánica principal es SYNC, activar módulo de resonancia
         if (this.currentMechanic instanceof SyncMechanic) {
             state.startBatch();

@@ -29,6 +29,7 @@ import { calculateRank } from '../../utils/systemUtils.js';
 import { LevelSelectorModal } from './LevelSelectorModal.js';
 import { Backdrop3D } from './Backdrop3D.js';
 import { FeelLayer, fxReduced, setFxReduced } from './FeelLayer.js';
+import { soundOn, setSoundOn } from '../juice.js';
 import { AchievementToast, AchievementsPanel } from './AchievementsUI.js';
 import { persistenceManager } from '../../systems/PersistenceManager.js';
 
@@ -626,6 +627,15 @@ export const Layout = () => {
                                             className="px-4 py-1 border border-cyan-900/50 text-cyan-500 text-[10px] hover:bg-cyan-500/10 transition-all uppercase tracking-widest"
                                         >
                                             ${fxReduced() ? 'Reducidos' : 'Completos'}
+                                        </button>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-zinc-500 uppercase tracking-widest text-[10px]">Sonido</span>
+                                        <button
+                                            onClick=${() => { setSoundOn(!soundOn()); setModal({ ...modal }); }}
+                                            className="px-4 py-1 border border-cyan-900/50 text-cyan-500 text-[10px] hover:bg-cyan-500/10 transition-all uppercase tracking-widest"
+                                        >
+                                            ${soundOn() ? 'Activado' : 'Silencio'}
                                         </button>
                                     </div>
                                     <div className="flex justify-between items-center opacity-50">

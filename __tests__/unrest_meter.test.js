@@ -67,3 +67,12 @@ describe('UnrestMeter Tests (unrest_meter.test.js)', () => {
         expect(state.unrest).toBe(0);
     });
 });
+
+describe('Activación por desbloqueo de módulo', () => {
+    it('el medidor se activa con el id real del módulo (MOD-10)', () => {
+        unrestMeter.reset();
+        expect(unrestMeter.isActive).toBe(false);
+        bus.emit('MODULE_UNLOCKED', { id: 'MOD-10' });
+        expect(unrestMeter.isActive).toBe(true);
+    });
+});
