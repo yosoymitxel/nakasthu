@@ -8,6 +8,9 @@ import { useGameState } from '../hooks/useGameState.js';
 import { CONFIG } from '../../data/gameConfig.js';
 import { calculateScanCost } from '../../utils/scannerUtils.js';
 import { PATH_CONFIGS } from '../../data/pathConfigs.js';
+import { state } from '../../core/State.js';
+
+const { useRef, useEffect } = React;
 
 export const BioScan = () => {
     const energy = useGameState('energy');
@@ -24,6 +27,19 @@ export const BioScan = () => {
     const isSectarian = storyPath === 1;
     const pathConfig = PATH_CONFIGS[storyPath];
     const labels = pathConfig.bioscan;
+
+    // Atajos 1-5 para los escaneos, en el orden de la lista
+    const scanKeys = useRef(null);
+    scanKeys.current = (n) => { const t = Object.values(SCAN_TYPES)[n - 1]; if (t) startScan(t); };
+    useEffect(() => {
+        const onKey = (e) => {
+            if (e.repeat || /INPUT|TEXTAREA/.test(e.target.tagName) || !/^[1-5]$/.test(e.key)) return;
+            if (state.isModalOpen || state.isPaused || document.querySelector('.modal-overlay, .game-modal-overlay')) return;
+            scanKeys.current(Number(e.key));
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, []);
 
     const startScan = async (type) => {
         const scanCount = currentEntity?.scanHistory?.[type.id] || 0;
@@ -135,7 +151,7 @@ export const BioScan = () => {
                                 <div className="flex items-baseline gap-2 min-w-0">
                                     <span className=${`text-[11px] font-bold uppercase tracking-wider truncate ${isActive ? (isSectarian ? 'text-purple-500' : 'text-cyan-500') : 'text-zinc-400 group-hover:text-amber-600/70'}`}>
                                         ${isSectarian && html`<span className="mr-1.5 opacity-40 group-hover:opacity-100 transition-opacity">✧</span>`}
-                                        ${labels.scans[type.id]}
+                                        <kbd className="key-hint">${idx + 1}</kbd>${labels.scans[type.id]}
                                     </span>
                                     ${scanCount > 0 && html`<span className="text-[9px] font-bold text-zinc-500 whitespace-nowrap">×${scanCount}</span>`}
                                     <span className=${`text-[9px] font-mono uppercase whitespace-nowrap ${isSectarian ? 'text-purple-400/50' : 'text-zinc-400'}`}>

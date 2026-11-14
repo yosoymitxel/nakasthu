@@ -93,7 +93,7 @@ export const HeaderNucleo = () => {
                     <span className=${`text-[9px] font-black uppercase tracking-[0.1em] whitespace-nowrap transition-colors ${activeHighlights.energy ? (isSectarian ? 'text-purple-400' : 'text-amber-400') : (isSectarian ? 'text-purple-700' : 'text-amber-700')}`}>
                         ${isSectarian ? 'Esencia_Vital' : 'System_Power'}
                     </span>
-                    <span className=${`text-[12px] font-mono font-bold leading-none whitespace-nowrap ${activeHighlights.energy ? (isSectarian ? 'text-purple-300' : 'text-amber-300') : (isSectarian ? 'text-purple-600' : 'text-amber-600')}`}>
+                    <span data-stat="energy" className=${`text-[12px] font-mono font-bold leading-none whitespace-nowrap ${activeHighlights.energy ? (isSectarian ? 'text-purple-300' : 'text-amber-300') : (isSectarian ? 'text-purple-600' : 'text-amber-600')}`}>
                         ${isSectarian ? '✧' : '⚡'} ${Math.floor(energy)}%
                     </span>
                 </div>
@@ -121,7 +121,7 @@ export const HeaderNucleo = () => {
                     <span className=${`text-[9px] font-black uppercase tracking-[0.1em] whitespace-nowrap transition-colors ${activeHighlights.stability ? (isSectarian ? 'text-purple-400' : 'text-red-500') : (isSectarian ? 'text-purple-800' : 'text-red-900')}`}>
                         ${isSectarian ? 'Paz_Espiritual' : 'Neural_Integrity'}
                     </span>
-                    <span className=${`text-[12px] font-mono font-bold leading-none whitespace-nowrap ${activeHighlights.stability ? (isSectarian ? 'text-purple-300' : 'text-red-400') : (isSectarian ? 'text-purple-600' : 'text-red-600')}`}>
+                    <span data-stat="stability" className=${`text-[12px] font-mono font-bold leading-none whitespace-nowrap ${activeHighlights.stability ? (isSectarian ? 'text-purple-300' : 'text-red-400') : (isSectarian ? 'text-purple-600' : 'text-red-600')}`}>
                         ${isSectarian ? '†' : '⚓'} ${Math.floor(stability)}%
                     </span>
                 </div>

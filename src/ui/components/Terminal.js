@@ -123,6 +123,8 @@ export const Terminal = memo(() => {
     };
 
     const handleKeyDown = (e) => {
+        // Escape suelta el terminal para que vuelvan a valer los atajos de teclado
+        if (e.key === 'Escape') { e.stopPropagation(); e.target.blur(); return; }
         if (e.key === 'Enter') runCommand(currentInput.trim());
     };
 
@@ -243,7 +245,6 @@ export const Terminal = memo(() => {
                     disabled=${isPaused || isTutorialActive}
                     className=${`flex-1 bg-transparent border-none outline-none text-[12px] placeholder-zinc-700 tracking-wider uppercase ${isSectarian ? 'text-purple-400' : 'text-cyan-400'}`}
                     placeholder=${isPaused ? labels.paused : isTutorialActive ? labels.tutorial : (isSectarian ? 'Entona tu plegaria...' : labels.placeholder)}
-                    autoFocus
                 />
             </div>
         </div>

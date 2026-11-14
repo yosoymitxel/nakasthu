@@ -21,6 +21,7 @@ export const SubjectVisual = () => {
     const [sacrificeFlash, setSacrificeFlash] = useState(false);
     const [localFlash, setLocalFlash] = useState(null);
     const [cardOpen, setCardOpen] = useState(false);
+    const activeScan = useGameState('activeScan');
 
     useEffect(() => {
         const onAuth = () => {
@@ -154,6 +155,8 @@ export const SubjectVisual = () => {
                             </div>
                         `}
                     </div>
+
+                    ${activeScan && html`<div className="scan-beam" style=${{ '--scan-progress': `${activeScan.progress || 0}%` }}></div>`}
 
                     <!-- HUD del sujeto (Sectario: Glifos) -->
                     <div className=${`absolute top-0 left-0 p-2 bg-black/60 backdrop-blur-sm border-r border-b ${isSectarian ? 'border-purple-900/50 rounded-br-lg' : 'border-zinc-800'}`}>

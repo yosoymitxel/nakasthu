@@ -109,6 +109,19 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
     const focusMode = useGameState('focusMode');
     const isShielded = focusMode && area !== 'C_MAIN' && area !== 'C_HEADER' && area !== 'L_LOWER';
 
+    // Al desbloquearse, el módulo "arranca" en vez de aparecer sin más
+    const [booting, setBooting] = useState(false);
+    const wasLocked = React.useRef(locked);
+    useEffect(() => {
+        if (wasLocked.current && !locked && !highlighted) {
+            setBooting(true);
+            const t = setTimeout(() => setBooting(false), 900);
+            wasLocked.current = locked;
+            return () => clearTimeout(t);
+        }
+        wasLocked.current = locked;
+    }, [locked]);
+
     // Foco pedido por otro panel: fijo (HIGHLIGHT_MODULE) o breve (UI_FOCUS_AREA)
     const [focusColor, setFocusColor] = useState(null);
     useEffect(() => {
@@ -145,7 +158,7 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
         <div
             style=${highlightStyle}
             className=${`
-                mod-container mod-${area} ${focusColor ? 'mod-focus' : ''}
+                mod-container mod-${area} ${focusColor ? 'mod-focus' : ''} ${booting ? 'mod-boot' : ''}
 
                 border transition-all duration-[1200ms] ease-in-out
                 ${isSectarian ? 'border-indigo-900/20' : 'border-zinc-800/50'}

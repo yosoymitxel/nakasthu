@@ -7,6 +7,8 @@
 import { html } from '../utils/html.js';
 import { bus } from '../../core/Bus.js';
 import { useGameState } from '../hooks/useGameState.js';
+import { state } from '../../core/State.js';
+import { sfx, floatText, dismissPortrait, animate } from '../juice.js';
 
 const { useState, useEffect, useRef } = React;
 
@@ -54,16 +56,31 @@ export const FeelLayer = () => {
     };
 
     useEffect(() => {
-        const onScan = () => shake(TIER.small);
+        const onScan = () => { shake(TIER.small); sfx('scanDone'); };
+        const onScanStart = () => sfx('scan');
         const onDecision = ({ action }) => {
             const kill = /SACRIF/i.test(action || '');
             shake(kill ? TIER.medium : TIER.small);
+            sfx(kill ? 'kill' : 'pass');
+            dismissPortrait(document.querySelector('.mod-C_MAIN canvas.pixel-art'), kill ? 'kill' : 'pass');
             show(kill ? (sect ? 'PURGADO' : 'SACRIFICADO') : (sect ? 'CONSAGRADO' : 'AUTORIZADO'), kill ? 'kill' : 'pass');
         };
-        const onQuota = () => { shake(TIER.medium); show(sect ? 'COSECHA COMPLETA' : 'CUOTA CUMPLIDA', 'quota', 1600); };
-        const onThreat = () => shake(TIER.medium);
+        const onQuota = () => { shake(TIER.medium); sfx('quota'); show(sect ? 'COSECHA COMPLETA' : 'CUOTA CUMPLIDA', 'quota', 1600); };
+        const onThreat = () => { shake(TIER.medium); sfx('alarm'); };
+        const onEmergency = () => {
+            sfx('alarm');
+            animate(document.querySelector('.mod-C_FOOTER'), { x: [0, -6, 6, -4, 4, 0] }, { duration: 0.4 });
+        };
+        const onUnlock = () => sfx('unlock');
+        const onAchievement = () => sfx('achievement');
+        const onSubject = () => sfx('whoosh');
 
         bus.on('SCAN_COMPLETED', onScan);
+        bus.on('SCAN_STARTED', onScanStart);
+        bus.on('EMERGENCY_START', onEmergency);
+        bus.on('MODULE_UNLOCKED', onUnlock);
+        bus.on('ACHIEVEMENT_UNLOCKED', onAchievement);
+        bus.on('NEW_SUBJECT_DETECTED', onSubject);
         bus.on('DECISION_MADE', onDecision);
         bus.on('QUOTA_MET', onQuota);
         bus.on('PORTAL_ANOMALY', onThreat);
@@ -71,6 +88,11 @@ export const FeelLayer = () => {
         bus.on('SABOTAGE_TRIGGERED', onThreat);
         return () => {
             bus.off('SCAN_COMPLETED', onScan);
+            bus.off('SCAN_STARTED', onScanStart);
+            bus.off('EMERGENCY_START', onEmergency);
+            bus.off('MODULE_UNLOCKED', onUnlock);
+            bus.off('ACHIEVEMENT_UNLOCKED', onAchievement);
+            bus.off('NEW_SUBJECT_DETECTED', onSubject);
             bus.off('DECISION_MADE', onDecision);
             bus.off('QUOTA_MET', onQuota);
             bus.off('PORTAL_ANOMALY', onThreat);
@@ -83,10 +105,25 @@ export const FeelLayer = () => {
     useEffect(() => {
         if (errors > prevErrors.current) {
             shake(TIER.large);
+            sfx('error');
             show(sect ? 'JUICIO PROFANO' : 'ERROR DE JUICIO', 'error', 1500);
         }
         prevErrors.current = errors;
     }, [errors]);
+
+    // Cambios bruscos de energía o estabilidad salen como cifra flotante junto a su barra
+    const energy = useGameState('energy');
+    const stability = useGameState('stability');
+    const prev = useRef({ energy, stability });
+    useEffect(() => {
+        for (const [key, value, color] of [['energy', energy, '#fbbf24'], ['stability', stability, '#f87171']]) {
+            const delta = Math.round(value - prev.current[key]);
+            if (Math.abs(delta) >= 2 && state.gameStatus === 'PLAYING') {
+                floatText(document.querySelector(`[data-stat="${key}"]`), `${delta > 0 ? '+' : '−'}${Math.abs(delta)}`, delta > 0 ? '#34d399' : color);
+            }
+            prev.current[key] = value;
+        }
+    }, [energy, stability]);
 
     if (!stamp) return null;
     return html`
