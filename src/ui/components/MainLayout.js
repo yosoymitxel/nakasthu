@@ -102,7 +102,11 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
     useEffect(() => {
         let timer;
         const onHighlight = (d) => {
-            if (d.areas?.includes(area)) setFocusColor(d.color || '#f59e0b');
+            if (d.areas?.includes(area)) {
+                setFocusColor(d.color || '#f59e0b');
+                // Con duración es un destello; sin ella queda fijo hasta el `clear`
+                if (d.duration) { clearTimeout(timer); timer = setTimeout(() => setFocusColor(null), d.duration); }
+            }
             if (d.clear?.includes(area)) setFocusColor(null);
         };
         const onFocus = (d) => {

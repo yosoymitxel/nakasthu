@@ -62,6 +62,7 @@ export const processCommand = (input) => {
     }
 
     if (effectiveCmd === '/interrogate') {
+        if (state.energy < 5) return formatTerminalResponse(isSectarian ? 'ESENCIA INSUFICIENTE PARA LA COMUNIÓN.' : 'ENERGÍA INSUFICIENTE PARA EL ENLACE.', 'error');
         state.energy -= 5;
         dialogueEngine.triggerRandomDialogue();
         return formatTerminalResponse(
@@ -73,6 +74,10 @@ export const processCommand = (input) => {
     }
 
     if (effectiveCmd === '/repair') {
+        // Sin este corte se reparaba gratis con la energía a cero
+        if (state.energy < CONFIG.ENERGY.REPAIR_COST) {
+            return formatTerminalResponse(isSectarian ? 'ESENCIA INSUFICIENTE PARA EL RITO.' : 'ENERGÍA INSUFICIENTE PARA REPARAR.', 'error');
+        }
         state.startBatch();
         state.stability = Math.min(100, state.stability + 10);
         state.energy = Math.max(0, state.energy - CONFIG.ENERGY.REPAIR_COST);

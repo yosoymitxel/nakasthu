@@ -310,7 +310,7 @@ body {
     .main-layout-grid[data-tab="sistemas"] > .mod-R_BOTTOM { display: block; height: 260px; }
     .main-layout-grid[data-tab="registro"] > .mod-R_TOP { display: block; height: 130px; }
     .main-layout-grid[data-tab="registro"] > .mod-R_MIDDLE { display: block; height: 320px; }
-    .main-layout-grid[data-tab="registro"] > .mod-R_UPPER { display: block; height: 260px; }
+    .main-layout-grid[data-tab="registro"] > .mod-R_UPPER { display: block; height: 260px; order: 2; }
 
     .mobile-tabs {
         display: flex;
@@ -466,3 +466,12 @@ button:not(:disabled):active { scale: 0.97; }
     .em-idle { flex-direction: row; padding: 10px; justify-content: flex-start; }
     .em-idle .em-ok { margin-left: auto; }
 }
+
+/* TERMINAL: órdenes frecuentes a un toque */
+.term-chips { display: flex; gap: 4px; padding: 4px 8px; border-top: 1px solid #1f1f23; overflow-x: auto; scrollbar-width: none; }
+.term-chip { flex: 1 0 auto; display: flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 3px 8px; border: 1px solid #27272a; background: rgba(0, 0, 0, 0.4); color: #a1a1aa; text-align: left; transition: border-color 0.15s, color 0.15s; }
+.term-chip-name { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+.term-chip-hint { font-size: 9px; color: #71717a; white-space: nowrap; }
+.term-chip.warn .term-chip-name { color: #f59e0b; }
+.term-chip:disabled { opacity: 0.35; }
+@media (hover: hover) and (pointer: fine) { .term-chip:not(:disabled):hover { border-color: #22d3ee; color: #e4e4e7; } }

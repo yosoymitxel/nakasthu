@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { state } from '../src/core/State.js';
+import { CONFIG } from '../src/data/gameConfig.js';
 import { bus } from '../src/core/Bus.js';
 import { processCommand } from '../src/systems/CommandEngine.js';
 
@@ -51,16 +52,18 @@ describe('CommandEngine Tests (command_engine.test.js)', () => {
 
             expect(result.text).toContain('SUCCESS');
             expect(state.stability).toBe(70); // +10
-            expect(state.energy).toBe(30); // -20
+            expect(state.energy).toBe(50 - CONFIG.ENERGY.REPAIR_COST);
         });
 
         it('debe fallar si energía insuficiente', () => {
-            state.energy = 15;
+            state.energy = CONFIG.ENERGY.REPAIR_COST - 1;
+            state.stability = 60;
 
             const result = processCommand('/repair');
 
             expect(result.text).toContain('ENERGÍA INSUFICIENTE');
             expect(result.type).toBe('error');
+            expect(state.stability).toBe(60);
         });
     });
 

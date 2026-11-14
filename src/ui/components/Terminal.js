@@ -17,6 +17,7 @@ export const Terminal = memo(() => {
     const isTutorialActive = useGameState('isTutorialActive');
     const storyPath = useGameState('storyPath') || 0;
     const isSectarian = storyPath === 1;
+    const energy = useGameState('energy');
     const pathConfig = PATH_CONFIGS[storyPath];
     const labels = pathConfig.terminal;
 
@@ -122,8 +123,11 @@ export const Terminal = memo(() => {
     };
 
     const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            const cmdInput = currentInput.trim();
+        if (e.key === 'Enter') runCommand(currentInput.trim());
+    };
+
+    const runCommand = (cmdInput) => {
+        {
             if (!cmdInput) return;
 
             // Vínculo Terminal -> Grid (Fase 18)
@@ -177,7 +181,7 @@ export const Terminal = memo(() => {
                 </div>
             `}
             <!-- Header Interno Sticky -->
-            <div className=${`flex justify-between items-center border-b p-3 sticky top-0 z-20 ${isSectarian ? 'border-purple-900/30 bg-purple-950/30' : 'border-zinc-800 bg-black/40'}`}>
+            <div className=${`flex justify-between items-center border-b px-3 py-1.5 sticky top-0 z-20 ${isSectarian ? 'border-purple-900/30 bg-purple-950/30' : 'border-zinc-800 bg-black/40'}`}>
                 <div className="flex items-center gap-2">
                     <div className=${`w-2 h-2 animate-pulse ${isSectarian ? 'bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]' : 'bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.5)]'}`}></div>
                     <span className=${`text-[12px] font-bold tracking-[0.2em] uppercase ${isSectarian ? 'text-purple-400' : 'text-zinc-300'}`}>
@@ -205,8 +209,28 @@ export const Terminal = memo(() => {
                 <div ref=${messagesEndRef} />
             </div>
 
+            <!-- Órdenes frecuentes a un toque, con lo que cuestan y lo que dan -->
+            <div className="term-chips">
+                ${[
+                    { cmd: isSectarian ? '/vision' : '/status', label: isSectarian ? 'Visión' : 'Estado', hint: 'E · S' },
+                    { cmd: isSectarian ? '/purificar' : '/repair', label: isSectarian ? 'Purificar' : 'Reparar', hint: `−${CONFIG.ENERGY.REPAIR_COST}⚡ +10⚓`, off: energy < CONFIG.ENERGY.REPAIR_COST },
+                    { cmd: isSectarian ? '/sacrificio' : '/overload', label: isSectarian ? 'Sacrificio' : 'Sobrecarga', hint: '+50⚓ · escáner off 15s', warn: true },
+                    { cmd: '/help', label: 'Ayuda', hint: '?' }
+                ].map(c => html`
+                    <button
+                        key=${c.cmd}
+                        disabled=${isPaused || isTutorialActive || c.off}
+                        onClick=${(e) => { e.stopPropagation(); runCommand(c.cmd); }}
+                        className=${`term-chip ${c.warn ? 'warn' : ''}`}
+                    >
+                        <span className="term-chip-name">${c.label}</span>
+                        <span className="term-chip-hint">${c.hint}</span>
+                    </button>
+                `)}
+            </div>
+
             <!-- Línea de Input Fija al Final -->
-            <div className=${`flex items-center gap-2 border-t p-3 transition-colors ${isSectarian ? 'border-purple-900/30 bg-purple-950/10' : 'border-zinc-800 bg-black/20'}`}>
+            <div className=${`flex items-center gap-2 border-t px-3 py-2 transition-colors ${isSectarian ? 'border-purple-900/30 bg-purple-950/10' : 'border-zinc-800 bg-black/20'}`}>
                 <span className=${`text-[12px] font-black animate-pulse ${isSectarian ? 'text-purple-500' : 'text-cyan-500'}`}>
                     ${isSectarian ? 'ψ' : '>'}
                 </span>
