@@ -27,6 +27,12 @@ class GameSequencer {
     }
 
     registerCoreListeners() {
+        bus.on('STORY_MODAL_CLOSE', () => {
+            if (!this.pendingAdvance) return;
+            this.pendingAdvance = false;
+            this.nextStep();
+        });
+
         bus.on('DECISION_MADE', ({ subject, action }) => {
             console.log(`[SEQUENCER] Decision made: ${action} for subject ${subject.id}. Current Processed: ${state.processedCount}/${state.quota}`);
 
@@ -286,6 +292,7 @@ class GameSequencer {
         state.endBatch();
 
         console.log('%c[SEQUENCER] Nivel reiniciado. Limpieza profunda completada.', 'color: #f59e0b;');
+        this.pendingAdvance = false;
         bus.emit('LEVEL_RESET', { step: this.currentStep });
         bus.emit('SYSTEM_LOG', { msg: 'NIVEL_REINICIADO: ESTADOS_NOMINALES' });
     }
@@ -379,7 +386,18 @@ class GameSequencer {
 
             // Bloqueo preventivo de estado para evitar múltiples disparos de nextStep
             state.gameStatus = 'LOADING';
-            this.nextStep();
+
+            // Con interfaz montada, el turno cierra con su resumen y avanza al continuar
+            if (bus.events['STORY_MODAL_OPEN']?.length) {
+                this.pendingAdvance = true;
+                bus.emit('STORY_MODAL_OPEN', {
+                    mode: 'Summary',
+                    title: `Turno cerrado: ${config.name}`,
+                    content: metaResults.success ? '' : metaResults.messages.join(' ')
+                });
+            } else {
+                this.nextStep();
+            }
         } else {
             // REGLA: Solo pedir siguiente sujeto si la cuota NO se ha alcanzado
             // Añadimos un pequeño delay para que la UI registre la limpieza del sujeto anterior

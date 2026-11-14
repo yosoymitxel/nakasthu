@@ -101,12 +101,7 @@ export const BioScan = () => {
                                 <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity bg-gradient-to-br from-purple-500/20 via-transparent to-transparent pointer-events-none"></div>
                             `}
 
-                            <!-- Scan Count Indicator -->
-                            ${scanCount > 0 ? html`
-                                <div className=${`absolute top-0 left-0 bg-zinc-900/80 px-1 border-r border-b ${isSectarian ? 'border-purple-900/50' : 'border-zinc-800'}`}>
-                                    <span className=${`text-[8px] font-bold ${isSectarian ? 'text-purple-500' : 'text-zinc-500'}`}>${labels.repeats}: ${scanCount}</span>
-                                </div>
-                            ` : null}
+                            
 
 
                             <!-- Required Indicator Tag -->
@@ -136,12 +131,13 @@ export const BioScan = () => {
                                 </div>
                             ` : null}
 
-                            <div key="content-container" className=${`flex justify-between items-baseline gap-2 relative z-10 ${isRequired ? 'pr-16' : ''} ${scanCount > 0 ? 'mt-2' : ''}`}>
+                            <div key="content-container" className=${`flex justify-between items-baseline gap-2 relative z-10 ${isRequired ? 'pr-16' : ''}`}>
                                 <div className="flex items-baseline gap-2 min-w-0">
                                     <span className=${`text-[11px] font-bold uppercase tracking-wider truncate ${isActive ? (isSectarian ? 'text-purple-500' : 'text-cyan-500') : 'text-zinc-400 group-hover:text-amber-600/70'}`}>
                                         ${isSectarian && html`<span className="mr-1.5 opacity-40 group-hover:opacity-100 transition-opacity">✧</span>`}
                                         ${labels.scans[type.id]}
                                     </span>
+                                    ${scanCount > 0 && html`<span className="text-[9px] font-bold text-zinc-500 whitespace-nowrap">×${scanCount}</span>`}
                                     <span className=${`text-[9px] font-mono uppercase whitespace-nowrap ${isSectarian ? 'text-purple-400/50' : 'text-zinc-400'}`}>
                                         ${isActive ? labels.scanning : (canAfford ? labels.ready : labels.insufficient)}
                                     </span>

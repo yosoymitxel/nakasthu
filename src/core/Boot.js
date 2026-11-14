@@ -10,6 +10,7 @@ import { loreSystem } from '../systems/LoreSystem.js';
 import { dialogueEngine } from '../systems/DialogueEngine.js';
 import { tutorialController } from '../systems/TutorialController.js';
 import { achievements } from '../systems/Achievements.js';
+import { verdictLog } from '../systems/VerdictLog.js';
 
 console.log("%c NAKASTHU // CORE BOOT SEQUENCE STARTED ", "background: #111; color: #FF8C00; font-weight: bold;");
 
@@ -21,7 +22,8 @@ const systems = {
     lore: loreSystem,
     dialogue: dialogueEngine,
     tutorial: tutorialController,
-    achievements
+    achievements,
+    verdicts: verdictLog
 };
 
 // Exponer state para depuración

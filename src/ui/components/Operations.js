@@ -16,6 +16,7 @@ import { PortalScene } from './PortalScene.js';
 import { SubjectVisual } from './SubjectVisual.js';
 import { Coms } from './Coms.js';
 import { FlowGuide } from './FlowGuide.js';
+import { VerdictLogButton } from './Verdicts.js';
 import { SCAN_TYPES } from '../../systems/Scanner.js';
 
 const { useState, useEffect, useRef } = React;
@@ -307,6 +308,7 @@ export const Operations = () => {
                             ></div>
                         </div>
                     `}
+                    <${VerdictLogButton} step=${currentStep} />
                     <div className="flex justify-center">
                         <span className=${`text-[12px] font-bold font-mono uppercase ${judgmentErrors >= (maxErrors || 3) - 1 ? 'text-red-500 animate-pulse' : (isSectarian ? 'text-purple-900/60' : 'text-zinc-600')}`}>
                             ${labels.errorLabel}: ${judgmentErrors} / ${maxErrors || 3}

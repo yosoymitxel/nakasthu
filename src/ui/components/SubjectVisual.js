@@ -6,6 +6,7 @@ import { html } from '../utils/html.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { bus } from '../../core/Bus.js';
 import { PixelPortrait, morphFor } from './PixelPortrait.js';
+import { SubjectCard } from './Verdicts.js';
 
 const { useState, useEffect } = React;
 
@@ -19,6 +20,7 @@ export const SubjectVisual = () => {
     const [authFlash, setAuthFlash] = useState(false);
     const [sacrificeFlash, setSacrificeFlash] = useState(false);
     const [localFlash, setLocalFlash] = useState(null);
+    const [cardOpen, setCardOpen] = useState(false);
 
     useEffect(() => {
         const onAuth = () => {
@@ -107,8 +109,10 @@ export const SubjectVisual = () => {
                 </div>
             `}
 
+            ${cardOpen && html`<${SubjectCard} subject=${subject} onClose=${() => setCardOpen(false)} />`}
+
             <!-- Silueta o Representación Visual (Maximizado 80%) -->
-                <div className=${`
+                <button onClick=${() => setCardOpen(true)} aria-label="Abrir ficha del sujeto" className=${`
                     relative w-[85%] flex-1 min-h-0 mt-1 border flex items-center justify-center overflow-hidden transition-all duration-500
                     ${isSectarian ? 'border-purple-500/20 rounded-full shadow-[0_0_40px_rgba(168,85,247,0.1)] bg-purple-950/10' : 'border-zinc-800'}
                     ${isCorrupted ? 'hue-rotate-90 border-red-500/50 scale-105' : ''}
@@ -157,7 +161,7 @@ export const SubjectVisual = () => {
                             ${isSectarian ? `᚛ ${id} ᚜` : id}
                         </span>
                     </div>
-                </div>
+                </button>
 
             <!-- Etiquetas de Estado -->
             <div className="flex-none py-1 flex flex-wrap items-center justify-center gap-x-2 leading-tight w-full px-1 whitespace-nowrap">
