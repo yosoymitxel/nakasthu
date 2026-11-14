@@ -140,15 +140,15 @@ const ResonanceModule = ({ isActive, storyPath }) => {
     const barColorClass = primary === 'purple' ? 'bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.6)]' : 'bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.6)]';
 
     return html`
-        <div className=${`flex flex-col h-full p-3 justify-between border relative overflow-hidden group ${!forceActive ? 'grayscale opacity-40' : 'animate-flicker'} ${primaryColorClass}`}>
+        <div className=${`flex flex-col h-full p-2 border relative overflow-hidden group ${!forceActive ? 'grayscale opacity-40' : 'animate-flicker'} ${primaryColorClass}`}>
             <canvas 
                 ref=${canvasRef} 
                 width="400" 
                 height="120" 
-                className="w-full h-32 bg-black/40 border border-zinc-900/50 rounded-sm mb-2"
+                className="w-full flex-1 min-h-[40px] bg-black/40 border border-zinc-900/50 rounded-sm mb-1"
             />
             
-            <div className="flex flex-col gap-3 relative z-10 flex-1">
+            <div className="flex flex-col gap-2 relative z-10 flex-none">
                 <div className="flex justify-between items-center px-1">
                     <span className=${`text-[11px] uppercase font-mono font-black tracking-widest ${textColorClass}`}>
                         ${config.name}
@@ -159,7 +159,7 @@ const ResonanceModule = ({ isActive, storyPath }) => {
                 </div>
 
                 <!-- Sliders más grandes y táctiles -->
-                <div className="space-y-4 px-1">
+                <div className="space-y-2 px-1">
                     <div className="flex flex-col gap-1">
                         <div className="flex justify-between text-[8px] text-zinc-500 uppercase font-bold px-1">
                             <span>${isSectarian ? 'Sintonía_del_Alma' : 'Frecuencia'}</span>
@@ -195,7 +195,7 @@ const ResonanceModule = ({ isActive, storyPath }) => {
                 <button 
                     onClick=${synchronize}
                     disabled=${resonanceSync < 90}
-                    className=${`w-full py-3 border-2 text-[12px] font-black tracking-[0.3em] transition-all uppercase mt-auto
+                    className=${`w-full py-2 border-2 text-[11px] font-black tracking-[0.2em] transition-all uppercase
                         ${resonanceSync >= 90 
                             ? 'border-emerald-500 bg-emerald-900/20 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:bg-emerald-500 hover:text-white' 
                             : 'border-zinc-800 bg-zinc-900/50 text-zinc-700 cursor-not-allowed'}`}
@@ -304,7 +304,16 @@ const OxygenModule = ({ isActive, storyPath }) => {
                 </div>
             </div>
             
-            <div className=${`relative ${isSectarian ? 'h-32 w-32 mx-auto mt-2' : 'grid grid-cols-2 gap-2'} relative z-10`}>
+            <!-- Orden a seguir: se enciende cada paso al acertarlo -->
+            <div className="em-seq relative z-10" aria-label="Orden de la secuencia">
+                ${sequence.length === 0
+                    ? html`<span className="em-seq-hint">${config.action} ▸</span>`
+                    : sequence.map((n, i) => html`
+                        <span key=${i} className=${`em-seq-step ${i < userInput.length ? 'ok' : i === userInput.length ? 'next' : ''}`}>${symbols[n - 1]}</span>
+                    `)}
+            </div>
+
+            <div className=${`relative ${isSectarian ? 'h-[140px] w-[140px] mx-auto my-1' : 'grid grid-cols-2 gap-2'} relative z-10`}>
                 ${[1, 2, 3, 4].map(num => {
                     const isPressed = userInput.includes(num);
                     const label = symbols[num - 1];
@@ -321,11 +330,11 @@ const OxygenModule = ({ isActive, storyPath }) => {
                         <button 
                             key=${num}
                             onClick=${() => handlePress(num)}
-                            className=${`border font-mono text-[9px] transition-all flex items-center justify-center relative overflow-hidden
+                            className=${`border font-mono text-[9px] transition-all flex items-center justify-center overflow-hidden
                                 ${isPressed ? buttonActiveColorClass : buttonIdleColorClass}
                                 ${isSectarian ? 
-                                    `absolute w-10 h-10 rotate-45 ${sectarianPos} border-purple-500/30 hover:bg-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]` : 
-                                    'h-10 hover:border-red-600 hover:bg-red-900/20 active:scale-95'}
+                                    `absolute w-[40px] h-[40px] rotate-45 ${sectarianPos} border-purple-500/30 hover:bg-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]` : 
+                                    'relative h-10 hover:border-red-600 hover:bg-red-900/20 active:scale-95'}
                             `}
                         >
                             <span className=${`z-10 ${isSectarian ? '-rotate-45 tracking-[0.1em] font-black text-[7px]' : ''} ${isPressed ? 'animate-pulse' : ''}`}>
@@ -339,12 +348,10 @@ const OxygenModule = ({ isActive, storyPath }) => {
                     <!-- Botón de Inicio Integrado en el Centro para el Sectario -->
                     <button 
                         onClick=${startMinigame}
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-purple-500/40 bg-purple-950/40 hover:bg-purple-500/20 transition-all z-20 flex items-center justify-center group/btn"
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[36px] h-[36px] rounded-full border border-purple-500/40 bg-purple-950/40 hover:bg-purple-500/20 transition-all z-20 flex items-center justify-center group/btn"
                     >
                         <div className="w-1.5 h-1.5 bg-purple-400 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.8)] animate-pulse group-hover/btn:scale-125 transition-transform"></div>
-                        <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[7px] font-black text-purple-400/60 whitespace-nowrap tracking-[0.2em] group-hover/btn:text-purple-400">
-                            ${config.action}
-                        </span>
+                        
                     </button>
                 `}
             </div>
@@ -352,7 +359,7 @@ const OxygenModule = ({ isActive, storyPath }) => {
             ${!isSectarian && html`
                 <button 
                     onClick=${startMinigame}
-                    className=${`w-full mt-4 py-1.5 border text-[9px] font-bold tracking-widest transition-all uppercase shadow-[0_0_10px_rgba(153,27,27,0.2)] ${mainButtonColorClass}`}
+                    className=${`w-full mt-2 py-1.5 border text-[9px] font-bold tracking-widest transition-all uppercase shadow-[0_0_10px_rgba(153,27,27,0.2)] ${mainButtonColorClass}`}
                 >
                     ${config.action}
                 </button>
@@ -395,6 +402,18 @@ const PowerGridModule = ({ isActive, storyPath }) => {
                 newBurned.add(idx);
             }
         }
+        // Un tablero sin camino de IN a OUT no se puede ganar: se vuelve a tirar
+        const open = (i) => i >= 0 && i < 72 && !newBurned.has(i);
+        const seen = new Set(), queue = [0, 12, 24, 36, 48, 60];
+        let solvable = false;
+        while (queue.length && !solvable) {
+            const i = queue.pop();
+            if (seen.has(i)) continue;
+            seen.add(i);
+            if (i % 12 === 11) solvable = true;
+            for (const j of [i - 12, i + 12, i % 12 ? i - 1 : -1, i % 12 < 11 ? i + 1 : -1]) if (open(j)) queue.push(j);
+        }
+        if (!solvable) return initGrid();
         setBurned(newBurned);
 
         // Empezar con un nodo aleatorio en la primera columna
@@ -451,6 +470,13 @@ const PowerGridModule = ({ isActive, storyPath }) => {
         setIsDragging(false);
     };
 
+    // Con el dedo no hay mouseenter: se mira qué celda queda debajo
+    const handleTouchMove = (e) => {
+        const t = e.touches[0];
+        const cell = document.elementFromPoint(t.clientX, t.clientY)?.closest('[data-cell]');
+        if (cell) handleInteraction(Number(cell.dataset.cell));
+    };
+
     useEffect(() => {
         window.addEventListener('mouseup', handleMouseUp);
         return () => window.removeEventListener('mouseup', handleMouseUp);
@@ -484,7 +510,7 @@ const PowerGridModule = ({ isActive, storyPath }) => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-12 grid-rows-6 gap-0.5 flex-1 bg-black/80 p-1 border border-zinc-800/50 relative">
+            <div onTouchMove=${handleTouchMove} style=${{ touchAction: 'none' }} className="grid grid-cols-12 grid-rows-6 gap-0.5 flex-1 min-h-0 bg-black/80 p-1 border border-zinc-800/50 relative">
                 ${Array.from({ length: 72 }).map((_, i) => {
                     const pathIndex = path.indexOf(i);
                     const isActive = pathIndex !== -1;
@@ -501,10 +527,12 @@ const PowerGridModule = ({ isActive, storyPath }) => {
                     return html`
                         <div 
                             key=${i}
+                            data-cell=${i}
+                            onClick=${() => handleInteraction(i)}
                             onMouseDown=${() => handleMouseDown(i)}
                             onMouseEnter=${() => handleMouseEnter(i)}
                             className=${`
-                                w-full h-full cursor-crosshair transition-all duration-200 border flex items-center justify-center font-bold text-[14px] relative
+                                w-full h-full min-h-0 overflow-hidden cursor-crosshair transition-all duration-200 border flex items-center justify-center font-bold text-[12px] leading-none relative
                                 ${isBurned ? 'bg-red-950/20 border-red-900/10 opacity-20 cursor-not-allowed' : 
                                   isActive ? cellActiveColorClass : 
                                   isStart ? 'bg-zinc-900 border-zinc-700 text-zinc-500 hover:bg-zinc-800' :
@@ -545,25 +573,31 @@ export const EmergencyConsole = () => {
     // REGLA: En el nivel 6 ("La Urgencia"), todos los módulos deben estar activos visualmente
     const isLevel6 = currentStep === 6;
 
+    const anyActive = Object.values(emergencies).some(v => v);
+    const names = PATH_CONFIGS[storyPath || 0].emergencies;
+    const slots = [
+        ['resonance', ResonanceModule, '∿'],
+        ['oxygen', OxygenModule, '◍'],
+        ['energy', PowerGridModule, '⌁']
+    ];
+    const open = (type) => isLevel6 || emergencies[type];
+
     return html`
-        <div className=${`grid grid-cols-3 h-full w-full bg-black/40 divide-x divide-zinc-800/50 relative overflow-hidden ${Object.values(emergencies).some(v => v) ? 'ring-1 ring-red-500/30' : ''}`}>
-            <!-- Scanline overlay for industrial feel -->
-            <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_2px,3px_100%]"></div>
-
-            <!-- Columna 1: Resonancia -->
-            <div className=${`h-full transition-all duration-500 ${emergencies.resonance ? 'emergency-glitch active-module' : (isLevel6 ? 'active-module' : 'standby-module')}`}>
-                <${ResonanceModule} isActive=${emergencies.resonance} storyPath=${storyPath} />
-            </div>
-
-            <!-- Columna 2: Oxígeno -->
-            <div className=${`h-full transition-all duration-500 ${emergencies.oxygen ? 'emergency-glitch active-module' : (isLevel6 ? 'active-module' : 'standby-module')}`}>
-                <${OxygenModule} isActive=${emergencies.oxygen} storyPath=${storyPath} />
-            </div>
-
-            <!-- Columna 3: Energía -->
-            <div className=${`h-full transition-all duration-500 ${emergencies.energy ? 'emergency-glitch active-module' : (isLevel6 ? 'active-module' : 'standby-module')}`}>
-                <${PowerGridModule} isActive=${emergencies.energy} storyPath=${storyPath} />
-            </div>
+        <div
+            className=${`em-console bg-black/40 ${anyActive ? 'ring-1 ring-red-500/30' : ''}`}
+            style=${{ gridTemplateColumns: slots.map(([type]) => (open(type) ? 'minmax(0, 1fr)' : (anyActive || isLevel6 ? '52px' : 'minmax(0, 1fr)'))).join(' ') }}
+        >
+            ${slots.map(([type, Module, glyph]) => open(type) ? html`
+                <div key=${type} className=${`em-slot ${emergencies[type] ? 'emergency-glitch' : ''}`}>
+                    <${Module} isActive=${emergencies[type]} storyPath=${storyPath} />
+                </div>
+            ` : html`
+                <div key=${type} className="em-idle">
+                    <span className="em-glyph">${glyph}</span>
+                    <span className="em-idle-name">${names[type].name}</span>
+                    <span className="em-ok">● estable</span>
+                </div>
+            `)}
         </div>
     `;
 };
