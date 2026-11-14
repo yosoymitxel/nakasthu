@@ -8,7 +8,7 @@ export const STEPS_CONFIG = {
         type: 'cinematic',
         name: 'La Avanzadilla',
         shot: 'descent',
-        briefingText: 'Kael, Deyar y Alexia. Tres sombras modificadas descendieron a Zhyr. No buscaban gloria, buscaban la Piedra. Pero la Piedra los encontró primero.',
+        briefingText: 'Kael, Deyar y Alexia bajaron a Zhyr a por la Piedra. Alexia la tocó el primer día; de ella no quedó ni la huella de la bota.',
         meta: null
     },
     2: {
@@ -16,21 +16,21 @@ export const STEPS_CONFIG = {
         mechanicType: 'SYNC',
         name: 'El Contacto',
         shot: 'monolith',
-        briefingText: 'La sincronización neural con el Bastión requiere contacto absoluto. El Monolito pulsa. Mantén la conexión o el sistema colapsa.',
+        briefingText: 'El Monolito pulsa once veces por minuto y el Bastión se sincroniza con ese ritmo. Si la conexión cae, cae todo.',
         meta: { syncRequired: 100 }
     },
     3: {
         type: 'cinematic',
         name: 'El Gran Desvío',
         shot: 'awakening',
-        briefingText: 'La Piedra despertó. Un tercio de la humanidad se desvaneció en un parpadeo. El caos reina en las Distribuciones. Tú eres el Operador del Bastión, el último filtro entre el orden y la extinción.',
+        briefingText: 'La Piedra despertó y un tercio de la humanidad desapareció en un parpadeo. Las Distribuciones no dan abasto. Tú eres el Operador del Bastión: cada persona que entra pasa antes por tu consola.',
         meta: null
     },
     4: {
         type: 'gameplay',
         mechanicType: 'DECISION',
         name: 'Reconstrucción',
-        briefingText: 'Orval Drexler ha ordenado la reconstrucción. Necesitamos mano de obra calificada. Evalúa los sujetos según su utilidad técnica.',
+        briefingText: 'Orval Drexler, desde Talok, ha ordenado la reconstrucción. Necesita técnicos. Evalúa a cada sujeto por lo que sabe hacer.',
         subjectCount: 10,
         meta: {
             requiredTechnicians: 6,
@@ -42,14 +42,14 @@ export const STEPS_CONFIG = {
         type: 'cinematic',
         name: 'La Grieta Social',
         shot: 'riot',
-        briefingText: 'Las plazas de Dispay arden. La gente no quiere trabajar, quiere a sus desaparecidos. En el BioScan, las lecturas empiezan a mostrar algo más que carne: muestran ecos, susurros de los que se fueron.',
+        briefingText: 'Las plazas de Dispay arden y en las pancartas hay fotos de desaparecidos. En el BioScan aparecen lecturas que no son de nadie de la cola: restos de los que se fueron.',
         meta: null
     },
     6: {
         type: 'gameplay',
         mechanicType: 'DECISION',
         name: 'La Urgencia',
-        briefingText: 'El tiempo apremia. Los disturbios se intensifican. Procesa los sujetos con rapidez. [ADVERTENCIA: Anomalía detectada en cola de espera]',
+        briefingText: 'Los disturbios llegan a las puertas. Procesa rápido; la cola no espera. [ADVERTENCIA: anomalía en la cola de espera]',
         subjectCount: 7,
         meta: {
             kaminAppears: true,
@@ -62,14 +62,14 @@ export const STEPS_CONFIG = {
         type: 'cinematic',
         name: 'El Mensajero de Aitor',
         shot: 'messenger',
-        briefingText: 'Kamin no habla de odio, habla de esperanza. Dice que el portal es un regalo, un Renacimiento. Su voz calma el zumbido de las máquinas. La gente empieza a escucharlo.',
+        briefingText: 'En Prisiat, un técnico llamado Kamin habla de esperanza. Llama al portal Renacimiento. Cuando él habla, hasta las máquinas parecen zumbar más bajo, y la gente se queda a escuchar.',
         meta: { actChange: true, newStoryPath: 1 }
     },
     8: {
         type: 'gameplay',
         mechanicType: 'DECISION',
         name: 'El Convencimiento',
-        briefingText: 'La secta de Kamin crece. Necesitamos sujetos con alta influencia para estabilizar la situación. Si fallas en reclutar suficientes devotos, el Bastión sufrirá sabotajes.',
+        briefingText: 'La secta de Kamin crece. El Bastión necesita sujetos con influencia; si no reclutas suficientes devotos, habrá sabotajes.',
         subjectCount: 5,
         meta: {
             requiredInfluence: 3,
@@ -81,14 +81,14 @@ export const STEPS_CONFIG = {
         type: 'cinematic',
         name: 'La Fe Ciega',
         shot: 'faith',
-        briefingText: 'Ya no hay ciudadanos, solo devotos. El Bastión hiede a incienso y aceite de máquina. La fe es el nuevo combustible de la Nakara.',
+        briefingText: 'En la cola quedan pocos ciudadanos; casi todos rezan. El Bastión huele a incienso y aceite de máquina, y la Nakara funciona con fe.',
         meta: null
     },
     10: {
         type: 'gameplay',
         mechanicType: 'DECISION',
         name: 'La Cosecha de Adeptos',
-        briefingText: 'Admisión masiva. Ya no importa la técnica, solo la cantidad. El Bastión necesita cuerpos. El propósito es secundario.',
+        briefingText: 'Admisión masiva. Kamin quiere cuerpos, no oficios: cuantos más crucen, mejor.',
         subjectCount: 15,
         meta: {
             massAdmission: true,
@@ -100,7 +100,7 @@ export const STEPS_CONFIG = {
         mechanicType: 'DECISION',
         name: 'El Juicio Final',
         shot: 'portal',
-        briefingText: 'El terminal se divide. Leina intenta cerrar la brecha. Kamin exige el sacrificio final. Tu desempeño determinará el destino.',
+        briefingText: 'La terminal se parte en dos. Leina intenta cerrar la brecha; Kamin exige el sacrificio final. Lo que hayas hecho hasta aquí decide de qué lado cae.',
         meta: {
             dualChoice: true,
             leftOption: { name: 'ESTABILIZAR', faction: 'orden', color: 'cyan' },
@@ -123,7 +123,7 @@ export const STEPS_CONFIG = {
         type: 'gameplay',
         mechanicType: 'DECISION',
         name: 'Modo Infinito: El Bucle',
-        briefingText: 'El tiempo se ha colapsado. Las almas y los técnicos se mezclan en un flujo eterno. No hay final, solo el deber.',
+        briefingText: 'El tiempo se ha plegado. Técnicos y devotos entran por la misma puerta, una y otra vez. Esto ya no termina.',
         subjectCount: Infinity,
         meta: {
             infinite: true,
