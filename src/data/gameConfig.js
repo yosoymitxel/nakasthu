@@ -56,6 +56,7 @@ export const CONFIG = {
         INITIAL_STABILITY: 100,
         DECAY_RATE: 2,
         STABILIZE_AMOUNT: 10,
+        STABILIZE_COST: 5,
         ANOMALY_THRESHOLD: 30,
         ANOMALY_CHANCE: 0.3,
         ANOMALY_DAMAGE: 15

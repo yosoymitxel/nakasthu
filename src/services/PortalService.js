@@ -6,6 +6,7 @@
 import { bus } from '../core/Bus.js';
 import { state } from '../core/State.js';
 import { CONFIG } from '../data/gameConfig.js';
+import { moduleRegistry } from '../systems/ModuleRegistry.js';
 
 class PortalFlux {
     constructor() {
@@ -19,13 +20,15 @@ class PortalFlux {
         bus.on('LEVEL_RESET', () => this.reset());
 
         bus.on('MODULE_UNLOCKED', (data) => {
-            if (data.id === 'MOD_PORTAL') {
+            // El registro usa 'MOD-11'; con el id viejo el portal no se activaba nunca
+            if (data.id === 'MOD-11' || data.id === 'MOD_PORTAL') {
                 this.isActive = true;
             }
         });
 
         // Decay natural con cada sujeto procesado o tick
         bus.on('DECISION_MADE', () => {
+            if (!this.isActive && moduleRegistry.isModuleActive('MOD-11')) this.isActive = true;
             if (this.isActive) {
                 this.decay(this.decayRate);
             }
@@ -33,6 +36,9 @@ class PortalFlux {
 
         // Acción manual de estabilizar (Command or Button)
         bus.on('PORTAL_STABILIZE', (amount) => {
+            // Estabilizar cuesta energía: es la decisión que da sentido al monitor
+            if (state.energy < CONFIG.PORTAL.STABILIZE_COST) return;
+            state.energy -= CONFIG.PORTAL.STABILIZE_COST;
             this.stabilize(amount || CONFIG.PORTAL.STABILIZE_AMOUNT);
         });
     }

@@ -481,3 +481,9 @@ button:not(:disabled):active { scale: 0.97; }
 .term-chip.warn .term-chip-name { color: #f59e0b; }
 .term-chip:disabled { opacity: 0.35; }
 @media (hover: hover) and (pointer: fine) { .term-chip:not(:disabled):hover { border-color: #22d3ee; color: #e4e4e7; } }
+
+/* PORTAL: acción de estabilizar */
+.portal-fix { display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; margin-top: 6px; padding: 5px 8px; border: 1px solid #27272a; background: rgba(0, 0, 0, 0.4); color: #a1a1aa; font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+.portal-fix-hint { font-size: 9px; font-weight: 400; letter-spacing: 0; color: #71717a; white-space: nowrap; }
+.portal-fix.urgent { border-color: #ef4444; color: #fca5a5; animation: pulse-slow 1s ease-in-out infinite; }
+.portal-fix:disabled { opacity: 0.35; animation: none; }

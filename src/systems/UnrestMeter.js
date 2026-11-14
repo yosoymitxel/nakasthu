@@ -6,6 +6,7 @@
 import { bus } from '../core/Bus.js';
 import { state } from '../core/State.js';
 import { CONFIG } from '../data/gameConfig.js';
+import { moduleRegistry } from './ModuleRegistry.js';
 import { getUnrestStatus, shouldTriggerRiot, calculateRiotImpact } from '../utils/unrestUtils.js';
 
 class UnrestMeter {
@@ -19,6 +20,7 @@ class UnrestMeter {
 
         // Escuchar eventos que aumentan/disminuyen el descontento
         bus.on('DECISION_MADE', ({ subject, action }) => {
+            if (!this.isActive && moduleRegistry.isModuleActive('MOD-10')) this.activate();
             if (!this.isActive) return;
 
             // Lógica de agitación: las malas decisiones aumentan el descontento
@@ -36,7 +38,8 @@ class UnrestMeter {
         });
 
         bus.on('MODULE_UNLOCKED', (data) => {
-            if (data.id === 'MOD_UNREST') {
+            // El registro usa 'MOD-10'; con el id viejo el medidor no se activaba nunca
+            if (data.id === 'MOD-10' || data.id === 'MOD_UNREST') {
                 this.activate();
             }
         });
