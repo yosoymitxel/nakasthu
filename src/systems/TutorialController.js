@@ -47,7 +47,7 @@ const TUTORIAL_CONTENT = {
         steps: [
             "El comando `/lore` desbloquea el acceso a la memoria recuperada de Zhyr.",
             "Busque pistas en los diálogos de NPC para desbloquear nuevas entradas.",
-            "La información es poder. Úsela para desbloquear comandos ocultos."
+            "Cada entrada que desbloquee abre comandos nuevos."
         ]
     },
     [MODULES.QUOTA_TRACKER?.tutorial || 'TUTO_QUOTA']: {
@@ -55,7 +55,7 @@ const TUTORIAL_CONTENT = {
         steps: [
             "El Bastión exige resultados. Cada ciclo tiene un objetivo de producción.",
             "Complete el procesamiento de sujetos válidos para cumplir la cuota.",
-            "Fallar repetidamente en la cuota atraerá la atención de Kamin. Y no querrá eso."
+            "Fallar la cuota dos veces seguidas atrae la atención de Kamin."
         ]
     },
     [MODULES.UNREST_METER?.tutorial || 'TUTO_UNREST']: {
@@ -97,9 +97,9 @@ const TUTORIAL_CONTENT_SECTARIAN = {
     [MODULES.BIOSCAN?.tutorial || 'TUTO_BIOSCAN']: {
         title: 'REVELACIÓN: ALTAR DE EXAMEN',
         steps: [
-            "Observe el [[MOD-01]]. No solo vemos carne, vemos la pureza de la esencia.",
+            "Observe el [[MOD-01]]. Aquí se lee la esencia, no la carne.",
             "Realice una LECTURA DE AURA para identificar la vibración del sujeto.",
-            "Busque la sintonía perfecta. Solo los puros de espíritu heredarán el Bastión."
+            "Busque la sintonía. Solo los puros de espíritu heredan el Bastión."
         ]
     },
     [MODULES.ANALYTICS?.tutorial || 'TUTO_ANALYTICS']: {

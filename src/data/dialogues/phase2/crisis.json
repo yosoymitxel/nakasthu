@@ -13,14 +13,14 @@
                     "corruption": 0
                 }
             },
-            "text": "*Una transmisión de alta seguridad desde Talok. Orval Drexler te observa desde una pantalla holográfica, ajustándose los guantes de su uniforme militar.* 'Operador, el caos es un combustible útil, pero la disciplina es el motor. No se distraiga con los susurros de los desaparecidos'.",
+            "text": "*Transmisión de alta seguridad desde Talok. Orval Drexler se ajusta los guantes mientras habla.* 'Operador, deje que el caos haga su trabajo. No se distraiga con los susurros de los desaparecidos'.",
             "options": [
                 {
                     "text": "Señor, las manifestaciones en Dispay están fuera de control.",
                     "energyCost": 0.2,
                     "stabilityImpact": -2,
                     "corruptionImpact": 15,
-                    "consequence": "*Orval niega con la cabeza levemente, sin perder la compostura.* 'Deje que griten. Cuando el hambre y el miedo superen a la rabia, vendrán a nosotros rogando por el orden que solo el Bastión puede proporcionar'.",
+                    "consequence": "*Orval niega con la cabeza, sin perder la compostura.* 'Deje que griten. Cuando el hambre pese más que la rabia, vendrán a pedir orden'.",
                     "next": [
                         {
                             "text": "¿Es cierto que Talok quiere reclamar el monolito para sí misma?",
@@ -28,7 +28,7 @@
                             "stabilityImpact": -5,
                             "corruptionImpact": 20,
                             "loreUnlock": "LORE_TALOK_AMBITION",
-                            "consequence": "'Talok no quiere la piedra, operador. Talok quiere el control del Renacimiento. Si el monolito es el diafragma, nosotros seremos la lente que enfoque su luz'."
+                            "consequence": "'Talok no quiere la piedra. Quiere controlar el Renacimiento. Si el monolito es el diafragma, nosotros ponemos la lente'."
                         }
                     ]
                 },
@@ -37,7 +37,7 @@
                     "energyCost": 0.1,
                     "stabilityImpact": 1,
                     "corruptionImpact": 5,
-                    "consequence": "'Nebot era un hombre de visión limitada. Su ausencia en Kanatsia es una oportunidad para que el comité temporal alinee la distribución con nuestros objetivos'."
+                    "consequence": "'Nebot tenía la vista corta. Su ausencia deja Kanatsia en manos del comité temporal'."
                 }
             ]
         },
@@ -52,7 +52,7 @@
                     "glitch": "NONE"
                 }
             },
-            "text": "*Serin Voke, consejera de Talok. Su mirada es incisiva y sus palabras medidas, consultando un datapad transparente.* 'He analizado los patrones de desaparición, operador. No hay azar. Hay una selección basada en la resonancia neural'.",
+            "text": "*Serin Voke, consejera de Talok. Habla sin mirar el datapad, como si ya supiera las respuestas.* 'He analizado los patrones de desaparición. No hay azar. Hay selección por resonancia neural'.",
             "options": [
                 {
                     "text": "¿Selección? ¿Insinúa que el monolito está 'cosechando' mentes?",
@@ -60,7 +60,7 @@
                     "stabilityImpact": -4,
                     "corruptionImpact": 12,
                     "loreUnlock": "LORE_NEURAL_RESONANCE",
-                    "consequence": "*Serin asiente fríamente, proyectando un gráfico de ondas cerebrales que se cortan abruptamente.* 'Exacto. Zhyr busca armonía, y nosotros somos ruido. Aquellos que desaparecen son los que mejor sintonizan con la frecuencia del monolito. Es una traducción masiva de biomasa a datos'.",
+                    "consequence": "*Serin asiente y proyecta un gráfico de ondas cerebrales que se cortan a la mitad.* 'Exacto. Zhyr busca armonía; nosotros somos ruido. Los que desaparecen son los que mejor sintonizan con el monolito'.",
                     "next": [
                         {
                             "text": "¿Cómo podemos protegernos de esa 'traducción'?",
@@ -84,7 +84,7 @@
                     "glitch": "LOW_RES"
                 }
             },
-            "text": "*Una científica de Itzinol con la bata manchada de aceite rojizo. Su identificación de la Orden ha sido tachada violentamente.* 'Drexler cree que el monolito es un arma para Talok. Qué ironía. No es un arma, es un espejo'.",
+            "text": "*Una científica de Itzinol con la bata manchada de aceite rojizo. Su identificación de la Orden está tachada.* 'Drexler cree que el monolito es un arma. No es un arma. Es un espejo'.",
             "options": [
                 {
                     "text": "¿Por qué dices que el monolito es un 'espejo'?",
@@ -148,21 +148,21 @@
                     "accessory": "GAFAS"
                 }
             },
-            "text": "*Un oficial de logística revisa frenéticamente listas de inventario.* 'Señor, los envíos de agua desde los acuíferos del norte se han detenido. Los conductores dicen que el agua... brilla en la oscuridad. Se niegan a transportarla'.",
+            "text": "*Un oficial de logística repasa listas de inventario.* 'Señor, los envíos de agua del norte se han detenido. Los conductores dicen que el agua brilla en la oscuridad. Se niegan a transportarla'.",
             "options": [
                 {
                     "text": "¿El agua es radiactiva? Envíe un equipo de materiales peligrosos.",
                     "energyCost": 0.3,
                     "stabilityImpact": -2,
                     "corruptionImpact": 5,
-                    "consequence": "'No es radiación, señor. Los contadores Geiger están en silencio. Pero los que bebieron... dicen que ahora pueden oír los pensamientos de sus vecinos. Estamos sellando los pozos'."
+                    "consequence": "'No es radiación. Los contadores están en silencio. Los que bebieron dicen que ahora oyen pensar a sus vecinos. Estamos sellando los pozos'."
                 },
                 {
                     "text": "Es histeria colectiva. Ordene el transporte inmediato bajo pena de corte marcial.",
                     "energyCost": 0.1,
                     "stabilityImpact": -8,
                     "corruptionImpact": 15,
-                    "consequence": "*El oficial traga saliva.* 'Sí, señor. Pero le advierto... si esa agua llega a la ciudad, la sed no será lo único que saciemos. Estamos invitando a algo a entrar en nuestras casas'."
+                    "consequence": "*El oficial traga saliva.* 'Sí, señor. Pero le advierto: si esa agua llega a la ciudad, la sed no será lo único que saciemos'."
                 }
             ]
         },
@@ -177,7 +177,7 @@
                     "glitch": "LOW_RES"
                 }
             },
-            "text": "*Una operadora de fábrica con ojeras profundas y manos temblorosas. Mira nerviosa a su alrededor.* '¿Has oído lo que dicen? Que todo esto comenzó con un experimento de la Orden en Zhyr. Que nosotros somos solo... biomasa de repuesto'.",
+            "text": "*Una operadora de fábrica con las uñas mordidas hasta el dedo. Habla sin levantar la vista.* '¿Has oído lo que dicen? Que todo empezó con un experimento de la Orden en Zhyr. Que nosotros somos biomasa de repuesto'.",
             "options": [
                 {
                     "text": "La Orden busca la supervivencia de la humanidad. Esos rumores son peligrosos.",

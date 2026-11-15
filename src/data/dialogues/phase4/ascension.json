@@ -11,14 +11,14 @@
                     "glitch": "VOID_BLACK"
                 }
             },
-            "text": "*El sujeto no tiene rostro. En su lugar, hay una superficie negra y pulida que refleja tu propia consola y tu cara de horror.* 'El tiempo de los interrogatorios ha terminado, operador. El monolito ya no está en Zhyr... está en la Tierra'.",
+            "text": "*El sujeto no tiene rostro. En su lugar hay una superficie negra y pulida que refleja tu consola y tus ojos.* 'El tiempo de los interrogatorios ha terminado. El monolito ya no está en Zhyr: está en la Tierra'.",
             "options": [
                 {
                     "text": "NAKASTHU informa de una anomalía gravitatoria masiva en el sector de Talok. ¿Es el portal?",
                     "energyCost": 0.8,
                     "stabilityImpact": -10,
                     "loreUnlock": "LORE_EARTH_COLLAPSE",
-                    "consequence": "*La superficie negra de su cara ondula como agua.* 'No es una anomalía. Es Zhyr reclamando su otra mitad. Pronto los soles gemelos brillarán sobre el océano Pacífico y el ruido de la humanidad será silenciado para siempre'."
+                    "consequence": "*La superficie negra de su cara ondula como agua.* 'No es una anomalía. Zhyr está reclamando su otra mitad. Pronto habrá dos soles sobre el Pacífico'."
                 },
                 {
                     "text": "¿Dónde están los demás operadores de la red? Las señales de las otras Distribuciones se han apagado.",
@@ -47,7 +47,7 @@
                     "energyCost": 0.4,
                     "stabilityImpact": 25,
                     "loreUnlock": "LORE_ALEXIA_GHOST",
-                    "consequence": "'Muerte... qué concepto tan terrestre y ruidoso. Soy la memoria de Zhyr. Y tú eres mi próximo recuerdo. Prepárate, el destello blanco está cerca'."
+                    "consequence": "'Muerte' es una palabra de superficie. Soy la memoria de Zhyr. Tú eres mi próximo recuerdo'."
                 },
                 {
                     "text": "Iniciando purga de datos de emergencia del enlace neural. No permitiré que Zhyr acceda a NAKASTHU.",
@@ -102,7 +102,7 @@
                     "text": "La humanidad no es 'datos'. Tenemos voluntad, historia, dolor.",
                     "energyCost": 0.5,
                     "stabilityImpact": -15,
-                    "consequence": "'El dolor es solo un error de entrada. La voluntad es una variable no inicializada. Zhyr os ofrece la constante. La paz del algoritmo perfecto. ¿Por qué luchas contra la elegancia del vacío?'"
+                    "consequence": "'El dolor es un error de entrada. La voluntad, una variable sin inicializar. Zhyr ofrece la constante: paz. ¿Por qué luchas contra eso?'"
                 }
             ]
         },
@@ -129,7 +129,7 @@
                     "energyCost": 2.0,
                     "stabilityImpact": 50,
                     "loreUnlock": "LORE_ETERNAL_RESISTANCE",
-                    "consequence": "*Forzas un bucle infinito en el núcleo. El sistema se congela en el último segundo. La agonía de la humanidad se vuelve eterna, pero real.*"
+                    "consequence": "*Forzas un bucle en el núcleo. El sistema se congela en el último segundo. La agonía de la humanidad se queda ahí, intacta.*"
                 }
             ]
         },
@@ -158,7 +158,7 @@
                     "energyCost": 1.0,
                     "stabilityImpact": -12,
                     "loreUnlock": "LORE_KAEL_LAST_PLEA",
-                    "consequence": "'La preparación es una mentira del ego. Solo existe el contacto. Siente cómo la arena abrasiva entra en tus circuitos, operador. Es el abrazo que siempre deseaste'."
+                    "consequence": "'Nadie está listo. Solo existe el contacto. Siente la arena entrar en tus circuitos. Es el abrazo que pediste'."
                 }
             ]
         },

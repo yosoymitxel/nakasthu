@@ -19,7 +19,7 @@
             "id": "DLG_COMM_ATMOS_02",
             "minStep": 1,
             "maxStep": 12,
-            "text": "*El escáner detecta una vibración de 14Hz proveniente del esternón del sujeto. No es un latido, es una frecuencia de radio antigua que emite estática constante.* 'Escucha... es la Tierra gritando mientras se desgarra'.",
+            "text": "*El escáner detecta una vibración de 14Hz proveniente del esternón del sujeto. No es un latido, es una frecuencia de radio antigua que emite estática constante.* 'Escucha. La Tierra se está desgarrando'.",
             "options": [
                 {
                     "text": "Estoy intentando aislar la señal de 14Hz. ¿Es una transmisión de la Orden o algo más profundo?",

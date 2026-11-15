@@ -23,7 +23,7 @@ export const STEPS_CONFIG = {
         type: 'cinematic',
         name: 'El Gran Desvío',
         shot: 'awakening',
-        briefingText: 'La Piedra despertó y un tercio de la humanidad desapareció en un parpadeo. Las Distribuciones no dan abasto. Tú eres el Operador del Bastión: cada persona que entra pasa antes por tu consola.',
+        briefingText: 'La Piedra despertó y un tercio de la humanidad desapareció en un parpadeo. Las Distribuciones no dan abasto. Tú eres el Operador del Bastión: cada persona que entra pasa por tu consola.',
         meta: null
     },
     4: {
@@ -114,7 +114,7 @@ export const STEPS_CONFIG = {
         briefingText: null, // Se determina según el final elegido
         meta: {
             endings: {
-                orden: 'Cierras el portal. La humanidad sobrevive en un mundo roto, pero real. Leina te mira con gratitud silenciosa.',
+                orden: 'Cierras el portal. La humanidad sobrevive en un mundo roto. Leina no dice nada; no hace falta.',
                 caos: 'Kamin empuja a Leina hacia la grieta. Las sombras devoran el Bastión. "El renacimiento nunca es sencillo", susurra antes de desvanecerse.'
             }
         }

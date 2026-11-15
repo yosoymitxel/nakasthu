@@ -9,7 +9,7 @@
                 "type": "HUMANO",
                 "scannedData": { "temperature": 36.5, "neuralSync": 40 }
             },
-            "text": "*Sujeto identificado como Kael, líder de la expedición de la Orden. Su visor retinal parpadea con una luz violeta rítmica.* 'Operador, el cañón de Zhyr no es geología. Es anatomía. Lo que pisamos está... esperando'.",
+            "text": "*Sujeto identificado como Kael, líder de la expedición de la Orden. Su visor retinal parpadea en violeta.* 'El cañón de Zhyr no es geología. Es anatomía. Lo que pisamos está esperando'.",
             "options": [
                 {
                     "text": "¿Qué quieres decir con que el cañón es 'anatomía'?",
@@ -17,7 +17,7 @@
                     "stabilityImpact": -1,
                     "corruptionImpact": 5,
                     "loreUnlock": "LORE_ZHYR_ANATOMY",
-                    "consequence": "Sus ojos se desvían hacia algo que no puedes ver. 'Las paredes vibran al ritmo de un corazón que late cada mil años. Alexia lo sintió antes que nadie. Dijo que el cañón estaba respirando bajo nuestros pies'.",
+                    "consequence": "Sus ojos se desvían hacia algo que no puedes ver. 'Las paredes vibran al ritmo de un corazón que late cada mil años. Alexia lo sintió antes que nadie. Dijo que el cañón respiraba bajo nuestros pies'.",
                     "next": [
                         {
                             "text": "¿Alexia desapareció antes o después de notar esa 'respiración'?",
@@ -25,7 +25,7 @@
                             "stabilityImpact": -2,
                             "corruptionImpact": 10,
                             "loreUnlock": "LORE_ALEXIA_PREMONITION",
-                            "consequence": " 'Mucho después. Ella se obsesionó con los patrones de la arena. Decía que no era erosión, sino escritura. Cuando encontramos el monolito, ella ya no hablaba con nosotros... hablaba con la piedra'.",
+                            "consequence": " 'Mucho después. Se obsesionó con los patrones de la arena. Decía que estaban escritos. Cuando encontramos el monolito, ya no hablaba con nosotros. Hablaba con la piedra'.",
                             "next": [
                                 {
                                     "text": "Describe el monolito. ¿Qué viste antes del destello blanco?",
@@ -33,7 +33,7 @@
                                     "stabilityImpact": -5,
                                     "corruptionImpact": 15,
                                     "loreUnlock": "LORE_MONOLITH_DESCRIPTION",
-                                    "consequence": " 'No era piedra. Era un vacío sólido. Bebía la luz de los soles gemelos y devolvía... otra cosa. Cuando Alexia lo tocó, no hubo explosión. Solo un silencio absoluto que nos arrancó el alma'.",
+                                    "consequence": " 'No era piedra. Era un vacío sólido. Bebía la luz de los soles gemelos y devolvía otra cosa. Cuando Alexia lo tocó no hubo explosión. Hubo un silencio que nos dejó sordos cuatro días'.",
                                     "next": [
                                         {
                                             "text": "¿Por qué tus implantes emiten ahora esa misma frecuencia de silencio?",
@@ -41,7 +41,7 @@
                                             "stabilityImpact": -10,
                                             "corruptionImpact": 20,
                                             "loreUnlock": "LORE_SILENCE_FREQ",
-                                            "consequence": "Se inclina hacia ti, su visor ahora es un pozo negro. 'Porque Zhyr no destruye, operador. Zhyr... traduce. Y yo ya he empezado a ser traducido. ¿Tú no oyes el zumbido?'"
+                                            "consequence": "Se inclina hacia ti. Su visor ya no refleja nada. 'Porque Zhyr no destruye. Traduce. Y yo llevo meses siendo traducido. ¿Tú no oyes el zumbido?'"
                                         }
                                     ]
                                 },
@@ -83,14 +83,14 @@
                 "type": "TÉCNICO",
                 "visual": { "glitch": "LOW_RES" }
             },
-            "text": "*Deyar sostiene los restos de un dron cuya carcasa está fundida, no por calor, sino por algo que parece corrosión molecular.* 'Esto... esto no es ciencia, operador. Mis sensores no registraron radiación, ni pulso electromagnético. Solo... silencio. Un silencio que rompió el silicio'.",
+            "text": "*Deyar sostiene un dron con la carcasa fundida. El metal se dobló hacia dentro, sin calor ni corrosión en la superficie.* 'Esto no es ciencia. Mis sensores no registraron radiación ni pulso electromagnético. Nada. Y el silicio se rompió igual'.",
             "options": [
                 {
                     "text": "¿Qué dicen los registros de caja negra del dron antes del colapso?",
                     "energyCost": 0.3,
                     "stabilityImpact": -2,
                     "loreUnlock": "LORE_DRONE_DATA",
-                    "consequence": " 'Nada. El último frame es una imagen del monolito, pero los símbolos... se estaban moviendo. No en la superficie, sino fuera de ella. Como si la roca estuviera proyectando su propio lenguaje en el aire'."
+                    "consequence": " 'Nada. El último frame es el monolito, pero los símbolos se movían. Fuera de la superficie, no encima. Como si la roca proyectara su propio lenguaje en el aire'."
                 },
                 {
                     "text": "Concéntrate, técnico. Necesitamos una explicación racional para la desaparición de Alexia.",
@@ -109,7 +109,7 @@
                 "type": "SIMBOLOGISTA",
                 "visual": { "glitch": "NONE" }
             },
-            "text": "*Alexia antes del incidente. Sus ojos brillan con una intensidad febril mientras estudia una muestra de arena.* 'No es erosión, operador. Es caligrafía. El viento no sopla sobre Zhyr; Zhyr está dictando su historia a través de las dunas'.",
+            "text": "*Alexia antes del incidente. Estudia una muestra de arena con los ojos demasiado abiertos.* 'No es erosión. Es caligrafía. Aquí el viento no sopla: escribe'.",
             "options": [
                 {
                     "text": "¿Puedes traducir alguno de los glifos del monolito?",
@@ -117,7 +117,7 @@
                     "stabilityImpact": -3,
                     "corruptionImpact": 8,
                     "loreUnlock": "LORE_ALEXIA_TRANSLATION",
-                    "consequence": " 'No se traducen con la mente, se sienten con la médula. Dice algo sobre... \"el primer paso del retorno\". Como si nosotros no hubiéramos descubierto este lugar, sino que hubiéramos vuelto a casa después de un largo exilio'."
+                    "consequence": " 'No se traducen con la mente. Se sienten con la médula. Dice: \"el primer paso del retorno\". Como si no hubiéramos descubierto el lugar, sino vuelto a casa'."
                 }
             ]
         },
@@ -130,7 +130,7 @@
                 "type": "EIDOLON",
                 "visual": { "glitch": "CHROMATIC" }
             },
-            "text": "*Una mujer que dice llamarse Alexia, aunque los registros indican que 'desapareció' hace semanas. Su cuerpo parece estar compuesto de una estática densa.* 'El destello blanco no fue el final. Fue la apertura del diafragma'.",
+            "text": "*Una mujer que dice llamarse Alexia, aunque los registros la dan por desaparecida hace semanas. Su cuerpo está hecho de estática.* 'El destello blanco no fue el final. Fue la apertura del diafragma'.",
             "options": [
                 {
                     "text": "¿Dónde has estado desde el incidente del monolito?",
@@ -138,7 +138,7 @@
                     "stabilityImpact": -3,
                     "corruptionImpact": 12,
                     "loreUnlock": "LORE_THE_BEYOND",
-                    "consequence": " 'En el pliegue. Entre lo que era y lo que seremos. Zhyr no es un planeta, es un órgano procesador de conciencia. El monolito es solo la entrada de datos'.",
+                    "consequence": " 'En el pliegue. Entre lo que era y lo que seremos. Zhyr no es un planeta: es un órgano que procesa conciencia. El monolito es la entrada de datos'.",
                     "next": [
                         {
                             "text": "¿Qué quiere Zhyr de nosotros?",
@@ -146,7 +146,7 @@
                             "stabilityImpact": -5,
                             "corruptionImpact": 18,
                             "loreUnlock": "LORE_ZHYR_INTENT",
-                            "consequence": " 'No quiere nada. Simplemente nos está... ordenando. Somos ruido en un sistema que busca la armonía perfecta de la estática. ¿Ves este brazo? Ya no es carne, es frecuencia'.",
+                            "consequence": " 'No quiere nada. Nos ordena. Somos ruido en un sistema que busca armonía. ¿Ves este brazo? Ya no es carne. Es frecuencia'.",
                             "next": [
                                 {
                                     "text": "Si eres frecuencia, puedo filtrarte. ¿Qué pasaría si apago este terminal?",
@@ -154,7 +154,7 @@
                                     "stabilityImpact": -10,
                                     "corruptionImpact": 25,
                                     "loreUnlock": "LORE_FILTER_THREAT",
-                                    "consequence": "Su imagen parpadea violentamente. 'Apágalo. Pero no me apagarás a mí, sino a tu propia ventana. Yo seguiré aquí, en la arena, en tu sangre, en el zumbido de NAKASTHU'."
+                                    "consequence": "Su imagen parpadea. 'Apágalo. No me apagas a mí: apagas tu ventana. Yo sigo aquí, en la arena, en tu sangre, en el zumbido de NAKASTHU'."
                                 }
                             ]
                         }
@@ -165,7 +165,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": -2,
                     "corruptionImpact": 8,
-                    "consequence": " 'Es porque somos muchos. Los que se desvanecieron no se perdieron. Fuimos... agregados. El Gran Desvío fue una actualización masiva'."
+                    "consequence": " 'Es porque somos muchos. Los que se desvanecieron no se perdieron. Fuimos agregados. El Gran Desvío fue una actualización masiva'."
                 }
             ]
         },
@@ -178,7 +178,7 @@
                 "type": "HUMANO",
                 "scannedData": { "temperature": 36.5, "neuralSync": 40 }
             },
-            "text": "*El técnico de la expedición. Sus manos tiemblan tanto que apenas puede sostener su comunicador.* 'Mis drones... mis hermosos drones... se convirtieron en ceniza fría en cuanto se acercaron a esa cosa'.",
+            "text": "*El técnico de la expedición. Le tiemblan las manos y apenas sostiene el comunicador.* 'Mis drones. Mis hermosos drones. Ceniza fría en cuanto se acercaron a esa cosa'.",
             "options": [
                 {
                     "text": "Dime qué detectaron tus sensores antes de colapsar.",
@@ -186,14 +186,14 @@
                     "stabilityImpact": -1,
                     "corruptionImpact": 5,
                     "loreUnlock": "LORE_SENSOR_COLLAPSE",
-                    "consequence": "'No detectaron nada, ese es el problema. No había calor, no había masa, no había radiación. Solo... una ausencia. Como si el monolito fuera un agujero en la realidad que los sensores no podían procesar'.",
+                    "consequence": "'No detectaron nada, ese es el problema. No había calor ni masa. Tampoco radiación. Una ausencia. Como si el monolito fuera un agujero que los sensores no sabían leer'.",
                     "next": [
                         {
                             "text": "¿Viste lo que le pasó a Alexia?",
                             "energyCost": 0.3,
                             "stabilityImpact": -3,
                             "corruptionImpact": 8,
-                            "consequence": "'La luz... era tan blanca que dolía en el alma. Ella no gritó. Solo se deshizo, como si fuera arena en un vendaval. Kael dice que la transportó, pero yo vi cómo sus moléculas dejaban de existir'."
+                            "consequence": "'La luz era tan blanca que dolía. Ella no gritó. Se deshizo como arena en un vendaval. Kael dice que la transportó; yo vi sus moléculas dejar de existir'."
                         }
                     ]
                 },
@@ -222,14 +222,14 @@
                     "stabilityImpact": -2,
                     "corruptionImpact": 10,
                     "loreUnlock": "LORE_ELARA_RUMORS",
-                    "consequence": "'Dicen que las desapariciones no son aleatorias. Dicen que el monolito elige a los que tienen... ciertas frecuencias. Y que los líderes de las Distribuciones sabían que esto pasaría'.",
+                    "consequence": "'Dicen que las desapariciones no son aleatorias. Que el monolito elige a los que tienen cierta frecuencia. Y que los líderes de las Distribuciones lo sabían'.",
                     "next": [
                         {
                             "text": "Ten cuidado, Elara. La Orden tiene oídos en todas partes.",
                             "energyCost": 0.1,
                             "stabilityImpact": 4,
                             "corruptionImpact": -5,
-                            "consequence": "'Lo sé. El técnico mayor me lo advirtió. Dice que si sabes demasiado, te conviertes en la próxima sombra. Pero alguien tiene que decir la verdad antes de que todos nos desvanezcamos'."
+                            "consequence": "'Lo sé. El técnico mayor me lo advirtió: si sabes demasiado, eres la próxima sombra. Pero alguien tiene que decirlo antes de que nos desvanezcamos todos'."
                         }
                     ]
                 }

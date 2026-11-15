@@ -11,13 +11,13 @@
                     "energyCost": 5,
                     "stabilityImpact": -2,
                     "loreUnlock": "LORE_ZHYR_EXP",
-                    "consequence": "Sujeto nervioso. Confirma que la Orden de los Vínculos Ancestrales movilizó personal modificado."
+                    "consequence": "Sujeto nervioso. Confirma que la Orden movilizó personal modificado."
                 },
                 {
                     "text": "Ignorar Rumores",
                     "energyCost": 2,
                     "stabilityImpact": 2,
-                    "consequence": "El sujeto se calla, pero su pulso aumenta. La incertidumbre persiste."
+                    "consequence": "Se calla. El pulso le sube a 120 y no aparta la vista de la puerta."
                 }
             ]
         },
@@ -32,7 +32,7 @@
                     "energyCost": 10,
                     "stabilityImpact": -5,
                     "loreUnlock": "LORE_MODS",
-                    "consequence": "Explicas la filtración química. El sujeto palidece al entender el costo de la supervivencia."
+                    "consequence": "Explicas la filtración química. El sujeto palidece y deja de preguntar."
                 }
             ]
         },
@@ -47,7 +47,7 @@
                     "energyCost": 5,
                     "stabilityImpact": -5,
                     "loreUnlock": "LORE_GREAT_SHIFT",
-                    "consequence": "El relato coincide con la desaparición de Alexia. El Gran Desvío no fue una desintegración física convencional."
+                    "consequence": "El relato coincide con la desaparición de Alexia. Mismo destello, misma ausencia de restos."
                 }
             ]
         },
@@ -62,7 +62,7 @@
                     "energyCost": 12,
                     "stabilityImpact": -8,
                     "loreUnlock": "LORE_SYMBOLS",
-                    "consequence": "El sujeto describe los patrones vivos del Monolito. El enlace neural detecta una frecuencia residual de Zhyr."
+                    "consequence": "El sujeto describe los patrones vivos del Monolito. El enlace detecta 14 Hz de fondo."
                 }
             ]
         },
@@ -77,7 +77,7 @@
                     "energyCost": 8,
                     "stabilityImpact": -3,
                     "loreUnlock": "LORE_ZHYR_SCAN",
-                    "consequence": "Confirmas anomalías térmicas en los registros de Kael. El planeta no está muerto."
+                    "consequence": "Confirmas anomalías térmicas en los registros de Kael."
                 }
             ]
         },
@@ -91,7 +91,7 @@
                     "text": "Investigar Fallo",
                     "energyCost": 5,
                     "stabilityImpact": 2,
-                    "consequence": "El colapso de los sensores de Deyar sugiere un campo electromagnético hostil alrededor del Monolito."
+                    "consequence": "Los sensores de Deyar no fallaron por batería. Algo alrededor del Monolito los quemó."
                 }
             ]
         },
@@ -120,7 +120,7 @@
                     "energyCost": 15,
                     "stabilityImpact": -10,
                     "loreUnlock": "LORE_ALEXIA_FIRST",
-                    "consequence": "El primer contacto. La desintegración de Alexia fue el inicio del protocolo NAKASTHU."
+                    "consequence": "El primer contacto. La desintegración de Alexia abrió el protocolo NAKASTHU."
                 }
             ]
         },
@@ -134,14 +134,14 @@
                     "text": "Citar a Orval Drexler",
                     "energyCost": 5,
                     "stabilityImpact": 5,
-                    "consequence": "Repites la doctrina de Talok. El sujeto asiente con miedo, buscando seguridad en la tiranía."
+                    "consequence": "Repites la doctrina de Talok. El sujeto asiente y pide que no lo reasignen."
                 },
                 {
                     "text": "Analizar Lealtad",
                     "energyCost": 15,
                     "stabilityImpact": -10,
                     "loreUnlock": "LORE_NEBOT_VOID",
-                    "consequence": "El sujeto confiesa que Nebot desapareció junto a todo su gabinete. Un vacío de poder absoluto."
+                    "consequence": "El sujeto confiesa que Nebot desapareció con todo su gabinete. No queda nadie que firme."
                 }
             ]
         },
@@ -162,7 +162,7 @@
                     "energyCost": 10,
                     "stabilityImpact": -5,
                     "loreUnlock": "LORE_GREAT_SHIFT",
-                    "consequence": "Describe cómo un tercio de su planta se evaporó en un parpadeo. Sin sangre, sin rastro."
+                    "consequence": "Describe cómo un tercio de su planta se evaporó en un parpadeo. Quedaron los bancos, la ropa, la sangre."
                 }
             ]
         },
@@ -176,14 +176,14 @@
                     "text": "Protocolo de Silencio",
                     "energyCost": 2,
                     "stabilityImpact": 5,
-                    "consequence": "Silencias al sujeto. Los fallos de Eidolon son secreto de estado en Talok."
+                    "consequence": "Silencias al sujeto. Los fallos de Eidolon no salen de Talok."
                 },
                 {
                     "text": "Investigar Filtración",
                     "energyCost": 8,
                     "stabilityImpact": -5,
                     "loreUnlock": "LORE_EIDOLON_FAIL",
-                    "consequence": "El sujeto menciona que las alertas intermitentes en el núcleo de Eidolon son constantes."
+                    "consequence": "El sujeto dice que las alertas del núcleo llevan tres meses sin apagarse."
                 }
             ]
         },
@@ -197,7 +197,7 @@
                     "text": "Control de Masas",
                     "energyCost": 10,
                     "stabilityImpact": 15,
-                    "consequence": "Aplicas un pulso sónico disuasorio. La estabilidad sube, pero el resentimiento se profundiza."
+                    "consequence": "Aplicas un pulso sónico. La calle se vacía. La estabilidad sube; el odio se queda."
                 }
             ]
         },
@@ -211,7 +211,7 @@
                     "text": "Evaluar Mano de Obra",
                     "energyCost": 5,
                     "stabilityImpact": 0,
-                    "consequence": "Un operario curtido. Esencial para mantener la infraestructura del Bastión."
+                    "consequence": "Un operario curtido. Lo mandas a la infraestructura del Bastión."
                 }
             ]
         },
@@ -225,7 +225,7 @@
                     "text": "Calmar Sedición",
                     "energyCost": 8,
                     "stabilityImpact": 10,
-                    "consequence": "Refuerzas la autoridad del Bastión. Los líderes regionales deben someterse o desaparecer."
+                    "consequence": "Refuerzas la autoridad del Bastión. Dos líderes regionales se someten; el tercero no llega a la reunión."
                 }
             ]
         },
@@ -233,13 +233,13 @@
             "id": "DLG_S4_07",
             "minStep": 4,
             "maxStep": 6,
-            "text": "Elara tiene ojeras que parecen pozos de brea. Dice que la Orden está experimentando con nosotros. Que el aire ya no es aire.",
+            "text": "Elara tiene ojeras de tres turnos seguidos. Dice que la Orden experimenta con nosotros. Que el aire ya no es aire.",
             "options": [
                 {
                     "text": "Sedante Neural",
                     "energyCost": 5,
                     "stabilityImpact": 5,
-                    "consequence": "Elara olvida sus miedos, pero sus manos siguen temblando. La sospecha es sistémica."
+                    "consequence": "Elara olvida sus miedos. Sus manos siguen temblando."
                 }
             ]
         },
@@ -254,7 +254,7 @@
                     "energyCost": 12,
                     "stabilityImpact": -8,
                     "loreUnlock": "LORE_TALOK_PLAN",
-                    "consequence": "Serin Voke coordina la extracción masiva de Nakasthu. Los ciudadanos son solo catalizadores."
+                    "consequence": "Serin Voke coordina la extracción masiva de Nakasthu. Los ciudadanos son el material."
                 }
             ]
         },
@@ -262,7 +262,7 @@
             "id": "DLG_S4_09",
             "minStep": 4,
             "maxStep": 6,
-            "text": "Eidolon está gimiendo. He pasado por la cámara subterránea y el zumbido me hizo sangrar los oídos. La máquina está sufriendo.",
+            "text": "Eidolon está gimiendo. Pasé por la cámara subterránea y el zumbido me hizo sangrar los oídos. La máquina está sufriendo.",
             "options": [
                 {
                     "text": "Diagnóstico de Sistema",
@@ -283,13 +283,13 @@
                     "energyCost": 15,
                     "stabilityImpact": -20,
                     "loreUnlock": "LORE_KAMIN_SPEECH",
-                    "consequence": "El sujeto recita versos de Kamin. La estabilidad del Bastión vibra con una resonancia desconocida."
+                    "consequence": "El sujeto recita versos de Kamin. En el pasillo, tres guardias se detienen a escuchar."
                 },
                 {
                     "text": "Reprimir Herejía",
                     "energyCost": 5,
                     "stabilityImpact": 10,
-                    "consequence": "Administras un sedante neural. El silencio regresa, pero el susurro de Kamin permanece en el aire."
+                    "consequence": "Administras un sedante. El sujeto duerme; en el pasillo alguien sigue tarareando el verso."
                 }
             ]
         },
@@ -304,7 +304,7 @@
                     "energyCost": 20,
                     "stabilityImpact": -15,
                     "loreUnlock": "LORE_VOID_DREAMS",
-                    "consequence": "Ves lo que él ve: Alexia caminando bajo cielos rojos y negros. El portal es un espejo."
+                    "consequence": "Ves lo que él ve: Alexia caminando bajo cielos rojos y negros, descalza."
                 }
             ]
         },
@@ -319,7 +319,7 @@
                     "energyCost": 5,
                     "stabilityImpact": -5,
                     "loreUnlock": "LORE_SECRET_MEETING",
-                    "consequence": "Has obtenido la ubicación de una célula de la secta de Aitor. Inteligencia de Talok actualizada."
+                    "consequence": "Tienes la dirección de una célula. Talok ya la tenía."
                 }
             ]
         },
@@ -333,7 +333,7 @@
                     "text": "Interrogar Dogma",
                     "energyCost": 10,
                     "stabilityImpact": -10,
-                    "consequence": "El sujeto repite las palabras de Kamin con una convicción que asusta. El fervor es contagioso."
+                    "consequence": "El sujeto repite las palabras de Kamin. Dos técnicos de turno las repiten con él."
                 }
             ]
         },
@@ -347,7 +347,7 @@
                     "text": "Analizar Psicosis",
                     "energyCost": 15,
                     "stabilityImpact": -5,
-                    "consequence": "El sujeto ha idealizado el entorno hostil de Zhyr como un paraíso. Su mente está fracturada por la fe."
+                    "consequence": "El sujeto ha convertido el cañón en un paraíso. No es la primera ficha así esta semana."
                 }
             ]
         },
@@ -362,7 +362,7 @@
                     "energyCost": 10,
                     "stabilityImpact": -12,
                     "loreUnlock": "LORE_MESSENGER",
-                    "consequence": "El Mensajero de Aitor es el título que la secta otorga a Kamin. Su influencia es imparable."
+                    "consequence": "El Mensajero de Aitor es el título que la secta le da a Kamin. La periodista lo escribió antes de desaparecer."
                 }
             ]
         },
@@ -390,7 +390,7 @@
                     "text": "Escuchar Verdad",
                     "energyCost": 20,
                     "stabilityImpact": -25,
-                    "consequence": "El sujeto entiende la naturaleza depredadora del Monolito. Su lucidez es peligrosa."
+                    "consequence": "El sujeto entiende lo que come el Monolito. Lo entiende demasiado bien."
                 }
             ]
         },
@@ -404,7 +404,7 @@
                     "text": "Monitorear Ética",
                     "energyCost": 8,
                     "stabilityImpact": 5,
-                    "consequence": "La moralidad es un lastre para el Bastión. Renata Sykes es marcada como 'obstáculo operativo'."
+                    "consequence": "Renata Sykes queda marcada como 'obstáculo operativo'. Nadie discute la etiqueta."
                 }
             ]
         },
@@ -419,13 +419,13 @@
                     "energyCost": 25,
                     "stabilityImpact": -30,
                     "loreUnlock": "LORE_FINAL_HARVEST",
-                    "consequence": "El sujeto sonríe mientras su cuerpo empieza a brillar con luz de Nakasthu. La cosecha ha comenzado."
+                    "consequence": "El sujeto sonríe. Su cuerpo empieza a brillar y no deja de sonreír."
                 },
                 {
                     "text": "Forzar Estabilización",
                     "energyCost": 10,
                     "stabilityImpact": 20,
-                    "consequence": "Intentas resetear los núcleos de Eidolon. El sistema gime, resistiéndose a la realidad física."
+                    "consequence": "Intentas resetear los núcleos. El sistema gime y rechaza el comando."
                 }
             ]
         },
@@ -439,7 +439,7 @@
                     "text": "Comulgar con la Máquina",
                     "energyCost": 20,
                     "stabilityImpact": -25,
-                    "consequence": "Sientes la conexión entre el mineral y la creencia humana. El Bastión se está convirtiendo en un templo mecánico."
+                    "consequence": "Sientes la Nakara responder al rezo. El Bastión ya no suena como una fábrica."
                 }
             ]
         },
@@ -453,7 +453,7 @@
                     "text": "Analizar Futuro",
                     "energyCost": 15,
                     "stabilityImpact": -15,
-                    "consequence": "Una visión del Juicio Final. El destino de la humanidad pende de un hilo entre el Orden y el Caos."
+                    "consequence": "Una visión del Juicio Final. Leina sostiene el cable; Kamin sostiene el cuchillo."
                 }
             ]
         },
@@ -468,7 +468,7 @@
                     "energyCost": 30,
                     "stabilityImpact": -40,
                     "loreUnlock": "LORE_ASCENSION",
-                    "consequence": "El sujeto se desvanece lentamente en partículas de luz blanca. Zhyr lo está reclamando."
+                    "consequence": "El sujeto se desvanece en partículas de luz blanca. La camilla queda tibia."
                 }
             ]
         },
@@ -482,7 +482,7 @@
                     "text": "Mantener Luces",
                     "energyCost": 10,
                     "stabilityImpact": 5,
-                    "consequence": "Te aferras a la realidad física. El sujeto gime en la oscuridad, llamando a los desaparecidos."
+                    "consequence": "Mantienes las luces encendidas. El sujeto gime y llama a alguien que no está."
                 }
             ]
         },
@@ -497,7 +497,7 @@
                     "energyCost": 25,
                     "stabilityImpact": -35,
                     "loreUnlock": "LORE_OMNISCIENT_EYE",
-                    "consequence": "La 'explosión de silencio' es la firma acústica de una reasignación masiva. El final está cerca."
+                    "consequence": "La 'explosión de silencio' es la firma acústica de una reasignación masiva. No es la primera."
                 }
             ]
         },
@@ -511,7 +511,7 @@
                     "text": "Cruzar Mirada",
                     "energyCost": 30,
                     "stabilityImpact": -45,
-                    "consequence": "Sufres un breve colapso neural. Has visto el Abismo, y el Abismo te ha reconocido."
+                    "consequence": "Sufres un colapso neural de cuatro segundos. Cuando vuelves, la consola sigue grabando."
                 }
             ]
         },
@@ -526,7 +526,7 @@
                     "energyCost": 20,
                     "stabilityImpact": -20,
                     "loreUnlock": "LORE_GROTESQUE_FORMS",
-                    "consequence": "Las 'formas' son proyecciones de la conciencia humana asimilada por el Nakasthu."
+                    "consequence": "Las 'formas' son conciencia humana asimilada. Todavía se mueven como si tuvieran prisa."
                 }
             ]
         },
@@ -540,7 +540,7 @@
                     "text": "Confirmar Traición",
                     "energyCost": 15,
                     "stabilityImpact": -15,
-                    "consequence": "La Orden ha estado en contacto con el Monolito desde hace décadas. El Bastión es su última voluntad."
+                    "consequence": "La Orden lleva décadas en contacto con el Monolito. El Bastión es lo que queda de ese trato."
                 }
             ]
         },
@@ -562,7 +562,7 @@
             "id": "DLG_GEN_02",
             "minStep": 1,
             "maxStep": 12,
-            "text": "He oído que los que cruzan el portal nunca vuelven iguales. Que sus ojos... sus ojos brillan con una luz que no es de este mundo.",
+            "text": "He oído que los que cruzan el portal nunca vuelven iguales. Que sus ojos brillan y no parpadean.",
             "options": [
                 {
                     "text": "Analizar Retina",
@@ -583,7 +583,7 @@
                     "energyCost": 15,
                     "stabilityImpact": -10,
                     "loreUnlock": "LORE_ORVAL_SECRET",
-                    "consequence": "Confirmas que el líder de Talok tiene una obsesión privada con el Monolito."
+                    "consequence": "Confirmas que Drexler tiene un fragmento en el despacho. Habla con él a las tres de la mañana."
                 }
             ]
         },
@@ -597,7 +597,7 @@
                     "text": "Ajustar Temperatura",
                     "energyCost": 10,
                     "stabilityImpact": 5,
-                    "consequence": "El sujeto deja de temblar. El Bastión gasta energía preciosa para mantener la ilusión de humanidad."
+                    "consequence": "El sujeto deja de temblar. La factura de energía sube otra vez."
                 }
             ]
         },
@@ -611,7 +611,7 @@
                     "text": "Restaurar Identidad",
                     "energyCost": 15,
                     "stabilityImpact": 15,
-                    "consequence": "Logras recuperar fragmentos de su base de datos personal. El sujeto llora de alivio."
+                    "consequence": "Recuperas fragmentos de su base de datos. El sujeto llora y no se limpia la cara."
                 }
             ]
         },
@@ -625,7 +625,7 @@
                     "text": "Sintonía de Pulso",
                     "energyCost": 20,
                     "stabilityImpact": -15,
-                    "consequence": "Sientes la vibración. No es mecánica, es biológica. La humanidad se está sincronizando con Zhyr."
+                    "consequence": "Sientes la vibración en el suelo. El pulso no viene de las máquinas."
                 }
             ]
         },
@@ -639,7 +639,7 @@
                     "text": "Silenciar Disidente",
                     "energyCost": 2,
                     "stabilityImpact": 10,
-                    "consequence": "Protocolo de seguridad activado. La verdad permanece enterrada en los archivos de Talok."
+                    "consequence": "Protocolo de seguridad activado. El archivo se cierra; el técnico no."
                 }
             ]
         },
@@ -669,7 +669,7 @@
                     "energyCost": 5,
                     "stabilityImpact": 5,
                     "loreUnlock": "LORE_VOID_FRAGMENT",
-                    "consequence": "Un fragmento genuino de Nakasthu. Emite un calor antinatural y pulsante."
+                    "consequence": "Un fragmento genuino de Nakasthu. Calienta la mano y late."
                 }
             ]
         },
@@ -683,7 +683,7 @@
                     "text": "Escaneo de Sueños",
                     "energyCost": 15,
                     "stabilityImpact": -10,
-                    "consequence": "Imágenes fragmentadas de un paisaje púrpura. La influencia de Zhyr es cada vez más fuerte."
+                    "consequence": "Imágenes fragmentadas de un paisaje púrpura. El sujeto duerme mejor desde que empezó a soñarlo."
                 }
             ]
         },
@@ -691,13 +691,13 @@
             "id": "DLG_GEN_11",
             "minStep": 1,
             "maxStep": 12,
-            "text": "¿Oyes eso? Es el sonido de la arena abrasiva golpeando el metal. Pero no hay viento... solo el hambre del planeta.",
+            "text": "¿Oyes eso? Arena contra el metal. Y no hay viento.",
             "options": [
                 {
                     "text": "Ignorar Acústica",
                     "energyCost": 5,
                     "stabilityImpact": 2,
-                    "consequence": "El sujeto se tapa los oídos. El sonido de Zhyr es una alucinación auditiva recurrente."
+                    "consequence": "El sujeto se tapa los oídos. El sonido no está en los sensores."
                 }
             ]
         },
@@ -711,7 +711,7 @@
                     "text": "Ofrecer Orden",
                     "energyCost": 10,
                     "stabilityImpact": 15,
-                    "consequence": "El sujeto se somete. La estabilidad del sistema se nutre de su agotamiento."
+                    "consequence": "El sujeto se somete. Su agotamiento entra en la cuota como cualquier otro recurso."
                 }
             ]
         },
@@ -725,7 +725,7 @@
                     "text": "Monitorear Mutación",
                     "energyCost": 20,
                     "stabilityImpact": -20,
-                    "consequence": "Las células del sujeto están siendo reemplazadas por estructuras cristalinas. Evolución forzada."
+                    "consequence": "Las células del sujeto se están volviendo cristalinas. El BioScan no tiene categoría para eso."
                 }
             ]
         },
@@ -739,7 +739,7 @@
                     "text": "Confirmar Reasignación",
                     "energyCost": 5,
                     "stabilityImpact": 5,
-                    "consequence": "Repites la mentira oficial. La estabilidad se mantiene a costa de la verdad."
+                    "consequence": "Repites la mentira oficial. El sujeto firma y vuelve a su casa vacía."
                 }
             ]
         },
@@ -754,7 +754,7 @@
                     "energyCost": 40,
                     "stabilityImpact": -50,
                     "loreUnlock": "LORE_THE_CALL",
-                    "consequence": "El sujeto se desvanece en un destello cegador. Has permitido una ascensión directa."
+                    "consequence": "El sujeto se desvanece en un destello. La cámara sigue grabando una silla vacía."
                 }
             ]
         }

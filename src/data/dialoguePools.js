@@ -18,7 +18,7 @@ export const DIALOGUE_POOLS = {
     ],
     EIDOLON: [
         "Vuestras máquinas no pueden contener lo que no comprendéis.",
-        "Nakasthu es solo el principio del fin.",
+        "Esto es el principio. Nakasthu viene después.",
         "Puedo oler tu miedo a través del cristal, operario.",
         "El vacío nos llama a todos por nuestro verdadero nombre."
     ],

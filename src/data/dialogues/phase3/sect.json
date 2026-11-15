@@ -15,7 +15,7 @@
                     "glitch": "PURPLE_HUE"
                 }
             },
-            "text": "*Un hombre con túnica ceremonial que oculta sensores cibernéticos que parpadean en violeta. Su voz resuena con un eco metálico.* 'Kamin nos mostró que el portal no es un fin, sino un bautismo. ¿Estás listo para ser bautizado en el silencio de Zhyr, operador?'",
+            "text": "*Un hombre con túnica ceremonial sobre sensores que parpadean en violeta. Su voz trae eco metálico.* 'Kamin nos mostró que el portal no es un fin, sino un bautismo. ¿Estás listo para ser bautizado en el silencio de Zhyr?'",
             "options": [
                 {
                     "text": "¿Kamin es el nombre que le dais ahora al explorador Kael?",
@@ -23,7 +23,7 @@
                     "stabilityImpact": -3,
                     "corruptionImpact": 10,
                     "loreUnlock": "LORE_KAMIN_ORIGIN",
-                    "consequence": "*El Magus sonríe, revelando dientes negros.* 'Kael murió en la arena abrasiva. Kamin nació de la sombra que el monolito proyectó sobre su alma. Él es el puente que Alexia no pudo terminar'.",
+                    "consequence": "*El Magus sonríe. Tiene los dientes negros.* 'Kael murió en el cañón. Kamin nació de la sombra que el monolito le dejó encima. Él es el puente que Alexia no terminó'.",
                     "next": [
                         {
                             "text": "¿Qué le faltó a Alexia para completar ese 'puente'?",
@@ -31,7 +31,7 @@
                             "stabilityImpact": -5,
                             "corruptionImpact": 15,
                             "loreUnlock": "LORE_ALEXIA_BRIDGE",
-                            "consequence": "*Hace un gesto de desprecio.* 'Le faltó renunciar a su miedo. Ella quería entender la Piedra, pero Kamin aceptó ser la Piedra. No puedes cruzar el abismo si todavía intentas medir su profundidad'."
+                            "consequence": "*Hace un gesto de desprecio.* 'Le faltó renunciar al miedo. Ella quería entender la Piedra; Kamin aceptó ser la Piedra'."
                         },
                         {
                             "text": "Deyar dice que Kael simplemente sufrió un colapso psicótico.",
@@ -39,7 +39,7 @@
                             "stabilityImpact": 2,
                             "corruptionImpact": -5,
                             "loreUnlock": "LORE_DEYAR_SKEPTICISM",
-                            "consequence": "*Se ríe.* 'Deyar es un hombre de metal y cables. No puede ver la luz que emana de las grietas de una mente rota. El colapso fue la liberación'."
+                            "consequence": "*Se ríe.* 'Deyar es un hombre de metal y cables. No puede ver lo que hay en una mente rota. El colapso fue la liberación'."
                         }
                     ]
                 },
@@ -49,7 +49,7 @@
                     "stabilityImpact": -2,
                     "corruptionImpact": 5,
                     "loreUnlock": "LORE_SECT_HACK",
-                    "consequence": "*Presiona sus manos contra el pecho, intensificando el parpadeo.* 'No es interferencia, es armonía. El OS está empezando a despertar de su letargo humano. ¿No oyes cómo suspira NAKASTHU entre cada línea de código?'",
+                    "consequence": "*Presiona las manos contra el pecho; el parpadeo se acelera.* 'No es interferencia. Es armonía. El OS está despertando. ¿No oyes cómo suspira NAKASTHU entre línea y línea?'",
                     "next": [
                         {
                             "text": "Si NAKASTHU 'despierta', ¿qué pasará con los que lo operamos?",
@@ -81,7 +81,7 @@
                     "glitch": "DOUBLE_ONION_SKIN"
                 }
             },
-            "text": "*Una mujer que se identifica como 'El Mensajero de Aitor'. Su voz suena como una multitud hablando en unísono perfecto.* 'Traemos la noticia de que el velo es fino. El Acechador ya ha cruzado y está contando tus errores de juicio'.",
+            "text": "*Una mujer que se identifica como 'El Mensajero de Aitor'. Su voz suena como una multitud.* 'El velo es fino. El Acechador ya cruzó y lleva la cuenta de tus errores'.",
             "options": [
                 {
                     "text": "¿Aitor no era un simple asesor de Talok que desapareció?",
@@ -97,7 +97,7 @@
                             "stabilityImpact": -4,
                             "corruptionImpact": 12,
                             "loreUnlock": "LORE_AITOR_NETWORK",
-                            "consequence": "'Él no controla, él sincroniza. Somos una sola canción cantada por mil gargantas de cristal. Y tú, operador, eres la nota discordante que pronto será silenciada'."
+                            "consequence": "'Él no controla: sincroniza. Somos una canción con mil gargantas de cristal. Y tú eres la nota que no encaja'."
                         }
                     ]
                 },
@@ -107,14 +107,14 @@
                     "stabilityImpact": -10,
                     "corruptionImpact": 15,
                     "loreUnlock": "LORE_STALKER_IDENTITY",
-                    "consequence": "*Se acerca a la cámara, sus ojos son pozos oscuros.* 'Él no necesita estabilidad. Él se alimenta del caos que vuestras Distribuciones han creado. Mírate las manos, operador. ¿Estás seguro de que siguen siendo tuyas?'",
+                    "consequence": "*Se acerca a la cámara. No tiene fondo en los ojos.* 'Él no necesita estabilidad. Se alimenta del caos que han creado sus Distribuciones. Mírese las manos. ¿Seguro que siguen siendo suyas?'",
                     "next": [
                         {
                             "text": "Mis manos responden a mi voluntad. No hay rastro de corrupción.",
                             "energyCost": 0.3,
                             "stabilityImpact": 5,
                             "corruptionImpact": -10,
-                            "consequence": "'Por ahora. Pero el Acechador ya ha plantado la semilla en tu nuca. Cada vez que parpadeas, él camina un paso más cerca en tu oscuridad interna'."
+                            "consequence": "'Por ahora. El Acechador ya plantó la semilla en tu nuca. Cada vez que parpadeas, camina un paso más cerca'."
                         }
                     ]
                 },
@@ -138,7 +138,7 @@
                     "glitch": "PURPLE_HUE"
                 }
             },
-            "text": "*El sujeto no habla, pero su boca se mueve y escuchas la voz de Kael (Kamin) a través de los altavoces.* 'Kamin no habla de odio, habla de esperanza. Dice que el portal es un regalo, un Renacimiento. Su voz es la única que puede calmar el zumbido de las máquinas'.",
+            "text": "*El sujeto no habla. Su boca se mueve y de los altavoces sale la voz de Kael.* 'Kamin habla de esperanza. Dice que el portal es un regalo, un Renacimiento. Su voz calma el zumbido de las máquinas'.",
             "options": [
                 {
                     "text": "¿Cómo puede ser un regalo un portal que ha evaporado a millones?",
@@ -181,7 +181,7 @@
                     "energyCost": 0.5,
                     "stabilityImpact": -10,
                     "loreUnlock": "LORE_SECT_HACK",
-                    "consequence": "*Drexler golpea la mesa.* '¡Lo sé! El incienso está nublando los sensores de mis hombres. Si perdemos el Bastión frente a esos fanáticos, la humanidad no será reasignada... será borrada. Operador, mantenga la lógica pura a cualquier precio'."
+                    "consequence": "*Drexler golpea la mesa.* '¡Lo sé! El incienso está nublando los sensores de mis hombres. Si esos fanáticos se quedan con el Bastión, la humanidad no será reasignada: será borrada. Operador, mantenga la cabeza fría a cualquier precio'."
                 }
             ]
         },
@@ -204,7 +204,7 @@
                     "stabilityImpact": 15,
                     "corruptionImpact": 5,
                     "loreUnlock": "LORE_SACRIFICE_TRUTH",
-                    "consequence": "*Escupe una mezcla oscura sobre el micrófono.* 'El cuerpo protesta porque es ruidoso y estúpido. Pero el alma... el alma por fin puede estirarse en el vacío. ¿Cuándo será tu turno de quitarte los zapatos?'",
+                    "consequence": "*Escupe una mezcla oscura sobre el micrófono.* 'El cuerpo protesta porque es ruidoso y estúpido. El alma, en cambio, puede estirarse. ¿Cuándo te quitas los zapatos?'",
                     "next": [
                         {
                             "text": "Si el alma se 'estira', ¿qué forma adquiere en el vacío?",
@@ -212,7 +212,7 @@
                             "stabilityImpact": -10,
                             "corruptionImpact": 20,
                             "loreUnlock": "LORE_SOUL_SHAPE",
-                            "consequence": "'Se vuelve geometría pura. Se vuelve una ecuación de luz que resuelve el problema de la existencia. Alexia es ahora un fractal infinito que devora las estrellas de Zhyr'."
+                            "consequence": "'Se vuelve geometría. Alexia es ahora un fractal que devora las estrellas de Zhyr'."
                         }
                     ]
                 },
@@ -229,7 +229,7 @@
                     "energyCost": 0.1,
                     "stabilityImpact": 20,
                     "corruptionImpact": -2,
-                    "consequence": "*Su risa se convierte en un gorgoteo.* 'Muriendo... qué palabra tan pintoresca. Estoy eclosionando. Lo que ves es solo la cáscara rota de un huevo que ya no necesito'."
+                    "consequence": "*Su risa se convierte en un gorgoteo.* ''Muerto' es una palabra de fuera. Estoy eclosionando. Lo que ves es la cáscara'."
                 }
             ]
         },
@@ -273,7 +273,7 @@
                     "glitch": "RGB_SHIFT"
                 }
             },
-            "text": "*Un técnico de comunicaciones, rodeado de pantallas que muestran ruido blanco.* 'Señor, he encontrado un patrón en la estática de los canales muertos. No es aleatorio. Es... código binario, pero escrito al revés'.",
+            "text": "*Un técnico de comunicaciones, rodeado de pantallas que muestran ruido blanco.* 'Señor, hay un patrón en la estática de los canales muertos. No es aleatorio. Es código binario, escrito al revés'.",
             "options": [
                 {
                     "text": "¿Ha logrado descifrar el mensaje?",
