@@ -322,20 +322,13 @@ const OxygenModule = ({ isActive, storyPath }) => {
                     `)}
             </div>
 
-            <div className=${`relative ${isSectarian ? 'flex-1 min-h-[124px] w-full max-w-[240px] mx-auto my-2' : 'grid grid-cols-2 grid-rows-2 gap-2 flex-1 min-h-[88px]'} relative z-10`}>
+            <div className=${`relative grid grid-cols-2 grid-rows-2 gap-2 flex-1 min-h-[88px] relative z-10`}>
                 ${[1, 2, 3, 4].map(num => {
                     const isPressed = userInput.includes(num);
                     const order = sequence.indexOf(num) + 1;
                     const isNext = order > 0 && order === userInput.length + 1;
                     const label = symbols[num - 1];
                     
-                    // Posicionamiento en rombo para el sectario
-                    const sectarianPos = [
-                        'top-0 left-1/2 -translate-x-1/2',    // 1: Norte
-                        'top-1/2 right-0 -translate-y-1/2',   // 2: Este
-                        'bottom-0 left-1/2 -translate-x-1/2', // 3: Sur
-                        'top-1/2 left-0 -translate-y-1/2'     // 4: Oeste
-                    ][num-1];
 
                     return html`
                         <button 
@@ -345,14 +338,14 @@ const OxygenModule = ({ isActive, storyPath }) => {
                                 ${isPressed ? buttonActiveColorClass : buttonIdleColorClass}
                                 ${isNext ? 'em-next' : ''} ${wrong === num ? 'em-wrong' : ''}
                                 ${isSectarian ? 
-                                    `absolute w-[40px] h-[40px] rotate-45 ${sectarianPos} border-purple-500/30 hover:bg-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]` : 
+                                    'relative h-full min-h-10 rounded-tl-2xl rounded-br-2xl border-purple-500/30 hover:bg-purple-500/20 active:scale-95' : 
                                     'relative h-full min-h-10 text-[12px] hover:border-red-600 hover:bg-red-900/20 active:scale-95'}
                             `}
                         >
-                            <span className=${`z-10 ${isSectarian ? '-rotate-45 tracking-[0.1em] font-black text-[7px]' : ''} ${isPressed ? 'animate-pulse' : ''}`}>
+                            <span className=${`z-10 ${isSectarian ? 'tracking-[0.15em] font-black text-[11px]' : ''} ${isPressed ? 'animate-pulse' : ''}`}>
                                 ${label}
                             </span>
-                            ${order > 0 && html`<b className=${`em-order ${isPressed ? 'ok' : ''} ${isSectarian ? '-rotate-45' : ''}`}>${isPressed ? '✓' : order}</b>`}
+                            ${order > 0 && html`<b className=${`em-order ${isPressed ? 'ok' : ''} ${num % 2 === 0 ? 'right' : ''}`}>${isPressed ? '✓' : order}</b>`}
                             ${isPressed && html`<div className=${`absolute inset-0 animate-flicker ${isSectarian ? 'bg-purple-500/20' : 'bg-red-500/10'}`}></div>`}
                         </button>
                     `;
@@ -361,7 +354,7 @@ const OxygenModule = ({ isActive, storyPath }) => {
                     <!-- Botón de Inicio Integrado en el Centro para el Sectario -->
                     <button 
                         onClick=${startMinigame}
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[36px] h-[36px] rounded-full border border-purple-500/40 bg-purple-950/40 hover:bg-purple-500/20 transition-all z-20 flex items-center justify-center group/btn"
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[36px] h-[36px] rounded-full border border-purple-500/40 bg-[#14081f] hover:bg-purple-500/20 transition-all z-20 flex items-center justify-center group/btn"
                     >
                         <div className="w-1.5 h-1.5 bg-purple-400 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.8)] animate-pulse group-hover/btn:scale-125 transition-transform"></div>
                         
