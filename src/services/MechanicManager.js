@@ -31,9 +31,7 @@ class BaseMechanic {
 class SyncMechanic extends BaseMechanic {
     randomizeTarget() {
         const { FREQ_MIN, FREQ_MAX, SCAN_KEYS } = CONFIG.RESONANCE;
-        // El objetivo nunca cae junto al mando: si no, la emergencia se resolvería sola
-        do { state.targetFrequency = FREQ_MIN + Math.random() * (FREQ_MAX - FREQ_MIN); }
-        while (Math.abs(state.targetFrequency - (state.localFrequency || 30)) < 8);
+        state.targetFrequency = FREQ_MIN + Math.random() * (FREQ_MAX - FREQ_MIN);
         state.targetPhase = Math.random() * Math.PI * 2;
 
         // Rotar requisito de escaneo entre los tipos disponibles configurados
@@ -207,6 +205,14 @@ export const MechanicManager = {
                 state.startBatch();
                 if (!state.emergencies) state.emergencies = {};
                 state.emergencies[type] = true;
+                if (type === 'resonance') {
+                    // Objetivo nuevo y lejos del mando: si no, la emergencia nace resuelta
+                    const { FREQ_MIN, FREQ_MAX } = CONFIG.RESONANCE;
+                    do { state.targetFrequency = FREQ_MIN + Math.random() * (FREQ_MAX - FREQ_MIN); }
+                    while (Math.abs(state.targetFrequency - (state.localFrequency || 30)) < 8);
+                    state.targetPhase = Math.random() * Math.PI * 2;
+                    this.updateResonance();
+                }
                 state.endBatch();
             });
             bus.on('EMERGENCY_END', ({ type }) => {

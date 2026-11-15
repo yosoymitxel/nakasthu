@@ -142,10 +142,10 @@ const ResonanceModule = ({ isActive, storyPath }) => {
 
     // Como una tarea de panel: al encajar las dos muescas se cierra sola
     useEffect(() => {
-        if (!forceActive || resonanceSync < 90) return;
+        if (!isActive || resonanceSync < 90) return;
         const id = setTimeout(synchronize, 700);
         return () => clearTimeout(id);
-    }, [forceActive, resonanceSync >= 90]);
+    }, [isActive, resonanceSync >= 90]);
 
     let phaseGap = Math.abs(targetPhase - localPhase) % (Math.PI * 2);
     if (phaseGap > Math.PI) phaseGap = Math.PI * 2 - phaseGap;

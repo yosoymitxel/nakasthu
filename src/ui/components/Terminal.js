@@ -173,7 +173,7 @@ export const Terminal = memo(() => {
     return html`
         <div 
             onClick=${handleContainerClick}
-            className=${`flex flex-col h-full cursor-text overflow-hidden relative ${isSectarian ? 'bg-[#0a0812] shadow-[inset_0_0_40px_rgba(168,85,247,0.1)]' : 'bg-[#0a0a0b]'}`}
+            className=${`flex flex-col flex-1 min-h-0 cursor-text overflow-hidden relative ${isSectarian ? 'bg-[#0a0812] shadow-[inset_0_0_40px_rgba(168,85,247,0.1)]' : 'bg-[#0a0a0b]'}`}
         >
             ${isSectarian && html`
                 <!-- Efecto Onírico: Bruma Terminal -->
@@ -216,7 +216,7 @@ export const Terminal = memo(() => {
                 ${[
                     { cmd: isSectarian ? '/vision' : '/status', label: isSectarian ? 'Visión' : 'Estado', hint: 'E · S' },
                     { cmd: isSectarian ? '/purificar' : '/repair', label: isSectarian ? 'Purificar' : 'Reparar', hint: `−${CONFIG.ENERGY.REPAIR_COST}⚡ +10⚓`, off: energy < CONFIG.ENERGY.REPAIR_COST },
-                    { cmd: isSectarian ? '/sacrificio' : '/overload', label: isSectarian ? 'Sacrificio' : 'Sobrecarga', hint: '+50⚓ · escáner off 15s', warn: true },
+                    { cmd: isSectarian ? '/sacrificio' : '/overload', label: isSectarian ? 'Sacrificio' : 'Sobrecarga', hint: '+50⚓ ✕15s', warn: true },
                     { cmd: '/help', label: 'Ayuda', hint: '?' }
                 ].map(c => html`
                     <button

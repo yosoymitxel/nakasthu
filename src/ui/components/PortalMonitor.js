@@ -49,7 +49,7 @@ export const PortalMonitor = () => {
     const status = getStatus();
 
     return html`
-        <div className="flex flex-col h-full w-full bg-black/40 p-3 font-mono relative overflow-hidden">
+        <div className="flex flex-col h-full w-full bg-black/40 p-2 font-mono relative overflow-hidden">
             ${isSectarian && html`
                 <!-- Efecto Onírico: Partículas del Vacío -->
                 <div key="dream-particles" className="absolute inset-0 pointer-events-none">
@@ -59,23 +59,13 @@ export const PortalMonitor = () => {
                 </div>
             `}
 
-            <div className="flex justify-between items-start mb-2 relative z-10">
-                <div>
-                    <span className="text-[9px] text-zinc-500 uppercase tracking-widest leading-none">
-                        ${isSectarian ? 'Presencia_del_Velo' : 'Flujo_Dimensional'}
-                    </span>
-                    <h4 className=${`text-sm font-black tracking-tighter ${status.color} ${isSectarian && combinedStability < 40 ? 'animate-pulse blur-[0.5px]' : ''}`}>
-                        ${isSectarian ? 'ESTABILIDAD_ESPIRITUAL' : 'INTEGRIDAD'}: ${combinedStability}%
-                    </h4>
-                </div>
-                <div className="text-right">
-                    <span className="text-[9px] text-zinc-500 uppercase tracking-widest leading-none">${isSectarian ? 'Voluntad' : 'Estado'}</span>
-                    <div className=${`text-[10px] font-bold ${status.color} ${isSectarian && combinedStability < 40 ? 'italic' : ''}`}>${status.label}</div>
-                </div>
+            <div className="flex justify-between items-baseline gap-2 relative z-10 whitespace-nowrap">
+                <h4 className=${`text-sm font-black tracking-tighter ${status.color}`}>${combinedStability}%</h4>
+                <div className=${`text-[10px] font-bold ${status.color}`}>${status.label}</div>
             </div>
 
             <!-- VISUALIZACIÓN DE ONDA / NÚCLEO -->
-            <div className=${`flex-1 relative flex items-center justify-center overflow-hidden border bg-black/60 my-2 ${isSectarian ? 'border-purple-900/30 rounded-full' : 'border-zinc-800/50'}`}>
+            <div className=${`flex-1 relative flex items-center justify-center overflow-hidden border bg-black/60 my-1 min-h-0 ${isSectarian ? 'border-purple-900/30' : 'border-zinc-800/50'}`}>
                 ${isSectarian && html`
                     <!-- Símbolo de Ritual de fondo -->
                     <div key="ritual-symbol" className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
@@ -135,35 +125,6 @@ export const PortalMonitor = () => {
                 `}
             </div>
 
-            <div className="space-y-2 relative z-10">
-                <div className="flex justify-between text-[8px] text-zinc-500">
-                    <span>${isSectarian ? 'RESONANCIA_DEL_VACÍO' : 'RESONANCIA_LOCAL'}</span>
-                    <span>${Math.floor(flux.stability)}%</span>
-                </div>
-                ${isSectarian ? html`
-                    <!-- Ritual Runes instead of a bar -->
-                    <div className="flex justify-between gap-1 h-1.5">
-                        ${[...Array(10)].map((_, i) => {
-                            const active = (flux.stability / 10) > i;
-                            return html`
-                                <div 
-                                    key=${i} 
-                                    className=${`flex-1 transition-all duration-700 ${active ? (combinedStability < 40 ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]' : 'bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.4)]') : 'bg-purple-950/30'}`}
-                                    style=${{ clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)' }}
-                                ></div>
-                            `;
-                        })}
-                    </div>
-                ` : html`
-                    <div className=${`w-full h-1 overflow-hidden bg-zinc-900`}>
-                        <div 
-                            className=${`h-full transition-all duration-500 ${combinedStability < 40 ? 'bg-red-500' : 'bg-purple-500'}`}
-                            style=${{ width: `${flux.stability}%` }}
-                        ></div>
-                    </div>
-                `}
-            </div>
-
             <!-- La única acción del monitor: gastar energía para cerrar la brecha -->
             <button
                 onClick=${(e) => { bus.emit('PORTAL_STABILIZE'); const b = e.currentTarget; b.classList.remove('em-done'); void b.offsetWidth; b.classList.add('em-done'); setTimeout(() => b.classList.remove('em-done'), 450); }}
@@ -174,11 +135,6 @@ export const PortalMonitor = () => {
                 <span className="portal-fix-hint">−${CONFIG.PORTAL.STABILIZE_COST}⚡ +${CONFIG.PORTAL.STABILIZE_AMOUNT}%</span>
             </button>
 
-            ${combinedStability < 30 && html`
-                <div className="mt-2 text-[8px] text-red-500 animate-pulse font-bold uppercase text-center border border-red-900/30 py-1 relative z-10">
-                    ${isSectarian ? 'PELIGRO: EL VELO SE DESGARRA' : 'PELIGRO: BRECHA DIMENSIONAL DETECTADA'}
-                </div>
-            `}
         </div>
     `;
 };
