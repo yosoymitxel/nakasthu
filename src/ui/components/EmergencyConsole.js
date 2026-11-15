@@ -322,7 +322,7 @@ const OxygenModule = ({ isActive, storyPath }) => {
                     `)}
             </div>
 
-            <div className=${`relative ${isSectarian ? 'h-[140px] w-[140px] mx-auto my-1' : 'grid grid-cols-2 gap-2'} relative z-10`}>
+            <div className=${`relative ${isSectarian ? 'flex-1 min-h-[124px] w-full max-w-[240px] mx-auto my-2' : 'grid grid-cols-2 grid-rows-2 gap-2 flex-1 min-h-[88px]'} relative z-10`}>
                 ${[1, 2, 3, 4].map(num => {
                     const isPressed = userInput.includes(num);
                     const order = sequence.indexOf(num) + 1;
@@ -346,7 +346,7 @@ const OxygenModule = ({ isActive, storyPath }) => {
                                 ${isNext ? 'em-next' : ''} ${wrong === num ? 'em-wrong' : ''}
                                 ${isSectarian ? 
                                     `absolute w-[40px] h-[40px] rotate-45 ${sectarianPos} border-purple-500/30 hover:bg-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]` : 
-                                    'relative h-10 hover:border-red-600 hover:bg-red-900/20 active:scale-95'}
+                                    'relative h-full min-h-10 text-[12px] hover:border-red-600 hover:bg-red-900/20 active:scale-95'}
                             `}
                         >
                             <span className=${`z-10 ${isSectarian ? '-rotate-45 tracking-[0.1em] font-black text-[7px]' : ''} ${isPressed ? 'animate-pulse' : ''}`}>
