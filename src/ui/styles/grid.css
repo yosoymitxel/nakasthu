@@ -560,3 +560,10 @@ button:not(:disabled):active { scale: 0.97; }
 .hold-hint { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border: 2px solid; border-radius: 50%; pointer-events: none; animation: hold-ping 1.4s ease-out infinite; }
 @keyframes hold-ping { 0% { scale: 0.5; opacity: 1; } 100% { scale: 1.8; opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .em-done, .hold-hint { animation: none; } }
+
+.portal-wave path { vector-effect: non-scaling-stroke; }
+.portal-wave { animation: portal-wobble 2.4s ease-in-out infinite alternate; transform-origin: center; }
+.portal-wave.fast { animation-duration: 0.5s; }
+@keyframes portal-wobble { from { transform: scaleY(0.75); } to { transform: scaleY(-0.75); } }
+.unrest-tip { animation: pulse-slow 0.8s ease-in-out infinite; box-shadow: 0 0 10px currentColor; }
+@media (prefers-reduced-motion: reduce) { .portal-wave, .unrest-tip { animation: none; } }

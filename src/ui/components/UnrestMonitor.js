@@ -88,7 +88,7 @@ export const UnrestMonitor = () => {
 
             <!-- MEDIDOR CIRCULAR O DE BARRAS -->
             <div className="flex-1 flex items-center justify-center relative py-2 z-10">
-                <div className=${isSectarian ? "flex flex-wrap gap-1.5 justify-center max-w-[120px]" : "grid grid-cols-10 gap-1 w-full"}>
+                <div className=${isSectarian ? "flex flex-wrap gap-1.5 justify-center max-w-[120px]" : "grid grid-cols-10 gap-1 w-full h-full"}>
                     ${Array.from({ length: 10 }).map((_, i) => {
                         const level = Math.floor(unrestLevel || 0);
                         const active = i < Math.floor(level / 10);
@@ -107,7 +107,7 @@ export const UnrestMonitor = () => {
                         return html`
                             <div 
                                 key=${i}
-                                className=${`h-8 border border-zinc-800 transition-all duration-300 ${active ? getBgColor() + ' opacity-80' : 'bg-zinc-900/50'}`}
+                                className=${`h-full min-h-8 border border-zinc-800 transition-all duration-300 ${active ? getBgColor() + ' opacity-80' : 'bg-zinc-900/50'} ${active && i === Math.floor(level / 10) - 1 && status !== 'CALM' ? 'unrest-tip' : ''}`}
                             ></div>
                         `;
                     })}

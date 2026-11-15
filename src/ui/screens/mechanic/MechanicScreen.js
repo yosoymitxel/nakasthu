@@ -38,7 +38,7 @@ export const MechanicScreen = memo(({ config }) => {
                         <h1 className="text-3xl font-bold text-zinc-100 uppercase tracking-widest">${config.name}</h1>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-8 w-full sm:h-[400px]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-8 w-full" style=${{ minHeight: 'min(46vh, 420px)' }}>
                         <!-- Lado Izquierdo: ORDEN (Leina) -->
                         <div 
                             className=${`relative border border-cyan-900/40 bg-cyan-950/5 p-4 pt-8 sm:p-8 flex flex-col items-center justify-center gap-4 sm:gap-8 transition-all hover:bg-cyan-950/10 ${judgmentChoice === 'orden' ? 'ring-2 ring-cyan-500' : ''}`}

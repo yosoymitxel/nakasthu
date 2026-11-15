@@ -86,7 +86,7 @@ export const PortalMonitor = () => {
                         </svg>
                     </div>
                 `}
-                <svg viewBox="0 0 200 60" className="w-full h-full relative z-10">
+                <svg viewBox="0 0 200 60" preserveAspectRatio="none" className=${`w-full h-full relative z-10 portal-wave ${combinedStability < 40 ? 'fast' : ''}`}>
                     ${isSectarian ? html`
                         <${React.Fragment} key="sectarian-wave">
                             <!-- Onda Sectaria: Más orgánica/caótica -->
@@ -166,7 +166,7 @@ export const PortalMonitor = () => {
 
             <!-- La única acción del monitor: gastar energía para cerrar la brecha -->
             <button
-                onClick=${() => bus.emit('PORTAL_STABILIZE')}
+                onClick=${(e) => { bus.emit('PORTAL_STABILIZE'); const b = e.currentTarget; b.classList.remove('em-done'); void b.offsetWidth; b.classList.add('em-done'); setTimeout(() => b.classList.remove('em-done'), 450); }}
                 disabled=${flux.stability >= 100 || energy < CONFIG.PORTAL.STABILIZE_COST}
                 className=${`portal-fix relative z-10 ${flux.stability < 40 ? 'urgent' : ''}`}
             >

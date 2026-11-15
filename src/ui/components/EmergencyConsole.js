@@ -237,7 +237,7 @@ const OxygenModule = ({ isActive, storyPath }) => {
     const [userInput, setUserInput] = useState([]);
     const [isGenerating, setIsGenerating] = useState(false);
     const [wrong, setWrong] = useState(0);
-    useEffect(() => { if (forceActive && sequence.length === 0 && !engineState.o2Stabilized) startMinigame(); }, [forceActive]);
+    useEffect(() => { if (isActive && sequence.length === 0 && !engineState.o2Stabilized) startMinigame(); }, [isActive]);
 
     const startMinigame = () => {
         const newSeq = [1, 2, 3, 4].sort(() => Math.random() - 0.5);
@@ -315,8 +315,16 @@ const OxygenModule = ({ isActive, storyPath }) => {
                 </div>
             </div>
             
+            <!-- Orden a seguir: se enciende cada paso al acertarlo -->
+            <div className="em-seq relative z-10" aria-label="Orden de la secuencia">
+                ${sequence.length === 0
+                    ? html`<span className="em-seq-hint">${config.action} ▸</span>`
+                    : sequence.map((n, i) => html`
+                        <span key=${i} className=${`em-seq-step ${i < userInput.length ? 'ok' : i === userInput.length ? 'next' : ''}`}>${i < userInput.length ? '✓' : i + 1}</span>
+                    `)}
+            </div>
 
-            <div className=${`relative ${isSectarian ? 'h-[140px] w-[140px] mx-auto my-1' : 'grid grid-cols-2 grid-rows-2 gap-2 flex-1 min-h-0'} relative z-10`}>
+            <div className=${`relative ${isSectarian ? 'h-[140px] w-[140px] mx-auto my-1' : 'grid grid-cols-2 gap-2'} relative z-10`}>
                 ${[1, 2, 3, 4].map(num => {
                     const isPressed = userInput.includes(num);
                     const order = sequence.indexOf(num) + 1;
@@ -340,8 +348,7 @@ const OxygenModule = ({ isActive, storyPath }) => {
                                 ${isNext ? 'em-next' : ''} ${wrong === num ? 'em-wrong' : ''}
                                 ${isSectarian ? 
                                     `absolute w-[40px] h-[40px] rotate-45 ${sectarianPos} border-purple-500/30 hover:bg-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]` : 
-                                    'relative h-full min-h-[40px] text-[13px] font-black hover:border-red-600 hover:bg-red-900/20 active:scale-95'}
-                                ${engineState.o2Stabilized ? 'em-done' : ''}
+                                    'relative h-10 hover:border-red-600 hover:bg-red-900/20 active:scale-95'}
                             `}
                         >
                             <span className=${`z-10 ${isSectarian ? '-rotate-45 tracking-[0.1em] font-black text-[7px]' : ''} ${isPressed ? 'animate-pulse' : ''}`}>
@@ -364,7 +371,19 @@ const OxygenModule = ({ isActive, storyPath }) => {
                 `}
             </div>
 
+            ${!isSectarian && html`
+                <button 
+                    onClick=${startMinigame}
+                    className=${`w-full mt-2 py-1.5 border text-[9px] font-bold tracking-widest transition-all uppercase shadow-[0_0_10px_rgba(153,27,27,0.2)] ${mainButtonColorClass}`}
+                >
+                    ${config.action}
+                </button>
+            `}
 
+            <div className=${`text-[9px] font-mono flex justify-between mt-auto pt-2 ${primary === 'purple' ? 'text-purple-900/60' : 'text-red-900/60'}`}>
+                <span>${isSectarian ? 'ALIENTO_VITAL' : 'OXYGEN_LEVEL'}</span>
+                <span className="opacity-50">${config.module}</span>
+            </div>
         </div>
     `;
 };
