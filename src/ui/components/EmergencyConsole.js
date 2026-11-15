@@ -133,24 +133,25 @@ const ResonanceModule = ({ isActive, storyPath }) => {
     };
 
     const synchronize = () => {
-        if (resonanceSync >= 90) {
+        if (freqHit && phaseHit) {
             bus.emit('TERMINAL_PRINT', { text: config.success, type: 'SUCCESS' });
             engineState.stability = Math.min(100, engineState.stability + 10);
             bus.emit('EMERGENCY_END', { type: 'resonance' });
         }
     };
 
-    // Como una tarea de panel: al encajar las dos muescas se cierra sola
-    useEffect(() => {
-        if (!isActive || resonanceSync < 90) return;
-        const id = setTimeout(synchronize, 700);
-        return () => clearTimeout(id);
-    }, [isActive, resonanceSync >= 90]);
-
     let phaseGap = Math.abs(targetPhase - localPhase) % (Math.PI * 2);
     if (phaseGap > Math.PI) phaseGap = Math.PI * 2 - phaseGap;
     const freqHit = Math.abs(targetFreq - localFreq) < 2;
     const phaseHit = phaseGap < 0.4;
+
+    // Como una tarea de panel: al encajar las dos muescas se cierra sola
+    useEffect(() => {
+        if (!isActive || !freqHit || !phaseHit) return;
+        const id = setTimeout(synchronize, 700);
+        return () => clearTimeout(id);
+    }, [isActive, freqHit && phaseHit]);
+
     const notch = (value, min, max, hit) => html`<i className=${`em-notch ${hit ? 'hit' : ''}`} style=${{ left: `${((value - min) / (max - min)) * 100}%` }}></i>`;
 
     const primaryColorClass = primary === 'purple' ? 'border-purple-500/20 bg-purple-950/5 shadow-[inset_0_0_15px_rgba(168,85,247,0.05)]' : 'border-cyan-500/20 bg-cyan-950/5 shadow-[inset_0_0_15px_rgba(6,182,212,0.05)]';
@@ -235,7 +236,6 @@ const OxygenModule = ({ isActive, storyPath }) => {
 
     const [sequence, setSequence] = useState([]);
     const [userInput, setUserInput] = useState([]);
-    const [isGenerating, setIsGenerating] = useState(false);
     const [wrong, setWrong] = useState(0);
     useEffect(() => { if (isActive && sequence.length === 0 && !engineState.o2Stabilized) startMinigame(); }, [isActive]);
 
@@ -243,11 +243,8 @@ const OxygenModule = ({ isActive, storyPath }) => {
         const newSeq = [1, 2, 3, 4].sort(() => Math.random() - 0.5);
         setSequence(newSeq);
         setUserInput([]);
-        setIsGenerating(true);
         
         bus.emit('TERMINAL_PRINT', { text: config.alert, type: 'SYSTEM' });
-
-        setTimeout(() => setIsGenerating(false), 2000);
     };
 
     const handlePress = (num) => {
