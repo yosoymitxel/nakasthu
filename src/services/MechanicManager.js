@@ -31,7 +31,9 @@ class BaseMechanic {
 class SyncMechanic extends BaseMechanic {
     randomizeTarget() {
         const { FREQ_MIN, FREQ_MAX, SCAN_KEYS } = CONFIG.RESONANCE;
-        state.targetFrequency = FREQ_MIN + Math.random() * (FREQ_MAX - FREQ_MIN);
+        // El objetivo nunca cae junto al mando: si no, la emergencia se resolvería sola
+        do { state.targetFrequency = FREQ_MIN + Math.random() * (FREQ_MAX - FREQ_MIN); }
+        while (Math.abs(state.targetFrequency - (state.localFrequency || 30)) < 8);
         state.targetPhase = Math.random() * Math.PI * 2;
 
         // Rotar requisito de escaneo entre los tipos disponibles configurados

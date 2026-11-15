@@ -554,3 +554,9 @@ button:not(:disabled):active { scale: 0.97; }
 .flow-step.now .flow-num { animation: flow-ping 1.6s var(--ease-out) infinite; }
 @keyframes flow-ping { 0% { box-shadow: 0 0 0 0 var(--flow-color, #f59e0b); } 70%, 100% { box-shadow: 0 0 0 6px transparent; } }
 @media (prefers-reduced-motion: reduce) { .mod-boot, .mod-boot .w-full.h-full.relative.z-0, .flow-step.now .flow-num { animation: none; } .scan-beam::before, .scan-beam::after { transition: none; } }
+
+.em-done { border-color: #34d399 !important; background: rgba(52, 211, 153, 0.3) !important; color: #d1fae5 !important; box-shadow: 0 0 16px rgba(52, 211, 153, 0.6); animation: em-pop 0.4s var(--ease-out, ease-out); }
+@keyframes em-pop { 0% { scale: 0.92; } 60% { scale: 1.06; } 100% { scale: 1; } }
+.hold-hint { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border: 2px solid; border-radius: 50%; pointer-events: none; animation: hold-ping 1.4s ease-out infinite; }
+@keyframes hold-ping { 0% { scale: 0.5; opacity: 1; } 100% { scale: 1.8; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .em-done, .hold-hint { animation: none; } }

@@ -164,7 +164,7 @@ const ResonanceModule = ({ isActive, storyPath }) => {
                 ref=${canvasRef} 
                 width="400" 
                 height="120" 
-                className="w-full flex-1 min-h-[40px] bg-black/40 border border-zinc-900/50 rounded-sm mb-1"
+                className=${`w-full flex-1 min-h-[40px] bg-black/40 border border-zinc-900/50 rounded-sm mb-1 ${resonanceSync >= 90 ? 'em-done' : ''}`}
             />
             
             <div className="flex flex-col gap-2 relative z-10 flex-none">
@@ -237,7 +237,7 @@ const OxygenModule = ({ isActive, storyPath }) => {
     const [userInput, setUserInput] = useState([]);
     const [isGenerating, setIsGenerating] = useState(false);
     const [wrong, setWrong] = useState(0);
-    useEffect(() => { if (isActive && sequence.length === 0 && !engineState.o2Stabilized) startMinigame(); }, [isActive]);
+    useEffect(() => { if (forceActive && sequence.length === 0 && !engineState.o2Stabilized) startMinigame(); }, [forceActive]);
 
     const startMinigame = () => {
         const newSeq = [1, 2, 3, 4].sort(() => Math.random() - 0.5);
@@ -315,16 +315,8 @@ const OxygenModule = ({ isActive, storyPath }) => {
                 </div>
             </div>
             
-            <!-- Orden a seguir: se enciende cada paso al acertarlo -->
-            <div className="em-seq relative z-10" aria-label="Orden de la secuencia">
-                ${sequence.length === 0
-                    ? html`<span className="em-seq-hint">${config.action} ▸</span>`
-                    : sequence.map((n, i) => html`
-                        <span key=${i} className=${`em-seq-step ${i < userInput.length ? 'ok' : i === userInput.length ? 'next' : ''}`}>${i < userInput.length ? '✓' : i + 1}</span>
-                    `)}
-            </div>
 
-            <div className=${`relative ${isSectarian ? 'h-[140px] w-[140px] mx-auto my-1' : 'grid grid-cols-2 gap-2'} relative z-10`}>
+            <div className=${`relative ${isSectarian ? 'h-[140px] w-[140px] mx-auto my-1' : 'grid grid-cols-2 grid-rows-2 gap-2 flex-1 min-h-0'} relative z-10`}>
                 ${[1, 2, 3, 4].map(num => {
                     const isPressed = userInput.includes(num);
                     const order = sequence.indexOf(num) + 1;
@@ -348,7 +340,8 @@ const OxygenModule = ({ isActive, storyPath }) => {
                                 ${isNext ? 'em-next' : ''} ${wrong === num ? 'em-wrong' : ''}
                                 ${isSectarian ? 
                                     `absolute w-[40px] h-[40px] rotate-45 ${sectarianPos} border-purple-500/30 hover:bg-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]` : 
-                                    'relative h-10 hover:border-red-600 hover:bg-red-900/20 active:scale-95'}
+                                    'relative h-full min-h-[40px] text-[13px] font-black hover:border-red-600 hover:bg-red-900/20 active:scale-95'}
+                                ${engineState.o2Stabilized ? 'em-done' : ''}
                             `}
                         >
                             <span className=${`z-10 ${isSectarian ? '-rotate-45 tracking-[0.1em] font-black text-[7px]' : ''} ${isPressed ? 'animate-pulse' : ''}`}>
@@ -371,19 +364,7 @@ const OxygenModule = ({ isActive, storyPath }) => {
                 `}
             </div>
 
-            ${!isSectarian && html`
-                <button 
-                    onClick=${startMinigame}
-                    className=${`w-full mt-2 py-1.5 border text-[9px] font-bold tracking-widest transition-all uppercase shadow-[0_0_10px_rgba(153,27,27,0.2)] ${mainButtonColorClass}`}
-                >
-                    ${config.action}
-                </button>
-            `}
 
-            <div className=${`text-[9px] font-mono flex justify-between mt-auto pt-2 ${primary === 'purple' ? 'text-purple-900/60' : 'text-red-900/60'}`}>
-                <span>${isSectarian ? 'ALIENTO_VITAL' : 'OXYGEN_LEVEL'}</span>
-                <span className="opacity-50">${config.module}</span>
-            </div>
         </div>
     `;
 };
@@ -406,6 +387,7 @@ const PowerGridModule = ({ isActive, storyPath }) => {
     const [path, setPath] = useState([]);
     const [burned, setBurned] = useState(new Set());
     const [isDragging, setIsDragging] = useState(false);
+    const [done, setDone] = useState(false);
 
     const initGrid = () => {
         const newBurned = new Set();
@@ -461,7 +443,8 @@ const PowerGridModule = ({ isActive, storyPath }) => {
                     bus.emit('TERMINAL_PRINT', { text: config.success, type: 'SUCCESS' });
                     // No usamos global state.energy directamente aquí, emitimos el evento o usamos bus
                     bus.emit('EMERGENCY_END', { type: 'energy' });
-                    setTimeout(() => initGrid(), 1000);
+                    setDone(true);
+                    setTimeout(() => { setDone(false); initGrid(); }, 1000);
                     setIsDragging(false);
                 }
             }
@@ -549,7 +532,7 @@ const PowerGridModule = ({ isActive, storyPath }) => {
                             className=${`
                                 w-full h-full min-h-0 overflow-hidden cursor-crosshair transition-all duration-200 border flex items-center justify-center font-bold text-[12px] leading-none relative
                                 ${isBurned ? 'em-burned cursor-not-allowed' : 
-                                  isActive ? cellActiveColorClass : 
+                                  isActive ? cellActiveColorClass + (done ? ' em-done' : '') : 
                                   isStart ? 'bg-zinc-900 border-zinc-700 text-zinc-500 hover:bg-zinc-800' :
                                   isEnd ? 'bg-zinc-900 border-zinc-700 text-zinc-500 hover:bg-zinc-800' :
                                   'bg-zinc-950 border-zinc-900 hover:bg-zinc-900'}
@@ -570,10 +553,6 @@ const PowerGridModule = ({ isActive, storyPath }) => {
                 ${forceActive && path.length === 1 && html`<i className="em-drag-hint" style=${{ top: `${(Math.floor(path[0] / 12) + 0.5) / 6 * 100}%` }}></i>`}
             </div>
             
-            <div className=${`text-[9px] font-mono flex justify-between px-1 mt-auto pt-1 ${footerTextColorClass}`}>
-                <span>${isSectarian ? 'CONEXIÓN_SANGUÍNEA' : 'ENERGY_NODE_SYSTEM'}</span>
-                <span className="opacity-50">${path.length} / 12 NODES</span>
-            </div>
         </div>
     `;
 };

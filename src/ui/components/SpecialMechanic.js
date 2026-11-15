@@ -109,6 +109,8 @@ export const SpecialMechanic = memo(({ onComplete, syncKey = ' ' }) => {
 
     // Estilo dinámico del monolito
     const monolithStyle = {
+        height: 'min(52vh, 460px)',
+        aspectRatio: '1 / 2',
         transform: `
             scale(${1 + glitchIntensity * 0.05}) 
             translateX(${isHolding ? (Math.random() - 0.5) * 4 * glitchIntensity : 0}px)
@@ -216,7 +218,7 @@ export const SpecialMechanic = memo(({ onComplete, syncKey = ' ' }) => {
                 `}
                 
                 <div 
-                    className="monolith relative w-32 h-64 cursor-pointer transition-transform z-10"
+                    className="monolith relative cursor-pointer transition-transform z-10 select-none"
                     style=${monolithStyle}
                     onMouseDown=${() => !isComplete && setIsHolding(true)}
                     onMouseUp=${() => setIsHolding(false)}
@@ -226,6 +228,9 @@ export const SpecialMechanic = memo(({ onComplete, syncKey = ' ' }) => {
                 >
                 <!-- Superficie del monolito -->
                 <div className=${`absolute inset-0 bg-gradient-to-b from-zinc-900 via-black to-zinc-950 border ${isSectarian ? 'border-purple-500/40 rounded-sm overflow-hidden shadow-[0_0_30px_rgba(147,51,234,0.3)]' : 'border-cyan-900/30'}`}>
+                    <!-- El progreso llena el propio Monolito -->
+                    <div className="absolute inset-x-0 bottom-0" style=${{ height: `${progress}%`, background: isSectarian ? 'linear-gradient(0deg, rgba(147,51,234,0.55), rgba(99,102,241,0.15))' : 'linear-gradient(0deg, rgba(6,182,212,0.55), rgba(6,182,212,0.1))', borderTop: `2px solid ${isSectarian ? '#c084fc' : '#67e8f9'}` }}></div>
+                    ${!isHolding && !isComplete && html`<i className="hold-hint" style=${{ borderColor: isSectarian ? '#c084fc' : '#67e8f9' }}></i>`}
                     <!-- Símbolos / Runas -->
                     <div 
                         className="absolute inset-0 opacity-60"
@@ -291,8 +296,8 @@ export const SpecialMechanic = memo(({ onComplete, syncKey = ' ' }) => {
             </div>
 
             <!-- Barra de Progreso -->
-            <div className="absolute bottom-24 left-1/2 -translate-x-1/2 w-80">
-                <div className=${`relative h-2 bg-zinc-900 border overflow-hidden ${isSectarian ? 'border-purple-900/50' : 'border-zinc-800'}`}>
+            <div className="absolute bottom-24 left-1/2 -translate-x-1/2" style=${{ width: 'min(86vw, 560px)' }}>
+                <div className=${`relative h-3 bg-zinc-900 border overflow-hidden ${isSectarian ? 'border-purple-900/50' : 'border-zinc-800'}`}>
                     <div 
                         className=${`absolute inset-y-0 left-0 bg-gradient-to-r ${isSectarian ? 'from-purple-800 to-indigo-500' : 'from-cyan-600 to-cyan-400'}`}
                         style=${progressBarStyle}
