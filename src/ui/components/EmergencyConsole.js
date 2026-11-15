@@ -240,7 +240,8 @@ const OxygenModule = ({ isActive, storyPath }) => {
     useEffect(() => { if (isActive && sequence.length === 0 && !engineState.o2Stabilized) startMinigame(); }, [isActive]);
 
     const startMinigame = () => {
-        const newSeq = [1, 2, 3, 4].sort(() => Math.random() - 0.5);
+        const newSeq = [1, 2, 3, 4];
+        for (let i = 3; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [newSeq[i], newSeq[j]] = [newSeq[j], newSeq[i]]; }
         setSequence(newSeq);
         setUserInput([]);
         

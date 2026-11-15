@@ -34,7 +34,7 @@ export const MechanicScreen = memo(({ config }) => {
                 <div className="w-full max-w-6xl flex flex-col items-center gap-4 sm:gap-12 my-auto">
                     
                     <div className="text-center space-y-4">
-                        <h2 className="text-zinc-600 text-[10px] tracking-[1em] uppercase">PASO 11 // EL JUICIO FINAL</h2>
+                        <h2 className="text-zinc-600 text-[10px] tracking-[0.4em] sm:tracking-[1em] uppercase">PASO 11 // EL JUICIO FINAL</h2>
                         <h1 className="text-3xl font-bold text-zinc-100 uppercase tracking-widest">${config.name}</h1>
                     </div>
 
@@ -44,7 +44,7 @@ export const MechanicScreen = memo(({ config }) => {
                             className=${`relative border border-cyan-900/40 bg-cyan-950/5 p-4 pt-8 sm:p-8 flex flex-col items-center justify-center gap-4 sm:gap-8 transition-all hover:bg-cyan-950/10 ${judgmentChoice === 'orden' ? 'ring-2 ring-cyan-500' : ''}`}
                             onClick=${() => setJudgmentChoice('orden')}
                         >
-                            <div className="absolute top-4 left-4 text-[10px] text-cyan-600 font-bold tracking-widest uppercase">FACTION: ORDER</div>
+                            <div className="absolute top-4 left-4 text-[10px] text-cyan-600 font-bold tracking-widest uppercase">FACCIÓN: ORDEN</div>
                             <div className="text-cyan-500 text-center space-y-4">
                                 <h3 className="text-2xl font-black tracking-widest">${leftOption.name}</h3>
                                 <p className="text-xs text-zinc-500 max-w-xs leading-relaxed font-mono">
@@ -65,7 +65,7 @@ export const MechanicScreen = memo(({ config }) => {
                             className=${`relative border border-purple-900/40 bg-purple-950/5 p-4 pt-8 sm:p-8 flex flex-col items-center justify-center gap-4 sm:gap-8 transition-all hover:bg-purple-950/10 ${judgmentChoice === 'caos' ? 'ring-2 ring-purple-500' : ''}`}
                             onClick=${() => setJudgmentChoice('caos')}
                         >
-                            <div className="absolute top-4 right-4 text-[10px] text-purple-600 font-bold tracking-widest uppercase text-right">FACTION: CHAOS</div>
+                            <div className="absolute top-4 right-4 text-[10px] text-purple-600 font-bold tracking-widest uppercase text-right">FACCIÓN: CAOS</div>
                             <div className="text-purple-500 text-center space-y-4">
                                 <h3 className="text-2xl font-black tracking-widest">${rightOption.name}</h3>
                                 <p className="text-xs text-zinc-500 max-w-xs leading-relaxed font-mono">
