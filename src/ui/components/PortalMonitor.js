@@ -11,6 +11,7 @@ const { useState, useEffect } = React;
 
 export const PortalMonitor = () => {
     const [flux, setFlux] = useState({ stability: 100 });
+    const [fixes, setFixes] = useState(0); // cambiar la key remonta el botón y repite el destello
     const stability = useGameState('stability'); // Global stability
     
     const storyPath = useGameState('storyPath');
@@ -127,9 +128,10 @@ export const PortalMonitor = () => {
 
             <!-- La única acción del monitor: gastar energía para cerrar la brecha -->
             <button
-                onClick=${(e) => { bus.emit('PORTAL_STABILIZE'); const b = e.currentTarget; b.classList.remove('em-done'); void b.offsetWidth; b.classList.add('em-done'); setTimeout(() => b.classList.remove('em-done'), 450); }}
+                key=${fixes}
+                onClick=${() => { bus.emit('PORTAL_STABILIZE'); setFixes(n => n + 1); }}
                 disabled=${flux.stability >= 100 || energy < CONFIG.PORTAL.STABILIZE_COST}
-                className=${`portal-fix relative z-10 ${flux.stability < 40 ? 'urgent' : ''}`}
+                className=${`portal-fix relative z-10 ${flux.stability < 40 ? 'urgent' : ''} ${fixes ? 'em-done' : ''}`}
             >
                 <span>${isSectarian ? 'Sellar el velo' : 'Estabilizar'}</span>
                 <span className="portal-fix-hint">−${CONFIG.PORTAL.STABILIZE_COST}⚡ +${CONFIG.PORTAL.STABILIZE_AMOUNT}%</span>
