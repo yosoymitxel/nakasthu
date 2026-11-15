@@ -48,6 +48,9 @@ const ResonanceModule = ({ isActive, storyPath }) => {
             const width = canvas.width;
             const height = canvas.height;
             const midY = height / 2;
+            // De medio ciclo a seis a lo ancho, y la onda ocupa casi todo el alto
+            const k = (f) => (Math.PI * 2 * (0.5 + (f / 60) * 5.5)) / width;
+            const amp = midY * 0.8;
 
             ctx.clearRect(0, 0, width, height);
             if (!isPaused) time += 0.05;
@@ -79,8 +82,8 @@ const ResonanceModule = ({ isActive, storyPath }) => {
                 ctx.shadowBlur = 10;
                 ctx.shadowColor = ctx.strokeStyle;
                 for (let x = 0; x < width; x++) {
-                    const targetY = midY + Math.sin(x * (targetFreq * 0.02) + targetPhase + time) * 15;
-                    const localY = midY + Math.sin(x * (localFreq * 0.02) + localPhase + time) * 15;
+                    const targetY = midY + Math.sin(x * k(targetFreq) + targetPhase + time) * amp;
+                    const localY = midY + Math.sin(x * k(localFreq) + localPhase + time) * amp;
                     const y = localY + (targetY - localY) * (resonanceSync / 100);
                     if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
@@ -100,7 +103,7 @@ const ResonanceModule = ({ isActive, storyPath }) => {
                 ctx.lineWidth = 3;
                 ctx.setLineDash([6, 5]);
                 for (let x = 0; x < width; x++) {
-                    const y = midY + Math.sin(x * (targetFreq * 0.02) + targetPhase + time) * 15;
+                    const y = midY + Math.sin(x * k(targetFreq) + targetPhase + time) * amp;
                     if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
@@ -111,7 +114,7 @@ const ResonanceModule = ({ isActive, storyPath }) => {
                 ctx.strokeStyle = resonanceSync > 85 ? '#10b981' : '#06b6d4';
                 ctx.lineWidth = 2;
                 for (let x = 0; x < width; x++) {
-                    const y = midY + Math.sin(x * (localFreq * 0.02) + localPhase + time) * 15;
+                    const y = midY + Math.sin(x * k(localFreq) + localPhase + time) * amp;
                     if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
@@ -139,10 +142,10 @@ const ResonanceModule = ({ isActive, storyPath }) => {
 
     // Como una tarea de panel: al encajar las dos muescas se cierra sola
     useEffect(() => {
-        if (!isActive || resonanceSync < 90) return;
+        if (!forceActive || resonanceSync < 90) return;
         const id = setTimeout(synchronize, 700);
         return () => clearTimeout(id);
-    }, [isActive, resonanceSync >= 90]);
+    }, [forceActive, resonanceSync >= 90]);
 
     let phaseGap = Math.abs(targetPhase - localPhase) % (Math.PI * 2);
     if (phaseGap > Math.PI) phaseGap = Math.PI * 2 - phaseGap;
@@ -210,16 +213,6 @@ const ResonanceModule = ({ isActive, storyPath }) => {
                     </div>
                 </div>
 
-                <button 
-                    onClick=${synchronize}
-                    disabled=${resonanceSync < 90}
-                    className=${`w-full py-2 border-2 text-[11px] font-black tracking-[0.2em] transition-all uppercase
-                        ${resonanceSync >= 90 
-                            ? 'border-emerald-500 bg-emerald-900/20 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:bg-emerald-500 hover:text-white' 
-                            : 'border-zinc-800 bg-zinc-900/50 text-zinc-700 cursor-not-allowed'}`}
-                >
-                    ${config.action}
-                </button>
             </div>
         </div>
     `;
