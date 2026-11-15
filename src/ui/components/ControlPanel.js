@@ -70,7 +70,7 @@ export const ControlPanel = () => {
             <div className="absolute top-2 right-3 flex flex-col items-end opacity-60">
                 <span className="text-[8px] font-bold text-zinc-500 tracking-tighter">${isSectarian ? 'ALMAS_RECLAMADAS' : labels.quotaLabel}</span>
                 <span className=${`text-[12px] font-black ${processedCount >= quota ? (isSectarian ? 'text-purple-400' : 'text-emerald-500') : 'text-zinc-400'}`}>
-                    ${processedCount}/${quota}
+                    ${processedCount}/${Number.isFinite(quota) ? quota : "∞"}
                 </span>
             </div>
 

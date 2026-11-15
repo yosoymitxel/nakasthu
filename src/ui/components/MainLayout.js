@@ -158,11 +158,11 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
         <div
             style=${highlightStyle}
             className=${`
-                mod-container mod-${area} ${focusColor ? 'mod-focus' : ''} ${booting ? 'mod-boot' : ''}
+                mod-container mod-${area} ${locked && !isShielded ? 'mod-locked' : ''} ${focusColor ? 'mod-focus' : ''} ${booting ? 'mod-boot' : ''}
 
                 border transition-all duration-[1200ms] ease-in-out
                 ${isSectarian ? 'border-indigo-900/20' : 'border-zinc-800/50'}
-                ${(locked || isShielded) ? 'opacity-20 pointer-events-none grayscale' : 'opacity-100'}
+                ${(locked || isShielded) ? 'opacity-50 pointer-events-none grayscale' : 'opacity-100'}
                 ${highlighted ? `border-${themeColor}-500/60 ring-1 ring-${themeColor}-500/30 ${isSectarian ? 'bg-indigo-950/10' : 'bg-cyan-950/5'} animate-pulse-slow` : 'bg-transparent'}
                 ${isShielded ? 'scale-[0.98]' : 'scale-100'}
                 ${className}
@@ -180,7 +180,7 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
             `}
 
             <!-- Contenido del Bloque (Componentes Nivel 1) -->
-            <div className="w-full h-full relative z-0">
+            <div className=${`w-full h-full relative z-0 ${locked ? 'invisible' : ''}`}>
                 ${children}
             </div>
 
@@ -190,7 +190,7 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
             <!-- Indicador de Bloqueo -->
             ${locked && !isShielded && html`
                 <div className="absolute inset-0 flex items-center justify-center z-40 bg-black/40 backdrop-blur-[1px]">
-                    <div className=${`transform -rotate-12 border bg-black/80 px-4 py-1 ${isSectarian ? 'border-purple-900/50 shadow-[0_0_10px_rgba(147,51,234,0.1)]' : 'border-red-900/50'}`}>
+                    <div className=${`border bg-black/80 px-4 py-1 ${isSectarian ? 'border-purple-900/50 shadow-[0_0_10px_rgba(147,51,234,0.1)]' : 'border-red-900/50'}`}>
                         <span className=${`text-[10px] font-black tracking-[0.2em] uppercase ${isSectarian ? 'text-purple-400' : 'text-red-500'}`}>
                             ${labels.layout.lockedLabel}
                         </span>

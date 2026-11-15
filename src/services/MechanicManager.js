@@ -28,18 +28,7 @@ class BaseMechanic {
 /**
  * Mecánica de Sincronía (MOD-06)
  */
-class SyncMechanic extends BaseMechanic {
-    randomizeTarget() {
-        const { FREQ_MIN, FREQ_MAX, SCAN_KEYS } = CONFIG.RESONANCE;
-        state.targetFrequency = FREQ_MIN + Math.random() * (FREQ_MAX - FREQ_MIN);
-        state.targetPhase = Math.random() * Math.PI * 2;
-
-        // Rotar requisito de escaneo entre los tipos disponibles configurados
-        state.requiredScan = SCAN_KEYS[Math.floor(Math.random() * SCAN_KEYS.length)];
-
-        console.log(`%c[MECHANICS] Siguiente requisito de bloqueo: ${state.requiredScan}`, "color: #06b6d4;");
-    }
-}
+class SyncMechanic extends BaseMechanic {}
 
 /**
  * Mecánica de Decisión (MOD-04)
@@ -205,6 +194,14 @@ export const MechanicManager = {
                 state.startBatch();
                 if (!state.emergencies) state.emergencies = {};
                 state.emergencies[type] = true;
+                if (type === 'resonance') {
+                    // Objetivo nuevo y lejos del mando: si no, la emergencia nace resuelta
+                    const { FREQ_MIN, FREQ_MAX } = CONFIG.RESONANCE;
+                    do { state.targetFrequency = FREQ_MIN + Math.random() * (FREQ_MAX - FREQ_MIN); }
+                    while (Math.abs(state.targetFrequency - (state.localFrequency || 30)) < 8);
+                    state.targetPhase = Math.random() * Math.PI * 2;
+                    this.updateResonance();
+                }
                 state.endBatch();
             });
             bus.on('EMERGENCY_END', ({ type }) => {
@@ -318,11 +315,5 @@ export const MechanicManager = {
         });
 
         return syncPercent;
-    },
-
-    randomizeTargetFrequency() {
-        if (this.currentMechanic instanceof SyncMechanic) {
-            this.currentMechanic.randomizeTarget();
-        }
     }
 };

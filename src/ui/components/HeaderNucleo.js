@@ -25,7 +25,7 @@ export const HeaderNucleo = () => {
 
     // MENU INVISIBLE (Utilidad de Sujetos)
     const invisibleMenu = (currentStep >= 4) ? html`
-        <div className="pr-28 max-[820px]:pr-1 pt-1 border-t border-zinc-800/30 relative z-10">
+        <div className="pr-36 max-[820px]:pr-1 pt-1 border-t border-zinc-800/30 relative z-10">
             <${InvisibleUtilityBar} value=${utilidadOculta || 0} max=${100} />
         </div>
     ` : null;
@@ -86,7 +86,7 @@ export const HeaderNucleo = () => {
 
             <!-- Barra 1: ENERGÍA (Amarillo/Amber -> Púrpura en Secta) -->
             <div 
-                className="flex items-center gap-3 pr-28 max-[820px]:pr-1 cursor-help group/energy relative z-10"
+                className="flex items-center gap-3 pr-36 max-[820px]:pr-1 cursor-help group/energy relative z-10"
                 onClick=${handleEnergyClick}
             >
                 <div className="flex items-baseline justify-between gap-2 w-[164px] shrink-0">
@@ -114,7 +114,7 @@ export const HeaderNucleo = () => {
 
             <!-- Barra 2: ESTABILIDAD (Rojo -> Púrpura Profundo en Secta) -->
             <div 
-                className="flex items-center gap-3 pr-28 max-[820px]:pr-1 cursor-help group/stability relative z-10"
+                className="flex items-center gap-3 pr-36 max-[820px]:pr-1 cursor-help group/stability relative z-10"
                 onClick=${handleStabilityClick}
             >
                 <div className="flex items-baseline justify-between gap-2 w-[164px] shrink-0">
@@ -142,7 +142,7 @@ export const HeaderNucleo = () => {
 
             <!-- Barra 3: CICLO ORBITAL (Cian / Lila en Eclipse) -->
             <div 
-                className="flex items-center gap-3 pr-28 max-[820px]:pr-1 cursor-help group/orbital relative z-10"
+                className="flex items-center gap-3 pr-36 max-[820px]:pr-1 cursor-help group/orbital relative z-10"
                 onClick=${handleOrbitalClick}
             >
                 <div className="flex items-baseline justify-between gap-2 w-[164px] shrink-0">

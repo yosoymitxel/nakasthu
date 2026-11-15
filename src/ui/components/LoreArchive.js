@@ -66,7 +66,7 @@ export const LoreArchive = () => {
                             <div className=${`w-4 h-0.5 animate-pulse ${isSectarian ? 'bg-purple-500' : 'bg-zinc-900'}`}></div>
                         </div>
                         <div className=${`text-[12px] uppercase tracking-[0.4em] font-black text-center leading-loose ${isSectarian ? 'text-purple-400/60' : 'text-zinc-400'}`}>
-                            ${isSectarian ? 'SANTUARIO SIN<br/>ILUMINACIÓN' : 'SISTEMA DE ARCHIVO<br/>VACÍO'}
+                            ${isSectarian ? 'SANTUARIO SIN ILUMINACIÓN' : 'ARCHIVO VACÍO'}
                         </div>
                     </div>
                 ` : sortedArchive.map((entry, i) => html`

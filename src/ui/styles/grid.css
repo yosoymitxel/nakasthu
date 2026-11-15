@@ -465,6 +465,23 @@ button:not(:disabled):active { scale: 0.97; }
 .em-seq-step.next { border-color: #f59e0b; color: #f59e0b; animation: pulse-slow 1s ease-in-out infinite; }
 .em-seq-step.ok { border-color: #059669; color: #34d399; background: rgba(5, 150, 105, 0.12); }
 
+/* Pistas visuales de los paneles de emergencia: dónde va cada cosa, sin texto */
+.em-dial { position: relative; padding: 5px 0; }
+.em-notch { position: absolute; top: 0; bottom: 0; width: 10px; margin-left: -5px; border: 2px solid #f59e0b; border-radius: 2px; pointer-events: none; animation: pulse-slow 1s ease-in-out infinite; }
+.em-notch.hit { border-color: #34d399; background: rgba(52, 211, 153, 0.25); animation: none; }
+.em-order { position: absolute; top: 2px; left: 4px; z-index: 11; font-size: 15px; line-height: 1; color: #fbbf24; }
+.em-order.ok { color: #34d399; }
+/* La columna derecha lleva el número a su esquina libre: la izquierda la tapa el botón central */
+.em-order.right { left: auto; right: 4px; }
+.em-next { border-color: #f59e0b !important; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.35), 0 0 14px rgba(245, 158, 11, 0.45); animation: pulse-slow 0.9s ease-in-out infinite; }
+.em-wrong { border-color: #ef4444 !important; background: rgba(239, 68, 68, 0.35) !important; animation: em-shake 0.3s linear; }
+@keyframes em-shake { 25% { translate: -4px 0; } 75% { translate: 4px 0; } }
+.em-burned { background: rgba(127, 29, 29, 0.25); border-color: rgba(127, 29, 29, 0.5); color: #7f1d1d; }
+.em-socket { border-color: #34d399 !important; color: #34d399 !important; animation: pulse-slow 1.2s ease-in-out infinite; }
+.em-drag-hint { position: absolute; left: 6%; width: 12px; height: 12px; margin-top: -6px; border-radius: 50%; background: #fff; opacity: 0; pointer-events: none; z-index: 30; animation: em-drag 1.6s ease-in-out infinite; }
+@keyframes em-drag { 0% { left: 6%; opacity: 0; } 15% { opacity: 0.8; } 80% { left: 55%; opacity: 0.8; } 100% { left: 60%; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .em-drag-hint { animation: none; opacity: 0.6; left: 30%; } }
+
 @media (max-width: 820px) {
     .main-layout-grid[data-tab="sistemas"] > .mod-C_FOOTER { height: auto; min-height: 150px; }
     .em-console { grid-template-columns: minmax(0, 1fr) !important; height: auto; }
@@ -539,3 +556,28 @@ button:not(:disabled):active { scale: 0.97; }
 .flow-step.now .flow-num { animation: flow-ping 1.6s var(--ease-out) infinite; }
 @keyframes flow-ping { 0% { box-shadow: 0 0 0 0 var(--flow-color, #f59e0b); } 70%, 100% { box-shadow: 0 0 0 6px transparent; } }
 @media (prefers-reduced-motion: reduce) { .mod-boot, .mod-boot .w-full.h-full.relative.z-0, .flow-step.now .flow-num { animation: none; } .scan-beam::before, .scan-beam::after { transition: none; } }
+
+.em-done { border-color: #34d399 !important; background: rgba(52, 211, 153, 0.3) !important; color: #d1fae5 !important; box-shadow: 0 0 16px rgba(52, 211, 153, 0.6); animation: em-pop 0.4s var(--ease-out, ease-out); }
+@keyframes em-pop { 0% { scale: 0.92; } 60% { scale: 1.06; } 100% { scale: 1; } }
+@media (prefers-reduced-motion: reduce) { .em-done { animation: none; } }
+
+.portal-wave path { vector-effect: non-scaling-stroke; }
+.portal-wave { animation: portal-wobble 2.4s ease-in-out infinite alternate; transform-origin: center; }
+.portal-wave.fast { animation-duration: 0.5s; }
+@keyframes portal-wobble { from { transform: scaleY(0.6); } to { transform: scaleY(1); } }
+.unrest-tip { animation: pulse-slow 0.8s ease-in-out infinite; box-shadow: 0 0 10px currentColor; }
+@media (prefers-reduced-motion: reduce) { .portal-wave, .unrest-tip { animation: none; } }
+
+/* Órdenes del terminal: las cuatro caben siempre, sin cortar la última */
+.term-chips { overflow: hidden; flex-shrink: 0; }
+.term-chip { flex: 1 1 0; min-width: 0; overflow: hidden; padding: 3px 5px; }
+.term-chip-name { font-size: 9px; letter-spacing: 0.04em; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.term-chip > :not(.term-chip-name) { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* En móvil un módulo bloqueado solo roba pantalla: se oculta hasta que se desbloquea */
+@media (max-width: 820px) { .main-layout-grid > .mod-container.mod-locked { display: none !important; } }
+@media (max-width: 820px) {
+    .flow-step { padding: 4px 5px; gap: 5px; }
+    .flow-step .flow-name { letter-spacing: 0.08em; }
+    .flow-step .flow-hint { white-space: normal; letter-spacing: 0; font-size: 8px; }
+}

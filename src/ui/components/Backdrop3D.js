@@ -65,12 +65,26 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
             ground.rotation.x = -Math.PI / 2;
             scene.add(ground);
 
+            // Los personajes llegan en pose T: se les bajan los brazos y cada uno toma una postura
+            const crew = [];
+            const pose = (obj, i) => {
+                const bones = {};
+                obj.traverse(o => { if (o.isBone) bones[o.name] = o; });
+                const set = (name, x, y, z) => bones[name]?.rotation.set(x, y, z);
+                set('LeftArm', 0, 0, -1.25); set('RightArm', 0, 0, 1.25);
+                set('LeftForeArm', 0, -0.25, 0); set('RightForeArm', 0, 0.25, 0);
+                if (i === 0) { set('RightArm', 0, 1.1, 0.35); set('RightForeArm', 0, 0.5, 0); } // tiende la mano al Monolito
+                if (i === 1) { set('LeftArm', 0, -0.9, -0.9); set('LeftForeArm', 0, -1.5, 0); } // consulta el escáner
+                if (i === 2) set('Head', -0.25, 0, 0); // mira hacia arriba
+                return { bones, i };
+            };
             for (const [id, x, z, turns] of PARTS) {
                 if (!make[id]) continue;
                 const obj = make[id]();
                 obj.position.set(x, 0, z);
                 obj.rotation.y = turns * Math.PI / 2;
                 scene.add(obj);
+                if (id.startsWith('astronaut')) crew.push(pose(obj, crew.length));
             }
 
             // Propios del juego: el Monolito y el portal no existen en ningún kit
@@ -142,6 +156,11 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
                 core.intensity = 50 + Math.sin(t * 0.002) * 18;
                 monoLight.intensity = 24 + Math.sin(t * 0.003) * 14;
                 ring.rotation.z += dt * 0.0003;
+                for (const { bones, i } of crew) {
+                    const w = Math.sin(t * 0.0012 + i * 2.1);
+                    if (bones.Spine) bones.Spine.rotation.x = w * 0.03;
+                    if (bones.Head) bones.Head.rotation.y = Math.sin(t * 0.0005 + i * 1.7) * 0.25;
+                }
                 renderer.render(scene, camera);
             };
             raf = requestAnimationFrame(frame);

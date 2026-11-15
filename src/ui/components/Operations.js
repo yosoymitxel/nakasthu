@@ -323,7 +323,7 @@ export const Operations = () => {
                     `}
                     <${VerdictLogButton} step=${currentStep} />
                     <div className="flex justify-center">
-                        <span className=${`text-[12px] font-bold font-mono uppercase ${judgmentErrors >= (maxErrors || 3) - 1 ? 'text-red-500 animate-pulse' : (isSectarian ? 'text-purple-900/60' : 'text-zinc-600')}`}>
+                        <span className=${`text-[12px] max-[820px]:text-[10px] font-bold font-mono uppercase whitespace-nowrap ${judgmentErrors >= (maxErrors || 3) - 1 ? 'text-red-500 animate-pulse' : (isSectarian ? 'text-purple-900/60' : 'text-zinc-600')}`}>
                             ${labels.errorLabel}: ${judgmentErrors} / ${maxErrors || 3}
                         </span>
                     </div>

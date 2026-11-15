@@ -31,7 +31,7 @@ export const FactionTracker = memo(() => {
     const isSectarian = storyPath === 1;
 
     return html`
-        <div className="flex flex-col h-full w-full bg-black/40 p-3 font-mono text-[10px] relative overflow-hidden">
+        <div className="flex flex-col flex-none w-full bg-black/40 px-3 py-2 font-mono text-[10px] relative overflow-hidden">
             ${isSectarian && html`
                 <!-- Efecto Onírico: Símbolos Flotantes -->
                 <div className="absolute inset-0 pointer-events-none opacity-[0.05]">
@@ -84,26 +84,8 @@ export const FactionTracker = memo(() => {
                         ${alignments.dominant === 'NEUTRAL' ? labels.descriptions.neutral_status || 'EN_EQUILIBRIO' : (alignments.dominant === 'ORDEN' ? labels.order : labels.chaos)}
                     </span>
                 </div>
-                <div className=${`h-[0.5px] w-full ${isSectarian ? 'bg-purple-900/30' : 'bg-zinc-800/50'}`}></div>
-                <p className=${`text-[9px] leading-relaxed italic mt-2 ${isSectarian ? 'text-zinc-400 font-serif' : 'text-zinc-500'}`}>
-                    ${alignments.dominant === 'ORDEN' ? labels.descriptions.order : 
-                      alignments.dominant === 'CAOS' ? labels.descriptions.chaos : 
-                      labels.descriptions.neutral}
-                </p>
             </div>
 
-            <!-- DECORACIÓN TEMÁTICA -->
-            <div className=${`absolute bottom-1 right-1 transition-opacity duration-1000 ${isSectarian ? 'opacity-30' : 'opacity-10'}`}>
-                <svg width="40" height="40" viewBox="0 0 40 40">
-                    ${isSectarian ? html`
-                        <path d="M20 5 L35 30 L5 30 Z" fill="none" stroke="#a855f7" strokeWidth="0.5" />
-                        <circle cx="20" cy="22" r="8" fill="none" stroke="#a855f7" strokeWidth="0.5" />
-                    ` : html`
-                        <path d="M20 0 L40 20 L20 40 L0 20 Z" fill="none" stroke="currentColor" strokeWidth="0.5" />
-                        <circle cx="20" cy="20" r="10" fill="none" stroke="currentColor" strokeWidth="0.5" />
-                    `}
-                </svg>
-            </div>
         </div>
     `;
 });

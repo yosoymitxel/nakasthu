@@ -48,6 +48,9 @@ const ResonanceModule = ({ isActive, storyPath }) => {
             const width = canvas.width;
             const height = canvas.height;
             const midY = height / 2;
+            // De medio ciclo a seis a lo ancho, y la onda ocupa casi todo el alto
+            const k = (f) => (Math.PI * 2 * (0.5 + (f / 60) * 5.5)) / width;
+            const amp = midY * 0.8;
 
             ctx.clearRect(0, 0, width, height);
             if (!isPaused) time += 0.05;
@@ -79,8 +82,8 @@ const ResonanceModule = ({ isActive, storyPath }) => {
                 ctx.shadowBlur = 10;
                 ctx.shadowColor = ctx.strokeStyle;
                 for (let x = 0; x < width; x++) {
-                    const targetY = midY + Math.sin(x * (targetFreq * 0.02) + targetPhase + time) * 15;
-                    const localY = midY + Math.sin(x * (localFreq * 0.02) + localPhase + time) * 15;
+                    const targetY = midY + Math.sin(x * k(targetFreq) + targetPhase + time) * amp;
+                    const localY = midY + Math.sin(x * k(localFreq) + localPhase + time) * amp;
                     const y = localY + (targetY - localY) * (resonanceSync / 100);
                     if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
@@ -96,19 +99,22 @@ const ResonanceModule = ({ isActive, storyPath }) => {
 
                 // Onda Objetivo
                 ctx.beginPath();
-                ctx.strokeStyle = 'rgba(6, 182, 212, 0.3)';
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([6, 5]);
                 for (let x = 0; x < width; x++) {
-                    const y = midY + Math.sin(x * (targetFreq * 0.02) + targetPhase + time) * 15;
+                    const y = midY + Math.sin(x * k(targetFreq) + targetPhase + time) * amp;
                     if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
+                ctx.setLineDash([]);
 
                 // Onda Local
                 ctx.beginPath();
                 ctx.strokeStyle = resonanceSync > 85 ? '#10b981' : '#06b6d4';
                 ctx.lineWidth = 2;
                 for (let x = 0; x < width; x++) {
-                    const y = midY + Math.sin(x * (localFreq * 0.02) + localPhase + time) * 15;
+                    const y = midY + Math.sin(x * k(localFreq) + localPhase + time) * amp;
                     if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
@@ -127,12 +133,26 @@ const ResonanceModule = ({ isActive, storyPath }) => {
     };
 
     const synchronize = () => {
-        if (resonanceSync >= 90) {
+        if (freqHit && phaseHit) {
             bus.emit('TERMINAL_PRINT', { text: config.success, type: 'SUCCESS' });
             engineState.stability = Math.min(100, engineState.stability + 10);
             bus.emit('EMERGENCY_END', { type: 'resonance' });
         }
     };
+
+    let phaseGap = Math.abs(targetPhase - localPhase) % (Math.PI * 2);
+    if (phaseGap > Math.PI) phaseGap = Math.PI * 2 - phaseGap;
+    const freqHit = Math.abs(targetFreq - localFreq) < 2;
+    const phaseHit = phaseGap < 0.4;
+
+    // Como una tarea de panel: al encajar las dos muescas se cierra sola
+    useEffect(() => {
+        if (!isActive || !freqHit || !phaseHit) return;
+        const id = setTimeout(synchronize, 700);
+        return () => clearTimeout(id);
+    }, [isActive, freqHit && phaseHit]);
+
+    const notch = (value, min, max, hit) => html`<i className=${`em-notch ${hit ? 'hit' : ''}`} style=${{ left: `${((value - min) / (max - min)) * 100}%` }}></i>`;
 
     const primaryColorClass = primary === 'purple' ? 'border-purple-500/20 bg-purple-950/5 shadow-[inset_0_0_15px_rgba(168,85,247,0.05)]' : 'border-cyan-500/20 bg-cyan-950/5 shadow-[inset_0_0_15px_rgba(6,182,212,0.05)]';
     const accentColorClass = primary === 'purple' ? 'bg-purple-500/5' : 'bg-cyan-500/5';
@@ -145,7 +165,7 @@ const ResonanceModule = ({ isActive, storyPath }) => {
                 ref=${canvasRef} 
                 width="400" 
                 height="120" 
-                className="w-full flex-1 min-h-[40px] bg-black/40 border border-zinc-900/50 rounded-sm mb-1"
+                className=${`w-full flex-1 min-h-[40px] bg-black/40 border border-zinc-900/50 rounded-sm mb-1 ${resonanceSync >= 90 ? 'em-done' : ''}`}
             />
             
             <div className="flex flex-col gap-2 relative z-10 flex-none">
@@ -165,6 +185,7 @@ const ResonanceModule = ({ isActive, storyPath }) => {
                             <span>${isSectarian ? 'Sintonía_del_Alma' : 'Frecuencia'}</span>
                             <span>${localFreq.toFixed(1)}Hz</span>
                         </div>
+                        <div className="em-dial">${notch(targetFreq, 0.1, 60, freqHit)}
                         <input 
                             type="range" 
                             min="0.1" 
@@ -173,13 +194,14 @@ const ResonanceModule = ({ isActive, storyPath }) => {
                             value=${localFreq}
                             onChange=${(e) => adjust('localFrequency', parseFloat(e.target.value))}
                             className="w-full h-2 bg-zinc-900 rounded-lg appearance-none cursor-pointer accent-cyan-500"
-                        />
+                        /></div>
                     </div>
                     <div className="flex flex-col gap-1">
                         <div className="flex justify-between text-[8px] text-zinc-500 uppercase font-bold px-1">
                             <span>${isSectarian ? 'Oscilación_del_Velo' : 'Fase'}</span>
                             <span>${(localPhase / Math.PI).toFixed(2)}π</span>
                         </div>
+                        <div className="em-dial">${notch(targetPhase, 0, Math.PI * 2, phaseHit)}
                         <input 
                             type="range" 
                             min="0" 
@@ -188,20 +210,10 @@ const ResonanceModule = ({ isActive, storyPath }) => {
                             value=${localPhase}
                             onChange=${(e) => adjust('localPhase', parseFloat(e.target.value))}
                             className="w-full h-2 bg-zinc-900 rounded-lg appearance-none cursor-pointer accent-cyan-500"
-                        />
+                        /></div>
                     </div>
                 </div>
 
-                <button 
-                    onClick=${synchronize}
-                    disabled=${resonanceSync < 90}
-                    className=${`w-full py-2 border-2 text-[11px] font-black tracking-[0.2em] transition-all uppercase
-                        ${resonanceSync >= 90 
-                            ? 'border-emerald-500 bg-emerald-900/20 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:bg-emerald-500 hover:text-white' 
-                            : 'border-zinc-800 bg-zinc-900/50 text-zinc-700 cursor-not-allowed'}`}
-                >
-                    ${config.action}
-                </button>
             </div>
         </div>
     `;
@@ -224,21 +236,16 @@ const OxygenModule = ({ isActive, storyPath }) => {
 
     const [sequence, setSequence] = useState([]);
     const [userInput, setUserInput] = useState([]);
-    const [isGenerating, setIsGenerating] = useState(false);
+    const [wrong, setWrong] = useState(0);
+    useEffect(() => { if (isActive && sequence.length === 0 && !engineState.o2Stabilized) startMinigame(); }, [isActive]);
 
     const startMinigame = () => {
-        const newSeq = Array.from({ length: 4 }, () => Math.floor(Math.random() * 4) + 1);
+        const newSeq = [1, 2, 3, 4];
+        for (let i = 3; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [newSeq[i], newSeq[j]] = [newSeq[j], newSeq[i]]; }
         setSequence(newSeq);
         setUserInput([]);
-        setIsGenerating(true);
         
-        const sequenceLabels = newSeq.map(n => config.labels[n-1]);
-        bus.emit('TERMINAL_PRINT', { 
-            text: `${config.alert} ORDEN: ${sequenceLabels.join(' ➔ ')}`, 
-            type: 'SYSTEM' 
-        });
-
-        setTimeout(() => setIsGenerating(false), 2000);
+        bus.emit('TERMINAL_PRINT', { text: config.alert, type: 'SYSTEM' });
     };
 
     const handlePress = (num) => {
@@ -251,6 +258,8 @@ const OxygenModule = ({ isActive, storyPath }) => {
             const errorText = `[ERROR] ${config.name} FALLIDO. REINTENTAR SECUENCIA.`;
             bus.emit('TERMINAL_PRINT', { text: errorText, type: 'ERROR' });
             setUserInput([]);
+            setWrong(num);
+            setTimeout(() => setWrong(0), 350);
             return;
         }
 
@@ -309,22 +318,17 @@ const OxygenModule = ({ isActive, storyPath }) => {
                 ${sequence.length === 0
                     ? html`<span className="em-seq-hint">${config.action} ▸</span>`
                     : sequence.map((n, i) => html`
-                        <span key=${i} className=${`em-seq-step ${i < userInput.length ? 'ok' : i === userInput.length ? 'next' : ''}`}>${symbols[n - 1]}</span>
+                        <span key=${i} className=${`em-seq-step ${i < userInput.length ? 'ok' : i === userInput.length ? 'next' : ''}`}>${i < userInput.length ? '✓' : i + 1}</span>
                     `)}
             </div>
 
-            <div className=${`relative ${isSectarian ? 'h-[140px] w-[140px] mx-auto my-1' : 'grid grid-cols-2 gap-2'} relative z-10`}>
+            <div className=${`relative grid grid-cols-2 grid-rows-2 gap-2 flex-1 min-h-[88px] relative z-10`}>
                 ${[1, 2, 3, 4].map(num => {
                     const isPressed = userInput.includes(num);
+                    const order = sequence.indexOf(num) + 1;
+                    const isNext = order > 0 && order === userInput.length + 1;
                     const label = symbols[num - 1];
                     
-                    // Posicionamiento en rombo para el sectario
-                    const sectarianPos = [
-                        'top-0 left-1/2 -translate-x-1/2',    // 1: Norte
-                        'top-1/2 right-0 -translate-y-1/2',   // 2: Este
-                        'bottom-0 left-1/2 -translate-x-1/2', // 3: Sur
-                        'top-1/2 left-0 -translate-y-1/2'     // 4: Oeste
-                    ][num-1];
 
                     return html`
                         <button 
@@ -332,14 +336,16 @@ const OxygenModule = ({ isActive, storyPath }) => {
                             onClick=${() => handlePress(num)}
                             className=${`border font-mono text-[9px] transition-all flex items-center justify-center overflow-hidden
                                 ${isPressed ? buttonActiveColorClass : buttonIdleColorClass}
+                                ${isNext ? 'em-next' : ''} ${wrong === num ? 'em-wrong' : ''}
                                 ${isSectarian ? 
-                                    `absolute w-[40px] h-[40px] rotate-45 ${sectarianPos} border-purple-500/30 hover:bg-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]` : 
-                                    'relative h-10 hover:border-red-600 hover:bg-red-900/20 active:scale-95'}
+                                    'relative h-full min-h-10 rounded-tl-2xl rounded-br-2xl border-purple-500/30 hover:bg-purple-500/20 active:scale-95' : 
+                                    'relative h-full min-h-10 text-[12px] hover:border-red-600 hover:bg-red-900/20 active:scale-95'}
                             `}
                         >
-                            <span className=${`z-10 ${isSectarian ? '-rotate-45 tracking-[0.1em] font-black text-[7px]' : ''} ${isPressed ? 'animate-pulse' : ''}`}>
+                            <span className=${`z-10 ${isSectarian ? 'tracking-[0.15em] font-black text-[11px]' : ''} ${isPressed ? 'animate-pulse' : ''}`}>
                                 ${label}
                             </span>
+                            ${order > 0 && html`<b className=${`em-order ${isPressed ? 'ok' : ''} ${num % 2 === 0 ? 'right' : ''}`}>${isPressed ? '✓' : order}</b>`}
                             ${isPressed && html`<div className=${`absolute inset-0 animate-flicker ${isSectarian ? 'bg-purple-500/20' : 'bg-red-500/10'}`}></div>`}
                         </button>
                     `;
@@ -348,7 +354,7 @@ const OxygenModule = ({ isActive, storyPath }) => {
                     <!-- Botón de Inicio Integrado en el Centro para el Sectario -->
                     <button 
                         onClick=${startMinigame}
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[36px] h-[36px] rounded-full border border-purple-500/40 bg-purple-950/40 hover:bg-purple-500/20 transition-all z-20 flex items-center justify-center group/btn"
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[36px] h-[36px] rounded-full border border-purple-500/40 bg-[#14081f] hover:bg-purple-500/20 transition-all z-20 flex items-center justify-center group/btn"
                     >
                         <div className="w-1.5 h-1.5 bg-purple-400 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.8)] animate-pulse group-hover/btn:scale-125 transition-transform"></div>
                         
@@ -391,6 +397,7 @@ const PowerGridModule = ({ isActive, storyPath }) => {
     const [path, setPath] = useState([]);
     const [burned, setBurned] = useState(new Set());
     const [isDragging, setIsDragging] = useState(false);
+    const [done, setDone] = useState(false);
 
     const initGrid = () => {
         const newBurned = new Set();
@@ -446,7 +453,8 @@ const PowerGridModule = ({ isActive, storyPath }) => {
                     bus.emit('TERMINAL_PRINT', { text: config.success, type: 'SUCCESS' });
                     // No usamos global state.energy directamente aquí, emitimos el evento o usamos bus
                     bus.emit('EMERGENCY_END', { type: 'energy' });
-                    setTimeout(() => initGrid(), 1000);
+                    setDone(true);
+                    setTimeout(() => { setDone(false); initGrid(); }, 1000);
                     setIsDragging(false);
                 }
             }
@@ -533,30 +541,28 @@ const PowerGridModule = ({ isActive, storyPath }) => {
                             onMouseEnter=${() => handleMouseEnter(i)}
                             className=${`
                                 w-full h-full min-h-0 overflow-hidden cursor-crosshair transition-all duration-200 border flex items-center justify-center font-bold text-[12px] leading-none relative
-                                ${isBurned ? 'bg-red-950/20 border-red-900/10 opacity-20 cursor-not-allowed' : 
-                                  isActive ? cellActiveColorClass : 
+                                ${isBurned ? 'em-burned cursor-not-allowed' : 
+                                  isActive ? cellActiveColorClass + (done ? ' em-done' : '') : 
                                   isStart ? 'bg-zinc-900 border-zinc-700 text-zinc-500 hover:bg-zinc-800' :
                                   isEnd ? 'bg-zinc-900 border-zinc-700 text-zinc-500 hover:bg-zinc-800' :
                                   'bg-zinc-950 border-zinc-900 hover:bg-zinc-900'}
                                 ${isLast && !isBurned ? 'ring-1 ring-white/50 z-20 scale-105' : ''}
+                                ${isEnd && !isActive && !isBurned && forceActive ? 'em-socket' : ''}
                             `}
                         >
                             ${isActive && html`
                                 <span className=${`z-10 ${isLast ? 'animate-bounce' : ''}`}>
-                                    ${isLast ? (isEnd ? '✓' : '●') : arrow}
+                                    ${isLast ? (isEnd ? '✓' : (path.length === 1 ? '⚡' : '●')) : arrow}
                                 </span>
                             `}
-                            ${isStart && !isActive && !isBurned && html`<span className="text-[8px] opacity-30">IN</span>`}
-                            ${isEnd && !isActive && !isBurned && html`<span className="text-[8px] opacity-30">OUT</span>`}
+                            ${isBurned && html`<span className="text-[9px]">✕</span>`}
+                            ${isEnd && !isActive && !isBurned && html`<span className="text-[10px]">◎</span>`}
                         </div>
                     `;
                 })}
+                ${forceActive && path.length === 1 && html`<i className="em-drag-hint" style=${{ top: `${(Math.floor(path[0] / 12) + 0.5) / 6 * 100}%` }}></i>`}
             </div>
             
-            <div className=${`text-[9px] font-mono flex justify-between px-1 mt-auto pt-1 ${footerTextColorClass}`}>
-                <span>${isSectarian ? 'CONEXIÓN_SANGUÍNEA' : 'ENERGY_NODE_SYSTEM'}</span>
-                <span className="opacity-50">${path.length} / 12 NODES</span>
-            </div>
         </div>
     `;
 };
