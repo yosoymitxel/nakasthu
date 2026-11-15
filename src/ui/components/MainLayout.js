@@ -158,7 +158,7 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
         <div
             style=${highlightStyle}
             className=${`
-                mod-container mod-${area} ${focusColor ? 'mod-focus' : ''} ${booting ? 'mod-boot' : ''}
+                mod-container mod-${area} ${locked && !isShielded ? 'mod-locked' : ''} ${focusColor ? 'mod-focus' : ''} ${booting ? 'mod-boot' : ''}
 
                 border transition-all duration-[1200ms] ease-in-out
                 ${isSectarian ? 'border-indigo-900/20' : 'border-zinc-800/50'}
