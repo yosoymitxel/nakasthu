@@ -573,7 +573,7 @@ button:not(:disabled):active { scale: 0.97; }
 .term-chip > :not(.term-chip-name) { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* En móvil un módulo bloqueado solo roba pantalla: se oculta hasta que se desbloquea */
-@media (max-width: 820px) { .mod-container.mod-locked { display: none; } }
+@media (max-width: 820px) { .main-layout-grid > .mod-container.mod-locked { display: none !important; } }
 @media (max-width: 820px) {
     .flow-step { padding: 4px 5px; gap: 5px; }
     .flow-step .flow-name { letter-spacing: 0.08em; }
