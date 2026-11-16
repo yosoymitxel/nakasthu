@@ -659,7 +659,7 @@ export const Layout = () => {
                                 <div className="mt-6 p-4 border border-zinc-800 bg-black/40 space-y-4">
                                     <h3 className="text-zinc-500 uppercase tracking-widest text-[10px] border-b border-zinc-800 pb-2 mb-2">Selector de Nivel [DEV]</h3>
                                     <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto custom-scrollbar">
-                                        ${Object.entries(STEPS_CONFIG).map(([id, config]) => html`
+                                        ${React.Children.toArray(Object.entries(STEPS_CONFIG).map(([id, config]) => html`
                                             <button 
                                                 key=${`dev-step-${id}`}
                                                 onClick=${() => {
@@ -670,7 +670,7 @@ export const Layout = () => {
                                             >
                                                 ${id}. ${config.name}
                                             </button>
-                                        `)}
+                                        `))}
                                     </div>
                                 </div>
                             `}
