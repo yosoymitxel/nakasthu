@@ -8,6 +8,8 @@
     display: grid;
     width: 100vw;
     height: 100vh;
+    /* dvh = alto con la barra del navegador visible. Con sólo vh, en móvil sobraba una franja abajo. */
+    height: 100dvh;
     padding: 4px;
     gap: 4px;
     background-color: rgba(26, 26, 28, 0.88);
@@ -313,6 +315,8 @@ body {
 
 /* MÓVIL / VENTANA ESTRECHA: un panel por pestaña en vez de la rejilla 12x6 */
 @media (max-width: 820px) {
+    /* App de una pantalla: el documento no debe scrollear (se veía el hueco bajo las pestañas). */
+    html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
     .main-layout-grid {
         display: flex;
         flex-direction: column;

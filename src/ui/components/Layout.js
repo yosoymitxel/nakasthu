@@ -364,7 +364,7 @@ export const Layout = () => {
     const stabilityAlertClass = isCriticalStability ? 'shadow-[inset_0_0_100px_rgba(220,38,38,0.4)]' : '';
 
     return html`
-        <div className=${`relative min-h-screen bg-[#0b0b0d] text-zinc-300 overflow-hidden cursor-default select-none font-mono transition-all duration-[1000ms] ${isPaused ? 'grayscale' : ''} ${criticalClass}`}>
+        <div className=${`relative min-h-screen min-h-[100dvh] bg-[#0b0b0d] text-zinc-300 overflow-hidden cursor-default select-none font-mono transition-all duration-[1000ms] ${isPaused ? 'grayscale' : ''} ${criticalClass}`}>
             
             <${Backdrop3D}
                 dim=${!isStartMenu && !sceneShot}
@@ -457,7 +457,7 @@ export const Layout = () => {
 
             <!-- Protocolo de Colapso (Muerte / Final) -->
             <div className=${`death-screen ${isGameOver ? 'active' : ''}`} aria-hidden=${!isGameOver} inert=${isGameOver ? undefined : ''}>
-                <div className="flex flex-col items-center space-y-8 max-w-4xl text-center px-4 overflow-y-auto max-h-screen py-12 custom-scrollbar">
+                <div className="flex flex-col items-center space-y-8 max-w-4xl text-center px-4 overflow-y-auto max-h-screen max-h-[100dvh] py-12 custom-scrollbar">
                     <h1 className=${`font-mono text-2xl sm:text-4xl tracking-[0.15em] sm:tracking-[0.3em] uppercase font-black ${deathHeader?.color || 'text-red-600'}`}>
                         ${deathHeader?.text || 'BASTIÓN COMPROMETIDO'}
                     </h1>

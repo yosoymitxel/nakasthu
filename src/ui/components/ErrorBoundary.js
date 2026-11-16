@@ -23,7 +23,7 @@ export class ErrorBoundary extends Component {
     render() {
         if (this.state.hasError) {
             return html`
-                <div className="flex flex-col items-center justify-center h-screen w-screen bg-black text-red-600 font-mono p-10 border-4 border-red-900">
+                <div className="flex flex-col items-center justify-center h-screen h-[100dvh] w-screen bg-black text-red-600 font-mono p-10 border-4 border-red-900">
                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 pointer-events-none"></div>
                     <h1 className="text-4xl mb-4 animate-pulse">SYSTEM_CRITICAL_FAILURE</h1>
                     <p className="text-xl mb-8 uppercase tracking-widest border-b border-red-600 pb-2">

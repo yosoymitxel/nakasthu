@@ -300,6 +300,16 @@ test.describe('REGRESIÓN · responsive @responsive', () => {
             await noHorizontalOverflow(page);
             await snap(page, testInfo, `resp-tab-${key}`);
         }
+        // Las pestañas pegadas al borde inferior y el documento sin scroll propio (antes sobraba una franja).
+        const fit = await page.evaluate(() => ({
+            tabsBottom: Math.round(document.querySelector('.mobile-tabs').getBoundingClientRect().bottom),
+            inner: innerHeight,
+            docScroll: document.scrollingElement.scrollHeight - innerHeight,
+            bodyOverflow: getComputedStyle(document.body).overflowY,
+        }));
+        expect(Math.abs(fit.tabsBottom - fit.inner), JSON.stringify(fit)).toBeLessThanOrEqual(1);
+        expect(fit.docScroll, JSON.stringify(fit)).toBeLessThanOrEqual(0);
+        expect(fit.bodyOverflow).toBe('hidden');
         // En Mando el escaneo debe ser pulsable (no tapado por las pestañas).
         await page.getByRole('button', { name: /BIOMÉTRICO/ }).first().click({ trial: true });
     });
