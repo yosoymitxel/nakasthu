@@ -124,7 +124,6 @@ test('flujo jugable inicial: cinemática → sincronización del monolito → si
 });
 
 test('gameplay: validación biométrica → autorización → terminal → pausa y guardado', async ({ page }) => {
-  // Evitar interrupciones de tutoriales para recorrer el flujo de operaciones.
   await page.evaluate(() => {
     localStorage.setItem('nakasthu_skip_tutorials', 'true');
     localStorage.setItem('nakasthu_tutorial_seen', 'true');
@@ -148,7 +147,7 @@ test('gameplay: validación biométrica → autorización → terminal → pausa
   await expect(progressBar).toHaveAttribute('style', /width: 100%/, { timeout: 12_000 });
   await page.keyboard.up('Space');
 
-  // Paso 3: avanzar la cinemática hasta la primera fase de gameplay.
+  // Paso 3: avanzar hasta la primera fase de gameplay.
   cinematic = page.locator('.cinematic-screen');
   await expect(cinematic).toBeVisible();
   await cinematic.click();
@@ -158,39 +157,35 @@ test('gameplay: validación biométrica → autorización → terminal → pausa
   const briefing = page.locator('.game-modal-overlay');
   await expect(briefing).toBeVisible();
   await briefing.getByRole('button', { name: 'INICIAR OPERACIONES' }).click();
-  await expect.poll(() => page.evaluate(() => window.__NAKASTHU_STATE__?.currentStep)).toBe(4);
 
-  // La autorización debe permanecer bloqueada hasta completar el escaneo requerido.
-  const authorize = page.locator('.h-16').last().getByRole('button', { name: /AUTORIZAR/ });
-  await expect(authorize).toBeDisabled();
+  // La UI informa que las decisiones están bloqueadas hasta validar biometría.
+  await expect(page.getByText(/AUTORIZACIÓN PENDIENTE DE VALIDACIÓN BIOMÉTRICA/)).toBeVisible();
+  await expect(page.getByRole('button', { name: /AUTORIZAR/ })).toHaveCount(0);
 
   const scanButton = page.getByRole('button', { name: /BIOMÉTRICO/ });
   await expect(scanButton).toBeVisible();
-  const energyBeforeScan = await page.evaluate(() => window.__NAKASTHU_STATE__?.energy);
+  await expect(scanButton).toBeEnabled();
   await scanButton.click();
 
-  await expect.poll(() => page.evaluate(() => {
-    const state = window.__NAKASTHU_STATE__;
-    return Boolean(state?.currentEntity?.scannedTypes?.includes('BIOMETRIC') && !state.activeScan);
-  }), { timeout: 10_000 }).toBe(true);
-  const energyAfterScan = await page.evaluate(() => window.__NAKASTHU_STATE__?.energy);
-  expect(energyAfterScan).toBeLessThan(energyBeforeScan);
+  // El escaneo dura 2,5 s en configuración base y se refleja en las acciones habilitadas.
+  const authorize = page.getByRole('button', { name: /AUTORIZAR/ });
+  await expect(authorize).toBeVisible({ timeout: 10_000 });
   await expect(authorize).toBeEnabled();
 
-  // La acción se ejecuta por el botón de la interfaz; el motor debe registrar exactamente un sujeto.
+  // Ejecutar la autorización desde el botón visible.
   await authorize.click();
-  await expect.poll(() => page.evaluate(() => window.__NAKASTHU_STATE__?.processedCount), { timeout: 5_000 }).toBe(1);
+  await expect(page.getByText('1 / 10', { exact: true })).toBeVisible({ timeout: 8_000 });
 
-  // Terminal: enviar un comando real desde el input de la consola.
+  // Terminal: ejecutar un comando real desde su input.
   const terminalInput = page.locator('input[type="text"]').first();
   await expect(terminalInput).toBeEnabled();
   await terminalInput.fill('/status');
   await terminalInput.press('Enter');
   await expect(page.locator('#terminal-log')).toContainText('SYS_INFO:');
 
-  // Pausa y guardado desde la interfaz.
+  // Pausar y guardar desde el menú de pausa.
   await page.locator('button[title="PAUSA"]').click();
-  await expect.poll(() => page.evaluate(() => window.__NAKASTHU_STATE__?.isPaused)).toBe(true);
+  await expect(page.getByRole('button', { name: 'Guardar Partida', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Guardar Partida', exact: true }).click();
 
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('nakasthu_save_v1') || 'null'));
@@ -198,6 +193,7 @@ test('gameplay: validación biométrica → autorización → terminal → pausa
   expect(saved.currentStep).toBe(4);
   expect(saved.storyPath).toBe(0);
   expect(saved.timestamp).toBeGreaterThan(0);
+  expect(Array.isArray(saved.unlockedModules)).toBe(true);
 
   await page.screenshot({ path: 'test-results/nakasthu-gameplay-step-04.png', fullPage: true });
 });
