@@ -222,7 +222,7 @@ test('final Orden: la elección se refleja en el epílogo y permite completar la
   await expect(step11).toBeEnabled();
   await step11.click();
 
-  await expect(page.getByRole('heading', { name: 'El Juicio Final' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'El Juicio Final', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'EJECUTAR SENTENCIA', exact: true }).click();
 
   const epilogue = page.locator('.cinematic-screen');
@@ -243,7 +243,7 @@ test('final Caos: la elección alternativa conserva su propio epílogo', async (
   await expect(step11).toBeEnabled();
   await step11.click();
 
-  await expect(page.getByRole('heading', { name: 'El Juicio Final' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'El Juicio Final', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'ABRAZAR EL VACÍO', exact: true }).click();
 
   const epilogue = page.locator('.cinematic-screen');

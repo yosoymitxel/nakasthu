@@ -661,6 +661,7 @@ export const Layout = () => {
                                     <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto custom-scrollbar">
                                         ${Object.entries(STEPS_CONFIG).map(([id, config]) => html`
                                             <button 
+                                                key=${`dev-step-${id}`}
                                                 onClick=${() => {
                 gameSequencer.jumpToStep(parseInt(id));
                 setModal(null);
