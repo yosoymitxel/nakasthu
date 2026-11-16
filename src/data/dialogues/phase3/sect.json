@@ -184,6 +184,16 @@
                     "stabilityImpact": -10,
                     "loreUnlock": "LORE_SECT_HACK",
                     "consequence": "*Drexler golpea la mesa.* '¡Lo sé! El incienso está nublando los sensores de mis hombres. Si esos fanáticos se quedan con el Bastión, la humanidad no será reasignada: será borrada. Operador, mantenga la cabeza fría a cualquier precio'."
+                },
+                {
+                    "text": "Señor, en la Zona 4 dicen que la orden de disparar salió de esta consola.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -3,
+                    "corruptionImpact": 5,
+                    "if": {
+                        "vargas_fuerza": "letal"
+                    },
+                    "consequence": "*Drexler ni pestañea.* 'Salió de donde tenía que salir. El generador siguió funcionando, ¿no? Es lo único que recordará la historia'."
                 }
             ]
         },

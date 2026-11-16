@@ -7,10 +7,23 @@ import { state } from '../core/State.js';
 import { bus } from '../core/Bus.js';
 import { applyTraits } from '../services/EntityService.js';
 import { analyzeSubjectProbability } from '../utils/scannerUtils.js';
+import { narrativeFlags } from './NarrativeFlags.js';
 
 // Por defecto una respuesta del operador cierra las alternativas: si no, se podía negar algo y
 // acto seguido concederlo. Sólo las charlas de pura indagación marcan `exclusive: false`.
 export const isExclusive = (dialogue) => dialogue?.exclusive !== false;
+
+// Opciones visibles según lo que el operador decidió antes (`if`).
+const visibleOptions = (options = []) => options.filter(o => narrativeFlags.matches(o.if));
+
+/**
+ * Quién habla, explícito en los datos: `speaker` de la opción o del diálogo, si no el NPC
+ * del diálogo y, en último caso, el sujeto en cámara. La UI pone su etiqueta genérica si es null.
+ */
+export function resolveSpeaker(dialogue, option, entity = state.currentEntity) {
+    const name = option?.speaker || dialogue?.speaker || dialogue?.npcTraits?.id || entity?.name || entity?.id;
+    return name ? String(name).toUpperCase() : null;
+}
 
 class DialogueEngine {
     constructor() {
@@ -69,6 +82,7 @@ class DialogueEngine {
             }
 
             this.dialogues = allDialogues;
+            narrativeFlags.declare(manifest.flags);
             console.log('[DIALOGUE] Base de datos modular cargada:', this.dialogues.length);
         } catch (error) {
             console.error('[DIALOGUE] Error cargando diálogos modulares:', error);
@@ -82,9 +96,11 @@ class DialogueEngine {
         if (this.dialogues.length === 0) return;
 
         const currentStep = state.currentStep || 1;
+        const eligible = this.dialogues.filter(d => narrativeFlags.matches(d.requires));
+        if (eligible.length === 0) return;
 
         // 1. Filtrar diálogos por el paso actual (minStep/maxStep)
-        let pool = this.dialogues.filter(d => {
+        let pool = eligible.filter(d => {
             const minStep = d.minStep || 1;
             const maxStep = d.maxStep || 12;
             return currentStep >= minStep && currentStep <= maxStep;
@@ -102,14 +118,19 @@ class DialogueEngine {
 
         // 3. Fallback: Si no hay diálogos específicos para este paso, usar los de pasos anteriores
         if (unusedPool.length === 0) {
-            unusedPool = this.dialogues.filter(d => (d.minStep || 1) <= currentStep && !state.usedDialogueIds.includes(d.id));
+            unusedPool = eligible.filter(d => (d.minStep || 1) <= currentStep && !state.usedDialogueIds.includes(d.id));
         }
 
         // 4. Fallback final: Si aún así no hay nada, usar todo el pool disponible
-        if (unusedPool.length === 0) unusedPool = pool.length > 0 ? pool : this.dialogues;
+        if (unusedPool.length === 0) unusedPool = pool.length > 0 ? pool : eligible;
 
         const randomIndex = Math.floor(Math.random() * unusedPool.length);
-        this.currentDialogue = unusedPool[randomIndex];
+        this.startDialogue(unusedPool[randomIndex]);
+    }
+
+    /** Abre un diálogo concreto (también lo usan los tests que recorren todas las ramas). */
+    startDialogue(dialogue) {
+        this.currentDialogue = { ...dialogue, options: visibleOptions(dialogue.options) };
 
         // Registrar como usado
         const usedIds = [...state.usedDialogueIds];
@@ -130,14 +151,16 @@ class DialogueEngine {
 
         // Actualizar estado para React
         state.focusMode = true;
+        const speaker = resolveSpeaker(this.currentDialogue);
         state.activeDialogue = {
             id: this.currentDialogue.id,
             text: this.currentDialogue.text,
+            speaker,
             exclusive: isExclusive(this.currentDialogue),
             options: this.currentDialogue.options.map(opt => ({ ...opt, used: false }))
         };
 
-        bus.emit('DIALOGUE_STARTED', this.currentDialogue);
+        bus.emit('DIALOGUE_STARTED', { ...this.currentDialogue, speaker });
     }
 
     /**
@@ -198,6 +221,9 @@ class DialogueEngine {
         }
         state.endBatch();
 
+        // Lo decidido queda en la memoria narrativa para diálogos posteriores
+        if (option.set) narrativeFlags.set(option.set);
+
         // Desbloquear lore si existe
         if (option.loreUnlock) {
             bus.emit('LORE_UNLOCKED', option.loreUnlock);
@@ -217,6 +243,7 @@ class DialogueEngine {
 
         // Emitir consecuencia para el chat y analíticas
         bus.emit('DIALOGUE_OPTION_SELECTED', {
+            speaker: resolveSpeaker(this.currentDialogue, option),
             option: option.text,
             consequence: option.consequence,
             corruptionImpact: option.corruptionImpact || 0,
@@ -229,12 +256,13 @@ class DialogueEngine {
             this.currentDialogue = {
                 ...this.currentDialogue,
                 text: option.consequence, // La respuesta del sujeto se convierte en el nuevo contexto
-                options: option.next
+                options: visibleOptions(option.next)
             };
 
             state.activeDialogue = {
                 id: this.currentDialogue.id,
                 text: this.currentDialogue.text,
+                speaker: state.activeDialogue?.speaker ?? resolveSpeaker(this.currentDialogue),
                 exclusive: isExclusive(this.currentDialogue),
                 options: this.currentDialogue.options.map(opt => ({ ...opt, used: false }))
             };

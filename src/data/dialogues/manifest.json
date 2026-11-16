@@ -6,5 +6,19 @@
         "phase4/ascension.json",
         "general/common.json",
         "general/interrogations.json"
-    ]
+    ],
+    "flags": {
+        "vargas_fuerza": [
+            "letal",
+            "contencion"
+        ],
+        "agua_norte": [
+            "sellada",
+            "forzada"
+        ],
+        "elara_contacto": [
+            "confia",
+            "desconfia"
+        ]
+    }
 }

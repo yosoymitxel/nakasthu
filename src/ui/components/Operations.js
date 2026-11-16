@@ -112,15 +112,11 @@ export const Operations = () => {
             // Notificar al sistema que el escaneo ha terminado
         };
 
-        // Quien habla tiene nombre: "BIOMASA" para todos impedía saber si era Vargas, Kael o un anónimo.
-        const speaker = () => {
-            const e = state.currentEntity;
-            return (e?.name || e?.id || labels.subjectSender).toString().toUpperCase();
-        };
 
         const onDialogueStarted = (dialogue) => {
             bus.emit('DIALOGUE_EMITTED', {
-                sender: speaker(),
+                // El motor dice quién habla; la etiqueta genérica sólo si no hay nombre.
+                sender: dialogue.speaker || labels.subjectSender,
                 text: dialogue.text,
                 type: 'SUBJECT'
             });
@@ -139,7 +135,7 @@ export const Operations = () => {
             if (data.consequence) {
                 setTimeout(() => {
                     bus.emit('DIALOGUE_EMITTED', {
-                        sender: speaker(),
+                        sender: data.speaker || labels.subjectSender,
                         text: data.consequence,
                         type: 'SUBJECT'
                     });
