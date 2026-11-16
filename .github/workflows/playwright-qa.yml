@@ -14,8 +14,8 @@ jobs:
     name: Sintaxis + Vitest
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npm test
@@ -24,8 +24,8 @@ jobs:
     name: Playwright (smoke · e2e · regresión · móvil)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npx playwright install --with-deps chromium
@@ -37,7 +37,7 @@ jobs:
         run: |
           node qa/support/report.mjs || true
           cat test-results/QA_REPORT.md >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: nakasthu-playwright-report
@@ -51,8 +51,8 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npx playwright install --with-deps chromium
