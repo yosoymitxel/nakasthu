@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "check:syntax": "node tools/check-syntax.mjs",
-    "test": "node tools/check-syntax.mjs && vitest run __tests__",
+    "check:registry": "node tools/check-registry.mjs",
+    "test": "node tools/check-syntax.mjs && node tools/check-registry.mjs && vitest run __tests__",
     "test:smoke": "playwright test --config=qa/playwright.config.mjs --project=smoke",
     "test:e2e": "playwright test --config=qa/playwright.config.mjs --project=e2e --project=mobile",
     "test:regression": "playwright test --config=qa/playwright.config.mjs --project=regression",

@@ -530,6 +530,7 @@ button:not(:disabled):active { scale: 0.97; }
 
 /* SENTENCIAS: tira del turno, registro y ficha del sujeto */
 .vd-button { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 18px; padding: 2px 4px; }
+@media (pointer: coarse) { .vd-button { min-height: 36px; } } /* objetivo táctil */
 .vd-pips { display: inline-flex; flex-wrap: wrap; gap: 2px; justify-content: center; }
 .vd-pip { width: 9px; height: 9px; display: inline-flex; align-items: center; justify-content: center; font-size: 8px; line-height: 1; color: #0b0b0d; font-weight: 900; }
 .vd-pip.pass { background: #10b981; }

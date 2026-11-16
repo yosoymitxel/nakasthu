@@ -304,6 +304,23 @@ test.describe('REGRESIÓN · responsive @responsive', () => {
         await page.getByRole('button', { name: /BIOMÉTRICO/ }).first().click({ trial: true });
     });
 
+    test('dedo real (CDP): menú → cinemática → monolito mantenido → paso 3 @responsive', async ({ page, context }) => {
+        test.skip(page.viewportSize().width > 900, 'Sólo táctil');
+        await bootGame(page, SKIP_TUTORIALS);
+        const cdp = await context.newCDPSession(page);
+        const tap = async (loc) => { const b = await loc.boundingBox(); await page.touchscreen.tap(b.x + b.width / 2, b.y + b.height / 2); };
+        await tap(page.getByRole('button', { name: 'Iniciar Juego', exact: true }));
+        await expect(page.locator('.cinematic-screen')).toBeVisible();
+        for (let i = 0; i < 30 && await page.locator('.cinematic-screen').isVisible(); i++) { await page.touchscreen.tap(40, 200); await page.waitForTimeout(200); }
+        const mono = page.locator('.special-mechanic-container .monolith');
+        await expect(mono).toBeVisible();
+        const b = await mono.boundingBox();
+        const pt = [{ x: b.x + b.width / 2, y: b.y + b.height / 2 }];
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pt });
+        await expect.poll(() => page.evaluate(() => window.state.currentStep), { timeout: 20_000 }).toBe(3);
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    });
+
     test('pantalla final legible en móvil @responsive', async ({ page }, testInfo) => {
         await bootGame(page, { nakasthu_max_step: '11' });
         await jumpToStep(page, 11);
