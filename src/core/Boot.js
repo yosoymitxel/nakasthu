@@ -11,6 +11,7 @@ import { dialogueEngine } from '../systems/DialogueEngine.js';
 import { tutorialController } from '../systems/TutorialController.js';
 import { achievements } from '../systems/Achievements.js';
 import { verdictLog } from '../systems/VerdictLog.js';
+import { storageGet } from '../utils/storage.js';
 
 console.log("%c NAKASTHU // CORE BOOT SEQUENCE STARTED ", "background: #111; color: #FF8C00; font-weight: bold;");
 
@@ -31,7 +32,7 @@ window.state = state;
 window.__SYSTEMS__ = systems;
 
 // Protocolo de omisión de tutoriales si se solicita via comando o estado
-if (state.hasSeenTutorial || (typeof localStorage !== 'undefined' && localStorage.getItem('nakasthu_skip_tutorials') === 'true')) {
+if (state.hasSeenTutorial || storageGet('nakasthu_skip_tutorials') === 'true') {
     setTimeout(() => {
         bus.emit('TUTORIAL_SKIP_ALL');
     }, 500);

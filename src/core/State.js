@@ -7,6 +7,7 @@ import { bus } from './Bus.js';
 import { generateSubject, applyTraits } from '../services/EntityService.js';
 import { CONFIG } from '../data/gameConfig.js';
 import { STEPS_CONFIG } from '../data/stepsConfig.js';
+import { storageGet, storageGetInt } from '../utils/storage.js';
 
 let isBatching = false;
 
@@ -77,8 +78,9 @@ const initialState = {
     tutorialStep: 0, // 0: No tutorial, 1-4: Pasos del tutorial
     focusMode: false, // Bloquea el resto de la UI durante diálogos profundos
     unlockedCommands: ['HELP', 'CLEAR', 'STATUS'], // Comandos iniciales
-    hasSeenTutorial: (typeof localStorage !== 'undefined' && (localStorage.getItem('nakasthu_tutorial_seen') === 'true' || localStorage.getItem('nakasthu_skip_tutorials') === 'true')),
-    maxStepReached: parseInt((typeof localStorage !== 'undefined' && localStorage.getItem('nakasthu_max_step')) || '1', 10),
+    hasSeenTutorial: storageGet('nakasthu_tutorial_seen') === 'true' || storageGet('nakasthu_skip_tutorials') === 'true',
+    // Acotado a los pasos existentes: un valor manipulado (NaN, -3, 999) rompía o desbloqueaba el selector.
+    maxStepReached: storageGetInt('nakasthu_max_step', { fallback: 1, min: 1, max: Math.max(...Object.keys(STEPS_CONFIG).map(Number)) }),
     infiniteMode: false,
     requiredScan: 'BIOMETRIC', // Tipo de escaneo requerido para decisiones (rotativo)
     usedDialogueIds: []        // Memoria de diálogos para evitar repeticiones

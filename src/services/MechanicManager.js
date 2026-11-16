@@ -57,7 +57,6 @@ class DecisionMechanic extends BaseMechanic {
 
         // PREVENCIÓN: Evitar doble decisión sobre el mismo sujeto
         if (subject._processed) return;
-        subject._processed = true;
 
         const loreChar = subject.isLoreCore ? subject.loreCore : findLoreCharacter(subject.id, subject.name);
 
@@ -72,6 +71,8 @@ class DecisionMechanic extends BaseMechanic {
             });
             return;
         }
+        // Marcar DESPUÉS del bloqueo: si no, un intento prematuro dejaba al sujeto sin decisión posible.
+        subject._processed = true;
 
         const storyPath = state.storyPath || 0;
         const pathConfig = PATH_CONFIGS[storyPath];
@@ -150,7 +151,6 @@ class DecisionMechanic extends BaseMechanic {
 
         // PREVENCIÓN: Evitar doble decisión sobre el mismo sujeto
         if (subject._processed) return;
-        subject._processed = true;
 
         const requiredType = state.requiredScan || 'BIOMETRIC';
         const hasRequiredScan = subject.scannedTypes && subject.scannedTypes.includes(requiredType);
@@ -162,6 +162,7 @@ class DecisionMechanic extends BaseMechanic {
             });
             return;
         }
+        subject._processed = true;
 
         const storyPath = state.storyPath || 0;
         const pathConfig = PATH_CONFIGS[storyPath];

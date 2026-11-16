@@ -15,6 +15,7 @@ import { CONFIG } from '../data/gameConfig.js';
 import { STEPS_CONFIG } from '../data/stepsConfig.js';
 import { MechanicManager } from '../services/MechanicManager.js';
 import { calculateJudgmentRecommendation, checkStepMeta } from '../utils/gameplayUtils.js';
+import { storageSet } from '../utils/storage.js';
 
 /**
  * Clase GameSequencer - Gestiona la progresión narrativa
@@ -144,9 +145,7 @@ class GameSequencer {
         // Actualizar el paso máximo alcanzado para el selector de niveles
         if (nextStepIdx > (state.maxStepReached || 0)) {
             state.maxStepReached = nextStepIdx;
-            if (typeof localStorage !== 'undefined') {
-                localStorage.setItem('nakasthu_max_step', nextStepIdx.toString());
-            }
+            storageSet('nakasthu_max_step', nextStepIdx);
         }
 
         this.finalizeStepTransition(nextStepIdx);
@@ -184,9 +183,7 @@ class GameSequencer {
         // Actualizar el paso máximo alcanzado para el selector de niveles si avanzamos linealmente
         if (this.currentStep > (state.maxStepReached || 0)) {
             state.maxStepReached = this.currentStep;
-            if (typeof localStorage !== 'undefined') {
-                localStorage.setItem('nakasthu_max_step', this.currentStep.toString());
-            }
+            storageSet('nakasthu_max_step', this.currentStep);
         }
 
         // Verificar si hay cambio de acto ANTES de generar stepData
@@ -471,7 +468,14 @@ class GameSequencer {
         state.gameStatus = 'LOADING'; // Temporal para evitar ticks locos
         state.endBatch();
 
+        // Token: si el jugador ya actuó (p.ej. eligió final) o hubo otro salto en estos 100 ms,
+        // finalizar aquí lo devolvería al paso de origen y pisaría su decisión.
+        const jumpToken = (this._jumpToken = (this._jumpToken || 0) + 1);
         setTimeout(() => {
+            if (jumpToken !== this._jumpToken || this.currentStep !== stepIndex) {
+                console.warn(`[SEQUENCER] Salto a ${stepIndex} descartado: el estado avanzó durante la transición.`);
+                return;
+            }
             this.finalizeStepTransition(stepIndex);
 
             // Forzar cierre de cualquier modal residual

@@ -264,6 +264,18 @@ export const Layout = () => {
         };
     }, []);
 
+    // El modal de sistema (propuestas de tutorial, Configuración) bloquea al jugador:
+    // el motor debe congelarse igual que con GameModal, o drena energía mientras el jugador lee.
+    const hasSystemModal = Boolean(modal) && !gameModalState.visible;
+    useEffect(() => {
+        if (!hasSystemModal) return;
+        state.isModalOpen = true;
+        return () => {
+            // Si GameModal tomó el relevo, él gestiona la bandera.
+            if (!document.querySelector('.game-modal-overlay')) state.isModalOpen = false;
+        };
+    }, [hasSystemModal]);
+
     const isEclipse = phase === 'ECLIPSE';
     const isCriticalEnergy = energy < 15;
     const isCriticalStability = stability < 15;
@@ -305,8 +317,15 @@ export const Layout = () => {
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === 'Escape') {
+                // El modal de sistema (Configuración) tiene prioridad: cerrarlo no debe pausar.
+                if (modal) {
+                    setModal(null);
+                    return;
+                }
+                // Volver a donde se abrió el archivo: desde el menú, forzar PLAYING montaba un nivel sin partida.
                 if (gameStatus === 'LORE_ARCHIVE') {
-                    state.gameStatus = 'PLAYING';
+                    const back = state.previousGameStatus;
+                    state.gameStatus = back && back !== 'LORE_ARCHIVE' ? back : 'START_MENU';
                     return;
                 }
 
@@ -323,7 +342,7 @@ export const Layout = () => {
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [gameStatus]);
+    }, [gameStatus, modal]);
 
 
     const rank = calculateRank(rankInput);
@@ -371,7 +390,7 @@ export const Layout = () => {
             </div>
 
             <!-- Overlay de Pantalla de Inicio -->
-            <div className=${`start-menu ${isStartMenu ? 'active' : ''}`}>
+            <div className=${`start-menu ${isStartMenu ? 'active' : ''}`} inert=${isStartMenu ? undefined : ''}>
                 <div className="flex flex-col items-center space-y-12">
                     <div className="text-center space-y-4">
                         <h1 className="menu-title font-bold text-zinc-100 opacity-90">NAKASTHU</h1>
@@ -424,7 +443,7 @@ export const Layout = () => {
             ${isLoreArchive && html`<${LoreScreen} />`}
 
             <!-- Protocolo de Colapso (Muerte / Final) -->
-            <div className=${`death-screen ${isGameOver ? 'active' : ''}`}>
+            <div className=${`death-screen ${isGameOver ? 'active' : ''}`} aria-hidden=${!isGameOver} inert=${isGameOver ? undefined : ''}>
                 <div className="flex flex-col items-center space-y-8 max-w-4xl text-center px-4 overflow-y-auto max-h-screen py-12 custom-scrollbar">
                     <h1 className=${`font-mono text-2xl sm:text-4xl tracking-[0.15em] sm:tracking-[0.3em] uppercase font-black ${deathHeader?.color || 'text-red-600'}`}>
                         ${deathHeader?.text || 'BASTIÓN COMPROMETIDO'}
@@ -622,6 +641,8 @@ export const Layout = () => {
                         <div className="text-zinc-400 font-mono text-[12px] leading-relaxed my-4">
                             ${modal.content}
                             ${modal.title === 'CONFIGURACIÓN' && html`
+                                <!-- Un único nodo raíz: htm devuelve un array sin keys si hay hermanos en la raíz -->
+                                <div>
                                 <div className="mt-6 p-4 border border-zinc-800 bg-black/40 space-y-4">
                                     <div className="flex justify-between items-center">
                                         <span className="text-zinc-500 uppercase tracking-widest text-[10px]">Visualización</span>
@@ -659,8 +680,9 @@ export const Layout = () => {
                                 <div className="mt-6 p-4 border border-zinc-800 bg-black/40 space-y-4">
                                     <h3 className="text-zinc-500 uppercase tracking-widest text-[10px] border-b border-zinc-800 pb-2 mb-2">Selector de Nivel [DEV]</h3>
                                     <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto custom-scrollbar">
-                                        ${Object.entries(STEPS_CONFIG).map(([id, config]) => html`
+                                        ${React.Children.toArray(Object.entries(STEPS_CONFIG).map(([id, config]) => html`
                                             <button 
+                                                key=${`dev-step-${id}`}
                                                 onClick=${() => {
                 gameSequencer.jumpToStep(parseInt(id));
                 setModal(null);
@@ -669,8 +691,9 @@ export const Layout = () => {
                                             >
                                                 ${id}. ${config.name}
                                             </button>
-                                        `)}
+                                        `))}
                                     </div>
+                                </div>
                                 </div>
                             `}
                         </div>

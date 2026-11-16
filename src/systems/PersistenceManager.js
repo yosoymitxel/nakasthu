@@ -3,6 +3,10 @@
  * Sistema de guardado en localStorage para progreso de historia y lore.
  */
 import { bus } from '../core/Bus.js';
+import { storageGetJSON, storageSet, storageRemove } from '../utils/storage.js';
+
+// Un guardado sólo es utilizable si apunta a un paso concreto.
+const isValidSave = (d) => d && typeof d === 'object' && Number.isInteger(d.currentStep) && d.currentStep >= 1;
 
 class PersistenceManager {
     constructor() {
@@ -20,9 +24,7 @@ class PersistenceManager {
             unlockedModules: Array.from(gameState.unlockedModules || []),
             timestamp: Date.now()
         };
-        if (typeof localStorage !== 'undefined') {
-            localStorage.setItem(this.SAVE_KEY, JSON.stringify(data));
-        }
+        storageSet(this.SAVE_KEY, JSON.stringify(data));
         console.log("%c[SAVE] Partida guardada.", "color: #0ea5e9; font-weight: bold;");
         bus.emit('SYSTEM_LOG', { msg: 'SISTEMA_GUARDADO: PROGRESO_SINCRONIZADO' });
     }
@@ -31,20 +33,17 @@ class PersistenceManager {
      * Carga el estado guardado.
      */
     loadGame() {
-        if (typeof localStorage === 'undefined') return null;
-        const data = localStorage.getItem(this.SAVE_KEY);
-        return data ? JSON.parse(data) : null;
+        return storageGetJSON(this.SAVE_KEY, null, isValidSave);
     }
 
     /**
      * Guarda un fragmento de lore desbloqueado.
      */
     saveLore(loreId) {
-        if (typeof localStorage === 'undefined') return;
         const lore = this.loadLore();
         if (!lore.includes(loreId)) {
             lore.push(loreId);
-            localStorage.setItem(this.LORE_KEY, JSON.stringify(lore));
+            storageSet(this.LORE_KEY, JSON.stringify(lore));
         }
     }
 
@@ -52,18 +51,17 @@ class PersistenceManager {
      * Carga todos los fragmentos de lore desbloqueados.
      */
     loadLore() {
-        if (typeof localStorage === 'undefined') return [];
-        const data = localStorage.getItem(this.LORE_KEY);
-        return data ? JSON.parse(data) : [];
+        // Corrupto o con otra forma → vacío. Antes lanzaba y abortaba la carga de TODA la base de lore.
+        const ids = storageGetJSON(this.LORE_KEY, [], Array.isArray);
+        return ids.filter((id) => typeof id === 'string');
     }
 
     /**
      * Borra todo el progreso.
      */
     clearAll() {
-        if (typeof localStorage === 'undefined') return;
-        localStorage.removeItem(this.SAVE_KEY);
-        localStorage.removeItem(this.LORE_KEY);
+        storageRemove(this.SAVE_KEY);
+        storageRemove(this.LORE_KEY);
         console.warn("[PERSISTENCE] Todos los datos borrados.");
     }
 }

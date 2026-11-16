@@ -1,0 +1,56 @@
+name: Playwright QA
+on:
+  push:
+    branches:
+      - main
+      - qa/playwright-smoke-20261116
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: nakasthu-playwright-qa-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  unit:
+    name: Existing unit and syntax tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Run existing tests
+        run: npm test
+
+  browser:
+    name: Playwright browser smoke and user flows
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install Playwright
+        run: npm install --no-save @playwright/test
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Test checked-out branch locally and smoke published Pages
+        env:
+          BASE_URL: http://127.0.0.1:4173/
+          PUBLISHED_URL: https://yosoymitxel.github.io/nakasthu/
+        run: npx playwright test --config=qa/playwright.config.mjs
+      - name: Upload Playwright report and traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nakasthu-playwright-report
+          path: |
+            playwright-report/
+            test-results/
+            qa/playwright-results.json
+          if-no-files-found: warn
+          retention-days: 14
