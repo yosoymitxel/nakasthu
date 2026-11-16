@@ -8,7 +8,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: nakasthu-playwright-qa
+  group: nakasthu-playwright-qa-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   unit:

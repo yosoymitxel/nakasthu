@@ -15,8 +15,9 @@ export default defineConfig({
     ['json', { outputFile: './playwright-results.json' }],
   ],
   webServer: {
-    command: 'python3 -m http.server 4173 --bind 127.0.0.1',
+    command: 'python3 -m http.server 4173 --directory "$GITHUB_WORKSPACE" --bind 127.0.0.1',
     url: 'http://127.0.0.1:4173/',
+    cwd: process.env.GITHUB_WORKSPACE || process.cwd(),
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
   },
