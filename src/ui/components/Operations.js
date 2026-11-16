@@ -46,6 +46,11 @@ export const Operations = () => {
     // Si no hay entidad o no hay escaneo requerido, se considera incompleto por defecto
     const isScanComplete = !!(currentEntity && requiredScan && currentEntity.scannedTypes?.includes(requiredScan));
 
+    // Detectar si el sujeto actual es un personaje Motor del Lore
+    const loreChar = currentEntity
+        ? (currentEntity.isLoreCore ? currentEntity.loreCore : findLoreCharacter(currentEntity.id, currentEntity.name))
+        : null;
+
     const [flash, setFlash] = useState(null);
 
     // Atajos: A autoriza, S sacrifica, I interroga. Nunca mientras se escribe ni con un modal abierto.

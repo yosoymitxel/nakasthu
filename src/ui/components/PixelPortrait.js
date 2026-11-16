@@ -278,7 +278,7 @@ const drawLoreCharacter = (ctx, loreKey, r, p) => {
     return false;
 };
 
-/** Renderizado procedimental avanzado según Especie y Rol */
+/** Renderizado procedimental avanzado: siluetas y colores que se distinguen a 16×20 */
 const drawProcedural = (ctx, seed, morph, hooded, corrupt, role, species, r, p) => {
     let s = hash(String(seed));
     const nextRandom = () => {
@@ -291,189 +291,239 @@ const drawProcedural = (ctx, seed, morph, hooded, corrupt, role, species, r, p) 
     const isTech = roleClean.includes('técnic') || roleClean.includes('tecnic') || roleClean.includes('ingenier') || roleClean.includes('operad');
     const isDevout = roleClean.includes('devot') || roleClean.includes('sectari') || roleClean.includes('creyente') || hooded;
     const isLeader = roleClean.includes('líder') || roleClean.includes('lider') || roleClean.includes('comand') || roleClean.includes('oficial');
+    const isInfiltrado = roleClean.includes('infiltr');
     const isClone = morph === 'clon' || String(species).toUpperCase() === 'CLON';
     const isAlien = ALIENS.includes(morph) || String(species).toUpperCase() === 'HÍBRIDO';
+    const isEidolon = String(species).toUpperCase() === 'EIDOLON';
 
-    // 1. VESTIMENTA / TORSO SEGÚN ROL
-    r(INK, 3, 12, 10, 1); r(INK, 2, 13, 12, 7);
+    // ──── TORSO: Color dominante que rompe la monotonía ────
+    r(INK, 2, 12, 12, 8);
 
     if (isTech) {
-        // Uniforme técnico: Gris grafito con franja de alta visibilidad (amarillo o cian)
-        const stripeColor = pick(['#eab308', '#06b6d4', '#f97316']);
+        // Mono industrial naranja con reflectante
+        const accent = pick(['#f97316', '#eab308', '#06b6d4']);
         r('#27272a', 3, 13, 10, 7);
-        r(stripeColor, 6, 12, 4, 2); // Cuello llamativo
-        r(stripeColor, 4, 15, 8, 1); // Franja horizontal en pecho
-        r('#18181b', 4, 13, 1, 7);   // Correa de herramientas
-        p('#e4e4e7', 5, 17);        // Hebilla de arnés
-        p(stripeColor, 9, 14);       // Insignia de técnico
+        r(accent, 4, 13, 8, 1);       // Franja reflectante en hombros
+        r('#3f3f46', 6, 14, 4, 3);     // Pechera de herramientas
+        r(accent, 7, 15, 2, 1);        // Indicador luminoso
+        p(accent, 5, 17);              // Led de arnés
+        r('#18181b', 4, 14, 1, 6);     // Correa
     } else if (isDevout) {
-        // Túnica ceremonial: Púrpura, carmesí o índigo con bordado litúrgico
+        // Túnica litúrgica larga con estola
         const robeColor = pick(['#3b0764', '#4c1d95', '#7f1d1d', '#1e1b4b']);
-        const trimColor = pick(['#f59e0b', '#c084fc', '#cbd5e1']);
-        r(robeColor, 3, 13, 10, 7);
-        r(trimColor, 7, 13, 2, 2);  // Bordado de cuello
-        r(trimColor, 6, 15, 4, 1);  // Emblema sagrado
-        r('#a855f7', 7, 17, 2, 2);  // Relicario de piedra
+        const trimColor = pick(['#f59e0b', '#c084fc', '#e2e8f0']);
+        r(robeColor, 3, 12, 10, 8);
+        r(trimColor, 7, 12, 2, 8);    // Estola vertical central visible
+        r(trimColor, 4, 14, 1, 4); r(trimColor, 11, 14, 1, 4); // Ribetes laterales
+        p('#a855f7', 7, 18); p('#a855f7', 8, 18); // Relicario
     } else if (isLeader) {
-        // Abrigo de mando de la Orden: Negro militar con hombreras doradas
-        r('#09090b', 3, 13, 10, 7);
+        // Abrigo militar largo negro con charreteras doradas
+        r('#09090b', 3, 12, 10, 8);
         r('#f59e0b', 2, 13, 3, 1); r('#f59e0b', 11, 13, 3, 1); // Charreteras
-        p('#f59e0b', 6, 15); p('#f59e0b', 9, 15);
+        r('#f59e0b', 7, 13, 2, 1);    // Broche central
+        p('#f59e0b', 6, 15); p('#f59e0b', 9, 15); // Botones
         p('#f59e0b', 6, 17); p('#f59e0b', 9, 17);
-        r('#3f3f46', 6, 12, 4, 2);
+        r('#3f3f46', 6, 12, 4, 1);     // Cuello rígido
+    } else if (isInfiltrado) {
+        // Gabardina cerrada oscura con capucha oculta
+        const gabColor = pick(['#1c1917', '#18181b', '#1e293b']);
+        r(gabColor, 3, 12, 10, 8);
+        r('#27272a', 7, 13, 2, 7);    // Cierre central
+        p('#ef4444', 7, 14);           // Led rojo oculto
+        p('#71717a', 5, 18); p('#71717a', 10, 18); // Bolsillos laterales
     } else if (isClone) {
-        // Mono de clon estándar con número de serie
-        r('#334155', 3, 13, 10, 7);
-        r('#64748b', 6, 12, 4, 2);
-        p('#38bdf8', 5, 16); p('#38bdf8', 7, 16); // Marcador de lote
+        // Mono estándar gris con código de serie visible
+        r('#475569', 3, 12, 10, 8);
+        r('#64748b', 5, 13, 6, 5);    // Pechera clara
+        r('#38bdf8', 6, 14, 4, 1);    // Barra de ID cian
+        p('#38bdf8', 5, 16); p('#38bdf8', 10, 16); // Marcadores de lote
     } else {
-        // Ropa civil de obrero: Abrigo utilitario con bufanda
-        const coatColor = pick(['#36453b', '#443a2b', '#1e293b', '#334155']);
-        const scarfColor = pick(['#78350f', '#52525b', '#0d9488', '#b91c1c']);
-        r(coatColor, 3, 13, 10, 7);
-        r(scarfColor, 5, 12, 6, 3); // Bufanda envolvente
-        r(scarfColor, 7, 15, 2, 4); // Caída de la bufanda
+        // Ciudadano: ropa civil variada con bufanda o capa
+        const coatColor = pick(['#36453b', '#443a2b', '#1e293b', '#334155', '#3b1c1c', '#1a2e1a']);
+        const scarfColor = pick(['#b91c1c', '#0d9488', '#78350f', '#6d28d9', '#0369a1']);
+        r(coatColor, 3, 12, 10, 8);
+        r(scarfColor, 5, 12, 6, 2);   // Bufanda ancha visible
+        r(scarfColor, 7, 14, 2, 3);   // Caída de la bufanda
     }
 
-    // 2. CABEZA Y RASGOS FACIALES
+    // ──── CABEZA: Silueta diferenciada por especie ────
     if (isAlien) {
-        // --- HÍBRIDOS / ESPECIES ALIENÍGENAS ---
         if (morph === 'quitinoso') {
-            // Insectoide acorazado con 4 ojos rojos y mandíbulas
+            // Insectoide: cabeza angular con mandíbulas y 4 ojos rojos
+            r(INK, 4, 1, 8, 11);
             const carapace = pick(['#14532d', '#1c1917', '#365314']);
-            r(INK, 4, 2, 8, 9); r(INK, 5, 1, 6, 1);
             r(carapace, 5, 2, 6, 8);
-            r('#16a34a', 5, 1, 6, 1); // Cresta superior verde
-            r('#16a34a', 4, 3, 1, 2); r('#16a34a', 11, 3, 1, 2);
-            // 4 ojos compuestos rojos
-            p('#ef4444', 5, 5); p('#ef4444', 6, 6);
-            p('#ef4444', 10, 5); p('#ef4444', 9, 6);
-            // Placas de mandíbula
-            r(INK, 6, 9, 4, 1);
-            p('#15803d', 5, 9); p('#15803d', 10, 9);
+            // Cresta angular superior
+            r('#16a34a', 5, 1, 6, 1);
+            r('#16a34a', 4, 2, 1, 3); r('#16a34a', 11, 2, 1, 3);
+            // 4 ojos compuestos rojo intenso
+            r('#ef4444', 5, 5, 2, 1); r('#ef4444', 9, 5, 2, 1);
+            r('#dc2626', 5, 7, 2, 1); r('#dc2626', 9, 7, 2, 1);
+            // Mandíbulas prominentes
+            p('#15803d', 5, 10); p('#15803d', 10, 10);
+            r(carapace, 6, 10, 4, 1);
         } else if (morph === 'cristalino') {
-            // Silicato translúcido con cristales en la sien y ojos cian
-            r(INK, 4, 2, 8, 9); r(INK, 5, 1, 6, 1);
-            r('#0284c7', 5, 2, 6, 8); // Piel azul cristalina
-            r('#38bdf8', 6, 3, 4, 3);
-            p('#ffffff', 10, 2); p('#38bdf8', 11, 1); // Cristal saliente
-            // Ojos de hendidura cian brillante
+            // Silicato: cabeza translúcida azul con cristales salientes
+            r(INK, 3, 1, 10, 11);
+            r('#0284c7', 5, 2, 6, 8);
+            r('#38bdf8', 6, 3, 4, 4);  // Faceta central brillante
+            // Cristales salientes arriba y lados
+            p('#a5f3fc', 4, 1); p('#ffffff', 11, 1);
+            r('#67e8f9', 3, 4, 2, 3);  // Cristal izquierdo
+            p('#e0f2fe', 12, 3);        // Cristal derecho
+            // Ojos de hendidura horizontal brillante
             r('#a5f3fc', 5, 6, 2, 1); r('#a5f3fc', 9, 6, 2, 1);
             r('#0369a1', 7, 9, 2, 1);
         } else if (morph === 'nakari') {
-            // Piel abisal con cuernos psiónicos y ojos dorados
-            r(INK, 4, 2, 8, 9); r(INK, 5, 1, 6, 1);
+            // Abisal: piel oscura violeta con cuernos curvos y ojos dorados
+            r(INK, 3, 1, 10, 11);
             r('#3b0764', 5, 2, 6, 8);
-            // Cuernos psiónicos
-            r('#c084fc', 3, 1, 2, 2); r('#c084fc', 11, 1, 2, 2);
-            // Ojos dorados radiantes
-            p('#facc15', 6, 6); p('#facc15', 9, 6);
-            // Marcas rituales doradas
-            p('#eab308', 6, 8); p('#eab308', 9, 8);
-            r('#581c87', 7, 9, 2, 1);
+            // Cuernos curvos prominentes
+            r('#7c3aed', 3, 0, 2, 3); r('#7c3aed', 11, 0, 2, 3);
+            r('#c084fc', 3, 0, 1, 1); r('#c084fc', 12, 0, 1, 1);
+            // Ojos dorados grandes
+            r('#facc15', 5, 5, 2, 2); r('#facc15', 9, 5, 2, 2);
+            p(INK, 6, 5); p(INK, 9, 5); // Pupilas
+            // Marcas tribales doradas
+            r('#eab308', 5, 8, 1, 2); r('#eab308', 10, 8, 1, 2);
+            r('#581c87', 7, 10, 2, 1);
         } else {
-            // Zhyriano: piel gris lavanda, ojos almendrados negros con doble brillo
-            r(INK, 4, 2, 8, 9); r(INK, 5, 1, 6, 1);
-            r('#94a3b8', 5, 2, 6, 8);
-            r('#64748b', 10, 3, 1, 7); // Sombra lateral
-            // Grandes ojos alienígenas negros
-            r(INK, 5, 5, 2, 3); r(INK, 9, 5, 2, 3);
-            p('#ffffff', 5, 5); p('#ffffff', 9, 5); // Reflejos estelares
-            p('#cbd5e1', 6, 6); p('#cbd5e1', 10, 6);
-            r('#475569', 7, 10, 2, 1); // Orificio nasal/bucal
+            // Zhyriano: cabeza ovoide gris, ojos almendrados enormes negros
+            r(INK, 3, 1, 10, 11); r(INK, 5, 0, 6, 1);
+            r('#94a3b8', 5, 1, 6, 9);
+            r('#b0bec5', 6, 2, 4, 3); // Cráneo abultado superior
+            r('#64748b', 10, 3, 1, 7);
+            // Ojos enormes negros con brillo estelar
+            r(INK, 4, 5, 3, 3); r(INK, 9, 5, 3, 3);
+            p('#ffffff', 4, 5); p('#ffffff', 11, 5); // Reflejos
+            p('#cbd5e1', 5, 6); p('#cbd5e1', 10, 6);
+            // Boca mínima
+            p('#475569', 7, 10); p('#475569', 8, 10);
         }
     } else if (isClone) {
-        // --- CLONES ---
-        // Cabeza rapada, piel sintética desaturada, código de barras y puerto neural
-        r(INK, 4, 2, 8, 9); r(INK, 5, 1, 6, 1);
+        // Clon: cabeza rapada, piel gris desaturada, código de barras y puerto neural
+        r(INK, 4, 1, 8, 11); r(INK, 5, 0, 6, 1);
         r('#d9d6ce', 5, 2, 6, 8); r('#a8a29e', 10, 3, 1, 7);
-        // Sombra de corte al cero
-        r('#78716c', 5, 2, 6, 1);
-        // Código de barras en la sien
-        p(INK, 5, 4); p(INK, 7, 4); p(INK, 8, 4);
-        // Puerto neural cian en el cuello/oreja
-        p('#06b6d4', 4, 7); p('#22d3ee', 4, 8);
-        // Ojos idénticos
+        // Corte al cero
+        r('#78716c', 5, 1, 6, 2);
+        // Código de barras prominente en la sien
+        p(INK, 4, 3); p(INK, 4, 5); p(INK, 4, 7);
+        p('#78716c', 4, 4); p('#78716c', 4, 6);
+        // Puerto neural cian en el cuello
+        r('#06b6d4', 4, 8, 1, 2); r('#22d3ee', 3, 9, 1, 1);
+        // Ojos idénticos (todos los clones: misma expresión)
         p('#ffffff', 5, 6); p('#292524', 6, 6);
         p('#ffffff', 10, 6); p('#292524', 9, 6);
         r('#78716c', 7, 9, 2, 1);
-    } else {
-        // --- HUMANOS NATURALES ---
+    } else if (isEidolon) {
+        // Eidolon: aspecto casi humano pero con grietas de vacío y ojos heterocromáticos
         const [skin, shade] = pick(HUMAN_SKINS);
         const hair = pick(HAIR_COLORS);
-        const hairStyle = Math.floor(nextRandom() * 5); // 0 a 4
+        r(INK, 4, 1, 8, 11); r(INK, 5, 0, 6, 1);
+        r(skin, 5, 3, 6, 8); r(shade, 10, 4, 1, 7);
+        // Cabello con mechón blanco de corrupción
+        r(hair.base, 5, 1, 6, 3);
+        r('#e4e4e7', 5, 1, 2, 2); // Mechón blanco delator
+        // Ojo izquierdo normal, ojo derecho rojo vacío
+        p('#ffffff', 5, 6); p('#0f172a', 6, 6);
+        p('#ef4444', 9, 5); p('#ef4444', 10, 5); p('#ef4444', 9, 6); p('#ef4444', 10, 6);
+        p('#ffffff', 9, 5); // Punto de brillo
+        // Grieta de corrupción en mejilla
+        p('#d946ef', 10, 7); p('#d946ef', 10, 8);
+        p('#7c3aed', 11, 8);
+        // Venas oscuras bajo el ojo corrupto
+        p(INK, 10, 7); p(shade, 11, 7);
+        r(shade, 7, 10, 2, 1);
+    } else {
+        // ──── HUMANOS NATURALES: variación visible de piel, pelo y accesorios ────
+        const [skin, shade] = pick(HUMAN_SKINS);
+        const hair = pick(HAIR_COLORS);
+        const hairStyle = Math.floor(nextRandom() * 6); // 0 a 5
 
-        // Silueta base de cabeza con orejas
-        r(INK, 4, 2, 8, 10); r(INK, 5, 1, 6, 1);
+        // Silueta base
+        r(INK, 4, 1, 8, 11); r(INK, 5, 0, 6, 1);
         p(skin, 4, 7); p(skin, 11, 7); // Orejas
         r(skin, 5, 3, 6, 8); r(shade, 10, 4, 1, 7);
 
-        // Cabello variado
+        // Peinados con siluetas muy distintas
         if (hairStyle === 0) {
-            // Corto militar
-            r(hair.base, 5, 2, 6, 2); r(hair.light, 6, 2, 4, 1);
+            // Corto militar (cabeza expuesta arriba)
+            r(hair.base, 5, 1, 6, 3); r(hair.light, 6, 1, 4, 1);
         } else if (hairStyle === 1) {
-            // Con flequillo caído hacia un lado
-            r(hair.base, 5, 2, 6, 2); r(hair.base, 4, 3, 2, 3);
-            r(hair.light, 6, 2, 3, 1);
+            // Flequillo largo hacia un lado (asimétrico)
+            r(hair.base, 5, 1, 6, 3); r(hair.base, 4, 2, 2, 4);
+            r(hair.light, 6, 1, 3, 1);
+            r(hair.base, 5, 4, 3, 1); // Flequillo tapa un ojo
         } else if (hairStyle === 2) {
-            // Peinado hacia atrás / ejecutivo
-            r(hair.base, 4, 2, 8, 2); r(hair.light, 5, 1, 6, 1);
+            // Peinado hacia atrás con volumen
+            r(hair.base, 4, 1, 8, 3); r(hair.light, 5, 0, 6, 1);
             p(hair.base, 4, 4); p(hair.base, 11, 4);
         } else if (hairStyle === 3) {
-            // Melena media con volumen a los lados
-            r(hair.base, 4, 2, 8, 2);
-            r(hair.base, 3, 3, 2, 5); r(hair.base, 11, 3, 2, 5);
+            // Melena larga con pelo a los lados (silueta ancha)
+            r(hair.base, 4, 1, 8, 3);
+            r(hair.base, 3, 2, 2, 8); r(hair.base, 11, 2, 2, 8);
+            r(hair.light, 5, 0, 6, 1);
+        } else if (hairStyle === 4) {
+            // Rapado con barba prominente
+            r(hair.base, 5, 1, 6, 1);
+            r(shade, 5, 8, 6, 3); // Barba espesa
+            r(hair.base, 5, 8, 6, 1);
         } else {
-            // Rapado con sombra de barba
-            r(hair.base, 5, 2, 6, 1);
-            r(shade, 5, 9, 6, 2); // Barba de 3 días
+            // Mohawk / cresta (silueta puntiaguda)
+            r(hair.base, 6, 0, 4, 4); r(hair.light, 7, 0, 2, 1);
         }
 
         // Cejas
-        r(hair.base, 5, 5, 2, 1); r(hair.base, 9, 5, 2, 1);
-        // Ojos humanos expresivos
-        const eyeColor = pick(['#3b271d', '#1e3a8a', '#14532d', '#78350f', '#0f172a']);
+        r(hair.base, 5, 4, 2, 1); r(hair.base, 9, 4, 2, 1);
+        // Ojos: color aleatorio
+        const eyeColor = pick(['#3b271d', '#1e3a8a', '#14532d', '#78350f', '#0f172a', '#0891b2']);
         p('#ffffff', 5, 6); p(eyeColor, 6, 6);
         p('#ffffff', 10, 6); p(eyeColor, 9, 6);
 
-        // ACCESORIOS SEGÚN ROL HUMANO
+        // ACCESORIOS PROMINENTES SEGÚN ROL (visible a cualquier escala)
         if (isTech) {
-            // Técnico: 50% gafas en frente / 50% monóculo biónico
+            // Gafas protectoras grandes o visor biónico
             if (nextRandom() > 0.5) {
-                r('#d97706', 5, 3, 2, 2); r('#d97706', 9, 3, 2, 2);
-                p('#fef08a', 5, 3); p('#fef08a', 9, 3);
+                // Gafas protectoras naranjas que cubren ambos ojos
+                r('#d97706', 4, 5, 8, 2);
+                r('#fef08a', 5, 5, 2, 2); r('#fef08a', 9, 5, 2, 2);
+                p(INK, 7, 5); p(INK, 8, 5);  // Puente
             } else {
-                r('#06b6d4', 5, 6, 2, 1); p('#a5f3fc', 6, 6); // Ojo biónico cian
+                // Visor biónico cian (ojo izquierdo completo)
+                r('#27272a', 8, 4, 4, 4);
+                r('#06b6d4', 9, 5, 2, 2);
+                p('#a5f3fc', 9, 5); // Lente brillante
             }
         } else if (isDevout) {
-            // Devoto: Pintura ritual bajo los ojos
-            p('#a855f7', 6, 7); p('#a855f7', 9, 7);
-        } else {
-            // Ciudadano: Ojeras o detalle de fatiga
-            p('#713f12', 6, 7); p('#713f12', 9, 7);
+            // Pintura ritual bajo ambos ojos + marca en frente
+            r('#a855f7', 5, 7, 2, 1); r('#a855f7', 9, 7, 2, 1);
+            p('#c084fc', 7, 3); p('#c084fc', 8, 3); // Marca litúrgica en la frente
+        } else if (isInfiltrado) {
+            // Cicatriz diagonal + ojo muerto
+            r(shade, 5, 4, 1, 4);  // Cicatriz diagonal
+            p('#71717a', 6, 6); // Ojo muerto/apagado
         }
 
         // Boca
         r(shade, 7, 9, 2, 1);
     }
 
-    // 3. CAPUCHA LITÚRGICA SECTARIA (SI storyPath == 1 o isDevout forzado)
-    if (hooded) {
-        r(INK, 3, 1, 10, 2);
-        r('#3b0764', 4, 1, 8, 2);
+    // ──── CAPUCHA SECTARIA ────
+    if (hooded && !isAlien) {
+        r(INK, 3, 0, 10, 3);
+        r('#3b0764', 4, 0, 8, 3);
         r('#3b0764', 3, 3, 2, 9); r('#3b0764', 11, 3, 2, 9);
-        r('#f59e0b', 5, 2, 6, 1);
+        r('#f59e0b', 5, 1, 6, 1); // Ribete dorado
     }
 
-    // 4. ANOMALÍA / CORRUPCIÓN EIDOLON
+    // ──── CORRUPCIÓN EIDOLON (overlay final) ────
     if (corrupt) {
-        // Fisura de vacío: píxeles desgarrados cromáticamente
-        r('#d946ef', 6, 6, 1, 2); // Magenta
-        r('#06b6d4', 9, 6, 1, 2); // Cian
-        p('#ffffff', 6, 6); p('#ffffff', 9, 6);
-        r(INK, 4, 4, 2, 2); // Parche de vacío en la frente
-        p('#38bdf8', 4, 4); // Chispa cuántica
+        // Grietas de vacío cromáticas: magenta + cian sobre la cara
+        r('#d946ef', 5, 4, 1, 4); // Grieta magenta vertical
+        r('#06b6d4', 10, 5, 1, 3); // Grieta cian vertical
+        p('#ffffff', 6, 6); p('#ffffff', 9, 6); // Ojos blancos de vacío
+        r(INK, 4, 3, 2, 2); // Parche de vacío en sien
+        p('#38bdf8', 4, 3); // Chispa cuántica
         p('#ef4444', 7, 10); p('#ef4444', 8, 11); // Sangrado digital
     }
 };
