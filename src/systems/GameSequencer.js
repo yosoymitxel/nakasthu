@@ -144,7 +144,9 @@ class GameSequencer {
         // Actualizar el paso máximo alcanzado para el selector de niveles
         if (nextStepIdx > (state.maxStepReached || 0)) {
             state.maxStepReached = nextStepIdx;
-            localStorage.setItem('nakasthu_max_step', nextStepIdx.toString());
+            if (typeof localStorage !== 'undefined') {
+                localStorage.setItem('nakasthu_max_step', nextStepIdx.toString());
+            }
         }
 
         this.finalizeStepTransition(nextStepIdx);
@@ -182,7 +184,9 @@ class GameSequencer {
         // Actualizar el paso máximo alcanzado para el selector de niveles si avanzamos linealmente
         if (this.currentStep > (state.maxStepReached || 0)) {
             state.maxStepReached = this.currentStep;
-            localStorage.setItem('nakasthu_max_step', this.currentStep.toString());
+            if (typeof localStorage !== 'undefined') {
+                localStorage.setItem('nakasthu_max_step', this.currentStep.toString());
+            }
         }
 
         // Verificar si hay cambio de acto ANTES de generar stepData

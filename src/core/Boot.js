@@ -31,7 +31,7 @@ window.state = state;
 window.__SYSTEMS__ = systems;
 
 // Protocolo de omisión de tutoriales si se solicita via comando o estado
-if (state.hasSeenTutorial || localStorage.getItem('nakasthu_skip_tutorials') === 'true') {
+if (state.hasSeenTutorial || (typeof localStorage !== 'undefined' && localStorage.getItem('nakasthu_skip_tutorials') === 'true')) {
     setTimeout(() => {
         bus.emit('TUTORIAL_SKIP_ALL');
     }, 500);

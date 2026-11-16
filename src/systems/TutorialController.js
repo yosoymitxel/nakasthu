@@ -234,8 +234,10 @@ class TutorialController {
         // Omitir todo el tutorial (reutilizando lógica de Mod-08)
         bus.on('TUTORIAL_SKIP_ALL', () => {
             console.log('[TUTORIAL] Skipping all pending tutorials.');
-            localStorage.setItem('nakasthu_skip_tutorials', 'true');
-            localStorage.setItem('nakasthu_tutorial_seen', 'true');
+            if (typeof localStorage !== 'undefined') {
+                localStorage.setItem('nakasthu_skip_tutorials', 'true');
+                localStorage.setItem('nakasthu_tutorial_seen', 'true');
+            }
             
             this.proposalQueue = []; // Limpiar cola
             this.cancelActiveTutorial(); // Cancelar el actual
@@ -281,7 +283,7 @@ class TutorialController {
 
     proposeTutorial(moduleId, moduleName, tutorialId) {
         // Si el jugador ha decidido omitir todos los tutoriales, no hacer nada
-        if (localStorage.getItem('nakasthu_skip_tutorials') === 'true') return;
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('nakasthu_skip_tutorials') === 'true') return;
 
         console.log(`[TUTORIAL] Proponiendo tutorial para ${moduleName} (${tutorialId})`);
         

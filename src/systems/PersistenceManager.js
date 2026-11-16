@@ -20,7 +20,9 @@ class PersistenceManager {
             unlockedModules: Array.from(gameState.unlockedModules || []),
             timestamp: Date.now()
         };
-        localStorage.setItem(this.SAVE_KEY, JSON.stringify(data));
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(this.SAVE_KEY, JSON.stringify(data));
+        }
         console.log("%c[SAVE] Partida guardada.", "color: #0ea5e9; font-weight: bold;");
         bus.emit('SYSTEM_LOG', { msg: 'SISTEMA_GUARDADO: PROGRESO_SINCRONIZADO' });
     }
@@ -29,6 +31,7 @@ class PersistenceManager {
      * Carga el estado guardado.
      */
     loadGame() {
+        if (typeof localStorage === 'undefined') return null;
         const data = localStorage.getItem(this.SAVE_KEY);
         return data ? JSON.parse(data) : null;
     }
@@ -37,6 +40,7 @@ class PersistenceManager {
      * Guarda un fragmento de lore desbloqueado.
      */
     saveLore(loreId) {
+        if (typeof localStorage === 'undefined') return;
         const lore = this.loadLore();
         if (!lore.includes(loreId)) {
             lore.push(loreId);
@@ -48,6 +52,7 @@ class PersistenceManager {
      * Carga todos los fragmentos de lore desbloqueados.
      */
     loadLore() {
+        if (typeof localStorage === 'undefined') return [];
         const data = localStorage.getItem(this.LORE_KEY);
         return data ? JSON.parse(data) : [];
     }
@@ -56,6 +61,7 @@ class PersistenceManager {
      * Borra todo el progreso.
      */
     clearAll() {
+        if (typeof localStorage === 'undefined') return;
         localStorage.removeItem(this.SAVE_KEY);
         localStorage.removeItem(this.LORE_KEY);
         console.warn("[PERSISTENCE] Todos los datos borrados.");

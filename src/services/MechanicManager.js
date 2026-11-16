@@ -10,6 +10,7 @@ import { CONFIG } from '../data/gameConfig.js';
 import { PATH_CONFIGS } from '../data/pathConfigs.js';
 import { cancelScan } from '../systems/Scanner.js';
 import { calculateDecisionResult, calculateSyncStabilityEffect } from '../utils/gameplayUtils.js';
+import { findLoreCharacter } from '../data/loreCharactersConfig.js';
 
 class BaseMechanic {
     constructor(config) {
@@ -58,11 +59,13 @@ class DecisionMechanic extends BaseMechanic {
         if (subject._processed) return;
         subject._processed = true;
 
-        // BLOQUEO: Solo permitir tras escaneo específico
+        const loreChar = subject.isLoreCore ? subject.loreCore : findLoreCharacter(subject.id, subject.name);
+
+        // BLOQUEO: Solo permitir tras escaneo específico (los personajes del lore tienen enlace prioritario)
         const requiredType = state.requiredScan || 'BIOMETRIC';
         const hasRequiredScan = subject.scannedTypes && subject.scannedTypes.includes(requiredType);
 
-        if (!hasRequiredScan && !state.isTutorialActive) {
+        if (!loreChar && !hasRequiredScan && !state.isTutorialActive) {
             bus.emit('TERMINAL_PRINT', {
                 text: `[BLOQUEO] IMPOSIBLE PROCEDER: ENLACE ${requiredType} NO ESTABLECIDO.`,
                 type: 'SYSTEM'
@@ -73,35 +76,43 @@ class DecisionMechanic extends BaseMechanic {
         const storyPath = state.storyPath || 0;
         const pathConfig = PATH_CONFIGS[storyPath];
 
-        // Calcular resultado usando utilidad
-        const result = calculateDecisionResult(subject, 'authorize', CONFIG);
-
         // Detener escaneos en curso para evitar contaminación del siguiente NPC (Fase 18)
         cancelScan();
 
         state.startBatch();
 
-        // Aplicar cambios
-        if (result.energyChange !== 0) state.energy = Math.max(0, Math.min(100, state.energy + result.energyChange));
-        if (result.stabilityChange !== 0) state.stability = Math.max(0, Math.min(100, state.stability + result.stabilityChange));
-        if (result.unrestChange !== 0) state.unrest = Math.max(0, Math.min(100, state.unrest + result.unrestChange));
-
-        if (result.isError) {
-            state.judgmentErrors++;
-            if (result.flash) bus.emit('TRIGGER_FLASH', result.flash);
+        if (loreChar) {
+            // Resolución canónica de personaje del lore (sin penalización por corrupción)
+            state.stability = Math.min(100, state.stability + 20);
+            state.energy = Math.max(0, state.energy - 2);
+            bus.emit('TRIGGER_FLASH', { color: loreChar.glowColor || '#06b6d4', duration: 350, target: 'MOD04' });
             bus.emit('TERMINAL_PRINT', {
-                text: pathConfig.decisions.authorize.fail,
-                type: 'ERROR'
-            });
-        } else {
-            bus.emit('TERMINAL_PRINT', {
-                text: pathConfig.decisions.authorize.success,
+                text: loreChar.authorizeSuccessMsg || `[NAKASTHU] ENLACE PRIORITARIO AUTORIZADO: ${subject.id}`,
                 type: 'SUCCESS'
             });
-        }
+        } else {
+            // Calcular resultado usando utilidad estándar
+            const result = calculateDecisionResult(subject, 'authorize', CONFIG);
 
-        // REGLA: El incremento de processedCount ahora lo gestiona GameSequencer.js
-        // para centralizar la validación de cuota y evitar el error 6/5.
+            // Aplicar cambios
+            if (result.energyChange !== 0) state.energy = Math.max(0, Math.min(100, state.energy + result.energyChange));
+            if (result.stabilityChange !== 0) state.stability = Math.max(0, Math.min(100, state.stability + result.stabilityChange));
+            if (result.unrestChange !== 0) state.unrest = Math.max(0, Math.min(100, state.unrest + result.unrestChange));
+
+            if (result.isError) {
+                state.judgmentErrors++;
+                if (result.flash) bus.emit('TRIGGER_FLASH', result.flash);
+                bus.emit('TERMINAL_PRINT', {
+                    text: pathConfig.decisions.authorize.fail,
+                    type: 'ERROR'
+                });
+            } else {
+                bus.emit('TERMINAL_PRINT', {
+                    text: pathConfig.decisions.authorize.success,
+                    type: 'SUCCESS'
+                });
+            }
+        }
 
         state.endBatch();
 
@@ -113,6 +124,23 @@ class DecisionMechanic extends BaseMechanic {
     handleSacrifice() {
         const subject = state.currentEntity;
         if (!subject || state.gameStatus !== 'PLAYING') return;
+
+        const loreChar = subject.isLoreCore ? subject.loreCore : findLoreCharacter(subject.id, subject.name);
+
+        // BLOQUEO ABSOLUTO: Los personajes motor del lore no pueden ser sacrificados en el canon
+        if (loreChar && !loreChar.canSacrifice) {
+            bus.emit('TRIGGER_FLASH', { color: '#ef4444', duration: 250, target: 'MOD04' });
+            bus.emit('TERMINAL_PRINT', {
+                text: loreChar.blockedSacrificeMsg,
+                type: 'ERROR'
+            });
+            bus.emit('DIALOGUE_EMITTED', {
+                sender: 'NAKASTHU_OS',
+                text: loreChar.blockedSacrificeMsg,
+                type: 'SYSTEM'
+            });
+            return;
+        }
 
         // PREVENCIÓN: Evitar doble decisión sobre el mismo sujeto
         if (subject._processed) return;
@@ -146,7 +174,6 @@ class DecisionMechanic extends BaseMechanic {
         if (result.unrestChange !== 0) state.unrest = Math.max(0, Math.min(100, state.unrest + result.unrestChange));
 
         // CRÍTICO: Limpiar sujeto actual para forzar la regeneración en el siguiente tick
-        // NOTA: GameSequencer también limpia esto, pero lo hacemos aquí por seguridad de doble-check
         state.currentEntity = null;
 
         if (result.isError) {
@@ -162,8 +189,6 @@ class DecisionMechanic extends BaseMechanic {
                 type: 'SUCCESS'
             });
         }
-
-        // REGLA: El incremento de processedCount ahora lo gestiona GameSequencer.js
 
         state.endBatch();
 

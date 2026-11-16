@@ -4,6 +4,7 @@
         "phase2/crisis.json",
         "phase3/sect.json",
         "phase4/ascension.json",
-        "general/common.json"
+        "general/common.json",
+        "general/interrogations.json"
     ]
 }

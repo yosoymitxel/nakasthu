@@ -11,6 +11,7 @@ import {
     DIALOGUES, 
     GENERATION_CONFIG 
 } from '../data/entityConfig.js';
+import { findLoreCharacter } from '../data/loreCharactersConfig.js';
 
 export { 
     ENTITY_TYPES, 
@@ -18,7 +19,8 @@ export {
     PREFIXES, 
     GLITCH_TYPES, 
     DIALOGUES, 
-    GENERATION_CONFIG 
+    GENERATION_CONFIG,
+    findLoreCharacter
 };
 
 /**
@@ -105,6 +107,18 @@ export const applyTraits = (subject, traits) => {
             ...subject.visual,
             ...traits.visual
         };
+    }
+
+    // Identificación y protección de personajes Motor del Lore
+    const loreChar = findLoreCharacter(subject.id, subject.name);
+    if (loreChar) {
+        subject.isLoreCore = true;
+        subject.loreCore = loreChar;
+        subject.isCorrupt = false; // Personajes clave del canon no son corrupción arbitraria
+        if (!subject.scannedTypes) subject.scannedTypes = [];
+        if (!subject.scannedTypes.includes('LORE_VERIFIED')) {
+            subject.scannedTypes.push('LORE_VERIFIED');
+        }
     }
 
     return subject;

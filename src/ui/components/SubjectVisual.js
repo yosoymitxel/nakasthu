@@ -7,6 +7,7 @@ import { useGameState } from '../hooks/useGameState.js';
 import { bus } from '../../core/Bus.js';
 import { PixelPortrait, morphFor } from './PixelPortrait.js';
 import { SubjectCard } from './Verdicts.js';
+import { findLoreCharacter } from '../../data/loreCharactersConfig.js';
 
 const { useState, useEffect } = React;
 
@@ -79,6 +80,7 @@ export const SubjectVisual = () => {
     `;
 
     const { visual, type, id, species } = subject;
+    const loreChar = (subject.isLoreCore ? subject.loreCore : findLoreCharacter(id, subject.name)) || null;
     
     // Regla 3: Si es EIDOLON y estabilidad < 40, aplicar filtro de corrupción
     const isCorrupted = species === 'EIDOLON' && stability < 40;
@@ -115,12 +117,36 @@ export const SubjectVisual = () => {
             <!-- Silueta o Representación Visual (Maximizado 80%) -->
                 <button onClick=${() => setCardOpen(true)} aria-label="Abrir ficha del sujeto" className=${`
                     relative w-[85%] flex-1 min-h-0 mt-1 border flex items-center justify-center overflow-hidden transition-all duration-500
-                    ${isSectarian ? 'border-purple-500/20 rounded-full shadow-[0_0_40px_rgba(168,85,247,0.1)] bg-purple-950/10' : 'border-zinc-800'}
+                    ${loreChar 
+                        ? `${loreChar.borderClass || 'border-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.4)]'} bg-black/50` 
+                        : (isSectarian ? 'border-purple-500/20 rounded-full shadow-[0_0_40px_rgba(168,85,247,0.1)] bg-purple-950/10' : 'border-zinc-800')}
                     ${isCorrupted ? 'hue-rotate-90 border-red-500/50 scale-105' : ''}
                     ${isPaused ? 'transition-none' : ''}
                 `}>
+                    <!-- Badge flotante de Motor del Lore -->
+                    ${loreChar && html`
+                        <div className="absolute top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/90 border border-cyan-500/80 text-[8px] font-mono tracking-widest text-cyan-300 uppercase font-black z-30 shadow-[0_0_12px_rgba(6,182,212,0.6)] flex items-center gap-1 whitespace-nowrap animate-pulse">
+                            <span className="text-yellow-400">★</span>
+                            <span>${loreChar.badge}</span>
+                            <span className="text-yellow-400">★</span>
+                        </div>
+                    `}
+
+                    <!-- Esquinas tecnológicas animadas para personajes clave -->
+                    ${loreChar && html`
+                        <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-cyan-400 z-20 animate-pulse"></div>
+                        <div className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2 border-cyan-400 z-20 animate-pulse"></div>
+                        <div className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2 border-cyan-400 z-20 animate-pulse"></div>
+                        <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-cyan-400 z-20 animate-pulse"></div>
+                    `}
+
+                    <!-- Efecto de aura radial para personajes del lore -->
+                    ${loreChar && html`
+                        <div className="absolute inset-0 pointer-events-none animate-pulse" style=${{ background: `radial-gradient(circle at center, ${loreChar.auraColor || 'rgba(6,182,212,0.25)'} 0%, transparent 75%)` }}></div>
+                    `}
+
                     <!-- Efecto de aura giratoria (Sectario) -->
-                    ${isSectarian && html`
+                    ${isSectarian && !loreChar && html`
                         <div className="absolute inset-0 border border-purple-500/5 rounded-full animate-spin-slow scale-110 pointer-events-none"></div>
                         <div className="absolute inset-0 border border-indigo-500/5 rounded-full animate-slow-spin direction-reverse scale-105 pointer-events-none"></div>
                     `}
@@ -139,7 +165,7 @@ export const SubjectVisual = () => {
                         morph=${morphFor(species, id)}
                         hooded=${isSectarian}
                         corrupt=${isCorrupted}
-                        className=${`feel-enter h-[92%] select-none transition-all duration-1000 ${isCorrupted ? 'saturate-150' : ''} ${isSectarian ? 'drop-shadow-[0_0_10px_rgba(168,85,247,0.4)]' : ''}`}
+                        className=${`feel-enter h-[92%] select-none transition-all duration-1000 ${isCorrupted ? 'saturate-150' : ''} ${isSectarian ? 'drop-shadow-[0_0_10px_rgba(168,85,247,0.4)]' : ''} ${loreChar ? 'drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]' : ''}`}
                     />
                         
                         <!-- Capas de glitch aleatorio -->
@@ -158,23 +184,23 @@ export const SubjectVisual = () => {
 
                     ${activeScan && html`<div className="scan-beam" style=${{ '--scan-progress': `${activeScan.progress || 0}%` }}></div>`}
 
-                    <!-- HUD del sujeto (Sectario: Glifos) -->
-                    <div className=${`absolute top-0 left-0 p-2 bg-black/60 backdrop-blur-sm border-r border-b ${isSectarian ? 'border-purple-900/50 rounded-br-lg' : 'border-zinc-800'}`}>
-                        <span className=${`text-[10px] font-mono font-bold tracking-widest ${isSectarian ? 'text-purple-400' : 'text-cyan-400'}`}>
-                            ${isSectarian ? `᚛ ${id} ᚜` : id}
+                    <!-- HUD del sujeto (Sectario: Glifos / Lore: Insignia) -->
+                    <div className=${`absolute top-0 left-0 p-2 bg-black/60 backdrop-blur-sm border-r border-b ${loreChar ? 'border-cyan-500/50' : (isSectarian ? 'border-purple-900/50 rounded-br-lg' : 'border-zinc-800')}`}>
+                        <span className=${`text-[10px] font-mono font-bold tracking-widest ${loreChar ? 'text-cyan-300' : (isSectarian ? 'text-purple-400' : 'text-cyan-400')}`}>
+                            ${loreChar ? `★ ${id}` : (isSectarian ? `᚛ ${id} ᚜` : id)}
                         </span>
                     </div>
                 </button>
 
             <!-- Etiquetas de Estado -->
             <div className="flex-none py-1 flex flex-wrap items-center justify-center gap-x-2 leading-tight w-full px-1 whitespace-nowrap">
-                <span className=${`text-[10px] tracking-[0.1em] uppercase ${isSectarian ? 'text-purple-400 font-black' : 'text-zinc-400'}`}>
-                    ${isSectarian && type === 'EIDOLON' ? 'CORRUPTO' : (isSectarian && type === 'HUMAN' ? 'DEVOTO' : type)}
+                <span className=${`text-[10px] tracking-[0.1em] uppercase ${loreChar ? 'text-cyan-300 font-black' : (isSectarian && type === 'EIDOLON' ? 'text-purple-400 font-black' : (isSectarian && type === 'HUMAN' ? 'text-purple-400 font-black' : 'text-zinc-400'))}`}>
+                    ${loreChar ? loreChar.title : (isSectarian && type === 'EIDOLON' ? 'CORRUPTO' : (isSectarian && type === 'HUMAN' ? 'DEVOTO' : type))}
                 </span>
                 <div className="flex gap-1 items-center">
-                    <div className=${`w-1 h-1 rounded-full ${visual.glitch === 'NONE' ? 'bg-green-500' : 'bg-red-500'} ${isSectarian ? 'shadow-[0_0_5px_currentColor]' : ''}`}></div>
-                    <span className=${`text-[10px] font-mono ${isSectarian ? 'text-purple-400' : 'text-zinc-400'}`}>
-                        ${isSectarian ? 'SINTONÍA' : 'SYNC'}: ${subject.scannedData.neuralSync}%
+                    <div className=${`w-1 h-1 rounded-full ${loreChar ? 'bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)]' : (visual.glitch === 'NONE' ? 'bg-green-500' : 'bg-red-500')} ${isSectarian ? 'shadow-[0_0_5px_currentColor]' : ''}`}></div>
+                    <span className=${`text-[10px] font-mono ${loreChar ? 'text-cyan-300' : (isSectarian ? 'text-purple-400' : 'text-zinc-400')}`}>
+                        ${isSectarian ? 'SINTONÍA' : 'SYNC'}: ${subject.scannedData?.neuralSync || 0}%
                     </span>
                 </div>
             </div>

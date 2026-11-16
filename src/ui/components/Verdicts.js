@@ -11,6 +11,7 @@ import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 import { STEPS_CONFIG } from '../../data/stepsConfig.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { PixelPortrait, morphFor } from './PixelPortrait.js';
+import { findLoreCharacter } from '../../data/loreCharactersConfig.js';
 
 const { useState, useEffect, useRef } = React;
 
@@ -110,12 +111,17 @@ export const SubjectCard = ({ subject, onClose }) => {
     const labels = PATH_CONFIGS[storyPath].bioscan;
     const morph = morphFor(subject.species, subject.id);
     const done = subject.scannedTypes || [];
+    const loreChar = (subject.isLoreCore ? subject.loreCore : findLoreCharacter(subject.id, subject.name)) || null;
 
     return html`
         <${Modal} label=${`Ficha · ${subject.id}`} onClose=${onClose}>
             <div className="sc-card">
                 <${PixelPortrait} seed=${subject.id} morph=${morph} hooded=${storyPath === 1} className="sc-face" />
                 <div className="sc-data">
+                    ${loreChar && html`
+                        <div className="sc-line"><span>Estatus</span><b className="text-cyan-400">★ ${loreChar.name} ★</b></div>
+                        <div className="sc-line"><span>Canon</span><b className="text-zinc-300 text-[10px] leading-tight">${loreChar.title}</b></div>
+                    `}
                     <div className="sc-line"><span>Forma aparente</span><b>${MORPH_NAME[morph]}</b></div>
                     <div className="sc-line"><span>Rol declarado</span><b>${subject.type}</b></div>
                     <div className="sc-line"><span>Interrogado</span><b>${subject.hasBeenInterrogated ? 'sí' : 'no'}</b></div>

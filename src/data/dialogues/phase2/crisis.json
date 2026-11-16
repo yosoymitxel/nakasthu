@@ -106,6 +106,7 @@
         },
         {
             "id": "DLG_P2_RIOT_CHIEF",
+            "exclusive": true,
             "minStep": 3,
             "maxStep": 5,
             "npcTraits": {
@@ -139,6 +140,7 @@
         },
         {
             "id": "DLG_P2_SUPPLY_OFFICER",
+            "exclusive": true,
             "minStep": 4,
             "maxStep": 6,
             "npcTraits": {

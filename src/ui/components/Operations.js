@@ -18,6 +18,7 @@ import { Coms } from './Coms.js';
 import { FlowGuide } from './FlowGuide.js';
 import { VerdictLogButton } from './Verdicts.js';
 import { SCAN_TYPES } from '../../systems/Scanner.js';
+import { findLoreCharacter } from '../../data/loreCharactersConfig.js';
 
 const { useState, useEffect, useRef } = React;
 
@@ -416,57 +417,86 @@ export const Operations = () => {
                     `: null}
                     
                     <div className=${`flex items-center justify-center gap-6 w-full h-full px-4 ${(!isTutorialActive && !isScanComplete) ? 'invisible' : ''}`}>
-                    <button 
-                        onClick=${() => handleAction('SACRIFICE')}
-                        disabled=${isTyping || kaminOverride || (!isTutorialActive && !isScanComplete)}
-                        className=${`flex-1 max-w-[200px] h-full relative group border transition-all uppercase tracking-[0.3em] font-black text-[11px] 
+                    ${loreChar ? html`
+                        <button 
+                            onClick=${() => handleAction('SACRIFICE')}
+                            disabled=${isTyping}
+                            className="flex-1 max-w-[210px] h-full relative group border border-amber-500/40 text-amber-400/80 bg-amber-950/20 hover:bg-amber-950/30 uppercase tracking-[0.15em] font-black text-[10px] flex items-center justify-center gap-1 transition-all cursor-not-allowed shadow-[0_0_15px_rgba(245,158,11,0.08)]"
+                            title=${loreChar.blockedSacrificeMsg}
+                        >
+                            <span className="text-amber-400 text-xs">⚿</span>
+                            <span className="truncate">${loreChar.blockedSacrificeLabel}</span>
+                            <kbd className="key-hint">S</kbd>
+                        </button>
+                    ` : html`
+                        <button 
+                            onClick=${() => handleAction('SACRIFICE')}
+                            disabled=${isTyping || kaminOverride || (!isTutorialActive && !isScanComplete)}
+                            className=${`flex-1 max-w-[200px] h-full relative group border transition-all uppercase tracking-[0.3em] font-black text-[11px] 
+                                ${kaminOverride
+                                    ? 'border-purple-500/30 text-purple-500/40 animate-pulse cursor-not-allowed bg-purple-950/10'
+                                    : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isScanComplete ? false : true))
+                                        ? isSectarian 
+                                            ? 'border-indigo-500/40 text-indigo-400/70 hover:bg-indigo-500/10 hover:border-indigo-500 hover:text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.05)] hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] bg-indigo-950/5 rounded-tl-xl rounded-br-sm'
+                                            : 'border-red-500/40 text-red-500/70 hover:bg-red-500/10 hover:border-red-500 hover:text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.05)] hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] bg-red-950/5'
+                                        : 'border-zinc-800 text-zinc-800 pointer-events-none'`}>
+                            <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSectarian ? 'bg-indigo-500/5' : 'bg-red-500/5'`}></div>
+                            ${isSectarian && html`
+                                <div className="absolute top-1 left-1 w-1.5 h-1.5 bg-indigo-500/30 rotate-45 group-hover:bg-indigo-400 transition-colors"></div>
+                                <div className="absolute bottom-1 right-1 w-1.5 h-1.5 bg-indigo-500/30 rotate-45 group-hover:bg-indigo-400 transition-colors"></div>
+                            `}
                             ${kaminOverride
-                                ? 'border-purple-500/30 text-purple-500/40 animate-pulse cursor-not-allowed bg-purple-950/10'
-                                : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isScanComplete ? false : true))
-                                    ? isSectarian 
-                                        ? 'border-indigo-500/40 text-indigo-400/70 hover:bg-indigo-500/10 hover:border-indigo-500 hover:text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.05)] hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] bg-indigo-950/5 rounded-tl-xl rounded-br-sm'
-                                        : 'border-red-500/40 text-red-500/70 hover:bg-red-500/10 hover:border-red-500 hover:text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.05)] hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] bg-red-950/5'
-                                    : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
-                    >
-                        <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSectarian ? 'bg-indigo-500/5' : 'bg-red-500/5'}`}></div>
-                        ${isSectarian && html`
-                            <div className="absolute top-1 left-1 w-1.5 h-1.5 bg-indigo-500/30 rotate-45 group-hover:bg-indigo-400 transition-colors"></div>
-                            <div className="absolute bottom-1 right-1 w-1.5 h-1.5 bg-indigo-500/30 rotate-45 group-hover:bg-indigo-400 transition-colors"></div>
-                        `}
-                        ${kaminOverride
-                            ? labels.overrideLabel
-                            : labels.rejectLabel.toUpperCase()}
-                        <kbd className="key-hint">S</kbd>
-                    </button>
+                                ? labels.overrideLabel
+                                : labels.rejectLabel.toUpperCase()}
+                            <kbd className="key-hint">S</kbd>
+                        </button>
+                    `}
                     
-                    <div className=${`w-px h-6 ${isSectarian ? 'bg-indigo-900/30' : 'bg-zinc-800/50'}`}></div>
+                    <div className=${`w-px h-6 ${isSectarian ? 'bg-indigo-900/30' : 'bg-zinc-800/50'`}></div>
 
-                    <button 
-                        onClick=${() => handleAction('AUTHORIZE')}
-                        disabled=${isTyping || (!isTutorialActive && !isScanComplete)}
-                        className=${`flex-1 max-w-[200px] h-full relative group border transition-all uppercase tracking-[0.3em] font-black text-[11px] 
-                            ${kaminOverride
-                                ? 'border-purple-500 text-purple-400 bg-purple-900/30 hover:bg-purple-900/50 animate-pulse shadow-[0_0_20px_rgba(168,85,247,0.3)]'
-                                : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isScanComplete ? false : true))
-                                    ? isSectarian
-                                        ? 'border-purple-500/40 text-purple-400/70 hover:bg-purple-500/10 hover:border-purple-500 hover:text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.05)] hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] bg-purple-950/5 rounded-br-xl rounded-tl-sm'
-                                        : (stepColor === 'orange' 
-                                            ? 'border-orange-500/40 text-orange-500/70 hover:bg-orange-500/10 hover:border-orange-500 hover:text-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.05)] hover:shadow-[0_0_20px_rgba(249,115,22,0.15)] bg-orange-950/5'
-                                            : stepColor === 'red'
-                                                ? 'border-red-500/40 text-red-500/70 hover:bg-red-500/10 hover:border-red-500 hover:text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.05)] hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] bg-red-950/5'
-                                                : stepColor === 'cyan'
-                                                    ? 'border-cyan-500/40 text-cyan-500/70 hover:bg-cyan-500/10 hover:border-cyan-500 hover:text-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.05)] hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] bg-cyan-950/5'
-                                                    : 'border-emerald-500/40 text-emerald-500/70 hover:bg-emerald-500/10 hover:border-emerald-500 hover:text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.05)] hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] bg-emerald-950/5')
-                                    : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}
-                    >
-                        <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSectarian ? 'bg-purple-500/5' : 'bg-emerald-500/5'}`}></div>
-                        ${isSectarian && html`
-                            <div className="absolute top-1 left-1 w-1.5 h-1.5 border border-purple-500/30 rotate-45 group-hover:border-purple-400 transition-colors"></div>
-                            <div className="absolute bottom-1 right-1 w-1.5 h-1.5 border border-purple-500/30 rotate-45 group-hover:border-purple-400 transition-colors"></div>
-                        `}
-                        ${labels.authorizeLabel.toUpperCase()}
-                        <kbd className="key-hint">A</kbd>
-                    </button>
+                    ${loreChar ? html`
+                        <button 
+                            onClick=${() => handleAction('AUTHORIZE')}
+                            disabled=${isTyping}
+                            className=${`flex-1 max-w-[220px] h-full relative group border uppercase tracking-[0.15em] font-black text-[11px] transition-all flex items-center justify-center gap-1.5 shadow-lg
+                                ${loreChar.theme === 'purple' 
+                                    ? 'border-purple-400 text-purple-200 bg-purple-950/40 hover:bg-purple-900/60 shadow-[0_0_25px_rgba(168,85,247,0.4)] animate-pulse'
+                                    : loreChar.theme === 'amber'
+                                        ? 'border-amber-400 text-amber-200 bg-amber-950/40 hover:bg-amber-900/60 shadow-[0_0_25px_rgba(245,158,11,0.4)] animate-pulse'
+                                        : loreChar.theme === 'emerald'
+                                            ? 'border-emerald-400 text-emerald-200 bg-emerald-950/40 hover:bg-emerald-900/60 shadow-[0_0_25px_rgba(16,185,129,0.4)] animate-pulse'
+                                            : 'border-cyan-400 text-cyan-200 bg-cyan-950/40 hover:bg-cyan-900/60 shadow-[0_0_25px_rgba(6,182,212,0.4)] animate-pulse'`}>
+                            <span className="text-[12px] text-yellow-400">★</span>
+                            <span className="truncate">${loreChar.authorizeLabel}</span>
+                            <kbd className="key-hint">A</kbd>
+                        </button>
+                    ` : html`
+                        <button 
+                            onClick=${() => handleAction('AUTHORIZE')}
+                            disabled=${isTyping || (!isTutorialActive && !isScanComplete)}
+                            className=${`flex-1 max-w-[200px] h-full relative group border transition-all uppercase tracking-[0.3em] font-black text-[11px] 
+                                ${kaminOverride
+                                    ? 'border-purple-500 text-purple-400 bg-purple-900/30 hover:bg-purple-900/50 animate-pulse shadow-[0_0_20px_rgba(168,85,247,0.3)]'
+                                    : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isScanComplete ? false : true))
+                                        ? isSectarian
+                                            ? 'border-purple-500/40 text-purple-400/70 hover:bg-purple-500/10 hover:border-purple-500 hover:text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.05)] hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] bg-purple-950/5 rounded-br-xl rounded-tl-sm'
+                                            : (stepColor === 'orange' 
+                                                ? 'border-orange-500/40 text-orange-500/70 hover:bg-orange-500/10 hover:border-orange-500 hover:text-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.05)] hover:shadow-[0_0_20px_rgba(249,115,22,0.15)] bg-orange-950/5'
+                                                : stepColor === 'red'
+                                                    ? 'border-red-500/40 text-red-500/70 hover:bg-red-500/10 hover:border-red-500 hover:text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.05)] hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] bg-red-950/5'
+                                                    : stepColor === 'cyan'
+                                                        ? 'border-cyan-500/40 text-cyan-500/70 hover:bg-cyan-500/10 hover:border-cyan-500 hover:text-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.05)] hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] bg-cyan-950/5'
+                                                        : 'border-emerald-500/40 text-emerald-500/70 hover:bg-emerald-500/10 hover:border-emerald-500 hover:text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.05)] hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] bg-emerald-950/5')
+                                        : 'border-zinc-800 text-zinc-800 pointer-events-none'`}>
+                            <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSectarian ? 'bg-purple-500/5' : 'bg-emerald-500/5'`}></div>
+                            ${isSectarian && html`
+                                <div className="absolute top-1 left-1 w-1.5 h-1.5 border border-purple-500/30 rotate-45 group-hover:border-purple-400 transition-colors"></div>
+                                <div className="absolute bottom-1 right-1 w-1.5 h-1.5 border border-purple-500/30 rotate-45 group-hover:border-purple-400 transition-colors"></div>
+                            `}
+                            ${labels.authorizeLabel.toUpperCase()}
+                            <kbd className="key-hint">A</kbd>
+                        </button>
+                    `}
                 </div>
                 </div>
             </div>

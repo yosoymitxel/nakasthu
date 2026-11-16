@@ -4,8 +4,9 @@
  * Regla 2.A: Minimiza emisiones para evitar loops de re-renderizado.
  */
 import { bus } from './Bus.js';
-import { generateSubject } from '../services/EntityService.js';
+import { generateSubject, applyTraits } from '../services/EntityService.js';
 import { CONFIG } from '../data/gameConfig.js';
+import { STEPS_CONFIG } from '../data/stepsConfig.js';
 
 let isBatching = false;
 
@@ -73,8 +74,8 @@ const initialState = {
     tutorialStep: 0, // 0: No tutorial, 1-4: Pasos del tutorial
     focusMode: false, // Bloquea el resto de la UI durante diálogos profundos
     unlockedCommands: ['HELP', 'CLEAR', 'STATUS'], // Comandos iniciales
-    hasSeenTutorial: localStorage.getItem('nakasthu_tutorial_seen') === 'true' || localStorage.getItem('nakasthu_skip_tutorials') === 'true',
-    maxStepReached: parseInt(localStorage.getItem('nakasthu_max_step') || '1'),
+    hasSeenTutorial: (typeof localStorage !== 'undefined' && (localStorage.getItem('nakasthu_tutorial_seen') === 'true' || localStorage.getItem('nakasthu_skip_tutorials') === 'true')),
+    maxStepReached: parseInt((typeof localStorage !== 'undefined' && localStorage.getItem('nakasthu_max_step')) || '1', 10),
     infiniteMode: false,
     requiredScan: 'BIOMETRIC', // Tipo de escaneo requerido para decisiones (rotativo)
     usedDialogueIds: []        // Memoria de diálogos para evitar repeticiones
@@ -100,7 +101,18 @@ const stateManager = {
             this.activeScan = null;
         }
 
-        const newSubject = generateSubject();
+        const currentStep = this.currentStep || 1;
+        const stepMeta = STEPS_CONFIG?.[currentStep]?.meta;
+        const nextPos = (this.processedCount || 0) + 1;
+
+        let newSubject = generateSubject();
+        if (stepMeta?.kaminAppears && nextPos === stepMeta.kaminPosition) {
+            applyTraits(newSubject, {
+                id: 'KAMIN',
+                type: 'SECTARIO',
+                name: 'Kamin'
+            });
+        }
         this.currentEntity = newSubject;
 
         // CRÍTICO: Emitir eventos FUERA del batch para garantizar que React se actualice

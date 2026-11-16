@@ -128,6 +128,7 @@ class DialogueEngine {
         state.activeDialogue = {
             id: this.currentDialogue.id,
             text: this.currentDialogue.text,
+            exclusive: !!this.currentDialogue.exclusive,
             options: this.currentDialogue.options.map(opt => ({ ...opt, used: false }))
         };
 
@@ -149,6 +150,15 @@ class DialogueEngine {
      */
     selectOption(optionIndex) {
         if (!this.currentDialogue) return;
+
+        const active = state.activeDialogue;
+        const uiOption = active?.options[optionIndex];
+
+        // Una opción resuelta no se ejecuta dos veces (doble clic o llamada directa)
+        if (uiOption?.used) return;
+
+        // Decisión exclusiva: una vez elegida una ruta, las hermanas quedan descartadas
+        if (this.currentDialogue.exclusive && active?.options.some(o => o.used)) return;
 
         const option = this.currentDialogue.options[optionIndex];
         if (!option) return;
@@ -213,13 +223,17 @@ class DialogueEngine {
             state.activeDialogue = {
                 id: this.currentDialogue.id,
                 text: this.currentDialogue.text,
+                exclusive: !!this.currentDialogue.exclusive,
                 options: this.currentDialogue.options.map(opt => ({ ...opt, used: false }))
             };
         } else {
             // Marcar opción como usada en el estado si no hay ramificación
             if (state.activeDialogue) {
-                const newOptions = [...state.activeDialogue.options];
-                newOptions[optionIndex] = { ...newOptions[optionIndex], used: true };
+                // En una decisión exclusiva se cierran también las rutas no elegidas
+                const lockSiblings = !!this.currentDialogue.exclusive;
+                const newOptions = state.activeDialogue.options.map((opt, i) =>
+                    (i === optionIndex || lockSiblings) ? { ...opt, used: true } : opt
+                );
                 state.activeDialogue = {
                     ...state.activeDialogue,
                     options: newOptions
