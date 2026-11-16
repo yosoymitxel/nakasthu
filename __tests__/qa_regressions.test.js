@@ -74,3 +74,16 @@ describe('GameSequencer.jumpToStep', () => {
         vi.useRealTimers();
     });
 });
+
+describe('Señales deducibles', () => {
+    it('el valor físico y la lectura del escáner dicen lo mismo', async () => {
+        const { generateSubject } = await import('../src/services/EntityService.js');
+        const { analyzeSubjectProbability } = await import('../src/utils/scannerUtils.js');
+        for (let i = 0; i < 200; i++) {
+            const s = generateSubject();
+            expect(s.scannedData.temperature >= 38).toBe(s.tells.BIOMETRIC);
+            expect(s.scannedData.neuralSync < 50).toBe(s.tells.NEURAL);
+            expect(analyzeSubjectProbability('BIOMETRIC', s, 'NORMAL') > 50).toBe(s.tells.BIOMETRIC);
+        }
+    });
+});

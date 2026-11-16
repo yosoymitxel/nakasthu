@@ -202,7 +202,7 @@ test.describe('REGRESIÓN · estados inesperados y recuperación', () => {
     });
 
     test('propuesta de tutorial abierta: el motor no consume energía mientras bloquea al jugador', async ({ page }) => {
-        await bootGame(page, { nakasthu_max_step: '4' });
+        await bootGame(page, { nakasthu_max_step: '4', nakasthu_coach_done: 'true' });
         await jumpToStep(page, 4);
         await startOperations(page);
         await expect(page.getByText('NUEVO SISTEMA DETECTADO')).toBeVisible();

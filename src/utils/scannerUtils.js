@@ -3,6 +3,7 @@
  * Lógica pura para el sistema de escaneo.
  * Desacoplado de State y Bus para facilitar pruebas.
  */
+import { CONFIG } from '../data/gameConfig.js';
 
 /**
  * Calcula el costo final de un escaneo considerando penalizaciones por repetición.
@@ -43,30 +44,40 @@ export const evaluateScanResult = (scanId, subject) => {
  * @param {string} currentMode - Modo actual del sistema (NORMAL, ECLIPSE, etc).
  * @returns {number} Probabilidad calculada (0-100).
  */
+export const scanPrecision = (scanType) =>
+    scanType === 'VOICE' ? CONFIG.SCANNER.VOICE_PRECISION : (CONFIG.SCANNER.TYPES[scanType]?.precision ?? 0.5);
+
+/**
+ * Señales fijas por sujeto: para cada fuente, ¿muestra anomalía? Acierta con su `precision`.
+ * Fijarlas al generar el sujeto hace que el valor físico (TEMP, SYNC...) y el % digan lo mismo
+ * y que repetir un escaneo no "re-tire los dados".
+ */
+export const rollTells = (isCorrupt, rand = Math.random) => {
+    const tells = {};
+    for (const type of [...Object.keys(CONFIG.SCANNER.TYPES), 'VOICE']) {
+        tells[type] = rand() < scanPrecision(type) ? isCorrupt : !isCorrupt;
+    }
+    return tells;
+};
+
 export const analyzeSubjectProbability = (scanType, entity, currentMode) => {
     if (!entity) return 0;
-    
-    let precision = 0.5;
-    switch (scanType) {
-        case 'NEURAL': precision = 0.9; break;
-        case 'NAKARA': precision = 0.95; break;
-        case 'RESONANCE': precision = 0.7; break;
-        case 'THERMAL': precision = 0.65; break;
-        // El escaneo OBLIGATORIO debe ser informativo: a 0.5 era una moneda y el paso 4
-        // se ganaba el ~5% de las veces siguiendo las reglas (simulación Monte Carlo).
-        case 'BIOMETRIC': precision = 0.8; break;
-    }
-    
+
     const eclipseInterference = currentMode === 'ECLIPSE' ? 0.2 : 0;
-    precision = Math.max(0.1, precision - eclipseInterference);
-    
-    const showTruth = Math.random() < precision;
-    const displayedIsCorrupt = showTruth ? entity.isCorrupt : !entity.isCorrupt;
-    
-    let prob = displayedIsCorrupt 
-        ? (precision * 100 + (Math.random() * (100 - precision * 100))) 
-        : ((1 - precision) * 100 * Math.random());
-        
+    const precision = Math.max(0.1, scanPrecision(scanType) - eclipseInterference);
+
+    // Con señal fija se usa; sin ella (sujetos antiguos/tests) se sortea con la misma precisión.
+    let displayedIsCorrupt = entity.tells && scanType in entity.tells
+        ? entity.tells[scanType]
+        : (Math.random() < precision ? entity.isCorrupt : !entity.isCorrupt);
+    // El eclipse mete ruido encima de la señal.
+    if (eclipseInterference && Math.random() < eclipseInterference) displayedIsCorrupt = !displayedIsCorrupt;
+
+    const p = scanPrecision(scanType);
+    const prob = displayedIsCorrupt
+        ? (p * 100 + (Math.random() * (100 - p * 100)))
+        : ((1 - p) * 100 * Math.random());
+
     return Math.floor(prob);
 };
 

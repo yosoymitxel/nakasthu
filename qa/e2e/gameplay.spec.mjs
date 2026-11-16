@@ -177,8 +177,31 @@ test.describe('E2E · gameplay', () => {
         expect(await page.evaluate(() => window.state.currentStep)).toBe(4);
     });
 
-    test('tutorial primera vez: propuesta visible y "Omitir todo" persiste la preferencia', async ({ page }, testInfo) => {
+    test('primer turno: guía en vivo sin ventanas, se completa tras 2 sentencias @responsive', async ({ page }, testInfo) => {
+        test.setTimeout(90_000);
         await bootGame(page, { nakasthu_max_step: '4' });
+        await jumpToStep(page, 4);
+        await startOperations(page);
+        const coach = page.locator('.coach-hint');
+        await expect(coach).toContainText('BIOMÉTRICO');
+        await expect(page.getByText('NUEVO SISTEMA DETECTADO')).toHaveCount(0);
+        await snap(page, testInfo, 'e2e-coach-1');
+        await scanBiometric(page);
+        await expect(coach).toContainText(/Corrupción \d+%/);
+        for (let i = 0; i < 2; i++) {
+            if (i > 0) await scanBiometric(page);
+            const corrupt = await page.evaluate(() => window.state.currentEntity.corruptionEstimate > 50);
+            const btn = page.getByRole('button', { name: new RegExp(`^${corrupt ? 'SACRIFICAR' : 'AUTORIZAR'}`) });
+            await expect(btn).toBeVisible({ timeout: 10_000 });
+            await btn.click();
+            await expect.poll(() => page.evaluate(() => window.state.processedCount), { timeout: 15_000 }).toBe(i + 1);
+        }
+        await expect(coach).toHaveCount(0);
+        expect(await page.evaluate(() => localStorage.getItem('nakasthu_coach_done'))).toBe('true');
+    });
+
+    test('tutorial primera vez: propuesta visible y "Omitir todo" persiste la preferencia', async ({ page }, testInfo) => {
+        await bootGame(page, { nakasthu_max_step: '4', nakasthu_coach_done: 'true' });
         await jumpToStep(page, 4);
         await startOperations(page);
         await expect(page.getByText('NUEVO SISTEMA DETECTADO')).toBeVisible();

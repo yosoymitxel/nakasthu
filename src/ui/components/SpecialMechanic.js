@@ -30,7 +30,7 @@ export const SpecialMechanic = memo(({ onComplete, syncKey = ' ' }) => {
     const lastTimeRef = useRef(0);
 
     // Velocidades de subida/bajada del progreso
-    const PROGRESS_SPEED_UP = 0.4;   // Sube lento mientras mantienes
+    const PROGRESS_SPEED_UP = 0.7;   // ~5 s de pulsación: a 0.4 eran ~9 s antes de la primera decisión
     const PROGRESS_SPEED_DOWN = 1.2;  // Baja rápido si sueltas
 
     // Loop de animación con requestAnimationFrame

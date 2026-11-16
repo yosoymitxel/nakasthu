@@ -69,45 +69,26 @@ describe('Complete Game Flow Integration (integration.test.js)', () => {
         expect(state.unlockedCommands).toContain('REBOOT');
     });
 
-    it('Historial de Corrupción: El historial debe acumularse correctamente tras múltiples interacciones', () => {
+    it('Historial de Corrupción: el interrogatorio añade UNA lectura de voz y no la inventa', () => {
         state.currentEntity = {
             id: 'S-123',
-            scannedData: {
-                corruption: 10,
-                corruptionHistory: [10] // Valor inicial del escaneo
-            }
+            isCorrupt: true,
+            tells: { VOICE: true },
+            scannedData: { corruption: 10, corruptionHistory: [90] }
         };
-
-        dialogueEngine.currentDialogue = {
-            id: 'test-corr-dlg',
-            text: 'Test',
-            options: [
-                { text: 'Presionar', corruptionImpact: 10 },
-                { text: 'Amenazar', corruptionImpact: 20 }
-            ]
-        };
-
-        // Primera interacción (+10)
+        dialogueEngine.currentDialogue = { id: 'test-corr-dlg', text: 'Test', options: [{ text: 'Presionar', corruptionImpact: 10 }] };
         dialogueEngine.selectOption(0);
+        // El dato narrativo se mueve, pero el indicio sale de la señal de voz (anómala → > 50 %).
         expect(state.currentEntity.scannedData.corruption).toBe(20);
-        expect(state.currentEntity.scannedData.corruptionHistory).toEqual([10, 20]);
-
-        // Segunda interacción (+20)
-        // Reset dialogue for second option
-        dialogueEngine.currentDialogue = {
-            id: 'test-corr-dlg-2',
-            text: 'Test 2',
-            options: [{ text: 'Amenazar', corruptionImpact: 20 }]
-        };
-        dialogueEngine.selectOption(0);
-        
-        expect(state.currentEntity.scannedData.corruption).toBe(40);
-        expect(state.currentEntity.scannedData.corruptionHistory).toEqual([10, 20, 40]);
-        
-        // El promedio sería (10+20+40)/3 = 23.33 -> Math.floor = 23
         const history = state.currentEntity.scannedData.corruptionHistory;
-        const average = Math.floor(history.reduce((a, b) => a + b, 0) / history.length);
-        expect(average).toBe(23);
+        expect(history).toHaveLength(2);
+        expect(history[1]).toBeGreaterThan(50);
+        expect(state.currentEntity.corruptionEstimate).toBe(Math.round((history[0] + history[1]) / 2));
+
+        // Una segunda respuesta no suma otra lectura (si no, interrogar sería farmear indicios).
+        dialogueEngine.currentDialogue = { id: 'test-corr-dlg-2', text: 'Test 2', options: [{ text: 'Amenazar', corruptionImpact: 20 }] };
+        dialogueEngine.selectOption(0);
+        expect(state.currentEntity.scannedData.corruptionHistory).toHaveLength(2);
     });
 
     it('Progresión Narrativa: Avance de pasos debe limpiar el pool de diálogos y actualizar Step', () => {

@@ -15,6 +15,7 @@ import { gameSequencer } from '../../systems/GameSequencer.js';
 import { PortalScene } from './PortalScene.js';
 import { SubjectVisual } from './SubjectVisual.js';
 import { Coms } from './Coms.js';
+import { CoachHint } from './CoachHint.js';
 import { FlowGuide } from './FlowGuide.js';
 import { ObjectiveBar } from './ObjectiveBar.js';
 import { VerdictLogButton } from './Verdicts.js';
@@ -348,6 +349,7 @@ export const Operations = () => {
                 scanName=${scanName}
                 talking=${!!activeDialogue}
             />
+            <${CoachHint} />
 
             <!-- SECCIÓN CENTRAL: CHAT / LOG (MOD-05) -->
             <${Coms} />

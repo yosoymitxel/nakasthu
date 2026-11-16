@@ -171,6 +171,14 @@ const TUTORIAL_CONTENT_SECTARIAN = {
 
 import { storageGet, storageSet } from '../utils/storage.js';
 
+// Guía en vivo del primer turno jugable (paso 4) hasta completar 2 sentencias.
+export const COACH_STEP = 4;
+export const COACH_KEY = 'nakasthu_coach_done';
+export const isCoachActive = () =>
+    state.currentStep === COACH_STEP &&
+    storageGet(COACH_KEY) !== 'true' &&
+    storageGet('nakasthu_skip_tutorials') !== 'true';
+
 class TutorialController {
     constructor() {
         this.activeTutorialId = null;
@@ -207,6 +215,17 @@ class TutorialController {
         // Hacer lo que pide el paso también lo da por visto: escanear avanza el tutorial del escáner
         bus.on('SCAN_COMPLETED', () => {
             if (this.activeTutorialId === MODULES.BIOSCAN?.tutorial && this.currentStepIndex === 1) this.nextStep();
+        });
+
+        // La guía en vivo termina tras dos sentencias del primer turno.
+        this.coachDecisions = 0;
+        bus.on('DECISION_MADE', () => {
+            if (!isCoachActive()) return;
+            if (++this.coachDecisions >= 2) {
+                storageSet(COACH_KEY, 'true');
+                bus.emit('COACH_DONE');
+                bus.emit('TERMINAL_PRINT', { text: '>>> INDUCCIÓN COMPLETADA. EL BASTIÓN ES SUYO, OPERADOR.', type: 'SUCCESS' });
+            }
         });
 
         // Avance manual desde el modal
@@ -282,6 +301,8 @@ class TutorialController {
     proposeTutorial(moduleId, moduleName, tutorialId) {
         // Si el jugador ha decidido omitir todos los tutoriales, no hacer nada
         if (storageGet('nakasthu_skip_tutorials') === 'true') return;
+        // En el primer turno enseña la guía en vivo (CoachHint); una ventana encima sólo estorba.
+        if (isCoachActive()) return;
 
         console.log(`[TUTORIAL] Proponiendo tutorial para ${moduleName} (${tutorialId})`);
         
@@ -311,6 +332,11 @@ class TutorialController {
 
         // Extraer el siguiente tutorial
         const next = this.proposalQueue.shift();
+        // Una propuesta por vez: el resto se resume en una línea en lugar de encadenar ventanas.
+        const rest = this.proposalQueue.splice(0);
+        if (rest.length) {
+            bus.emit('TERMINAL_PRINT', { text: `> Módulos nuevos: ${rest.map(r => r.moduleName).join(', ')}. Usa /help para ver sus instrucciones.`, type: 'INFO' });
+        }
         console.log(`[TUTORIAL] Procesando tutorial de la cola: ${next.tutorialId}`);
         this.showProposalModal(next.moduleId, next.moduleName, next.tutorialId);
     }

@@ -141,6 +141,7 @@ export const BioScan = () => {
                                         ${isSectarian && html`<span className="mr-1.5 opacity-40 group-hover:opacity-100 transition-opacity">✧</span>`}
                                         <kbd className="key-hint">${idx + 1}</kbd>${labels.scans[type.id]}
                                     </span>
+                                    <span className="text-[9px] font-mono text-zinc-500 whitespace-nowrap" title="Fiabilidad: cuántas veces acierta la señal">${Math.round((type.precision || 0.5) * 100)}%</span>
                                     ${scanCount > 0 && html`<span className="text-[9px] font-bold text-zinc-500 whitespace-nowrap">×${scanCount}</span>`}
                                     ${(isActive || !canAfford) && html`<span className=${`text-[9px] font-mono uppercase whitespace-nowrap ${isSectarian ? 'text-purple-400/50' : 'text-zinc-400'}`}>
                                         ${isActive ? labels.scanning : labels.insufficient}

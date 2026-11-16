@@ -6,6 +6,7 @@
 import { state } from '../core/State.js';
 import { bus } from '../core/Bus.js';
 import { applyTraits } from '../services/EntityService.js';
+import { analyzeSubjectProbability } from '../utils/scannerUtils.js';
 
 class DialogueEngine {
     constructor() {
@@ -168,21 +169,28 @@ class DialogueEngine {
         if (option.energyCost) state.energy = Math.floor(Math.max(0, state.energy - option.energyCost));
         if (option.stabilityImpact) state.stability = Math.floor(Math.max(0, state.stability + option.stabilityImpact));
 
-        // Impacto mecánico en la corrupción del sujeto actual
-        if (option.corruptionImpact && state.currentEntity) {
-            // Ajustar la probabilidad de corrupción del sujeto basado en el diálogo
-            const currentProb = state.currentEntity.scannedData.corruption || 0;
-            const newCorruption = Math.min(100, Math.max(0, currentProb + option.corruptionImpact));
-
-            state.currentEntity.scannedData.corruption = newCorruption;
-
-            // Añadir al historial de indicios para el promedio en MOD-02
-            if (!state.currentEntity.scannedData.corruptionHistory) {
-                state.currentEntity.scannedData.corruptionHistory = [];
-            }
-            state.currentEntity.scannedData.corruptionHistory.push(newCorruption);
-
-            console.log(`%c[DIALOGUE] Impacto en corrupción: ${option.corruptionImpact}% (Total: ${newCorruption}%)`, 'color: #ef4444;');
+        // Análisis de voz: la PRIMERA respuesta del sujeto aporta un indicio con fiabilidad propia.
+        // Antes se metía en el promedio un número sin relación con la verdad y empeoraba la lectura.
+        // corruptionImpact sólo mueve el dato narrativo `corruption`; NO entra en el indicio.
+        if (option.corruptionImpact && state.currentEntity?.scannedData) {
+            const sd = state.currentEntity.scannedData;
+            sd.corruption = Math.min(100, Math.max(0, (sd.corruption || 0) + option.corruptionImpact));
+        }
+        const subject = state.currentEntity;
+        if (subject && !subject.voiceRead) {
+            const probability = analyzeSubjectProbability('VOICE', subject, state.mode);
+            const history = [...(subject.scannedData?.corruptionHistory || []), probability];
+            state.currentEntity = {
+                ...subject,
+                voiceRead: true,
+                scannedData: { ...subject.scannedData, corruptionHistory: history },
+                corruptionEstimate: Math.round(history.reduce((x, y) => x + y, 0) / history.length)
+            };
+            bus.emit('TERMINAL_PRINT', {
+                text: `[ANÁLISIS DE VOZ] ${probability > 50 ? 'Microtemblor y evasivas detectadas' : 'Respuesta coherente'} · indicio ${probability}%`,
+                type: probability > 50 ? 'ERROR' : 'INFO'
+            });
+            console.log(`%c[DIALOGUE] Lectura de voz: ${probability}%`, 'color: #ef4444;');
         }
         state.endBatch();
 

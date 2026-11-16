@@ -122,9 +122,11 @@ export const executeScan = async (typeId) => {
                         : currentScans;
                         
                     // La lectura de corrupción es lógica de juego: vive en el motor, no en la vista.
+                    // La señal es fija por sujeto: repetir un escaneo no aporta una lectura nueva.
+                    const firstTime = !currentScans.includes(scan.id);
                     const probability = analyzeSubjectProbability(scan.id, state.currentEntity, state.mode);
                     const scannedData = state.currentEntity.scannedData || {};
-                    const corruptionHistory = [...(scannedData.corruptionHistory || []), probability];
+                    const corruptionHistory = firstTime ? [...(scannedData.corruptionHistory || []), probability] : (scannedData.corruptionHistory || []);
                     state.currentEntity = {
                         ...state.currentEntity,
                         scannedTypes: newScans,

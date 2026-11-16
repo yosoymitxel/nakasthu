@@ -25,12 +25,15 @@ export const CONFIG = {
     },
     SCANNER: {
         TYPES: {
-            THERMAL: { id: 'THERMAL', name: 'TÉRMICO', cost: 0.5, duration: 2000 },
-            NEURAL: { id: 'NEURAL', name: 'NEURAL', cost: 1, duration: 4000 },
-            NAKARA: { id: 'NAKARA', name: 'SONDA NAKARA', cost: 2, duration: 6000 },
-            BIOMETRIC: { id: 'BIOMETRIC', name: 'BIO-MÉTRICO', cost: 0.5, duration: 2500 },
-            RESONANCE: { id: 'RESONANCE', name: 'RESONANCIA', cost: 1, duration: 5000 }
+            // precision: probabilidad de que la señal física diga la verdad (se muestra al jugador).
+            THERMAL: { id: 'THERMAL', name: 'TÉRMICO', cost: 0.5, duration: 2000, precision: 0.65 },
+            NEURAL: { id: 'NEURAL', name: 'NEURAL', cost: 1, duration: 4000, precision: 0.9 },
+            NAKARA: { id: 'NAKARA', name: 'SONDA NAKARA', cost: 2, duration: 6000, precision: 0.95 },
+            BIOMETRIC: { id: 'BIOMETRIC', name: 'BIO-MÉTRICO', cost: 0.5, duration: 2500, precision: 0.8 },
+            RESONANCE: { id: 'RESONANCE', name: 'RESONANCIA', cost: 1, duration: 5000, precision: 0.7 }
         },
+        // El interrogatorio también es una fuente de indicios (análisis de voz).
+        VOICE_PRECISION: 0.85,
         REPETITION_PENALTY: 0.5, // +50% por cada repetición
         SYNC_BONUS_MAX: 0.5,     // -50% duración con 100% sincronía
         SCAN_INTERVAL: 100       // ms entre ticks de progreso

@@ -221,6 +221,15 @@ class GameSequencer {
         state.quota = currentConfig.subjectCount || currentConfig.quota || CONFIG.DEFAULT_QUOTA;
         state.maxErrors = errorBudget(state.quota);
 
+        // Consecuencia del objetivo del turno anterior: se cobra al empezar el siguiente turno jugable.
+        if (currentConfig.type === 'gameplay' && this.turnCarry) {
+            const { errors = 0, energy = 0, text } = this.turnCarry;
+            state.maxErrors += errors;
+            state.energy = Math.max(10, Math.min(100, state.energy + energy));
+            bus.emit('TERMINAL_PRINT', { text, type: errors > 0 ? 'SUCCESS' : 'ERROR' });
+            this.turnCarry = null;
+        }
+
         // Limpiar sujeto actual para que el nuevo nivel empiece de cero
         state.currentEntity = null;
         if (currentConfig.type === 'gameplay') {
@@ -395,6 +404,14 @@ class GameSequencer {
             }
 
             const metaResults = checkStepMeta(config.meta);
+            // El objetivo visible tiene peso: cumplirlo da margen el próximo turno, fallarlo lo cuesta.
+            const hasGoal = config.meta?.requiredTechnicians || config.meta?.requiredInfluence;
+            if (hasGoal) {
+                this.turnCarry = metaResults.success
+                    ? { errors: 1, text: '[MANDO] Objetivo cumplido: +1 error tolerado en este turno.' }
+                    : { energy: -20, text: '[MANDO] Objetivo incumplido: el turno empieza con −20 de energía.' };
+                metaResults.messages.push(metaResults.success ? 'Objetivo cumplido: +1 error tolerado en el próximo turno.' : 'Próximo turno: −20 de energía.');
+            }
 
             if (!metaResults.success) {
                 console.log('%c[SEQUENCER] Cuota completada pero metas no alcanzadas.', 'color: #f59e0b;');
@@ -414,7 +431,7 @@ class GameSequencer {
                 bus.emit('STORY_MODAL_OPEN', {
                     mode: 'Summary',
                     title: `Turno cerrado: ${config.name}`,
-                    content: metaResults.success ? '' : metaResults.messages.join(' ')
+                    content: metaResults.messages.join(' ')
                 });
             } else {
                 this.nextStep();
@@ -448,7 +465,8 @@ class GameSequencer {
 
         console.log(`%c[SEQUENCER] >>> JUMPING TO STEP ${stepIndex} <<<`, 'color: #fca5a5; font-weight: bold; background: #450a0a; padding: 4px;');
 
-        // 1. Limpieza total del estado anterior
+        // 1. Limpieza total del estado anterior (también la consecuencia pendiente de objetivos)
+        this.turnCarry = null;
         state.resetState();
 
         // 2. Limpieza de tutoriales activos (importar controller o emitir evento)

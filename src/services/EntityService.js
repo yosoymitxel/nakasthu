@@ -12,6 +12,7 @@ import {
     GENERATION_CONFIG 
 } from '../data/entityConfig.js';
 import { findLoreCharacter } from '../data/loreCharactersConfig.js';
+import { rollTells } from '../utils/scannerUtils.js';
 
 export { 
     ENTITY_TYPES, 
@@ -36,6 +37,7 @@ export const generateSubject = () => {
 
     // Motor de Veracidad: Determinar corrupción real
     const isCorrupt = Math.random() < GENERATION_CONFIG.CORRUPTION_CHANCE;
+    const tells = rollTells(isCorrupt);
 
     // Probabilidad base de ser un Eidolon (Corrupción visual)
     const corruptionLevel = type === ENTITY_TYPES.EIDOLON 
@@ -62,11 +64,13 @@ export const generateSubject = () => {
         _processed: false, // Flag de control para evitar decisiones duplicadas
         scannedTypes: [], // Lista de tipos de escaneo realizados (THERMAL, NEURAL, etc.)
         // Datos ocultos para los escáneres
+        // Señales deducibles: anomalía = fiebre ≥38 °C, sincronía < 50 %, calor > 60 λ, vacío > 60 m.
+        tells,
         scannedData: {
-            temperature: Math.floor(35 + Math.random() * 5), // 35-40°C
-            neuralSync: Math.floor(Math.random() * 100), // 0-100%
-            heatSignature: Math.floor(Math.random() * 100), // 0-100%
-            voidDepth: Math.floor(Math.random() * 100), // 0-100%
+            temperature: tells.BIOMETRIC ? 38 + Math.random() * 1.9 : 36 + Math.random() * 1.9,
+            neuralSync: Math.floor(tells.NEURAL ? Math.random() * 50 : 50 + Math.random() * 50),
+            heatSignature: Math.floor(tells.THERMAL ? 61 + Math.random() * 39 : Math.random() * 60),
+            voidDepth: Math.floor(tells.NAKARA ? 61 + Math.random() * 39 : Math.random() * 60),
             implants: Math.floor(Math.random() * 5),
             corruption: Math.floor(corruptionLevel * 100),
             corruptionHistory: [] // Historial de indicios para promedio
@@ -122,6 +126,7 @@ export const applyTraits = (subject, traits) => {
         subject.isLoreCore = true;
         subject.loreCore = loreChar;
         subject.isCorrupt = false; // Personajes clave del canon no son corrupción arbitraria
+        subject.tells = rollTells(false);
         if (loreChar.species) subject.species = loreChar.species;
         if (!subject.scannedTypes) subject.scannedTypes = [];
         if (!subject.scannedTypes.includes('LORE_VERIFIED')) {
