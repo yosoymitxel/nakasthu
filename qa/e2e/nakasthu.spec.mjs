@@ -162,7 +162,7 @@ test('gameplay: validación biométrica → autorización → terminal → pausa
   await expect(page.getByText(/AUTORIZACIÓN PENDIENTE DE VALIDACIÓN BIOMÉTRICA/)).toBeVisible();
   await expect(page.getByRole('button', { name: /AUTORIZAR/ })).toHaveCount(0);
 
-  const scanButton = page.getByRole('button', { name: /BIOMÉTRICO/ });
+  const scanButton = page.getByRole('button', { name: /^REQUERIDO 4 BIOMÉTRICO \\d+$/ });
   await expect(scanButton).toBeVisible();
   await expect(scanButton).toBeEnabled();
   await scanButton.click();
