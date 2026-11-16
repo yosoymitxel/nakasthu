@@ -7,6 +7,18 @@ updates:
     groups:
       dev:
         patterns: ["*"]
+    # Estas librerías las carga index.html desde CDN con versión fija; en npm solo son el espejo
+    # de los tests (qa/support/cdn-mirror.mjs). Se suben a mano, a la vez en index.html y package.json.
+    ignore:
+      - dependency-name: react
+      - dependency-name: react-dom
+      - dependency-name: htm
+      - dependency-name: motion
+      - dependency-name: three
+      - dependency-name: zzfx
+      - dependency-name: tailwindcss
+      - dependency-name: pixelarticons
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
