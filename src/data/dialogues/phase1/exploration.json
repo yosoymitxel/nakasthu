@@ -7,7 +7,10 @@
             "npcTraits": {
                 "id": "KAEL",
                 "type": "HUMANO",
-                "scannedData": { "temperature": 36.5, "neuralSync": 40 }
+                "scannedData": {
+                    "temperature": 36.5,
+                    "neuralSync": 40
+                }
             },
             "text": "*Sujeto identificado como Kael, líder de la expedición de la Orden. Su visor retinal parpadea en violeta.* 'El cañón de Zhyr no es geología. Es anatomía. Lo que pisamos está esperando'.",
             "options": [
@@ -17,7 +20,7 @@
                     "stabilityImpact": -1,
                     "corruptionImpact": 5,
                     "loreUnlock": "LORE_ZHYR_ANATOMY",
-                    "consequence": "Sus ojos se desvían hacia algo que no puedes ver. 'Las paredes vibran al ritmo de un corazón que late cada mil años. Alexia lo sintió antes que nadie. Dijo que el cañón respiraba bajo nuestros pies'.",
+                    "consequence": "*Sus ojos se desvían hacia algo que no puedes ver.* 'Las paredes vibran al ritmo de un corazón que late cada mil años. Alexia lo sintió antes que nadie. Dijo que el cañón respiraba bajo nuestros pies'.",
                     "next": [
                         {
                             "text": "¿Alexia desapareció antes o después de notar esa 'respiración'?",
@@ -25,7 +28,7 @@
                             "stabilityImpact": -2,
                             "corruptionImpact": 10,
                             "loreUnlock": "LORE_ALEXIA_PREMONITION",
-                            "consequence": " 'Mucho después. Se obsesionó con los patrones de la arena. Decía que estaban escritos. Cuando encontramos el monolito, ya no hablaba con nosotros. Hablaba con la piedra'.",
+                            "consequence": "'Mucho después. Se obsesionó con los patrones de la arena. Decía que estaban escritos. Cuando encontramos el monolito, ya no hablaba con nosotros. Hablaba con la piedra'.",
                             "next": [
                                 {
                                     "text": "Describe el monolito. ¿Qué viste antes del destello blanco?",
@@ -33,7 +36,7 @@
                                     "stabilityImpact": -5,
                                     "corruptionImpact": 15,
                                     "loreUnlock": "LORE_MONOLITH_DESCRIPTION",
-                                    "consequence": " 'No era piedra. Era un vacío sólido. Bebía la luz de los soles gemelos y devolvía otra cosa. Cuando Alexia lo tocó no hubo explosión. Hubo un silencio que nos dejó sordos cuatro días'.",
+                                    "consequence": "'No era piedra. Era un vacío sólido. Bebía la luz de los soles gemelos y devolvía otra cosa. Cuando Alexia lo tocó no hubo explosión. Hubo un silencio que nos dejó sordos cuatro días'.",
                                     "next": [
                                         {
                                             "text": "¿Por qué tus implantes emiten ahora esa misma frecuencia de silencio?",
@@ -41,7 +44,7 @@
                                             "stabilityImpact": -10,
                                             "corruptionImpact": 20,
                                             "loreUnlock": "LORE_SILENCE_FREQ",
-                                            "consequence": "Se inclina hacia ti. Su visor ya no refleja nada. 'Porque Zhyr no destruye. Traduce. Y yo llevo meses siendo traducido. ¿Tú no oyes el zumbido?'"
+                                            "consequence": "*Se inclina hacia ti. Su visor ya no refleja nada.* 'Porque Zhyr no destruye. Traduce. Y yo llevo meses siendo traducido. ¿Tú no oyes el zumbido?'"
                                         }
                                     ]
                                 },
@@ -51,7 +54,7 @@
                                     "stabilityImpact": 1,
                                     "corruptionImpact": -5,
                                     "loreUnlock": "LORE_DEYAR_FAILURE",
-                                    "consequence": " 'Deyar estaba ocupado con sus máquinas ruidosas. Sus sensores colapsaron antes de que ella extendiera la mano. El metal es sordo a la verdad de Zhyr'."
+                                    "consequence": "'Deyar estaba ocupado con sus máquinas ruidosas. Sus sensores colapsaron antes de que ella extendiera la mano. El metal es sordo a la verdad de Zhyr'."
                                 }
                             ]
                         },
@@ -61,7 +64,7 @@
                             "stabilityImpact": 2,
                             "corruptionImpact": -2,
                             "loreUnlock": "LORE_ORDER_SECRETS",
-                            "consequence": " 'La Orden solo busca expansión. Nos enviaron como sondas de carne. Sabían que algo nos reclamaría, solo no sabían el nombre de nuestro nuevo dueño'."
+                            "consequence": "'La Orden solo busca expansión. Nos enviaron como sondas de carne. Sabían que algo nos reclamaría, solo no sabían el nombre de nuestro nuevo dueño'."
                         }
                     ]
                 },
@@ -70,9 +73,10 @@
                     "energyCost": 0.1,
                     "stabilityImpact": 3,
                     "corruptionImpact": 2,
-                    "consequence": " 'Solo el 40%? NAKASTHU es generoso hoy. El resto de mí ya está caminando por las arenas rojas de lo que está por venir'."
+                    "consequence": "'Solo el 40%? NAKASTHU es generoso hoy. El resto de mí ya está caminando por las arenas rojas de lo que está por venir'."
                 }
-            ]
+            ],
+            "exclusive": false
         },
         {
             "id": "DLG_P1_DEYAR_TECH",
@@ -81,7 +85,9 @@
             "npcTraits": {
                 "id": "DEYAR",
                 "type": "TÉCNICO",
-                "visual": { "glitch": "LOW_RES" }
+                "visual": {
+                    "glitch": "LOW_RES"
+                }
             },
             "text": "*Deyar sostiene un dron con la carcasa fundida. El metal se dobló hacia dentro, sin calor ni corrosión en la superficie.* 'Esto no es ciencia. Mis sensores no registraron radiación ni pulso electromagnético. Nada. Y el silicio se rompió igual'.",
             "options": [
@@ -90,7 +96,7 @@
                     "energyCost": 0.3,
                     "stabilityImpact": -2,
                     "loreUnlock": "LORE_DRONE_DATA",
-                    "consequence": " 'Nada. El último frame es el monolito, pero los símbolos se movían. Fuera de la superficie, no encima. Como si la roca proyectara su propio lenguaje en el aire'."
+                    "consequence": "'Nada. El último frame es el monolito, pero los símbolos se movían. Fuera de la superficie, no encima. Como si la roca proyectara su propio lenguaje en el aire'."
                 },
                 {
                     "text": "Concéntrate, técnico. Necesitamos una explicación racional para la desaparición de Alexia.",
@@ -98,7 +104,8 @@
                     "stabilityImpact": 5,
                     "consequence": "*Deyar ríe nerviosamente, un sonido seco y agudo.* '¿Racional? Vi cómo el aire se abría como una herida y se la tragaba. No hay física que explique cómo un cuerpo humano se convierte en píxeles de carne en medio de un desierto'."
                 }
-            ]
+            ],
+            "exclusive": false
         },
         {
             "id": "DLG_P1_SYMBOLS_ALIVE",
@@ -107,7 +114,9 @@
             "npcTraits": {
                 "id": "ALEXIA (PRE)",
                 "type": "SIMBOLOGISTA",
-                "visual": { "glitch": "NONE" }
+                "visual": {
+                    "glitch": "NONE"
+                }
             },
             "text": "*Alexia antes del incidente. Estudia una muestra de arena con los ojos demasiado abiertos.* 'No es erosión. Es caligrafía. Aquí el viento no sopla: escribe'.",
             "options": [
@@ -117,7 +126,7 @@
                     "stabilityImpact": -3,
                     "corruptionImpact": 8,
                     "loreUnlock": "LORE_ALEXIA_TRANSLATION",
-                    "consequence": " 'No se traducen con la mente. Se sienten con la médula. Dice: \"el primer paso del retorno\". Como si no hubiéramos descubierto el lugar, sino vuelto a casa'."
+                    "consequence": "'No se traducen con la mente. Se sienten con la médula. Dice: \"el primer paso del retorno\". Como si no hubiéramos descubierto el lugar, sino vuelto a casa'."
                 }
             ]
         },
@@ -128,7 +137,9 @@
             "npcTraits": {
                 "id": "ALEXIA",
                 "type": "EIDOLON",
-                "visual": { "glitch": "CHROMATIC" }
+                "visual": {
+                    "glitch": "CHROMATIC"
+                }
             },
             "text": "*Una mujer que dice llamarse Alexia, aunque los registros la dan por desaparecida hace semanas. Su cuerpo está hecho de estática.* 'El destello blanco no fue el final. Fue la apertura del diafragma'.",
             "options": [
@@ -138,7 +149,7 @@
                     "stabilityImpact": -3,
                     "corruptionImpact": 12,
                     "loreUnlock": "LORE_THE_BEYOND",
-                    "consequence": " 'En el pliegue. Entre lo que era y lo que seremos. Zhyr no es un planeta: es un órgano que procesa conciencia. El monolito es la entrada de datos'.",
+                    "consequence": "'En el pliegue. Entre lo que era y lo que seremos. Zhyr no es un planeta: es un órgano que procesa conciencia. El monolito es la entrada de datos'.",
                     "next": [
                         {
                             "text": "¿Qué quiere Zhyr de nosotros?",
@@ -146,7 +157,7 @@
                             "stabilityImpact": -5,
                             "corruptionImpact": 18,
                             "loreUnlock": "LORE_ZHYR_INTENT",
-                            "consequence": " 'No quiere nada. Nos ordena. Somos ruido en un sistema que busca armonía. ¿Ves este brazo? Ya no es carne. Es frecuencia'.",
+                            "consequence": "'No quiere nada. Nos ordena. Somos ruido en un sistema que busca armonía. ¿Ves este brazo? Ya no es carne. Es frecuencia'.",
                             "next": [
                                 {
                                     "text": "Si eres frecuencia, puedo filtrarte. ¿Qué pasaría si apago este terminal?",
@@ -154,7 +165,7 @@
                                     "stabilityImpact": -10,
                                     "corruptionImpact": 25,
                                     "loreUnlock": "LORE_FILTER_THREAT",
-                                    "consequence": "Su imagen parpadea. 'Apágalo. No me apagas a mí: apagas tu ventana. Yo sigo aquí, en la arena, en tu sangre, en el zumbido de NAKASTHU'."
+                                    "consequence": "*Su imagen parpadea.* 'Apágalo. No me apagas a mí: apagas tu ventana. Yo sigo aquí, en la arena, en tu sangre, en el zumbido de NAKASTHU'."
                                 }
                             ]
                         }
@@ -165,9 +176,10 @@
                     "energyCost": 0.2,
                     "stabilityImpact": -2,
                     "corruptionImpact": 8,
-                    "consequence": " 'Es porque somos muchos. Los que se desvanecieron no se perdieron. Fuimos agregados. El Gran Desvío fue una actualización masiva'."
+                    "consequence": "'Es porque somos muchos. Los que se desvanecieron no se perdieron. Fuimos agregados. El Gran Desvío fue una actualización masiva'."
                 }
-            ]
+            ],
+            "exclusive": false
         },
         {
             "id": "DLG_DEYAR_TRAUMA",
@@ -176,7 +188,10 @@
             "npcTraits": {
                 "id": "DEYAR",
                 "type": "HUMANO",
-                "scannedData": { "temperature": 36.5, "neuralSync": 40 }
+                "scannedData": {
+                    "temperature": 36.5,
+                    "neuralSync": 40
+                }
             },
             "text": "*El técnico de la expedición. Le tiemblan las manos y apenas sostiene el comunicador.* 'Mis drones. Mis hermosos drones. Ceniza fría en cuanto se acercaron a esa cosa'.",
             "options": [
@@ -204,7 +219,8 @@
                     "corruptionImpact": -2,
                     "consequence": "'¿Éxito parcial? ¡Perdimos a Alexia y casi perdemos la razón! Si eso es éxito, no quiero imaginar el fracaso de la Orden'."
                 }
-            ]
+            ],
+            "exclusive": false
         },
         {
             "id": "DLG_ELARA_RUMORS",

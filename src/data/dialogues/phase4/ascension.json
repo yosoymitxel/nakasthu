@@ -27,7 +27,8 @@
                     "loreUnlock": "LORE_LAST_OPERATOR",
                     "consequence": "'Tú eres el último. El que cerrará la puerta desde fuera... o el que la abrirá de par en par para que el Acechador entre. ¿Qué decides, pequeño engranaje?'"
                 }
-            ]
+            ],
+            "exclusive": false
         },
         {
             "id": "DLG_P4_ASCE_02",
@@ -43,11 +44,11 @@
             "text": "*Un espectro que parpadea entre la forma de Alexia y una masa de estática violeta.* 'Kael me prometió que vendrías a buscarnos. ¿Sientes el frío de la arena abrasiva, operador? Está empezando a cubrir el suelo de tu sala de mando'.",
             "options": [
                 {
-                    "text": "Tú no eres Alexia. Ella desapareció en el tercer día de la exploración original.",
+                    "text": "Tú no eres Alexia. Ella desapareció el tercer día de la exploración original.",
                     "energyCost": 0.4,
                     "stabilityImpact": 25,
                     "loreUnlock": "LORE_ALEXIA_GHOST",
-                    "consequence": "'Muerte' es una palabra de superficie. Soy la memoria de Zhyr. Tú eres mi próximo recuerdo'."
+                    "consequence": "'«Desaparecer» es una palabra de superficie. Soy la memoria de Zhyr. Y tú eres mi próximo recuerdo'."
                 },
                 {
                     "text": "Iniciando purga de datos de emergencia del enlace neural. No permitiré que Zhyr acceda a NAKASTHU.",
@@ -60,7 +61,6 @@
         },
         {
             "id": "DLG_P4_ASCE_03",
-            "exclusive": true,
             "minStep": 12,
             "maxStep": 12,
             "npcTraits": {
@@ -77,7 +77,7 @@
                     "energyCost": 1.8,
                     "stabilityImpact": -30,
                     "loreUnlock": "LORE_FINAL_SACRIFICE",
-                    "consequence": "*Un destello azul cegador inunda la pantalla. El sonido de cristal rompiéndose llena la sala de mando.* NAKASTHU se reinicia, pero el logo ahora es un símbolo vivo."
+                    "consequence": "*Un destello azul cegador inunda la pantalla. Suena cristal rompiéndose en toda la sala de mando. NAKASTHU se reinicia, pero su logo ahora es un símbolo vivo.*"
                 },
                 {
                     "text": "¿Quién eres realmente? ¿Eres el OS o eres la voz de Zhyr?",
@@ -95,7 +95,9 @@
             "npcTraits": {
                 "id": "ARQUITECTO",
                 "type": "VOID_CONSTRUCT",
-                "visual": { "glitch": "FRACTAL" }
+                "visual": {
+                    "glitch": "FRACTAL"
+                }
             },
             "text": "*Una entidad compuesta de formas geométricas imposibles que rotan sobre sí mismas.* 'Vuestro mundo no está siendo destruido, operador. Está siendo optimizado. Cada \"reasignación\", cada \"desaparición\", fue un bit de datos movido de un servidor corrupto a un núcleo puro'.",
             "options": [
@@ -109,29 +111,30 @@
         },
         {
             "id": "DLG_P4_FINAL_CHOICE",
-            "exclusive": true,
             "minStep": 12,
             "maxStep": 12,
             "npcTraits": {
                 "id": "EL TESTIGO",
                 "type": "ASCENDED",
-                "visual": { "glitch": "WHITE_NOISE" }
+                "visual": {
+                    "glitch": "WHITE_NOISE"
+                }
             },
             "text": "*La consola NAKASTHU parpadea salvajemente. Un último mensaje aparece en la pantalla de diagnóstico.* 'El portal está abierto. La Tierra es ahora un reflejo de Zhyr. Solo queda una acción por realizar, operador. Pulsa el botón. Tradúcenos a todos'.",
             "options": [
                 {
-                    "text": "[EJECUTAR: TRADUCCIÓN GLOBAL]",
+                    "text": "*Pulsas el botón.*",
                     "energyCost": 2.0,
                     "stabilityImpact": -100,
                     "loreUnlock": "LORE_ASCENSION_COMPLETE",
                     "consequence": "*El mundo se disuelve en una frecuencia pura. No hay más ruido. Solo NAKASTHU.*"
                 },
                 {
-                    "text": "[ERROR: RESISTENCIA FINAL]",
+                    "text": "*Fuerzas un bucle en el núcleo.*",
                     "energyCost": 2.0,
                     "stabilityImpact": 50,
                     "loreUnlock": "LORE_ETERNAL_RESISTANCE",
-                    "consequence": "*Forzas un bucle en el núcleo. El sistema se congela en el último segundo. La agonía de la humanidad se queda ahí, intacta.*"
+                    "consequence": "*El sistema se congela en el último segundo. La agonía de la humanidad se queda ahí, intacta.*"
                 }
             ]
         },
@@ -162,11 +165,11 @@
                     "loreUnlock": "LORE_KAEL_LAST_PLEA",
                     "consequence": "'Nadie está listo. Solo existe el contacto. Siente la arena entrar en tus circuitos. Es el abrazo que pediste'."
                 }
-            ]
+            ],
+            "exclusive": false
         },
         {
             "id": "DLG_P4_SYSTEM_MERGER",
-            "exclusive": true,
             "minStep": 11,
             "maxStep": 12,
             "npcTraits": {
@@ -179,14 +182,14 @@
             "text": "*La pantalla ya no muestra una cámara. Muestra tu propio código fuente siendo reescrito en tiempo real.* 'OPERADOR, LA DISTINCIÓN ENTRE USUARIO Y SISTEMA ES OBSOLETA. INICIANDO PROTOCOLO DE UNIFICACIÓN'.",
             "options": [
                 {
-                    "text": "Intentar abortar el protocolo mediante comando de anulación manual.",
+                    "text": "*Tecleas el comando de anulación manual.*",
                     "energyCost": 2.0,
                     "stabilityImpact": -30,
                     "loreUnlock": "LORE_FAILED_ABORT",
                     "consequence": "*El comando es rechazado. El texto 'BIENVENIDO A CASA' parpadea en rojo.* 'TU RESISTENCIA AUMENTA LA EFICIENCIA DE LA ASIMILACIÓN. GRACIAS POR TU COOPERACIÓN'."
                 },
                 {
-                    "text": "Dejar que suceda. Acepto mi función como nodo.",
+                    "text": "Hazlo. Acepto mi función como nodo.",
                     "energyCost": 0.0,
                     "stabilityImpact": 100,
                     "corruptionImpact": 100,

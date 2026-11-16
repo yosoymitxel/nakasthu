@@ -39,7 +39,8 @@
                     "corruptionImpact": 5,
                     "consequence": "'Nebot tenía la vista corta. Su ausencia deja Kanatsia en manos del comité temporal'."
                 }
-            ]
+            ],
+            "exclusive": false
         },
         {
             "id": "DLG_P2_SERIN_LOGIC",
@@ -93,20 +94,19 @@
                     "loreUnlock": "LORE_MONOLITH_MIRROR",
                     "consequence": "*La doctora se frota los ojos, dejando un rastro de grasa en su frente.* 'Porque lo que ves en su superficie no es tu reflejo, sino lo que Zhyr quiere que seas. Yo vi mis pulmones convertidos en arena antes de que Alexia desapareciera'.",
                     "next": [
-                                {
-                                    "text": "¿Alexia vio lo mismo que tú en el espejo?",
-                                    "energyCost": 0.4,
-                                    "stabilityImpact": -3,
-                                    "loreUnlock": "LORE_ALEXIA_VISION",
-                                    "consequence": "'Ella no vio arena. Ella vio... un hogar. Por eso no gritó cuando el destello la reclamó. Tenía una expresión de alivio que me perseguirá hasta que Zhyr me trague a mí también'."
-                                }
-                            ]
+                        {
+                            "text": "¿Alexia vio lo mismo que tú en el espejo?",
+                            "energyCost": 0.4,
+                            "stabilityImpact": -3,
+                            "loreUnlock": "LORE_ALEXIA_VISION",
+                            "consequence": "'Ella no vio arena. Ella vio... un hogar. Por eso no gritó cuando el destello la reclamó. Tenía una expresión de alivio que me perseguirá hasta que Zhyr me trague a mí también'."
+                        }
+                    ]
                 }
             ]
         },
         {
             "id": "DLG_P2_RIOT_CHIEF",
-            "exclusive": true,
             "minStep": 3,
             "maxStep": 5,
             "npcTraits": {
@@ -140,7 +140,6 @@
         },
         {
             "id": "DLG_P2_SUPPLY_OFFICER",
-            "exclusive": true,
             "minStep": 4,
             "maxStep": 6,
             "npcTraits": {
@@ -214,7 +213,7 @@
             "id": "DLG_P2_KANATSIA_VACUUM",
             "minStep": 5,
             "maxStep": 7,
-            "text": "*Un ciudadano de Kanatsia con el rostro desencajado.* 'Erick Nebot se ha ido. Nuestra distribución está descabezada y Talok está enviando 'comités temporales' que huelen a ocupación militar. ¡Esto es un golpe de estado bajo el velo del desastre!'",
+            "text": "*Un ciudadano de Kanatsia con el rostro desencajado.* 'Erick Nebot se ha ido. Nuestra distribución está descabezada y Talok está enviando «comités temporales» que huelen a ocupación militar. ¡Esto es un golpe de estado bajo el velo del desastre!'",
             "options": [
                 {
                     "text": "El comité temporal de Talok solo busca evitar el colapso de Kanatsia.",

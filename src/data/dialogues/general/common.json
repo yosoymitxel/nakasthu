@@ -26,7 +26,7 @@
                     "energyCost": 0.4,
                     "stabilityImpact": -2,
                     "loreUnlock": "LORE_EARTH_SCREAM",
-                    "consequence": "*La señal se aclara por un segundo.* Oyes una voz lejana y distorsionada: '...la arena está en los conductos de ventilación de Itzinol... no hay salida...'"
+                    "consequence": "*La señal se aclara un segundo. Una voz lejana y distorsionada:* '...la arena está en los conductos de ventilación de Itzinol... no hay salida...'"
                 }
             ]
         },

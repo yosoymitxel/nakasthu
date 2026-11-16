@@ -112,9 +112,15 @@ export const Operations = () => {
             // Notificar al sistema que el escaneo ha terminado
         };
 
+        // Quien habla tiene nombre: "BIOMASA" para todos impedía saber si era Vargas, Kael o un anónimo.
+        const speaker = () => {
+            const e = state.currentEntity;
+            return (e?.name || e?.id || labels.subjectSender).toString().toUpperCase();
+        };
+
         const onDialogueStarted = (dialogue) => {
             bus.emit('DIALOGUE_EMITTED', {
-                sender: labels.subjectSender,
+                sender: speaker(),
                 text: dialogue.text,
                 type: 'SUBJECT'
             });
@@ -124,7 +130,8 @@ export const Operations = () => {
             // Emitir elección del inquisidor/operador
             bus.emit('DIALOGUE_EMITTED', {
                 sender: labels.operatorSender,
-                text: `> ${data.option}`,
+                // Una acción (*…*) se narra; anteponer "> " la convertía en habla.
+                text: data.option.trim().startsWith('*') ? data.option : `> ${data.option}`,
                 type: 'OPERATOR'
             });
 
@@ -132,7 +139,7 @@ export const Operations = () => {
             if (data.consequence) {
                 setTimeout(() => {
                     bus.emit('DIALOGUE_EMITTED', {
-                        sender: labels.subjectSender,
+                        sender: speaker(),
                         text: data.consequence,
                         type: 'SUBJECT'
                     });
@@ -375,7 +382,7 @@ export const Operations = () => {
                                             ? 'border-purple-500/30 bg-purple-950/10 hover:bg-purple-500/20 text-purple-500/80 hover:text-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.05)]'
                                                     : 'border-cyan-500/30 bg-cyan-950/10 hover:bg-cyan-500/20 text-cyan-500/80 hover:text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.05)]')}`}
                                     >
-                                        <span className="line-clamp-2 relative z-10">${opt.text}</span>
+                                        <span title=${opt.text.replace(/\*/g, '')} className=${`line-clamp-2 relative z-10 ${opt.text.trim().startsWith('*') ? 'italic normal-case font-normal' : ''}`}>${opt.text.replace(/\*/g, '').trim()}</span>
                                         <div className="text-[9px] text-zinc-500 mt-1 relative z-10 font-mono">
                                             ${labels.statLabels.energy}: ${opt.energyCost} | ${labels.statLabels.stability}: ${opt.stabilityImpact}
                                         </div>

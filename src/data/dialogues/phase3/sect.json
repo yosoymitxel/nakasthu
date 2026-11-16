@@ -68,7 +68,8 @@
                     "corruptionImpact": -8,
                     "consequence": "'La Orden ya es un cadáver que no sabe que ha muerto. Nosotros somos los gusanos que devoran su carne para que Zhyr pueda florecer en sus huesos'."
                 }
-            ]
+            ],
+            "exclusive": false
         },
         {
             "id": "DLG_P3_SECT_02",
@@ -125,7 +126,8 @@
                     "corruptionImpact": -5,
                     "consequence": "'Mi ID es el zumbido de los 14 hercios. Mi nombre es Legión. Sacrifícame si quieres, solo estarás enviando otra voz al coro de Zhyr'."
                 }
-            ]
+            ],
+            "exclusive": false
         },
         {
             "id": "DLG_P3_KAMIN_VOICE",
@@ -229,9 +231,10 @@
                     "energyCost": 0.1,
                     "stabilityImpact": 20,
                     "corruptionImpact": -2,
-                    "consequence": "*Su risa se convierte en un gorgoteo.* ''Muerto' es una palabra de fuera. Estoy eclosionando. Lo que ves es la cáscara'."
+                    "consequence": "*Su risa se convierte en un gorgoteo.* '«Muerto» es una palabra de fuera. Estoy eclosionando. Lo que ves es la cáscara'."
                 }
-            ]
+            ],
+            "exclusive": false
         },
         {
             "id": "DLG_P3_STALKER_WITNESS",

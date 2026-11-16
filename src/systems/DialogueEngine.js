@@ -8,6 +8,10 @@ import { bus } from '../core/Bus.js';
 import { applyTraits } from '../services/EntityService.js';
 import { analyzeSubjectProbability } from '../utils/scannerUtils.js';
 
+// Por defecto una respuesta del operador cierra las alternativas: si no, se podía negar algo y
+// acto seguido concederlo. Sólo las charlas de pura indagación marcan `exclusive: false`.
+export const isExclusive = (dialogue) => dialogue?.exclusive !== false;
+
 class DialogueEngine {
     constructor() {
         this.dialogues = [];
@@ -129,7 +133,7 @@ class DialogueEngine {
         state.activeDialogue = {
             id: this.currentDialogue.id,
             text: this.currentDialogue.text,
-            exclusive: !!this.currentDialogue.exclusive,
+            exclusive: isExclusive(this.currentDialogue),
             options: this.currentDialogue.options.map(opt => ({ ...opt, used: false }))
         };
 
@@ -159,7 +163,7 @@ class DialogueEngine {
         if (uiOption?.used) return;
 
         // Decisión exclusiva: una vez elegida una ruta, las hermanas quedan descartadas
-        if (this.currentDialogue.exclusive && active?.options.some(o => o.used)) return;
+        if (isExclusive(this.currentDialogue) && active?.options.some(o => o.used)) return;
 
         const option = this.currentDialogue.options[optionIndex];
         if (!option) return;
@@ -167,7 +171,7 @@ class DialogueEngine {
         // Consumir recursos y afectar al sujeto
         state.startBatch();
         if (option.energyCost) state.energy = Math.floor(Math.max(0, state.energy - option.energyCost));
-        if (option.stabilityImpact) state.stability = Math.floor(Math.max(0, state.stability + option.stabilityImpact));
+        if (option.stabilityImpact) state.stability = Math.floor(Math.min(100, Math.max(0, state.stability + option.stabilityImpact)));
 
         // Análisis de voz: la PRIMERA respuesta del sujeto aporta un indicio con fiabilidad propia.
         // Antes se metía en el promedio un número sin relación con la verdad y empeoraba la lectura.
@@ -231,14 +235,14 @@ class DialogueEngine {
             state.activeDialogue = {
                 id: this.currentDialogue.id,
                 text: this.currentDialogue.text,
-                exclusive: !!this.currentDialogue.exclusive,
+                exclusive: isExclusive(this.currentDialogue),
                 options: this.currentDialogue.options.map(opt => ({ ...opt, used: false }))
             };
         } else {
             // Marcar opción como usada en el estado si no hay ramificación
             if (state.activeDialogue) {
                 // En una decisión exclusiva se cierran también las rutas no elegidas
-                const lockSiblings = !!this.currentDialogue.exclusive;
+                const lockSiblings = isExclusive(this.currentDialogue);
                 const newOptions = state.activeDialogue.options.map((opt, i) =>
                     (i === optionIndex || lockSiblings) ? { ...opt, used: true } : opt
                 );

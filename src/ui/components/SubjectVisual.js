@@ -173,12 +173,15 @@ export const SubjectVisual = () => {
 
                     ${activeScan && html`<div className="scan-beam" style=${{ '--scan-progress': `${activeScan.progress || 0}%` }}></div>`}
 
-                    <!-- HUD del sujeto (Sectario: Glifos / Lore: Insignia) -->
-                    <div className=${`absolute top-0 left-0 p-2 bg-black/60 backdrop-blur-sm border-r border-b ${loreChar ? 'border-cyan-500/50' : (isSectarian ? 'border-purple-900/50 rounded-br-lg' : 'border-zinc-800')}`}>
-                        <span className=${`text-[10px] font-mono font-bold tracking-widest ${loreChar ? 'text-cyan-300' : (isSectarian ? 'text-purple-400' : 'text-cyan-400')}`}>
-                            ${isSectarian && !loreChar ? `᚛ ${id} ᚜` : id}
-                        </span>
-                    </div>
+                    <!-- ID del sujeto: chapa mínima en la esquina; antes era un recuadro que tapaba la cabeza.
+                         El lore ya lleva su nombre arriba, así que no se repite. -->
+                    ${!loreChar && html`
+                        <div className="absolute top-0.5 left-0.5 max-w-[60%] px-1 bg-black/70 z-30 truncate leading-tight" title=${id}>
+                            <span className=${`text-[8px] font-mono tracking-wider ${isSectarian ? 'text-purple-400/80' : 'text-zinc-400'}`}>
+                                ${isSectarian ? `᚛ ${id} ᚜` : id}
+                            </span>
+                        </div>
+                    `}
                 </button>
 
             <!-- Etiquetas de Estado -->
