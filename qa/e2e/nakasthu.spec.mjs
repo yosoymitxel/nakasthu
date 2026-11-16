@@ -165,15 +165,25 @@ test('gameplay: validación biométrica → autorización → terminal → pausa
   const scanButton = page.getByRole('button', { name: /^REQUERIDO 4 BIOMÉTRICO/ });
   await expect(scanButton).toBeVisible();
   await expect(scanButton).toBeEnabled();
+  const energyBeforeScan = await page.evaluate(() => window.state.energy);
   await scanButton.click();
 
-  // El escaneo dura 2,5 s en configuración base y se refleja en las acciones habilitadas.
+  // Confirmar el resultado en el estado real del motor, no solo en el texto de la UI.
+  await expect.poll(
+    () => page.evaluate(() => window.state.currentEntity?.scannedTypes?.includes('BIOMETRIC')),
+    { timeout: 10_000 }
+  ).toBe(true);
+  const energyAfterScan = await page.evaluate(() => window.state.energy);
+  expect(energyAfterScan).toBeLessThan(energyBeforeScan);
+
+  // La validación biométrica debe habilitar la acción de autorización.
   const authorize = page.getByRole('button', { name: /AUTORIZAR/ });
   await expect(authorize).toBeVisible({ timeout: 10_000 });
   await expect(authorize).toBeEnabled();
 
   // Ejecutar la autorización desde el botón visible.
   await authorize.click();
+  await expect.poll(() => page.evaluate(() => window.state.processedCount), { timeout: 8_000 }).toBe(1);
   await expect(page.getByText('1 / 10', { exact: true })).toBeVisible({ timeout: 8_000 });
 
   // Terminal: ejecutar un comando real desde su input.
@@ -182,6 +192,11 @@ test('gameplay: validación biométrica → autorización → terminal → pausa
   await terminalInput.fill('/status');
   await terminalInput.press('Enter');
   await expect(page.locator('#terminal-log')).toContainText('SYS_INFO:');
+
+  // El motor bloquea comandos consecutivos duplicados.
+  await terminalInput.fill('/status');
+  await terminalInput.press('Enter');
+  await expect(page.locator('#terminal-log')).toContainText('COMANDO REPETIDO DETECTADO');
 
   // Pausar y guardar desde el menú de pausa.
   await page.locator('button[title="PAUSA"]').click();
@@ -196,6 +211,105 @@ test('gameplay: validación biométrica → autorización → terminal → pausa
   expect(Array.isArray(saved.unlockedModules)).toBe(true);
 
   await page.screenshot({ path: 'test-results/nakasthu-gameplay-step-04.png', fullPage: true });
+});
+
+test('final Orden: la elección se refleja en el epílogo y permite completar la historia', async ({ page }) => {
+  await page.evaluate(() => localStorage.setItem('nakasthu_max_step', '11'));
+  await page.reload();
+
+  await page.getByRole('button', { name: 'Selector de Secuencias', exact: true }).click();
+  const step11 = page.getByRole('button').filter({ hasText: 'PASO_11' });
+  await expect(step11).toBeEnabled();
+  await step11.click();
+
+  await expect(page.getByRole('heading', { name: 'El Juicio Final' })).toBeVisible();
+  await page.getByRole('button', { name: 'EJECUTAR SENTENCIA', exact: true }).click();
+
+  const epilogue = page.locator('.cinematic-screen');
+  await expect(epilogue).toBeVisible();
+  await expect(epilogue.locator('.cine-title')).toHaveText('Epílogo');
+  await epilogue.click();
+  await expect(epilogue.locator('.cine-text')).toContainText('Cierras el portal. La humanidad sobrevive');
+  await epilogue.click();
+  await expect(page.getByRole('heading', { name: 'PROTOCOLOS COMPLETADOS' })).toBeVisible();
+});
+
+test('final Caos: la elección alternativa conserva su propio epílogo', async ({ page }) => {
+  await page.evaluate(() => localStorage.setItem('nakasthu_max_step', '11'));
+  await page.reload();
+
+  await page.getByRole('button', { name: 'Selector de Secuencias', exact: true }).click();
+  const step11 = page.getByRole('button').filter({ hasText: 'PASO_11' });
+  await expect(step11).toBeEnabled();
+  await step11.click();
+
+  await expect(page.getByRole('heading', { name: 'El Juicio Final' })).toBeVisible();
+  await page.getByRole('button', { name: 'ABRAZAR EL VACÍO', exact: true }).click();
+
+  const epilogue = page.locator('.cinematic-screen');
+  await expect(epilogue).toBeVisible();
+  await expect(epilogue.locator('.cine-title')).toHaveText('Epílogo');
+  await epilogue.click();
+  await expect(epilogue.locator('.cine-text')).toContainText('Kamin empuja a Leina hacia la grieta');
+  await epilogue.click();
+  await expect(page.getByRole('heading', { name: 'PROTOCOLOS COMPLETADOS' })).toBeVisible();
+});
+
+test('persistencia: un guardado existente no ofrece reanudación desde el menú', async ({ page }) => {
+  await page.evaluate(() => localStorage.setItem('nakasthu_save_v1', JSON.stringify({
+    currentStep: 4,
+    storyPath: 0,
+    unlockedModules: [],
+    timestamp: Date.now(),
+  })));
+  await page.reload();
+
+  await expect(page.getByRole('button', { name: 'Iniciar Juego', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Cargar Partida|Reanudar Partida|Continuar Partida/ })).toHaveCount(0);
+
+  // Evidencia del comportamiento actual: Iniciar Juego arranca en la secuencia 01,
+  // aunque localStorage contiene un guardado del paso 04.
+  await page.getByRole('button', { name: 'Iniciar Juego', exact: true }).click();
+  await expect(page.locator('.cinematic-screen')).toBeVisible();
+  await expect(page.locator('.cine-seq')).toHaveText('SECUENCIA 01');
+});
+
+test('responsive gameplay: las cuatro pestañas móviles cambian el panel activo', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => {
+    localStorage.setItem('nakasthu_max_step', '4');
+    localStorage.setItem('nakasthu_skip_tutorials', 'true');
+    localStorage.setItem('nakasthu_tutorial_seen', 'true');
+  });
+  await page.reload();
+
+  await page.getByRole('button', { name: 'Selector de Secuencias', exact: true }).click();
+  const step4 = page.getByRole('button').filter({ hasText: 'PASO_04' });
+  await expect(step4).toBeEnabled();
+  await step4.click();
+
+  const briefing = page.locator('.game-modal-overlay');
+  await expect(briefing).toBeVisible();
+  await briefing.getByRole('button', { name: 'INICIAR OPERACIONES' }).click();
+
+  const tabs = page.locator('.mobile-tabs');
+  const grid = page.locator('.main-layout-grid').first();
+  await expect(tabs).toBeVisible();
+  await expect(grid).toHaveAttribute('data-tab', 'mando');
+
+  for (const [label, key] of [['Escáner', 'escaner'], ['Sistemas', 'sistemas'], ['Registro', 'registro'], ['Mando', 'mando']]) {
+    await tabs.getByRole('button', { name: label, exact: true }).click();
+    await expect(grid).toHaveAttribute('data-tab', key);
+  }
+
+  const dimensions = await page.evaluate(() => ({
+    viewport: window.innerWidth,
+    document: document.documentElement.scrollWidth,
+    body: document.body.scrollWidth,
+  }));
+  expect(dimensions.document, JSON.stringify(dimensions)).toBeLessThanOrEqual(dimensions.viewport + 1);
+  expect(dimensions.body, JSON.stringify(dimensions)).toBeLessThanOrEqual(dimensions.viewport + 1);
+  await page.screenshot({ path: 'test-results/nakasthu-mobile-gameplay.png', fullPage: true });
 });
 
 test('responsive: menú usable en viewport móvil sin desbordamiento horizontal', async ({ page }) => {

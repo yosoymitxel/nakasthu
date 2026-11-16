@@ -2,6 +2,7 @@ name: Playwright QA
 on:
   push:
     branches:
+      - main
       - qa/playwright-smoke-20261116
   workflow_dispatch:
 permissions:

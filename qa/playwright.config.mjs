@@ -11,8 +11,8 @@ export default defineConfig({
   expect: { timeout: 12_000 },
   reporter: [
     ['list'],
-    ['html', { outputFolder: 'playwright-report', open: 'never' }],
-    ['json', { outputFile: 'qa/playwright-results.json' }],
+    ['html', { outputFolder: '../playwright-report', open: 'never' }],
+    ['json', { outputFile: './playwright-results.json' }],
   ],
   use: {
     baseURL: process.env.BASE_URL || 'https://yosoymitxel.github.io/nakasthu/',
