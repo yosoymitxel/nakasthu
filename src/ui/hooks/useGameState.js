@@ -19,12 +19,11 @@ export const useGameState = (key = null) => {
     useEffect(() => {
         const handler = (data) => {
             if (key) {
-                // Si recibimos un cambio de propiedad específico
-                if (typeof data !== 'object' || data === null) {
-                    setValue(data);
-                } else if (data[key] !== undefined) {
-                    // Si recibimos el estado completo (batch update)
+                // El evento específico trae el valor nuevo; el global trae el estado completo
+                if (data !== null && typeof data === 'object' && key in data) {
                     setValue(data[key]);
+                } else {
+                    setValue(data);
                 }
             } else {
                 setValue({ ...state });

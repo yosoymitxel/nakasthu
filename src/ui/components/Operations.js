@@ -16,6 +16,7 @@ import { PortalScene } from './PortalScene.js';
 import { SubjectVisual } from './SubjectVisual.js';
 import { Coms } from './Coms.js';
 import { FlowGuide } from './FlowGuide.js';
+import { ObjectiveBar } from './ObjectiveBar.js';
 import { VerdictLogButton } from './Verdicts.js';
 import { SCAN_TYPES } from '../../systems/Scanner.js';
 import { findLoreCharacter } from '../../data/loreCharactersConfig.js';
@@ -335,6 +336,8 @@ export const Operations = () => {
                     </div>
                 </div>
             </div>
+
+            <${ObjectiveBar} isSectarian=${isSectarian} />
 
             <${FlowGuide}
                 isSectarian=${isSectarian}

@@ -101,6 +101,7 @@ class DecisionMechanic extends BaseMechanic {
 
             if (result.isError) {
                 state.judgmentErrors++;
+                state.registerJudgmentError();
                 if (result.flash) bus.emit('TRIGGER_FLASH', result.flash);
                 bus.emit('TERMINAL_PRINT', {
                     text: pathConfig.decisions.authorize.fail,
@@ -112,6 +113,11 @@ class DecisionMechanic extends BaseMechanic {
                     type: 'SUCCESS'
                 });
             }
+        }
+
+        // Telemetría para el informe final
+        if (subject.isCorrupt) {
+            state.stats = { ...state.stats, corruptsAuthorized: state.stats.corruptsAuthorized + 1 };
         }
 
         state.endBatch();
@@ -178,6 +184,7 @@ class DecisionMechanic extends BaseMechanic {
 
         if (result.isError) {
             state.judgmentErrors++;
+            state.registerJudgmentError();
             if (result.flash) bus.emit('TRIGGER_FLASH', result.flash);
             bus.emit('TERMINAL_PRINT', {
                 text: pathConfig.decisions.sacrifice.fail,
@@ -188,6 +195,11 @@ class DecisionMechanic extends BaseMechanic {
                 text: pathConfig.decisions.sacrifice.success,
                 type: 'SUCCESS'
             });
+        }
+
+        // Telemetría para el informe final
+        if (!subject.isCorrupt) {
+            state.stats = { ...state.stats, innocentsSacrificed: state.stats.innocentsSacrificed + 1 };
         }
 
         state.endBatch();

@@ -50,6 +50,7 @@ export const Layout = () => {
     const quota = useGameState('quota');
     const judgmentErrors = useGameState('judgmentErrors');
     const maxErrors = useGameState('maxErrors');
+    const runStats = useGameState('runStats') || { processed: 0, errors: 0 };
     const techniciansRecruited = useGameState('techniciansRecruited');
     const devotsRecruited = useGameState('devotsRecruited');
     const tutorialStep = useGameState('tutorialStep');
@@ -69,6 +70,7 @@ export const Layout = () => {
     const [deathReason, setDeathReason] = useState(null);
     const [deathDetails, setDeathDetails] = useState(null);
     const [deathStats, setDeathStats] = useState(null);
+    const [deathHeader, setDeathHeader] = useState(null); // { text, color } del protocolo de colapso
     const [stableRank, setStableRank] = useState(null); // Capturar rango final para evitar parpadeo
     const [isFS, setIsFS] = useState(isFullScreen());
 
@@ -214,17 +216,32 @@ export const Layout = () => {
 
         const onSystemFailure = (data) => {
             let reasonLabel = 'SISTEMA COMPROMETIDO';
-            if (data.reason === 'ENERGY_DEPLETED') reasonLabel = 'ERROR CRÍTICO: Agotamiento de Energía';
-            if (data.reason === 'STABILITY_COLLAPSED') reasonLabel = 'SUJETO DESCONTROLADO: Inestabilidad Neural';
-            if (data.reason === 'EXCESSIVE_ERRORS') reasonLabel = 'FALLO OPERATIVO: Exceso de Errores';
+            let header = { text: 'BASTIÓN COMPROMETIDO', color: 'text-red-600' };
 
+            if (data.reason === 'ENERGY_DEPLETED') {
+                reasonLabel = 'ERROR CRÍTICO: Agotamiento de Energía';
+            }
+            if (data.reason === 'STABILITY_COLLAPSED') {
+                reasonLabel = 'SUJETO DESCONTROLADO: Inestabilidad Neural';
+            }
+            if (data.reason === 'EXCESSIVE_ERRORS') {
+                reasonLabel = 'FALLO OPERATIVO: Exceso de Errores';
+                header = { text: 'OPERADOR RELEVADO', color: 'text-red-800' };
+            }
+
+            setDeathHeader(header);
             setDeathReason(reasonLabel);
             setDeathDetails(data.details || data.text);
             setDeathStats(data.stats);
         };
 
         const onGameEnding = (data) => {
-            setDeathReason(`FINAL ALCANZADO: ${data.faction === 'orden' ? 'ORDEN' : 'TRASCENDENCIA'}`);
+            const isCaos = data.faction === 'caos';
+            setDeathHeader({
+                text: 'PROTOCOLOS COMPLETADOS',
+                color: isCaos ? 'text-purple-400' : 'text-cyan-500'
+            });
+            setDeathReason(`FINAL ALCANZADO: ${isCaos ? 'TRASCENDENCIA' : 'ORDEN'}`);
             setDeathDetails(data.text);
             setDeathStats(data.stats);
         };
@@ -257,16 +274,26 @@ export const Layout = () => {
     // Cinemáticas y mecánicas piden su plano de cámara a la escena 3D
     const sceneShot = (!isStartMenu && !isGameOver && !isLoreArchive && stepConfig?.type !== 'gameplay') ? stepConfig?.shot : null;
 
+    const isEnding = Boolean(deathReason && deathReason.includes('FINAL'));
+
+    // El informe final usa los totales de la partida, no los contadores del último nivel
+    const reportStats = {
+        processed: deathStats?.processed ?? runStats.processed ?? processedCount,
+        errors: deathStats?.errors ?? runStats.errors ?? judgmentErrors,
+        energy: deathStats?.energy ?? energy,
+        stability: deathStats?.stability ?? stability
+    };
+
+    const rankInput = {
+        ...reportStats,
+        maxErrors: deathStats?.maxErrors ?? maxErrors ?? 3,
+        failed: isGameOver && !isEnding
+    };
+
     // Capturar el rango final para evitar parpadeo al reiniciar el nivel
     useEffect(() => {
         if (isGameOver) {
-            const currentStats = {
-                errors: deathStats?.errors !== undefined ? deathStats.errors : judgmentErrors,
-                energy: deathStats?.energy !== undefined ? deathStats.energy : energy,
-                maxErrors: maxErrors || 3,
-                processed: deathStats?.processed ?? processedCount
-            };
-            setStableRank(calculateRank(currentStats));
+            setStableRank(calculateRank(rankInput));
         } else if (stableRank) {
             // Limpiar con retraso después de que la pantalla de muerte desaparezca (1.5s transition)
             const timer = setTimeout(() => setStableRank(null), 2000);
@@ -299,12 +326,7 @@ export const Layout = () => {
     }, [gameStatus]);
 
 
-    const rank = calculateRank({
-        errors: deathStats?.errors !== undefined ? deathStats.errors : judgmentErrors,
-        energy: deathStats?.energy !== undefined ? deathStats.energy : energy,
-        maxErrors: maxErrors || 3,
-        processed: deathStats?.processed ?? processedCount
-    });
+    const rank = calculateRank(rankInput);
 
     // Estilo dinámico del borde del contenedor
     const gridStyle = {
@@ -404,33 +426,13 @@ export const Layout = () => {
             <!-- Protocolo de Colapso (Muerte / Final) -->
             <div className=${`death-screen ${isGameOver ? 'active' : ''}`}>
                 <div className="flex flex-col items-center space-y-8 max-w-4xl text-center px-4 overflow-y-auto max-h-screen py-12 custom-scrollbar">
-                    ${(() => {
-            const isFinal = deathReason && deathReason.includes('FINAL');
-            const isProtocol = deathReason && deathReason.includes('PROTOCOL');
-            const isErrors = deathReason && deathReason.includes('EXCESSIVE');
-
-            let headerText = 'BASTIÓN COMPROMETIDO';
-            let headerColor = 'text-red-600';
-
-            if (isFinal) {
-                headerText = 'PROTOCOLOS COMPLETADOS';
-                headerColor = 'text-cyan-500';
-            } else if (isProtocol) {
-                headerText = 'DESEMPEÑO INSUFICIENTE';
-                headerColor = 'text-amber-500';
-            } else if (isErrors) {
-                headerText = 'OPERADOR RELEVADO';
-                headerColor = 'text-red-800';
-            }
-
-            return html`<h1 className=${`font-mono text-2xl sm:text-4xl tracking-[0.15em] sm:tracking-[0.3em] uppercase font-black ${headerColor}`}>
-                            ${headerText}
-                        </h1>`;
-        })()}
+                    <h1 className=${`font-mono text-2xl sm:text-4xl tracking-[0.15em] sm:tracking-[0.3em] uppercase font-black ${deathHeader?.color || 'text-red-600'}`}>
+                        ${deathHeader?.text || 'BASTIÓN COMPROMETIDO'}
+                    </h1>
                     
                     <div className="space-y-6 w-full max-w-2xl">
-                        <div className=${`p-4 border bg-zinc-950/40 ${deathReason && (deathReason.includes('FINAL') || deathReason.includes('PROTOCOL')) ? 'border-cyan-900/30' : 'border-red-900/30'}`}>
-                            <p className=${`font-bold text-xl tracking-widest animate-pulse mb-2 ${deathReason && (deathReason.includes('FINAL') || deathReason.includes('PROTOCOL')) ? 'text-cyan-400' : 'text-amber-500'}`}>
+                        <div className=${`p-4 border bg-zinc-950/40 ${isEnding ? (deathReason.includes('TRASCENDENCIA') ? 'border-purple-900/30' : 'border-cyan-900/30') : 'border-red-900/30'}`}>
+                            <p className=${`font-bold text-xl tracking-widest animate-pulse mb-2 ${isEnding ? (deathReason.includes('TRASCENDENCIA') ? 'text-purple-400' : 'text-cyan-400') : 'text-amber-500'}`}>
                                 ${deathReason || 'CONEXIÓN CORTADA'}
                             </p>
                             <p className="text-zinc-400 text-[14px] leading-relaxed italic">
@@ -441,19 +443,19 @@ export const Layout = () => {
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 py-6 border-y border-zinc-800/50">
                             <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
                                 <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Sujetos Procesados</span>
-                                <span className="text-2xl font-black text-zinc-200">${deathStats?.processed ?? processedCount}</span>
+                                <span className="text-2xl font-black text-zinc-200">${reportStats.processed}</span>
                             </div>
                             <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
                                 <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Errores de Juicio</span>
-                                <span className="text-2xl font-black text-red-500">${deathStats?.errors ?? judgmentErrors}</span>
+                                <span className="text-2xl font-black text-red-500">${reportStats.errors}</span>
                             </div>
                             <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
                                 <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Energía Final</span>
-                                <span className="text-xl font-bold text-amber-400">${deathStats?.energy ?? energy}%</span>
+                                <span className="text-xl font-bold text-amber-400">${reportStats.energy}%</span>
                             </div>
                             <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
                                 <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Estabilidad Final</span>
-                                <span className="text-xl font-bold text-red-400">${Math.round(deathStats?.stability ?? stability)}%</span>
+                                <span className="text-xl font-bold text-red-400">${Math.round(reportStats.stability)}%</span>
                             </div>
                             <div className="flex flex-col items-center p-3 bg-zinc-900/40 border border-zinc-800/30">
                                 <span className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Inocentes Sacrificados</span>
@@ -477,12 +479,18 @@ export const Layout = () => {
             setDeathReason(null);
             setDeathDetails(null);
             setDeathStats(null);
-            gameSequencer.resetLevel();
-            state.gameStatus = 'PLAYING';
+            setDeathHeader(null);
+            if (isEnding) {
+                // Repetir el juicio final en vez de reproducir un epílogo ya visto
+                gameSequencer.jumpToStep(11);
+            } else {
+                gameSequencer.resetLevel();
+                state.gameStatus = 'PLAYING';
+            }
         }}
                             className="group relative px-6 sm:px-10 py-4 border border-red-600/50 text-red-400 font-mono text-sm hover:bg-red-900/20 transition-all uppercase tracking-[0.2em] font-bold"
                         >
-                            <span className="relative z-10">Reiniciar Nivel</span>
+                            <span className="relative z-10">${isEnding ? 'Repetir Juicio Final' : 'Reiniciar Nivel'}</span>
                             <div className="absolute inset-0 bg-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         </button>
                         <button 
@@ -490,6 +498,8 @@ export const Layout = () => {
             setDeathReason(null);
             setDeathDetails(null);
             setDeathStats(null);
+            setDeathHeader(null);
+            bus.emit('SYSTEM_FORCE_RESET');
             state.resetState();
         }}
                             className="px-6 sm:px-10 py-4 border border-zinc-800 text-zinc-500 font-mono text-sm hover:bg-zinc-900/40 transition-all uppercase tracking-[0.2em]"
@@ -545,6 +555,7 @@ export const Layout = () => {
                             </button>
                             <button 
                                 onClick=${() => {
+                bus.emit('SYSTEM_FORCE_RESET');
                 state.resetState();
                 state.isPaused = false;
             }}
@@ -554,6 +565,7 @@ export const Layout = () => {
                             </button>
                             <button 
                                 onClick=${() => {
+                bus.emit('SYSTEM_FORCE_RESET');
                 state.resetState();
                 state.gameStatus = 'START_MENU';
                 state.isPaused = false;

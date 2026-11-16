@@ -22,6 +22,9 @@ class FactionSystem {
             // En este juego la facción es global, no se resetea por nivel.
         });
 
+        // Nueva partida o salto de nivel: los alineamientos vuelven a cero
+        bus.on('SYSTEM_FORCE_RESET', () => this.reset());
+
         bus.on('MODULE_UNLOCKED', (data) => {
             if (data.id === 'MOD_FACTION') {
                 this.isActive = true;

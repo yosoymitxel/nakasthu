@@ -99,9 +99,9 @@ export const Terminal = memo(() => {
             <div className="flex flex-wrap gap-2 items-center">
                 <span>${line.text}</span>
                 <div className="flex gap-2">
-                    ${line.links.map(link => html`
+                    ${line.links.map((link, i) => html`
                         <button 
-                            key=${link.label}
+                            key=${`link-${i}`}
                             onClick=${() => handleLinkClick(link)}
                             className=${`px-1.5 py-0.5 border text-[10px] transition-colors uppercase font-bold ${isSectarian ? 'bg-purple-900/30 border-purple-700/50 text-purple-400 hover:bg-purple-500 hover:text-black' : 'bg-cyan-900/30 border-cyan-700/50 text-cyan-400 hover:bg-cyan-500 hover:text-black'}`}
                         >

@@ -284,6 +284,28 @@ body {
 .flow-step.now { border-color: var(--flow-color, #f59e0b); color: var(--flow-color, #f59e0b); background: rgba(245, 158, 11, 0.06); animation: pulse-slow 2s ease-in-out infinite; }
 .flow-step.done { border-color: rgba(16, 185, 129, 0.35); color: #34d399; }
 
+/* OBJETIVO DEL TURNO: la meta explícita del nivel, siempre visible */
+.objective-bar {
+    --objective-color: #22d3ee;
+    flex: none;
+    padding: 5px 8px 6px;
+    border-bottom: 1px solid rgba(39, 39, 42, 0.8);
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.25));
+}
+.objective-bar.sect { --objective-color: #a855f7; }
+.objective-bar.done { --objective-color: #34d399; }
+.objective-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.objective-title { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.objective-kicker { flex: none; font-size: 9px; letter-spacing: 0.3em; color: #71717a; text-transform: uppercase; }
+.objective-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--objective-color); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.objective-state { flex: none; font-size: 9px; font-weight: 800; letter-spacing: 0.2em; color: var(--objective-color); text-transform: uppercase; }
+.objective-track { margin-top: 4px; height: 4px; border: 1px solid rgba(63, 63, 70, 0.6); background: #09090b; overflow: hidden; }
+.objective-fill { height: 100%; background: var(--objective-color); box-shadow: 0 0 8px var(--objective-color); transition: width 0.5s ease; }
+.objective-fill.is-infinite { opacity: 0.35; background-image: repeating-linear-gradient(45deg, transparent 0 4px, rgba(255, 255, 255, 0.25) 4px 8px); }
+.objective-meta { display: flex; justify-content: space-between; gap: 10px; margin-top: 3px; font-size: 9px; color: #71717a; text-transform: uppercase; letter-spacing: 0.08em; }
+.objective-hint { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.objective-count { flex: none; color: var(--objective-color); font-weight: 800; }
+
 /* Foco entre paneles (clic en la guía o en las barras de la cabecera) */
 .mod-focus { box-shadow: 0 0 0 1px var(--focus-color, #f59e0b), 0 0 22px var(--focus-color, #f59e0b); z-index: 40; }
 
@@ -580,4 +602,8 @@ button:not(:disabled):active { scale: 0.97; }
     .flow-step { padding: 4px 5px; gap: 5px; }
     .flow-step .flow-name { letter-spacing: 0.08em; }
     .flow-step .flow-hint { white-space: normal; letter-spacing: 0; font-size: 8px; }
+    .objective-bar { padding: 4px 6px 5px; }
+    .objective-hint { display: none; }
+    .objective-kicker { letter-spacing: 0.18em; }
+    .objective-label { letter-spacing: 0.06em; }
 }

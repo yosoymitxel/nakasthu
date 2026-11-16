@@ -13,13 +13,15 @@ const { useState, useEffect, memo } = React;
 
 export const CinematicScreen = memo(({ config }) => {
     const currentStep = useGameState('currentStep');
+    const endingFaction = useGameState('endingFaction');
     const [shown, setShown] = useState(0);
 
-    // El epílogo no trae texto: depende de la facción dominante
+    // El epílogo no trae texto: sigue la elección final, no la facción dominante
     let content = config.briefingText;
     if (config.name === 'Epílogo' && !content) {
         const endings = STEPS_CONFIG[12]?.meta?.endings;
-        content = endings[factionSystem.getDominance()] || endings.orden;
+        const faction = endingFaction || factionSystem.getDominance();
+        content = endings[faction] || endings.orden;
     }
     content = content || '';
     const done = shown >= content.length;

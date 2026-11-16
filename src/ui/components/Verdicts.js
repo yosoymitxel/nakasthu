@@ -94,21 +94,23 @@ export const VerdictLogButton = ({ step }) => {
     const steps = [...new Set(all.map(e => e.step))].reverse();
 
     return html`
-        <button className="vd-button" onClick=${() => setOpen(true)} aria-label="Abrir registro de sentencias">
-            <${VerdictPips} step=${step} />
-            <span className="vd-more">registro ▸</span>
-        </button>
-        ${open && html`
-            <${Modal} label="Registro de sentencias" onClose=${() => setOpen(false)}>
-                ${all.length === 0 && html`<p className="ach-desc">Todavía no dictaste ninguna sentencia.</p>`}
-                ${steps.map(s => html`
-                    <section key=${s}>
-                        <h3 className="ach-group">${STEPS_CONFIG[s]?.name || `Paso ${s}`}</h3>
-                        ${all.filter(e => e.step === s).reverse().map((e, i) => html`<${VerdictRow} key=${i} entry=${e} labels=${labels} hooded=${storyPath === 1} />`)}
-                    </section>
-                `)}
-            <//>
-        `}
+        <${React.Fragment}>
+            <button className="vd-button" onClick=${() => setOpen(true)} aria-label="Abrir registro de sentencias">
+                <${VerdictPips} step=${step} />
+                <span className="vd-more">registro ▸</span>
+            </button>
+            ${open && html`
+                <${Modal} label="Registro de sentencias" onClose=${() => setOpen(false)}>
+                    ${all.length === 0 && html`<p className="ach-desc">Todavía no dictaste ninguna sentencia.</p>`}
+                    ${steps.map(s => html`
+                        <section key=${s}>
+                            <h3 className="ach-group">${STEPS_CONFIG[s]?.name || `Paso ${s}`}</h3>
+                            ${all.filter(e => e.step === s).reverse().map((e, i) => html`<${VerdictRow} key=${i} entry=${e} labels=${labels} hooded=${storyPath === 1} />`)}
+                        </section>
+                    `)}
+                <//>
+            `}
+        <//>
     `;
 };
 

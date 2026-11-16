@@ -308,6 +308,7 @@ class GameSequencer {
         const { utility, influence, type } = subject;
 
         state.startBatch();
+        state.registerSubjectProcessed();
         if (action === 'authorize') {
             if (type === 'técnico') {
                 state.techniciansRecruited++;
@@ -340,10 +341,20 @@ class GameSequencer {
         // 1. Verificar Fallo Crítico (Errores de Juicio)
         if (state.judgmentErrors >= CONFIG.MAX_JUDGMENT_ERRORS) {
             console.log('%c[SEQUENCER] Límite de errores alcanzado. FALLO DE SISTEMA.', 'color: #ef4444; font-weight: bold;');
+            const maxErrors = state.maxErrors || CONFIG.MAX_JUDGMENT_ERRORS;
+            const runStats = state.runStats || { processed: 0, errors: 0 };
             state.gameStatus = 'GAME_OVER';
             bus.emit('SYSTEM_FAILURE', {
                 reason: 'EXCESSIVE_ERRORS',
-                errors: state.judgmentErrors
+                errors: state.judgmentErrors,
+                details: `Protocolo de seguridad activado: se ha alcanzado el límite de ${maxErrors} errores de juicio. El operador ha sido relevado.`,
+                stats: {
+                    processed: runStats.processed,
+                    errors: runStats.errors,
+                    energy: state.energy,
+                    stability: state.stability,
+                    maxErrors
+                }
             });
             return;
         }
@@ -477,8 +488,13 @@ class GameSequencer {
     setEnding(faction) {
         const endings = STEPS_CONFIG[12].meta.endings;
         const endingText = endings[faction];
+        const runStats = state.runStats || { processed: 0, errors: 0 };
+        // El límite de errores del informe final es de partida, no de nivel
+        const maxErrors = Math.max(CONFIG.MAX_JUDGMENT_ERRORS, Math.ceil((runStats.processed || 0) / 5));
 
         state.startBatch();
+        // El epílogo debe seguir la elección del jugador, no la facción dominante
+        state.endingFaction = faction;
         // Ya no seteamos GAME_OVER aquí, lo hará nextStep() tras el epílogo
         state.endBatch();
 
@@ -489,9 +505,11 @@ class GameSequencer {
                 techniciansRecruited: state.techniciansRecruited,
                 devotsRecruited: state.devotsRecruited,
                 influenceGathered: state.influenceGathered,
-                processed: state.processedCount,
-                errors: state.judgmentErrors,
+                processed: runStats.processed,
+                errors: runStats.errors,
                 energy: state.energy,
+                stability: state.stability,
+                maxErrors,
                 ...state.stats
             }
         });

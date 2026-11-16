@@ -42,16 +42,18 @@ class GameLoop {
         const status = evaluateSystemStatus(state, CONFIG);
 
         if (status.failed) {
+            const runStats = state.runStats || { processed: 0, errors: 0 };
             state.gameStatus = 'GAME_OVER';
             
             bus.emit('SYSTEM_FAILURE', {
                 reason: status.reason,
                 details: status.details,
                 stats: {
-                    processed: state.processedCount,
-                    errors: state.judgmentErrors,
+                    processed: runStats.processed,
+                    errors: runStats.errors,
                     energy: state.energy,
-                    stability: state.stability
+                    stability: state.stability,
+                    maxErrors: state.maxErrors || CONFIG.MAX_JUDGMENT_ERRORS
                 }
             });
         }

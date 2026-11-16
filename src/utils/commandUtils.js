@@ -49,11 +49,21 @@ export const getHelpLinks = (unlockedCommands = []) => {
         { label: 'CLEAR', event: 'TERMINAL_INPUT', data: '/clear' }
     ];
     
-    const extraLinks = unlockedCommands.map(c => ({ 
-        label: c, 
-        event: 'TERMINAL_INPUT', 
-        data: `/${c.toLowerCase()}` 
-    }));
+    // Evitar duplicados: CLEAR y STATUS ya existen en los enlaces base
+    const seen = new Set(baseLinks.map(link => link.label.toUpperCase()));
+
+    const extraLinks = unlockedCommands
+        .filter(c => {
+            const label = c.toUpperCase();
+            if (seen.has(label)) return false;
+            seen.add(label);
+            return true;
+        })
+        .map(c => ({ 
+            label: c, 
+            event: 'TERMINAL_INPUT', 
+            data: `/${c.toLowerCase()}` 
+        }));
     
     return [...baseLinks, ...extraLinks];
 };

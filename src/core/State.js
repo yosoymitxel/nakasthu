@@ -45,6 +45,9 @@ const initialState = {
     quota: CONFIG.DEFAULT_QUOTA,
     judgmentErrors: 0,
     maxErrors: CONFIG.MAX_JUDGMENT_ERRORS, // Agregado para visibilidad en UI
+    // Totales de la partida: sobreviven al reset de cada nivel y alimentan el informe final
+    runStats: { processed: 0, errors: 0 },
+    endingFaction: null, // 'orden' | 'caos': el epílogo sigue la elección, no la facción dominante
     unrest: 0,           // 0-100: Nivel de agitación civil
     faith: 0,            // 0-100: Nivel de herejía/devoción (storyPath 1)
     techniciansRecruited: 0,
@@ -113,6 +116,21 @@ const stateManager = {
                 name: 'Kamin'
             });
         }
+
+        // La cola debe poder cumplir la meta del paso: si ya no quedan sujetos
+        // suficientes para reunir los técnicos que faltan, el siguiente lo es.
+        const remainingAfter = Math.max(0, (this.quota || 0) - (this.processedCount || 0) - 1);
+        const missingTechnicians = (stepMeta?.requiredTechnicians || 0) - (this.techniciansRecruited || 0);
+        if (missingTechnicians > 0 && missingTechnicians > remainingAfter) {
+            applyTraits(newSubject, { type: 'técnico' });
+        }
+
+        // Misma garantía para la influencia: el último sujeto del turno puede cerrar la meta.
+        const missingInfluence = (stepMeta?.requiredInfluence || 0) - (this.influenceGathered || 0);
+        if (missingInfluence > 0 && remainingAfter === 0) {
+            newSubject.influence = Math.max(newSubject.influence || 0, missingInfluence);
+        }
+
         this.currentEntity = newSubject;
 
         // CRÍTICO: Emitir eventos FUERA del batch para garantizar que React se actualice
@@ -126,6 +144,15 @@ const stateManager = {
         }
 
         console.log(`%c[STATE] Nuevo sujeto generado: ${newSubject.id}`, "color: #10b981;");
+    },
+    // Totales de partida: sobreviven al reinicio de contadores de cada nivel
+    registerSubjectProcessed() {
+        const run = this.runStats || { processed: 0, errors: 0 };
+        this.runStats = { ...run, processed: run.processed + 1 };
+    },
+    registerJudgmentError() {
+        const run = this.runStats || { processed: 0, errors: 0 };
+        this.runStats = { ...run, errors: run.errors + 1 };
     },
     // Reinicio total del sistema (Fase 11)
     resetState() {

@@ -85,12 +85,17 @@ export const getRandomFragment = (step, storyPath) => {
 
 /**
  * Calcula el rango de desempeño basado en errores y energía.
+ * `failed` fuerza F: una partida perdida nunca puede puntuar como sobresaliente.
+ * Acepta `errors`/`processed` (resúmenes) y también `judgmentErrors`/`processedCount` (State).
  */
 export const calculateRank = (stats) => {
-    const errors = stats?.errors || 0;
-    const currentEnergy = stats?.energy || 0;
+    const errors = stats?.errors ?? stats?.judgmentErrors ?? 0;
+    const currentEnergy = stats?.energy ?? 0;
     const maxAllowed = stats?.maxErrors || 3;
-    const processed = stats?.processed || 0;
+    const processed = stats?.processed ?? stats?.processedCount ?? 0;
+    const failed = stats?.failed === true;
+
+    if (failed) return { label: 'F', color: 'text-red-600', desc: 'SISTEMA COLAPSADO' };
 
     // Si no ha procesado a nadie, el rango es F (Abandono) en lugar de null
     if (processed === 0) return { label: 'F', color: 'text-zinc-500', desc: 'ABANDONO DE DEBERES' };

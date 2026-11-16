@@ -9,7 +9,9 @@ import { html } from '../utils/html.js';
 import { bus } from '../../core/Bus.js';
 import { state } from '../../core/State.js';
 import { CONFIG } from '../../data/gameConfig.js';
+import { STEPS_CONFIG } from '../../data/stepsConfig.js';
 import { getRandomFragment, calculateRank } from '../../utils/systemUtils.js';
+import { getStepObjective } from '../../utils/objectiveUtils.js';
 
 import { MODULES } from '../../systems/ModuleRegistry.js';
 import { VerdictPips } from './Verdicts.js';
@@ -109,6 +111,12 @@ export const GameModal = memo(({
             : 'items-end justify-center min-[821px]:pb-[3%]'}`;
 
     const rank = calculateRank(stats);
+    const stepObjective = getStepObjective(STEPS_CONFIG[stats?.currentStep], {
+        processed: stats?.processedCount,
+        quota: stats?.quota,
+        technicians: stats?.techniciansRecruited,
+        influence: stats?.influenceGathered
+    });
 
     return html`
         <div className=${`game-modal-overlay fixed inset-0 z-[800] flex p-4 transition-all duration-500 ${dock}`}>
@@ -146,6 +154,23 @@ export const GameModal = memo(({
                                 ${processContent(animatedText)}
                                 ${isTyping && html`<span className="animate-pulse">▌</span>`}
                             </div>
+
+                            ${stepObjective && !isTutorial && html`
+                                <div className="mt-4 border border-amber-900/40 bg-amber-950/10 p-3 font-mono">
+                                    <div className="flex items-center justify-between text-[9px] uppercase tracking-[0.3em] text-amber-600">
+                                        <span>Objetivo del turno</span>
+                                        <span className=${stepObjective.complete ? 'text-emerald-500' : 'text-amber-500'}>
+                                            ${stepObjective.complete ? 'CUMPLIDO' : 'EN CURSO'}
+                                        </span>
+                                    </div>
+                                    <p className="mt-1 text-[13px] font-bold uppercase tracking-wider text-amber-300">
+                                        ${stepObjective.label}
+                                    </p>
+                                    <p className="mt-1 text-[10px] text-zinc-500">
+                                        ${stepObjective.hint}
+                                    </p>
+                                </div>
+                            `}
                             
                             <!-- No mostrar fragmentos en el tutorial -->
                             ${!isTutorial && html`
@@ -191,6 +216,13 @@ export const GameModal = memo(({
                                         <span className="text-zinc-500">Estabilidad</span>
                                         <div className="text-emerald-400 text-lg">${Math.floor(stats.stability || 0)}%</div>
                                     </div>
+                                </div>
+                            `}
+
+                            ${stepObjective && !isTutorial && html`
+                                <div className=${`flex items-center justify-between gap-3 border p-2 font-mono text-[10px] uppercase tracking-widest ${stepObjective.complete ? 'border-emerald-900/40 text-emerald-500' : 'border-amber-900/40 text-amber-500'}`}>
+                                    <span className="truncate">Objetivo: ${stepObjective.label}</span>
+                                    <span className="flex-none font-black">${stepObjective.complete ? 'CUMPLIDO' : 'NO CUMPLIDO'}</span>
                                 </div>
                             `}
 
