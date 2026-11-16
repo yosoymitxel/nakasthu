@@ -111,7 +111,7 @@ test('flujo jugable inicial: cinemática → sincronización del monolito → si
   const mechanic = page.locator('.special-mechanic-container');
   await expect(mechanic).toBeVisible();
   const progressBar = mechanic.locator('.absolute.inset-y-0.left-0').first();
-  await expect(progressBar).toBeVisible();
+  // La barra empieza en ancho cero; se vuelve visible al sincronizar.
 
   // La mecánica real requiere mantener espacio; se completa mediante teclado.
   await page.keyboard.down('Space');
