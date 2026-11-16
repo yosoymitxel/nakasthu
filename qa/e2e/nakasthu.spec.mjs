@@ -31,6 +31,17 @@ test.afterEach(async ({ page }, testInfo) => {
   // Unhandled exceptions are hard failures. Console and request diagnostics
   // are attached even when a third-party CDN emits a non-fatal warning.
   expect(diagnostics.pageErrors, 'No deben aparecer excepciones JavaScript no controladas').toEqual([]);
+  expect(diagnostics.consoleErrors, 'No deben aparecer errores ni warnings de consola').toEqual([]);
+});
+
+test('published GitHub Pages: smoke de versión desplegada', async ({ page }) => {
+  const publishedUrl = process.env.PUBLISHED_URL;
+  test.skip(!publishedUrl, 'PUBLISHED_URL no configurada');
+  const response = await page.goto(publishedUrl);
+  expect(response, 'GitHub Pages debe responder a la navegación').not.toBeNull();
+  expect(response.status(), 'La versión publicada debe responder HTTP 200').toBe(200);
+  await expect(page.getByRole('heading', { name: 'NAKASTHU' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Iniciar Juego', exact: true })).toBeVisible();
 });
 
 test('smoke: aplicación montada y menú principal operativo', async ({ page }) => {

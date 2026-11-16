@@ -14,8 +14,14 @@ export default defineConfig({
     ['html', { outputFolder: '../playwright-report', open: 'never' }],
     ['json', { outputFile: './playwright-results.json' }],
   ],
+  webServer: {
+    command: 'python3 -m http.server 4173 --bind 127.0.0.1',
+    url: 'http://127.0.0.1:4173/',
+    reuseExistingServer: !process.env.CI,
+    timeout: 30_000,
+  },
   use: {
-    baseURL: process.env.BASE_URL || 'https://yosoymitxel.github.io/nakasthu/',
+    baseURL: process.env.BASE_URL || 'http://127.0.0.1:4173/',
     headless: true,
     viewport: { width: 1440, height: 960 },
     screenshot: 'only-on-failure',

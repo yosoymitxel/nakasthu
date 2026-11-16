@@ -38,9 +38,10 @@ jobs:
         run: npm install --no-save @playwright/test
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
-      - name: Test deployed application
+      - name: Test checked-out branch locally and smoke published Pages
         env:
-          BASE_URL: https://yosoymitxel.github.io/nakasthu/
+          BASE_URL: http://127.0.0.1:4173/
+          PUBLISHED_URL: https://yosoymitxel.github.io/nakasthu/
         run: npx playwright test --config=qa/playwright.config.mjs
       - name: Upload Playwright report and traces
         if: always()
