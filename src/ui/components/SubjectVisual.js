@@ -158,11 +158,14 @@ export const SubjectVisual = () => {
                         ${visual.glitch === 'CHROMATIC' || isCorrupted ? 'shadow-[inset_0_0_15px_rgba(255,0,0,0.2)]' : ''}
                         ${visual.glitch === 'VOID' ? 'grayscale opacity-50' : ''}
                     `}>
-                        <!-- Retrato píxel determinista por id -->
+                        <!-- Retrato píxel determinista por id y rol -->
                     <${PixelPortrait}
                         key=${id}
                         seed=${id}
-                        morph=${morphFor(species, id)}
+                        subject=${subject}
+                        role=${subject.type}
+                        species=${subject.species}
+                        morph=${morphFor(species, id, subject.type)}
                         hooded=${isSectarian}
                         corrupt=${isCorrupted}
                         className=${`feel-enter h-[92%] select-none transition-all duration-1000 ${isCorrupted ? 'saturate-150' : ''} ${isSectarian ? 'drop-shadow-[0_0_10px_rgba(168,85,247,0.4)]' : ''} ${loreChar ? 'drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]' : ''}`}

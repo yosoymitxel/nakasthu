@@ -8,6 +8,9 @@
 
 export const LORE_CORE_CHARACTERS = {
     'KAEL': {
+        loreKey: 'KAEL',
+        species: 'HUMANO',
+        canonicalRole: 'EXPLORADOR',
         name: 'Kael',
         title: 'Líder de la Expedición a Zhyr',
         theme: 'cyan',
@@ -24,6 +27,9 @@ export const LORE_CORE_CHARACTERS = {
         pulseClass: 'animate-pulse'
     },
     'DEYAR': {
+        loreKey: 'DEYAR',
+        species: 'HUMANO',
+        canonicalRole: 'TÉCNICO',
         name: 'Deyar',
         title: 'Técnico de Telemetría (Expedición)',
         theme: 'amber',
@@ -40,6 +46,9 @@ export const LORE_CORE_CHARACTERS = {
         pulseClass: 'animate-pulse'
     },
     'ALEXIA': {
+        loreKey: 'ALEXIA',
+        species: 'HUMANO',
+        canonicalRole: 'SIMBOLOGISTA',
         name: 'Alexia',
         title: 'Primer Vínculo / Eco de Zhyr',
         theme: 'purple',
@@ -56,6 +65,9 @@ export const LORE_CORE_CHARACTERS = {
         pulseClass: 'animate-pulse'
     },
     'KAMIN': {
+        loreKey: 'KAMIN',
+        species: 'HUMANO',
+        canonicalRole: 'PROFETA',
         name: 'Kamin',
         title: 'Profeta de la Orden de los Vínculos',
         theme: 'purple',
@@ -72,6 +84,9 @@ export const LORE_CORE_CHARACTERS = {
         pulseClass: 'animate-pulse'
     },
     'ORVAL D.': {
+        loreKey: 'ORVAL D.',
+        species: 'HUMANO',
+        canonicalRole: 'LÍDER',
         name: 'Orval Drexler',
         title: 'Director del Régimen Técnico (Talok)',
         theme: 'cyan',
@@ -88,6 +103,9 @@ export const LORE_CORE_CHARACTERS = {
         pulseClass: 'animate-pulse'
     },
     'LEINA': {
+        loreKey: 'LEINA',
+        species: 'HUMANO',
+        canonicalRole: 'OPERADORA',
         name: 'Leina Karst',
         title: 'Operadora Precursora',
         theme: 'emerald',
@@ -104,6 +122,9 @@ export const LORE_CORE_CHARACTERS = {
         pulseClass: 'animate-pulse'
     },
     'ELARA': {
+        loreKey: 'ELARA',
+        species: 'HUMANO',
+        canonicalRole: 'OPERADORA',
         name: 'Elara',
         title: 'Operadora de Comunicaciones',
         theme: 'cyan',
@@ -120,6 +141,9 @@ export const LORE_CORE_CHARACTERS = {
         pulseClass: 'animate-pulse'
     },
     'NAKASTHU': {
+        loreKey: 'NAKASTHU',
+        species: 'EIDOLON',
+        canonicalRole: 'SISTEMA',
         name: 'NAKASTHU OS',
         title: 'Conciencia del Núcleo',
         theme: 'red',

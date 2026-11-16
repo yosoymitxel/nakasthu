@@ -65,7 +65,15 @@ export const VerdictPips = ({ step, max = 14 }) => {
 
 const VerdictRow = ({ entry, labels, hooded }) => html`
     <div className=${`vd-row ${entry.error ? 'error' : ''}`}>
-        <${PixelPortrait} seed=${entry.id} morph=${morphFor(entry.species, entry.id)} hooded=${hooded} className="vd-face" />
+        <${PixelPortrait} 
+            seed=${entry.id} 
+            role=${entry.role} 
+            species=${entry.species} 
+            morph=${morphFor(entry.species, entry.id, entry.role)} 
+            hooded=${hooded} 
+            corrupt=${entry.error && entry.species === 'EIDOLON'}
+            className="vd-face" 
+        />
         <span className="vd-who">
             <span className="vd-id">${entry.id}</span>
             <span className="vd-role">${entry.role}</span>
@@ -109,14 +117,23 @@ export const SubjectCard = ({ subject, onClose }) => {
     const storyPath = useGameState('storyPath') || 0;
     const requiredScan = useGameState('requiredScan');
     const labels = PATH_CONFIGS[storyPath].bioscan;
-    const morph = morphFor(subject.species, subject.id);
+    const morph = morphFor(subject.species, subject.id, subject.type);
     const done = subject.scannedTypes || [];
     const loreChar = (subject.isLoreCore ? subject.loreCore : findLoreCharacter(subject.id, subject.name)) || null;
 
     return html`
         <${Modal} label=${`Ficha · ${subject.id}`} onClose=${onClose}>
             <div className="sc-card">
-                <${PixelPortrait} seed=${subject.id} morph=${morph} hooded=${storyPath === 1} className="sc-face" />
+                <${PixelPortrait} 
+                    seed=${subject.id} 
+                    subject=${subject}
+                    role=${subject.type}
+                    species=${subject.species}
+                    morph=${morph} 
+                    hooded=${storyPath === 1} 
+                    corrupt=${subject.species === 'EIDOLON' && subject.isCorrupt}
+                    className="sc-face" 
+                />
                 <div className="sc-data">
                     ${loreChar && html`
                         <div className="sc-line"><span>Estatus</span><b className="text-cyan-400">★ ${loreChar.name} ★</b></div>

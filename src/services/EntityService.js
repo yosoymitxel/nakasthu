@@ -92,7 +92,14 @@ export const applyTraits = (subject, traits) => {
 
     // Solo sobreescribir si el trait existe en el objeto traits
     if (traits.id) subject.id = traits.id;
-    if (traits.type) subject.type = traits.type;
+    if (traits.type) {
+        subject.type = traits.type;
+        // Si el tipo especificado es una especie base, alinear species
+        if (['HUMANO', 'CLON', 'EIDOLON', 'HÍBRIDO'].includes(traits.type.toUpperCase())) {
+            subject.species = traits.type.toUpperCase();
+        }
+    }
+    if (traits.species) subject.species = traits.species.toUpperCase();
     if (traits.name) subject.name = traits.name; // Soporte para nombre real opcional
 
     if (traits.scannedData) {
@@ -115,6 +122,7 @@ export const applyTraits = (subject, traits) => {
         subject.isLoreCore = true;
         subject.loreCore = loreChar;
         subject.isCorrupt = false; // Personajes clave del canon no son corrupción arbitraria
+        if (loreChar.species) subject.species = loreChar.species;
         if (!subject.scannedTypes) subject.scannedTypes = [];
         if (!subject.scannedTypes.includes('LORE_VERIFIED')) {
             subject.scannedTypes.push('LORE_VERIFIED');
