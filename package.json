@@ -15,11 +15,11 @@
     "qa": "npm test && (npm run test:browser; node qa/support/report.mjs)"
   },
   "devDependencies": {
-    "@playwright/test": "1.63.0",
+    "@playwright/test": "1.65.1",
     "happy-dom": "^21.0.4",
     "htm": "3.1.1",
     "motion": "11.18.2",
-    "pixelarticons": "^1.8.1",
+    "pixelarticons": "^1.8.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "tailwindcss": "^3.4.17",
