@@ -1,56 +1,60 @@
 name: Playwright QA
 on:
   push:
-    branches:
-      - main
-      - qa/playwright-smoke-20261116
+    branches: [main]
+  pull_request:
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
   group: nakasthu-playwright-qa-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   unit:
-    name: Existing unit and syntax tests
+    name: Sintaxis + Vitest
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
+        with: { node-version: 22, cache: npm }
       - run: npm ci
-      - name: Run existing tests
-        run: npm test
+      - run: npm test
 
   browser:
-    name: Playwright browser smoke and user flows
+    name: Playwright (smoke · e2e · regresión · móvil)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
+        with: { node-version: 22, cache: npm }
       - run: npm ci
-      - name: Install Playwright
-        run: npm install --no-save @playwright/test
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-      - name: Test checked-out branch locally and smoke published Pages
-        env:
-          BASE_URL: http://127.0.0.1:4173/
-          PUBLISHED_URL: https://yosoymitxel.github.io/nakasthu/
-        run: npx playwright test --config=qa/playwright.config.mjs
-      - name: Upload Playwright report and traces
+      - run: npx playwright install --with-deps chromium
+      # Espejo CDN (por defecto): hermético, no depende de unpkg ni de cdn.tailwindcss.com.
+      - name: Suite completa
+        run: npm run test:browser
+      - name: Informe PASS/FAIL
         if: always()
-        uses: actions/upload-artifact@v4
+        run: |
+          node qa/support/report.mjs || true
+          cat test-results/QA_REPORT.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: nakasthu-playwright-report
           path: |
             playwright-report/
             test-results/
-            qa/playwright-results.json
-          if-no-files-found: warn
           retention-days: 14
+
+  live-smoke:
+    name: Smoke con CDN reales (no bloqueante)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # Detecta roturas reales de CDN (versiones flotantes como react@18) que el espejo oculta.
+      - run: QA_CDN=live npx playwright test --config=qa/playwright.config.mjs --project=smoke

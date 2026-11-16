@@ -155,3 +155,8 @@ MAPEO_DEPENDENCIAS.md
 **.ps1
 
 -piel-de-cloro-web/
+# QA Playwright
+playwright-report/
+test-results/
+qa/.cache/
+qa/playwright-results.json
