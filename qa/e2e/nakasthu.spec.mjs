@@ -123,6 +123,85 @@ test('flujo jugable inicial: cinemática → sincronización del monolito → si
   await page.screenshot({ path: 'test-results/nakasthu-step-03.png', fullPage: true });
 });
 
+test('gameplay: validación biométrica → autorización → terminal → pausa y guardado', async ({ page }) => {
+  // Evitar interrupciones de tutoriales para recorrer el flujo de operaciones.
+  await page.evaluate(() => {
+    localStorage.setItem('nakasthu_skip_tutorials', 'true');
+    localStorage.setItem('nakasthu_tutorial_seen', 'true');
+  });
+  await page.reload();
+
+  await page.getByRole('button', { name: 'Iniciar Juego', exact: true }).click();
+
+  // Paso 1: cinemática inicial.
+  let cinematic = page.locator('.cinematic-screen');
+  await expect(cinematic).toBeVisible();
+  await cinematic.click();
+  await expect(cinematic.locator('.cine-next')).toContainText('Continuar');
+  await cinematic.click();
+
+  // Paso 2: completar sincronización real del monolito manteniendo Espacio.
+  const mechanic = page.locator('.special-mechanic-container');
+  await expect(mechanic).toBeVisible();
+  const progressBar = mechanic.locator('.absolute.inset-y-0.left-0').first();
+  await page.keyboard.down('Space');
+  await expect(progressBar).toHaveAttribute('style', /width: 100%/, { timeout: 12_000 });
+  await page.keyboard.up('Space');
+
+  // Paso 3: avanzar la cinemática hasta la primera fase de gameplay.
+  cinematic = page.locator('.cinematic-screen');
+  await expect(cinematic).toBeVisible();
+  await cinematic.click();
+  await expect(cinematic.locator('.cine-next')).toContainText('Continuar');
+  await cinematic.click();
+
+  const briefing = page.locator('.game-modal-overlay');
+  await expect(briefing).toBeVisible();
+  await briefing.getByRole('button', { name: 'INICIAR OPERACIONES' }).click();
+  await expect.poll(() => page.evaluate(() => window.__NAKASTHU_STATE__?.currentStep)).toBe(4);
+
+  // La autorización debe permanecer bloqueada hasta completar el escaneo requerido.
+  const authorize = page.locator('.h-16').last().getByRole('button', { name: /AUTORIZAR/ });
+  await expect(authorize).toBeDisabled();
+
+  const scanButton = page.getByRole('button', { name: /BIOMÉTRICO/ });
+  await expect(scanButton).toBeVisible();
+  const energyBeforeScan = await page.evaluate(() => window.__NAKASTHU_STATE__?.energy);
+  await scanButton.click();
+
+  await expect.poll(() => page.evaluate(() => {
+    const state = window.__NAKASTHU_STATE__;
+    return Boolean(state?.currentEntity?.scannedTypes?.includes('BIOMETRIC') && !state.activeScan);
+  }), { timeout: 10_000 }).toBe(true);
+  const energyAfterScan = await page.evaluate(() => window.__NAKASTHU_STATE__?.energy);
+  expect(energyAfterScan).toBeLessThan(energyBeforeScan);
+  await expect(authorize).toBeEnabled();
+
+  // La acción se ejecuta por el botón de la interfaz; el motor debe registrar exactamente un sujeto.
+  await authorize.click();
+  await expect.poll(() => page.evaluate(() => window.__NAKASTHU_STATE__?.processedCount), { timeout: 5_000 }).toBe(1);
+
+  // Terminal: enviar un comando real desde el input de la consola.
+  const terminalInput = page.locator('input[type="text"]').first();
+  await expect(terminalInput).toBeEnabled();
+  await terminalInput.fill('/status');
+  await terminalInput.press('Enter');
+  await expect(page.locator('#terminal-log')).toContainText('SYS_INFO:');
+
+  // Pausa y guardado desde la interfaz.
+  await page.locator('button[title="PAUSA"]').click();
+  await expect.poll(() => page.evaluate(() => window.__NAKASTHU_STATE__?.isPaused)).toBe(true);
+  await page.getByRole('button', { name: 'Guardar Partida', exact: true }).click();
+
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('nakasthu_save_v1') || 'null'));
+  expect(saved).not.toBeNull();
+  expect(saved.currentStep).toBe(4);
+  expect(saved.storyPath).toBe(0);
+  expect(saved.timestamp).toBeGreaterThan(0);
+
+  await page.screenshot({ path: 'test-results/nakasthu-gameplay-step-04.png', fullPage: true });
+});
+
 test('responsive: menú usable en viewport móvil sin desbordamiento horizontal', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.getByRole('button', { name: 'Iniciar Juego', exact: true })).toBeVisible();
