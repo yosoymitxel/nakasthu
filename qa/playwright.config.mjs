@@ -45,5 +45,7 @@ export default defineConfig({
         { name: 'regression', testMatch: 'regression/**/*.spec.mjs', use: { viewport: { width: 1440, height: 960 } } },
         // Responsive: mismas pruebas marcadas @responsive en un móvil real emulado.
         { name: 'mobile', grep: /@responsive/, testMatch: ['e2e/**/*.spec.mjs', 'regression/**/*.spec.mjs'], use: { ...devices['Pixel 7'] } },
+        // Móvil chico: el peor caso de ancho para la consola de mando.
+        { name: 'mobile-sm', grep: /@responsive/, testMatch: 'regression/ops-layout.spec.mjs', use: { ...devices['Galaxy S8'] } },
     ],
 });

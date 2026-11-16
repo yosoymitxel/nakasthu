@@ -125,20 +125,20 @@ export const SubjectVisual = () => {
                 `}>
                     <!-- Badge flotante de Motor del Lore -->
                     ${loreChar && html`
-                        <div className="absolute top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/90 border border-cyan-500/80 text-[8px] font-mono tracking-widest text-cyan-300 uppercase font-black z-30 shadow-[0_0_12px_rgba(6,182,212,0.6)] flex items-center gap-1 whitespace-nowrap animate-pulse">
+                        <div className="absolute top-1 left-1/2 -translate-x-1/2 max-w-[94%] px-1.5 py-0.5 bg-black/90 border border-cyan-500/80 text-[8px] leading-tight font-mono tracking-wider text-cyan-300 uppercase font-black z-30 shadow-[0_0_12px_rgba(6,182,212,0.6)] flex items-center gap-1 animate-pulse">
                             <span className="text-yellow-400">★</span>
-                            <span>${loreChar.badge}</span>
+                            <span className="min-w-0 truncate" title=${loreChar.badge}>${loreChar.badge}</span>
                             <span className="text-yellow-400">★</span>
                         </div>
                     `}
 
                     <!-- Esquinas tecnológicas animadas para personajes clave -->
-                    ${loreChar && html`
+                    ${loreChar && html`<${React.Fragment}>
                         <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-cyan-400 z-20 animate-pulse"></div>
                         <div className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2 border-cyan-400 z-20 animate-pulse"></div>
                         <div className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2 border-cyan-400 z-20 animate-pulse"></div>
                         <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-cyan-400 z-20 animate-pulse"></div>
-                    `}
+                    <//>`}
 
                     <!-- Efecto de aura radial para personajes del lore -->
                     ${loreChar && html`
@@ -146,10 +146,10 @@ export const SubjectVisual = () => {
                     `}
 
                     <!-- Efecto de aura giratoria (Sectario) -->
-                    ${isSectarian && !loreChar && html`
+                    ${isSectarian && !loreChar && html`<${React.Fragment}>
                         <div className="absolute inset-0 border border-purple-500/5 rounded-full animate-spin-slow scale-110 pointer-events-none"></div>
                         <div className="absolute inset-0 border border-indigo-500/5 rounded-full animate-slow-spin direction-reverse scale-105 pointer-events-none"></div>
-                    `}
+                    <//>`}
 
                     <!-- Glitch Effect Container -->
                     <div className=${`
@@ -196,8 +196,8 @@ export const SubjectVisual = () => {
                 </button>
 
             <!-- Etiquetas de Estado -->
-            <div className="flex-none py-1 flex flex-wrap items-center justify-center gap-x-2 leading-tight w-full px-1 whitespace-nowrap">
-                <span className=${`text-[10px] tracking-[0.1em] uppercase ${loreChar ? 'text-cyan-300 font-black' : (isSectarian && type === 'EIDOLON' ? 'text-purple-400 font-black' : (isSectarian && type === 'HUMAN' ? 'text-purple-400 font-black' : 'text-zinc-400'))}`}>
+            <div className="flex-none py-1 flex flex-wrap items-center justify-center gap-x-2 leading-tight w-full min-w-0 px-1 whitespace-nowrap">
+                <span title=${loreChar?.title} className=${`max-w-full truncate text-[10px] tracking-[0.1em] uppercase ${loreChar ? 'text-cyan-300 font-black' : (isSectarian && type === 'EIDOLON' ? 'text-purple-400 font-black' : (isSectarian && type === 'HUMAN' ? 'text-purple-400 font-black' : 'text-zinc-400'))}`}>
                     ${loreChar ? loreChar.title : (isSectarian && type === 'EIDOLON' ? 'CORRUPTO' : (isSectarian && type === 'HUMAN' ? 'DEVOTO' : type))}
                 </span>
                 <div className="flex gap-1 items-center">

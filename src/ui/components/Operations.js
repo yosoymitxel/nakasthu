@@ -276,7 +276,8 @@ export const Operations = () => {
 
             <!-- SECCIÓN SUPERIOR: VISUALIZADORES -->
             <div className="flex-none h-[140px] w-full flex border-b border-zinc-800/80">
-                <div className=${`w-1/3 h-full border-r border-zinc-800/80 relative overflow-hidden flex flex-col group ${isSectarian ? 'bg-purple-950/20' : 'bg-black/40'}`}>
+                <!-- Orbital: decorativo; en móvil el ancho es para sujeto y cuota (el portal vive en Sistemas). -->
+                <div className=${`ops-orbital w-1/3 h-full border-r border-zinc-800/80 relative overflow-hidden flex flex-col group ${isSectarian ? 'bg-purple-950/20' : 'bg-black/40'}`}>
                     <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ${isSectarian ? 'bg-purple-500/5' : 'bg-cyan-500/5'}`}></div>
                     <${PortalScene} />
                     <div className="absolute bottom-1 left-2 text-[10px] text-zinc-500 tracking-[0.2em] uppercase font-bold pointer-events-none z-20">
@@ -285,7 +286,7 @@ export const Operations = () => {
                     <div className=${`absolute top-0 right-0 w-8 h-8 border-t border-r pointer-events-none ${isSectarian ? 'border-purple-500/20' : 'border-cyan-500/20'}`}></div>
                 </div>
 
-                <div className=${`w-1/3 h-full border-r border-zinc-800/80 relative overflow-hidden flex flex-col group ${isSectarian ? 'bg-indigo-950/20' : 'bg-black/40'}`}>
+                <div className=${`ops-subject w-1/3 h-full border-r border-zinc-800/80 relative overflow-hidden flex flex-col group ${isSectarian ? 'bg-indigo-950/20' : 'bg-black/40'}`}>
                     <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ${isSectarian ? 'bg-purple-500/5' : 'bg-amber-500/5'}`}></div>
                     <${SubjectVisual} />
                     <div className="absolute top-1 right-2 max-[820px]:hidden text-[9px] text-zinc-500 tracking-[0.2em] uppercase font-bold pointer-events-none z-20">
@@ -294,7 +295,7 @@ export const Operations = () => {
                     <div className=${`absolute top-0 right-0 w-8 h-8 border-t border-r pointer-events-none ${isSectarian ? 'border-indigo-500/20' : 'border-amber-500/20'}`}></div>
                 </div>
 
-                <div className=${`w-1/3 h-full flex flex-col justify-around px-3 py-2 relative ${isSectarian ? 'bg-purple-950/40 shadow-[inset_0_0_20px_rgba(168,85,247,0.1)]' : 'bg-black/60'}`}>
+                <div className=${`ops-quota w-1/3 min-w-0 h-full flex flex-col justify-around px-3 py-2 relative overflow-hidden ${isSectarian ? 'bg-purple-950/40 shadow-[inset_0_0_20px_rgba(168,85,247,0.1)]' : 'bg-black/60'}`}>
                     <!-- Detalle de fondo para cuota -->
                     <div className=${`absolute inset-0 pointer-events-none ${isSectarian ? 'bg-[radial-gradient(rgba(168,85,247,0.05)_1px,transparent_1px)] bg-[size:10px_10px]' : 'bg-[radial-gradient(#ffffff05_1px,transparent_1px)] bg-[size:8px_8px]'}`}></div>
                     <div className="flex flex-col items-center">
@@ -453,10 +454,10 @@ export const Operations = () => {
                                             : 'border-red-500/40 text-red-500/70 hover:bg-red-500/10 hover:border-red-500 hover:text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.05)] hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] bg-red-950/5'
                                         : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}>
                             <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSectarian ? 'bg-indigo-500/5' : 'bg-red-500/5'}`}></div>
-                            ${isSectarian && html`
+                            ${isSectarian && html`<${React.Fragment}>
                                 <div className="absolute top-1 left-1 w-1.5 h-1.5 bg-indigo-500/30 rotate-45 group-hover:bg-indigo-400 transition-colors"></div>
                                 <div className="absolute bottom-1 right-1 w-1.5 h-1.5 bg-indigo-500/30 rotate-45 group-hover:bg-indigo-400 transition-colors"></div>
-                            `}
+                    <//>`}
                             ${kaminOverride
                                 ? labels.overrideLabel
                                 : labels.rejectLabel.toUpperCase()}
@@ -501,10 +502,10 @@ export const Operations = () => {
                                                         : 'border-emerald-500/40 text-emerald-500/70 hover:bg-emerald-500/10 hover:border-emerald-500 hover:text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.05)] hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] bg-emerald-950/5')
                                         : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}>
                             <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSectarian ? 'bg-purple-500/5' : 'bg-emerald-500/5'}`}></div>
-                            ${isSectarian && html`
+                            ${isSectarian && html`<${React.Fragment}>
                                 <div className="absolute top-1 left-1 w-1.5 h-1.5 border border-purple-500/30 rotate-45 group-hover:border-purple-400 transition-colors"></div>
                                 <div className="absolute bottom-1 right-1 w-1.5 h-1.5 border border-purple-500/30 rotate-45 group-hover:border-purple-400 transition-colors"></div>
-                            `}
+                    <//>`}
                             ${labels.authorizeLabel.toUpperCase()}
                             <kbd className="key-hint">A</kbd>
                         </button>

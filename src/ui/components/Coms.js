@@ -141,7 +141,7 @@ export const Coms = () => {
                     ? `${isSectarian ? 'border-y border-purple-800/20 bg-purple-950/20 shadow-[inset_0_0_15px_rgba(147,51,234,0.1)]' : 'border-y border-zinc-900/30 bg-zinc-950/20'} py-2 my-1 items-center italic text-zinc-500 group`
                     : 'group'
             }`}>
-                    ${isSectarian && msg.type !== 'ACTION' && html`
+                    ${isSectarian && msg.type !== 'ACTION' && html`<${React.Fragment}>
                         <!-- Resplandor sutil para mensajes en modo sectario -->
                         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
                         ${i % 4 === 0 && html`
@@ -150,7 +150,7 @@ export const Coms = () => {
                         ${i % 7 === 0 && html`
                             <div className="absolute -right-1 top-1/2 -translate-y-1/2 text-[8px] text-indigo-500/20 pointer-events-none animate-pulse delay-500">‡</div>
                         `}
-                    `}
+                    <//>`}
 
                     <div className=${`flex justify-between items-center mb-1 ${msg.type === 'ACTION' ? 'hidden' : ''}`}>
                         <span className=${`text-[10px] font-bold tracking-[0.2em] uppercase ${msg.type === 'SYSTEM'
@@ -176,8 +176,8 @@ export const Coms = () => {
             ${isTyping && html`
                 <div className="flex gap-2 items-center animate-pulse pl-1 z-10">
                     ${isSectarian ? html`
-                        <div className="text-[10px] text-purple-400/70 font-mono tracking-[0.3em] italic animate-pulse">EL_VACÍO_SUSURRA...</div>
-                        <div className="flex gap-2">
+                        <div key="typing-label" className="text-[10px] text-purple-400/70 font-mono tracking-[0.3em] italic animate-pulse">EL_VACÍO_SUSURRA...</div>
+                        <div key="typing-dots" className="flex gap-2">
                             <div key="typing-dot-1" className="w-1.5 h-1.5 bg-purple-500/40 rounded-full animate-ping shadow-[0_0_5px_rgba(168,85,247,0.5)]"></div>
                             <div key="typing-dot-2" className="w-1.5 h-1.5 bg-indigo-500/40 rounded-full animate-ping delay-500 shadow-[0_0_5px_rgba(99,102,241,0.5)]"></div>
                         </div>
