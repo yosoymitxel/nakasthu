@@ -9,6 +9,7 @@ import { CONFIG } from '../../data/gameConfig.js';
 import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 import { useGameState } from '../hooks/useGameState.js';
 
+import { Icon } from '../shared/Icon.js';
 const { useState, useEffect, useRef } = React;
 
 export const Coms = () => {
@@ -168,7 +169,7 @@ export const Coms = () => {
                     ? (isSectarian ? 'text-purple-200/50' : 'text-zinc-500') :
                     (isSectarian ? 'text-zinc-300 group-hover:text-purple-100 transition-colors duration-700' : (msg.type === 'SUBJECT' ? 'text-zinc-300' : 'text-emerald-500/80 font-bold'))
             }`}>
-                        ${msg.type === 'ACTION' ? (isSectarian ? `✧ ${msg.text} ✧` : `◆ ${msg.text} ◆`) : msg.text}
+                        ${msg.type === 'ACTION' ? html`<span><${Icon} name=${isSectarian ? 'moon-stars' : 'chevron-right'} tone=${isSectarian ? 'sect' : 'orbital'} /> ${msg.text}</span>` : msg.text}
                     </p>
                 </div>
             `)}

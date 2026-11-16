@@ -616,3 +616,21 @@ button:not(:disabled):active { scale: 0.97; }
     .objective-kicker { letter-spacing: 0.18em; }
     .objective-label { letter-spacing: 0.06em; }
 }
+
+/* ICONOS PÍXEL (pixelarticons, MIT). Rejilla de 24 px: múltiplos enteros para que no se emborronen. */
+@font-face {
+    font-family: 'pixelarticons';
+    src: url('../../../assets/fonts/pixelarticons/pixelart-icons-font.woff2') format('woff2');
+    font-display: block;
+}
+.pxi {
+    font-family: 'pixelarticons';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1.15em;
+    line-height: 1;
+    display: inline-block;
+    vertical-align: -0.15em;
+    -webkit-font-smoothing: none;
+    speak: never;
+}

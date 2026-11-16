@@ -276,7 +276,7 @@ test.describe('REGRESIÓN · responsive @responsive', () => {
             await noHorizontalOverflow(page);
             await snap(page, testInfo, `resp-${label.split(' ')[0].toLowerCase()}`);
             await page.keyboard.press('Escape');
-            const closeBtns = page.getByRole('button', { name: /^(Cerrar|✕)$/ });
+            const closeBtns = page.getByRole('button', { name: /^Cerrar$/ });
             if (await closeBtns.count()) await closeBtns.first().click().catch(() => {});
             const selectorHeading = page.getByRole('heading', { name: 'Selector de Secuencias' });
             if (await selectorHeading.isVisible()) await selectorHeading.locator('xpath=../..').getByRole('button').first().click();

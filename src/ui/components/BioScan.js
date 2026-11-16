@@ -10,6 +10,7 @@ import { calculateScanCost } from '../../utils/scannerUtils.js';
 import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 import { state } from '../../core/State.js';
 
+import { Icon } from '../shared/Icon.js';
 const { useRef, useEffect } = React;
 
 export const BioScan = () => {
@@ -56,7 +57,7 @@ export const BioScan = () => {
                 ${isSectarian && html`
                     <div className="absolute inset-0 bg-purple-500/5 animate-pulse-slow"></div>
                 `}
-                <div className="text-xl mb-2">${isSectarian ? '✝' : '⚠️'}</div>
+                <div className="text-xl mb-2">${isSectarian ? html`<${Icon} name="alert" tone="sect" />` : html`<${Icon} name="alert" tone="warn" />`}</div>
                 <div className="text-[12px] font-bold tracking-widest uppercase mb-1">
                     ${isSectarian ? 'CANALIZACIÓN BLOQUEADA' : labels.offline}
                 </div>
@@ -138,7 +139,7 @@ export const BioScan = () => {
                             <div key="content-container" className=${`flex justify-between items-baseline gap-2 relative z-10 ${isRequired ? 'pt-2' : ''}`}>
                                 <div className="flex items-baseline gap-2 min-w-0">
                                     <span className=${`text-[11px] font-bold uppercase tracking-wide leading-tight ${isActive ? (isSectarian ? 'text-purple-500' : 'text-cyan-500') : 'text-zinc-400 group-hover:text-amber-600/70'}`}>
-                                        ${isSectarian && html`<span className="mr-1.5 opacity-40 group-hover:opacity-100 transition-opacity">✧</span>`}
+                                        ${isSectarian && html`<span className="mr-1.5 opacity-40 group-hover:opacity-100 transition-opacity"><${Icon} name="moon-stars" tone="sect" /></span>`}
                                         <kbd className="key-hint">${idx + 1}</kbd>${labels.scans[type.id]}
                                     </span>
                                     <span className="text-[9px] font-mono text-zinc-500 whitespace-nowrap" title="Fiabilidad: cuántas veces acierta la señal">${Math.round((type.precision || 0.5) * 100)}%</span>
@@ -149,7 +150,7 @@ export const BioScan = () => {
                                 </div>
                                 <div className="flex items-baseline gap-1 flex-row-reverse whitespace-nowrap">
                                     <span className=${`text-[12px] font-mono font-bold ${canAfford ? (isSectarian ? 'text-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.3)]' : 'text-zinc-400') : 'text-red-900/50'}`}>
-                                        ${isSectarian ? '✧'.repeat(Math.ceil(finalCost / 10)) : Math.floor(finalCost)}
+                                        ${Math.floor(finalCost)}
                                     </span>
                                 </div>
                             </div>
@@ -159,7 +160,7 @@ export const BioScan = () => {
             </div>
 
             <footer className="mt-auto pt-1 border-t-[0.5px] border-zinc-800 flex justify-between items-center text-[10px] whitespace-nowrap font-mono text-zinc-400 uppercase tracking-widest relative z-10">
-                <span className="text-zinc-600">${isSectarian ? '✧ = dogma' : '⚡ coste'}</span>
+                <span className="text-zinc-600">${isSectarian ? html`<span><${Icon} name="moon-stars" tone="sect" /> dogma</span>` : html`<span><${Icon} name="zap" tone="energy" /> coste</span>`}</span>
                 <span>${isSectarian ? 'SINTONÍA' : 'SYNC'}: ${Math.floor(resonanceSync)}%</span>
             </footer>
         </div>

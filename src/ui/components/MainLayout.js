@@ -15,6 +15,7 @@ import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 import { bus } from '../../core/Bus.js';
 import { state } from '../../core/State.js';
 
+import { Icon } from '../shared/Icon.js';
 const { memo, useState, useEffect } = React;
 
 const AREA_TAB = {
@@ -87,7 +88,7 @@ export const MainLayout = memo(({ children }) => {
                     </button>
                 `)}
                 <!-- Pausa siempre a mano en móvil: antes sólo existía dentro de la pestaña Registro -->
-                <button className="tab-pause" title="PAUSA" aria-label="Pausa" onClick=${() => { state.isPaused = true; bus.emit('GAME_PAUSE', { paused: true }); }}>❚❚</button>
+                <button className="tab-pause" title="PAUSA" aria-label="Pausa" onClick=${() => { state.isPaused = true; bus.emit('GAME_PAUSE', { paused: true }); }}><${Icon} name="pause" /></button>
             </nav>
             <!-- Grid Debugger Overlay (Opcional, se puede activar via CSS) -->
             <div className="grid-debug-overlay pointer-events-none absolute inset-0 z-0 opacity-5 border border-zinc-500/10"></div>
@@ -258,7 +259,7 @@ export const InvisibleUtilityBar = memo(({ value = 0, max = 100 }) => {
                 </span>
                 <!-- Sin número exacto, solo indicador visual -->
                 <span className="text-zinc-700 text-[10px]">
-                    ${percentage < 30 ? '▽ BAJO' : percentage < 70 ? '◇ MEDIO' : '△ ALTO'}
+                    <${Icon} name=${percentage < 30 ? 'trending-down' : percentage < 70 ? 'minus' : 'trending-up'} /> ${percentage < 30 ? 'BAJO' : percentage < 70 ? 'MEDIO' : 'ALTO'}
                 </span>
             </div>
             <div className="h-1 bg-zinc-900 border border-zinc-800 overflow-hidden">

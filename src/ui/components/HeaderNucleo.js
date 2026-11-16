@@ -9,6 +9,7 @@ import { state } from '../../core/State.js';
 import { bus } from '../../core/Bus.js';
 import { InvisibleUtilityBar } from './MainLayout.js';
 
+import { Icon } from '../shared/Icon.js';
 export const HeaderNucleo = () => {
     const energy = useGameState('energy');
     const stability = useGameState('stability');
@@ -94,7 +95,7 @@ export const HeaderNucleo = () => {
                         ${isSectarian ? 'Esencia_Vital' : 'System_Power'}
                     </span>
                     <span data-stat="energy" className=${`text-[12px] font-mono font-bold leading-none whitespace-nowrap ${activeHighlights.energy ? (isSectarian ? 'text-purple-300' : 'text-amber-300') : (isSectarian ? 'text-purple-600' : 'text-amber-600')}`}>
-                        ${isSectarian ? '✧' : '⚡'} ${Math.floor(energy)}%
+                        <${Icon} name=${isSectarian ? 'moon-stars' : 'zap'} tone=${isSectarian ? 'sect' : 'energy'} /> ${Math.floor(energy)}%
                     </span>
                 </div>
                 
@@ -122,7 +123,7 @@ export const HeaderNucleo = () => {
                         ${isSectarian ? 'Paz_Espiritual' : 'Neural_Integrity'}
                     </span>
                     <span data-stat="stability" className=${`text-[12px] font-mono font-bold leading-none whitespace-nowrap ${activeHighlights.stability ? (isSectarian ? 'text-purple-300' : 'text-red-400') : (isSectarian ? 'text-purple-600' : 'text-red-600')}`}>
-                        ${isSectarian ? '†' : '⚓'} ${Math.floor(stability)}%
+                        <${Icon} name=${isSectarian ? 'shield' : 'anchor'} tone=${isSectarian ? 'sect' : 'stability'} /> ${Math.floor(stability)}%
                     </span>
                 </div>
                 
@@ -150,7 +151,7 @@ export const HeaderNucleo = () => {
                         ${isSectarian ? 'Velo_Cósmico' : 'Orbital_Sync'}
                     </span>
                     <span className=${`text-[12px] font-mono font-bold leading-none whitespace-nowrap ${activeHighlights.orbital ? (isEclipse ? 'text-purple-300' : 'text-cyan-300') : (isEclipse ? 'text-purple-600' : 'text-cyan-600')}`}>
-                        ${isSectarian ? '🌑' : '🌑'} ${Math.floor(orbitalCycle)}%
+                        <${Icon} name="moon" tone=${isSectarian ? 'sect' : 'orbital'} /> ${Math.floor(orbitalCycle)}%
                     </span>
                 </div>
 

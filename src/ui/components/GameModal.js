@@ -16,6 +16,7 @@ import { getStepObjective } from '../../utils/objectiveUtils.js';
 import { MODULES } from '../../systems/ModuleRegistry.js';
 import { VerdictPips } from './Verdicts.js';
 
+import { Icon } from '../shared/Icon.js';
 const { useState, useEffect, memo } = React;
 
 /**
@@ -134,7 +135,7 @@ export const GameModal = memo(({
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <span className="text-amber-500 text-[10px] tracking-[0.4em] uppercase font-black">
-                                ${isTutorial ? '◆ TUTORIAL_GUIDE' : (mode === 'Briefing' ? '◆ BRIEFING_INIT' : '◆ SUMMARY_REPORT')}
+                                <${Icon} name=${isTutorial ? 'script-text' : (mode === 'Briefing' ? 'article' : 'chart-bar')} /> ${isTutorial ? 'TUTORIAL_GUIDE' : (mode === 'Briefing' ? 'BRIEFING_INIT' : 'SUMMARY_REPORT')}
                             </span>
                         </div>
                         <span className="text-zinc-700 text-xs font-mono">

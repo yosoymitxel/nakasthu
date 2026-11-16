@@ -8,6 +8,7 @@ import { useGameState } from '../../hooks/useGameState.js';
 import { state } from '../../../core/State.js';
 import { bus } from '../../../core/Bus.js';
 
+import { Icon } from '../../shared/Icon.js';
 const { useState, useMemo } = React;
 
 export const LoreScreen = () => {
@@ -178,7 +179,7 @@ export const LoreScreen = () => {
             <!-- Footer: Status Bar -->
             <div className="h-10 bg-zinc-950 border-t border-zinc-800/50 flex items-center justify-between px-12 text-[10px] uppercase tracking-[0.2em] text-zinc-600 font-bold">
                 <div className="flex gap-8">
-                    <span className="text-cyan-900/60 animate-pulse">● System Live</span>
+                    <span className="text-cyan-900/60 animate-pulse"><${Icon} name="circle" tone="ok" /> System Live</span>
                     <span>Buffer: 100%</span>
                     <span>Enc: RSA-4096</span>
                 </div>

@@ -7,6 +7,7 @@ import { bus } from '../../core/Bus.js';
 import { achievements } from '../../systems/Achievements.js';
 import { ACHIEVEMENTS, ACHIEVEMENT_GROUPS } from '../../data/achievements.js';
 
+import { Icon } from '../shared/Icon.js';
 const { useState, useEffect, useRef } = React;
 
 export const AchievementToast = () => {
@@ -26,7 +27,7 @@ export const AchievementToast = () => {
         <div className="ach-toasts" role="status">
             ${queue.slice(0, 3).map(def => html`
                 <div key=${def.id} className="ach-toast">
-                    <span className="ach-mark">◆</span>
+                    <span className="ach-mark"><${Icon} name="trophy" tone="warn" /></span>
                     <span className="ach-body">
                         <span className="ach-kicker">Logro desbloqueado</span>
                         <span className="ach-name">${def.name}</span>
@@ -60,7 +61,7 @@ export const AchievementsPanel = ({ isOpen, onClose }) => {
                         <p className="ach-kicker">Expediente del operador</p>
                         <h2 className="ach-title">Logros ${done} / ${ACHIEVEMENTS.length}</h2>
                     </div>
-                    <button ref=${closeRef} onClick=${onClose} className="ach-close" aria-label="Cerrar">✕</button>
+                    <button ref=${closeRef} onClick=${onClose} className="ach-close" aria-label="Cerrar"><${Icon} name="close" /></button>
                 </header>
                 <div className="ach-bar"><i style=${{ width: `${(done / ACHIEVEMENTS.length) * 100}%` }}></i></div>
 
@@ -75,7 +76,7 @@ export const AchievementsPanel = ({ isOpen, onClose }) => {
                                     const prog = achievements.progress(a);
                                     return html`
                                         <div key=${a.id} className=${`ach-card ${got ? 'got' : ''}`}>
-                                            <span className="ach-mark">${got ? '◆' : '◇'}</span>
+                                            <span className="ach-mark">${got ? html`<${Icon} name="trophy" tone="warn" />` : html`<${Icon} name="lock" tone="muted" />`}</span>
                                             <span className="ach-body">
                                                 <span className="ach-name">${hidden ? '???' : a.name}</span>
                                                 <span className="ach-desc">${hidden ? 'Clasificado hasta que ocurra.' : a.desc}</span>

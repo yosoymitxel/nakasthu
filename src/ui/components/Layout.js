@@ -34,6 +34,7 @@ import { AchievementToast, AchievementsPanel } from './AchievementsUI.js';
 import { persistenceManager } from '../../systems/PersistenceManager.js';
 import { tutorialProposalContent, tutorialProposalFooter } from './TutorialProposal.js';
 
+import { Icon } from '../shared/Icon.js';
 const { useState, useEffect, useMemo } = React;
 
 // Mapeo de Áreas de Grid a IDs de Módulo para el sistema de bloqueo
@@ -649,7 +650,7 @@ export const Layout = () => {
                     <div className="bg-[#1a1a1c] border border-zinc-800 p-6 w-[500px] max-w-[94vw] max-h-[90dvh] overflow-y-auto shadow-2xl relative" onClick=${e => e.stopPropagation()}>
                         <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
                             <h2 className="text-zinc-300 font-bold tracking-widest uppercase text-sm">${modal.title}</h2>
-                            <button onClick=${() => setModal(null)} className="text-zinc-500 hover:text-zinc-300">✕</button>
+                            <button onClick=${() => setModal(null)} aria-label="Cerrar" className="text-zinc-500 hover:text-zinc-300"><${Icon} name="close" /></button>
                         </div>
                         <div className="text-zinc-400 font-mono text-[12px] leading-relaxed my-4">
                             ${modal.kind === 'TUTORIAL_PROPOSAL' ? tutorialProposalContent(modal) : modal.content}

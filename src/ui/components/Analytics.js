@@ -11,6 +11,7 @@ import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 import { STEPS_CONFIG } from '../../data/stepsConfig.js';
 import { formatScanDetail } from '../../utils/scannerUtils.js';
 
+import { Icon } from '../shared/Icon.js';
 const { useState, useEffect, useMemo, memo } = React;
 
 export const Analytics = memo(() => {
@@ -100,7 +101,7 @@ export const Analytics = memo(() => {
                     : `> SCAN: ${scanName} | RESULT: [${detail}] | PROB: ${newProb || '??'}%`;
 
                 // Añadir decoración ritual a las líneas del sectario
-                const lineText = isSectarian ? `✧ ${dataString} ✧` : dataString;
+                const lineText = isSectarian ? `† ${dataString}` : dataString;
                 
                 setLines(prev => [{ text: lineText, color: trendColor }, ...prev]);
 
@@ -118,7 +119,7 @@ export const Analytics = memo(() => {
         const onNewSubject = (entity) => {
             setLines([
                 { text: `> ${anaLabels.monitoring}: ENTIDAD_${entity.id}_DETECTADA`, color: isSectarian ? 'text-purple-400' : 'text-cyan-400' },
-                { text: isSectarian ? `✧ ANALIZANDO ESENCIA...` : `> ANALISIS_INICIAL: [PROCESANDO...]`, color: 'text-zinc-500' }
+                { text: isSectarian ? `† ANALIZANDO ESENCIA...` : `> ANALISIS_INICIAL: [PROCESANDO...]`, color: 'text-zinc-500' }
             ]);
             setCorruptionProb(null);
             setPrevProb(null);
@@ -127,7 +128,7 @@ export const Analytics = memo(() => {
         const onDialogueStarted = () => {
             setLines(prev => [
                 { text: `> ${opsLabels.interrogateBtn.split('[')[0].trim()}: ${anaLabels.monitoring}`, color: isSectarian ? 'text-purple-600' : 'text-cyan-600' },
-                { text: isSectarian ? `✧ COMUNIÓN ESTABLECIDA` : `> ${anaLabels.linkActive}`, color: isSectarian ? 'text-purple-500' : 'text-cyan-500' }, 
+                { text: isSectarian ? `† COMUNIÓN ESTABLECIDA` : `> ${anaLabels.linkActive}`, color: isSectarian ? 'text-purple-500' : 'text-cyan-500' }, 
                 ...prev
             ].slice(0, 50));
         };
@@ -141,14 +142,14 @@ export const Analytics = memo(() => {
 
             setLines(prev => [
                 { text: `> ${opsLabels.operatorSender}: ${data.option}`, color: 'text-zinc-400' },
-                { text: `${isSectarian ? '✧ IMPACTO EN EL VELO' : '> ANALISIS_INTERACCION'}: [${impactStr.trim() || 'NOMINAL'}]`, color: impactStr.includes('+') ? 'text-red-400' : 'text-cyan-500' },
+                { text: `${isSectarian ? '† IMPACTO EN EL VELO' : '> ANALISIS_INTERACCION'}: [${impactStr.trim() || 'NOMINAL'}]`, color: impactStr.includes('+') ? 'text-red-400' : 'text-cyan-500' },
                 ...prev
             ].slice(0, 50));
         };
 
         const onDialogueEnded = () => {
             setLines(prev => [
-                { text: isSectarian ? `✧ COMUNIÓN FINALIZADA` : `> ${anaLabels.statusLabel}: ENLACE_CERRADO`, color: 'text-zinc-600' },
+                { text: isSectarian ? `† COMUNIÓN FINALIZADA` : `> ${anaLabels.statusLabel}: ENLACE_CERRADO`, color: 'text-zinc-600' },
                 ...prev
             ].slice(0, 50));
         };
@@ -218,7 +219,7 @@ export const Analytics = memo(() => {
                                 (isSectarian ? (100 - corruptionProb) > (100 - prevProb) : corruptionProb > prevProb) 
                                 ? 'text-red-500' : 'text-green-500'
                             }`}>
-                                ${isSectarian ? ((100 - corruptionProb) > (100 - prevProb) ? '↑' : '↓') : (corruptionProb > prevProb ? '↑' : '↓')}
+                                ${html`<${Icon} name=${(isSectarian ? (100 - corruptionProb) > (100 - prevProb) : corruptionProb > prevProb) ? 'trending-up' : 'trending-down'} />`}
                             </span>
                         `}
                     </div>

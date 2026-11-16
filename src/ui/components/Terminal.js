@@ -10,6 +10,7 @@ import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 
 import { useGameState } from '../hooks/useGameState.js';
 
+import { Icon } from '../shared/Icon.js';
 const { useState, useRef, useEffect, memo } = React;
 
 export const Terminal = memo(() => {
@@ -215,8 +216,8 @@ export const Terminal = memo(() => {
             <div className="term-chips">
                 ${[
                     { cmd: isSectarian ? '/vision' : '/status', label: isSectarian ? 'Visión' : 'Estado', hint: 'E · S' },
-                    { cmd: isSectarian ? '/purificar' : '/repair', label: isSectarian ? 'Purificar' : 'Reparar', hint: `−${CONFIG.ENERGY.REPAIR_COST}⚡ +10⚓`, off: energy < CONFIG.ENERGY.REPAIR_COST },
-                    { cmd: isSectarian ? '/sacrificio' : '/overload', label: isSectarian ? 'Sacrificio' : 'Sobrecarga', hint: '+50⚓ ✕15s', warn: true },
+                    { cmd: isSectarian ? '/purificar' : '/repair', label: isSectarian ? 'Purificar' : 'Reparar', hint: html`<span>−${CONFIG.ENERGY.REPAIR_COST}<${Icon} name="zap" tone="energy" /> +10<${Icon} name="anchor" tone="stability" /></span>`, off: energy < CONFIG.ENERGY.REPAIR_COST },
+                    { cmd: isSectarian ? '/sacrificio' : '/overload', label: isSectarian ? 'Sacrificio' : 'Sobrecarga', hint: html`<span>+50<${Icon} name="anchor" tone="stability" /> <${Icon} name="clock" />15s</span>`, warn: true },
                     { cmd: '/help', label: 'Ayuda', hint: '?' }
                 ].map(c => html`
                     <button

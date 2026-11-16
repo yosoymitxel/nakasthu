@@ -9,6 +9,7 @@ import { PixelPortrait, morphFor } from './PixelPortrait.js';
 import { SubjectCard } from './Verdicts.js';
 import { findLoreCharacter } from '../../data/loreCharactersConfig.js';
 
+import { Icon } from '../shared/Icon.js';
 const { useState, useEffect } = React;
 
 export const SubjectVisual = () => {
@@ -60,7 +61,7 @@ export const SubjectVisual = () => {
     if (isLocked) {
         return html`
             <div className="flex flex-col items-center justify-center h-full text-red-500 font-mono p-4 text-center border border-red-900/50 bg-red-950/20 overflow-hidden relative">
-                <div className="text-2xl mb-2">${isSectarian ? '†' : '⚠'}</div>
+                <div className="text-2xl mb-2">${html`<${Icon} name="alert" tone=${isSectarian ? 'sect' : 'warn'} />`}</div>
                 <div className="text-[12px] font-bold tracking-widest uppercase mb-1">
                     ${isSectarian ? 'VISIÓN OSCURECIDA' : 'VISUALIZER OFFLINE'}
                 </div>
@@ -118,31 +119,16 @@ export const SubjectVisual = () => {
                 <button onClick=${() => setCardOpen(true)} aria-label="Abrir ficha del sujeto" className=${`
                     relative w-[85%] flex-1 min-h-0 mt-1 border flex items-center justify-center overflow-hidden transition-all duration-500
                     ${loreChar 
-                        ? `${loreChar.borderClass || 'border-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.4)]'} bg-black/50` 
+                        ? 'bg-black/50' 
                         : (isSectarian ? 'border-purple-500/20 rounded-full shadow-[0_0_40px_rgba(168,85,247,0.1)] bg-purple-950/10' : 'border-zinc-800')}
                     ${isCorrupted ? 'hue-rotate-90 border-red-500/50 scale-105' : ''}
                     ${isPaused ? 'transition-none' : ''}
-                `}>
-                    <!-- Badge flotante de Motor del Lore -->
+                `} style=${loreChar ? { borderColor: `${loreChar.glowColor || '#22d3ee'}66` } : undefined}>
+                    <!-- Lore: sólo una etiqueta discreta; lo distintivo está en el propio retrato -->
                     ${loreChar && html`
-                        <div className="absolute top-1 left-1/2 -translate-x-1/2 max-w-[94%] px-1.5 py-0.5 bg-black/90 border border-cyan-500/80 text-[8px] leading-tight font-mono tracking-wider text-cyan-300 uppercase font-black z-30 shadow-[0_0_12px_rgba(6,182,212,0.6)] flex items-center gap-1 animate-pulse">
-                            <span className="text-yellow-400">★</span>
-                            <span className="min-w-0 truncate" title=${loreChar.badge}>${loreChar.badge}</span>
-                            <span className="text-yellow-400">★</span>
+                        <div className="absolute top-1 left-1/2 -translate-x-1/2 max-w-[94%] px-1 bg-black/80 text-[8px] leading-tight font-mono tracking-wider uppercase z-30 truncate" style=${{ color: loreChar.glowColor }} title=${loreChar.badge}>
+                            ${loreChar.name}
                         </div>
-                    `}
-
-                    <!-- Esquinas tecnológicas animadas para personajes clave -->
-                    ${loreChar && html`<${React.Fragment}>
-                        <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-cyan-400 z-20 animate-pulse"></div>
-                        <div className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2 border-cyan-400 z-20 animate-pulse"></div>
-                        <div className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2 border-cyan-400 z-20 animate-pulse"></div>
-                        <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-cyan-400 z-20 animate-pulse"></div>
-                    <//>`}
-
-                    <!-- Efecto de aura radial para personajes del lore -->
-                    ${loreChar && html`
-                        <div className="absolute inset-0 pointer-events-none animate-pulse" style=${{ background: `radial-gradient(circle at center, ${loreChar.auraColor || 'rgba(6,182,212,0.25)'} 0%, transparent 75%)` }}></div>
                     `}
 
                     <!-- Efecto de aura giratoria (Sectario) -->
@@ -190,7 +176,7 @@ export const SubjectVisual = () => {
                     <!-- HUD del sujeto (Sectario: Glifos / Lore: Insignia) -->
                     <div className=${`absolute top-0 left-0 p-2 bg-black/60 backdrop-blur-sm border-r border-b ${loreChar ? 'border-cyan-500/50' : (isSectarian ? 'border-purple-900/50 rounded-br-lg' : 'border-zinc-800')}`}>
                         <span className=${`text-[10px] font-mono font-bold tracking-widest ${loreChar ? 'text-cyan-300' : (isSectarian ? 'text-purple-400' : 'text-cyan-400')}`}>
-                            ${loreChar ? `★ ${id}` : (isSectarian ? `᚛ ${id} ᚜` : id)}
+                            ${isSectarian && !loreChar ? `᚛ ${id} ᚜` : id}
                         </span>
                     </div>
                 </button>

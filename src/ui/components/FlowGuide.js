@@ -6,6 +6,7 @@
 import { html } from '../utils/html.js';
 import { bus } from '../../core/Bus.js';
 
+import { Icon } from '../shared/Icon.js';
 export const FlowGuide = ({ isSectarian, hasSubject, scanDone, scanName, talking, estimate, readings = 0 }) => {
     const color = isSectarian ? '#a855f7' : '#f59e0b';
     const words = isSectarian
@@ -40,7 +41,7 @@ export const FlowGuide = ({ isSectarian, hasSubject, scanDone, scanName, talking
         <div className="flow-guide flex-none border-b border-zinc-800/80 bg-black/40" style=${{ '--flow-color': color }}>
             ${steps.map((s, i) => html`
                 <button key=${i} className=${`flow-step ${s.state}`} onClick=${s.go}>
-                    <span className="flow-num">${s.state === 'done' ? '✓' : i + 1}</span>
+                    <span className="flow-num">${s.state === 'done' ? html`<${Icon} name="check" />` : i + 1}</span>
                     <span className="flow-text">
                         <span className="flow-name">${s.name}</span>
                         <span className="flow-hint">${s.hint}</span>

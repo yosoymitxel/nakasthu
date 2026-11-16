@@ -6,6 +6,7 @@ import { html } from '../utils/html.js';
 import { bus } from '../../core/Bus.js';
 import { useGameState } from '../hooks/useGameState.js';
 
+import { Icon } from '../shared/Icon.js';
 const { useState, useEffect } = React;
 
 export const UnrestMonitor = () => {
@@ -116,7 +117,7 @@ export const UnrestMonitor = () => {
                 ${status === 'CRITICAL' && html`
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <span className=${`text-[40px] font-black animate-ping ${isSectarian ? 'text-red-500/30' : 'text-red-600/20'}`}>
-                            ${isSectarian ? '†' : '⚠'}
+                            <${Icon} name="alert" tone=${isSectarian ? 'sect' : 'warn'} />
                         </span>
                     </div>
                 `}

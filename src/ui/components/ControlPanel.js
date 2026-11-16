@@ -9,6 +9,7 @@ import { CONFIG } from '../../data/gameConfig.js';
 import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 import { useGameState } from '../hooks/useGameState.js';
 
+import { Icon } from '../shared/Icon.js';
 export const ControlPanel = () => {
     const isPaused = useGameState('isPaused');
     const isTutorialActive = useGameState('isTutorialActive');
@@ -88,7 +89,7 @@ export const ControlPanel = () => {
                     className=${`w-12 h-12 border flex items-center justify-center text-[16px] font-black transition-all ${isPaused ? (isSectarian ? 'border-purple-400 bg-purple-900/40 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.4)]' : 'border-cyan-500 bg-cyan-950/40 text-cyan-400') : (isSectarian ? 'border-zinc-800 bg-zinc-900/50 text-zinc-500 hover:text-purple-400' : 'border-zinc-800 bg-zinc-900/50 text-zinc-500 hover:text-cyan-500')}`}
                     title=${isPaused ? 'REANUDAR' : 'PAUSA'}
                 >
-                    ${isPaused ? (isSectarian ? '✧' : '▶') : (isSectarian ? '⌇' : '||')}
+                    <${Icon} name=${isPaused ? 'play' : 'pause'} />
                 </button>
 
                 ${isTutorialActive && html`

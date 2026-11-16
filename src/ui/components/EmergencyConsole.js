@@ -10,6 +10,7 @@ import { MechanicManager } from '../../services/MechanicManager.js';
 import { CONFIG } from '../../data/gameConfig.js';
 import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 
+import { Icon } from '../shared/Icon.js';
 const { useState, useEffect, useRef, useMemo } = React;
 
 /**
@@ -316,9 +317,9 @@ const OxygenModule = ({ isActive, storyPath }) => {
             <!-- Orden a seguir: se enciende cada paso al acertarlo -->
             <div className="em-seq relative z-10" aria-label="Orden de la secuencia">
                 ${sequence.length === 0
-                    ? html`<span className="em-seq-hint">${config.action} ▸</span>`
+                    ? html`<span className="em-seq-hint">${config.action} <${Icon} name="chevron-right" /></span>`
                     : sequence.map((n, i) => html`
-                        <span key=${i} className=${`em-seq-step ${i < userInput.length ? 'ok' : i === userInput.length ? 'next' : ''}`}>${i < userInput.length ? '✓' : i + 1}</span>
+                        <span key=${i} className=${`em-seq-step ${i < userInput.length ? 'ok' : i === userInput.length ? 'next' : ''}`}>${i < userInput.length ? html`<${Icon} name="check" />` : i + 1}</span>
                     `)}
             </div>
 
@@ -345,7 +346,7 @@ const OxygenModule = ({ isActive, storyPath }) => {
                             <span className=${`z-10 ${isSectarian ? 'tracking-[0.15em] font-black text-[11px]' : ''} ${isPressed ? 'animate-pulse' : ''}`}>
                                 ${label}
                             </span>
-                            ${order > 0 && html`<b className=${`em-order ${isPressed ? 'ok' : ''} ${num % 2 === 0 ? 'right' : ''}`}>${isPressed ? '✓' : order}</b>`}
+                            ${order > 0 && html`<b className=${`em-order ${isPressed ? 'ok' : ''} ${num % 2 === 0 ? 'right' : ''}`}>${isPressed ? html`<${Icon} name="check" />` : order}</b>`}
                             ${isPressed && html`<div className=${`absolute inset-0 animate-flicker ${isSectarian ? 'bg-purple-500/20' : 'bg-red-500/10'}`}></div>`}
                         </button>
                     `;
@@ -493,10 +494,10 @@ const PowerGridModule = ({ isActive, storyPath }) => {
     const getArrowDirection = (from, to) => {
         const r1 = Math.floor(from / 12), c1 = from % 12;
         const r2 = Math.floor(to / 12), c2 = to % 12;
-        if (r2 < r1) return '↑';
-        if (r2 > r1) return '↓';
-        if (c2 < c1) return '←';
-        if (c2 > c1) return '→';
+        if (r2 < r1) return 'arrow-up';
+        if (r2 > r1) return 'arrow-down';
+        if (c2 < c1) return 'arrow-left';
+        if (c2 > c1) return 'arrow-right';
         return '';
     };
 
@@ -552,11 +553,11 @@ const PowerGridModule = ({ isActive, storyPath }) => {
                         >
                             ${isActive && html`
                                 <span className=${`z-10 ${isLast ? 'animate-bounce' : ''}`}>
-                                    ${isLast ? (isEnd ? '✓' : (path.length === 1 ? '⚡' : '●')) : arrow}
+                                    <${Icon} name=${isLast ? (isEnd ? 'check' : (path.length === 1 ? 'zap' : 'circle')) : (arrow || 'circle')} />
                                 </span>
                             `}
-                            ${isBurned && html`<span className="text-[9px]">✕</span>`}
-                            ${isEnd && !isActive && !isBurned && html`<span className="text-[10px]">◎</span>`}
+                            ${isBurned && html`<span className="text-[9px]"><${Icon} name="close" /></span>`}
+                            ${isEnd && !isActive && !isBurned && html`<span className="text-[10px]"><${Icon} name="bullseye" /></span>`}
                         </div>
                     `;
                 })}
@@ -583,8 +584,8 @@ export const EmergencyConsole = () => {
     const names = PATH_CONFIGS[storyPath || 0].emergencies;
     const slots = [
         ['resonance', ResonanceModule, '∿'],
-        ['oxygen', OxygenModule, '◍'],
-        ['energy', PowerGridModule, '⌁']
+        ['oxygen', OxygenModule, 'wind'],
+        ['energy', PowerGridModule, 'zap']
     ];
     const open = (type) => isLevel6 || emergencies[type];
 
@@ -599,9 +600,9 @@ export const EmergencyConsole = () => {
                 </div>
             ` : html`
                 <div key=${type} className="em-idle">
-                    <span className="em-glyph">${glyph}</span>
+                    <span className="em-glyph"><${Icon} name=${glyph} /></span>
                     <span className="em-idle-name">${names[type].name}</span>
-                    <span className="em-ok">● estable</span>
+                    <span className="em-ok"><${Icon} name="circle" tone="ok" /> estable</span>
                 </div>
             `)}
         </div>

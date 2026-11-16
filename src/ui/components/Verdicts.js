@@ -13,6 +13,7 @@ import { useGameState } from '../hooks/useGameState.js';
 import { PixelPortrait, morphFor } from './PixelPortrait.js';
 import { findLoreCharacter } from '../../data/loreCharactersConfig.js';
 
+import { Icon } from '../shared/Icon.js';
 const { useState, useEffect, useRef } = React;
 
 const MORPH_NAME = { humano: 'Humano', clon: 'Clon', zhyriano: 'Zhyriano', nakari: 'Nakari', quitinoso: 'Quitinoso', cristalino: 'Cristalino' };
@@ -40,7 +41,7 @@ const Modal = ({ label, onClose, children }) => {
             <div className="ach-panel" role="dialog" aria-modal="true" aria-label=${label} onClick=${e => e.stopPropagation()}>
                 <header className="ach-head">
                     <h2 className="ach-title">${label}</h2>
-                    <button ref=${closeRef} onClick=${onClose} className="ach-close" aria-label="Cerrar">✕</button>
+                    <button ref=${closeRef} onClick=${onClose} className="ach-close" aria-label="Cerrar"><${Icon} name="close" /></button>
                 </header>
                 <div className="ach-scroll custom-scrollbar">${children}</div>
             </div>
@@ -50,7 +51,7 @@ const Modal = ({ label, onClose, children }) => {
 
 /** Un veredicto como cuadrito: verde pasó, rojo no pasó, con aspa si fue un error. */
 const Pip = ({ entry }) => html`
-    <span className=${`vd-pip ${entry.action === 'authorize' ? 'pass' : 'kill'} ${entry.error ? 'error' : ''}`} title=${entry.id}>${entry.error ? '✕' : ''}</span>
+    <span className=${`vd-pip ${entry.action === 'authorize' ? 'pass' : 'kill'} ${entry.error ? 'error' : ''}`} title=${entry.id}>${entry.error ? html`<${Icon} name="close" />` : ''}</span>
 `;
 
 export const VerdictPips = ({ step, max = 14 }) => {
@@ -80,7 +81,7 @@ const VerdictRow = ({ entry, labels, hooded }) => html`
         </span>
         <span className="vd-scans">${entry.scans.map(s => html`<i key=${s}>${labels.scans[s] || SCAN_TYPES[s]?.name || s}</i>`)}</span>
         <span className=${`vd-verdict ${entry.action === 'authorize' ? 'pass' : 'kill'}`}>
-            ${entry.action === 'authorize' ? '✓' : '✕'} ${entry.error ? '· error' : ''}
+            <${Icon} name=${entry.action === 'authorize' ? 'check' : 'close'} /> ${entry.error ? '· error' : ''}
         </span>
     </div>
 `;
@@ -97,7 +98,7 @@ export const VerdictLogButton = ({ step }) => {
         <${React.Fragment}>
             <button className="vd-button" onClick=${() => setOpen(true)} aria-label="Abrir registro de sentencias">
                 <${VerdictPips} step=${step} />
-                <span className="vd-more">registro ▸</span>
+                <span className="vd-more">registro <${Icon} name="chevron-right" /></span>
             </button>
             ${open && html`
                 <${Modal} label="Registro de sentencias" onClose=${() => setOpen(false)}>
@@ -138,7 +139,7 @@ export const SubjectCard = ({ subject, onClose }) => {
                 />
                 <div className="sc-data">
                     ${loreChar && html`
-                        <div className="sc-line"><span>Estatus</span><b className="text-cyan-400">★ ${loreChar.name} ★</b></div>
+                        <div className="sc-line"><span>Estatus</span><b className="text-cyan-400">${loreChar.name}</b></div>
                         <div className="sc-line"><span>Canon</span><b className="text-zinc-300 text-[10px] leading-tight">${loreChar.title}</b></div>
                     `}
                     <div className="sc-line"><span>Forma aparente</span><b>${MORPH_NAME[morph]}</b></div>
@@ -157,7 +158,7 @@ export const SubjectCard = ({ subject, onClose }) => {
                     const count = subject.scanHistory?.[t.id] || 0;
                     return html`
                         <span key=${t.id} className=${`sc-scan ${done.includes(t.id) ? 'done' : ''} ${requiredScan === t.id ? 'required' : ''}`}>
-                            <b>${done.includes(t.id) ? '✓' : '·'}</b>
+                            <b>${done.includes(t.id) ? html`<${Icon} name="check" tone="ok" />` : '·'}</b>
                             ${labels.scans[t.id] || t.name}
                             ${count > 1 && html`<small>×${count}</small>`}
                         </span>

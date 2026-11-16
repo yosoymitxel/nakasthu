@@ -9,6 +9,7 @@ import { gameSequencer } from '../../../systems/GameSequencer.js';
 import { STEPS_CONFIG } from '../../../data/stepsConfig.js';
 import { factionSystem } from '../../../systems/FactionSystem.js';
 
+import { Icon } from '../../shared/Icon.js';
 const { useState, useEffect, memo } = React;
 
 export const CinematicScreen = memo(({ config }) => {
@@ -58,7 +59,7 @@ export const CinematicScreen = memo(({ config }) => {
                     ${content.slice(0, shown)}${!done && html`<span className="cine-caret"></span>`}
                 </p>
                 <button className=${`cine-next ${done ? 'on' : ''}`}>
-                    ${done ? 'Continuar ▸' : 'Saltar ▸▸'}
+                    ${done ? html`<span>Continuar <${Icon} name="chevron-right" /></span>` : html`<span>Saltar <${Icon} name="next" /></span>`}
                 </button>
             </div>
         </div>

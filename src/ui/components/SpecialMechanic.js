@@ -9,6 +9,7 @@ import { state } from '../../core/State.js';
 import { CONFIG } from '../../data/gameConfig.js';
 import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 
+import { Icon } from '../shared/Icon.js';
 const { useState, useEffect, useRef, useCallback, memo } = React;
 
 /**
@@ -263,7 +264,7 @@ export const SpecialMechanic = memo(({ onComplete, syncKey = ' ' }) => {
                         <div className=${`absolute inset-0 bg-gradient-to-t from-purple-900/30 via-transparent to-purple-900/30 transition-opacity duration-1000 ${isHolding ? 'opacity-100' : 'opacity-40'}`} />
                         <!-- Glifos centrales -->
                         <div className=${`absolute inset-0 flex flex-col items-center justify-center pointer-events-none transition-all duration-700 ${isHolding ? 'opacity-100 scale-110' : 'opacity-0 scale-90'}`}>
-                            <span className="text-purple-400/40 text-4xl font-mono">🕈</span>
+                            <span className="text-purple-400/40 text-4xl"><${Icon} name="eye" /></span>
                         </div>
                     `}
                 </div>

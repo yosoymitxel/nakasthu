@@ -9,6 +9,7 @@ import { bus } from '../../core/Bus.js';
 import { isCoachActive } from '../../systems/TutorialController.js';
 import { CONFIG } from '../../data/gameConfig.js';
 
+import { Icon } from '../shared/Icon.js';
 const { useState, useEffect, memo } = React;
 const pct = (t) => `${Math.round((CONFIG.SCANNER.TYPES[t]?.precision || 0) * 100)}%`;
 
@@ -31,7 +32,7 @@ export const CoachHint = memo(() => {
     const est = entity?.corruptionEstimate;
     let text;
     if (!entity) text = 'Espera al siguiente sujeto…';
-    else if (!scanned) text = `Pulsa ESCANEAR → BIOMÉTRICO (acierta el ${pct('BIOMETRIC')}). Fiebre de 38 °C o más es mala señal.`;
+    else if (!scanned) text = `Pulsa ESCANEAR > BIOMÉTRICO (acierta el ${pct('BIOMETRIC')}). Fiebre de 38 °C o más es mala señal.`;
     else if (est > 65 || est < 35) text = `Corrupción ${est}%: por encima de 50 % SACRIFICA, por debajo AUTORIZA. Tolerancia: ${maxErrors} errores por turno.`;
     else text = `Corrupción ${est}%: dudoso. Pide otra lectura: escaneo NEURAL (acierta el ${pct('NEURAL')}) o INTERROGAR (análisis de voz).`;
 

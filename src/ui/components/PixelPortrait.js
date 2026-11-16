@@ -528,6 +528,62 @@ const drawProcedural = (ctx, seed, morph, hooded, corrupt, role, species, r, p) 
     }
 };
 
+/**
+ * Rasgos de silueta propios de cada personaje del lore: rompen el busto genérico para que se
+ * reconozcan por la forma (no por el marco). Se pintan encima del sprite base.
+ */
+const LORE_PROPS = {
+    KAEL: (r, p) => { // Casco de expedición abierto: aro metálico alrededor de la cabeza + antena
+        r('#3f4654', 3, 1, 1, 9); r('#3f4654', 12, 1, 1, 9); r('#3f4654', 4, 0, 8, 1);
+        r('#22d3ee', 3, 4, 1, 1); r('#22d3ee', 12, 4, 1, 1);
+        r('#94a3b8', 13, 0, 1, 3); p('#22d3ee', 13, 0);
+    },
+    DEYAR: (r, p) => { // Dron de telemetría flotando junto a la cabeza
+        r('#475569', 12, 1, 4, 2); r('#94a3b8', 12, 0, 1, 1); r('#94a3b8', 15, 0, 1, 1);
+        p('#f59e0b', 13, 2); p('#fef08a', 14, 2);
+        p('#f59e0b', 13, 4); p('#f59e0b', 12, 5); // haz de enlace
+    },
+    ALEXIA: (r, p) => { // Eco: el cuerpo se deshace en píxeles y la rodean glifos del vacío
+        for (let y = 14; y < 20; y++) for (let x = 2; x < 14; x++) if ((x + y) % 2 === 0) r(null, x, y);
+        p('#c084fc', 1, 6); p('#e9d5ff', 14, 3); p('#c084fc', 15, 9); p('#a855f7', 0, 12);
+    },
+    KAMIN: (r, p) => { // Capucha en punta y corona de la Orden
+        r('#3b0764', 7, 0, 2, 1); r('#581c87', 6, 1, 4, 1);
+        p('#fbbf24', 5, 2); p('#fbbf24', 8, 0); p('#fbbf24', 10, 2);
+    },
+    'ORVAL D.': (r, p) => { // Gorra de plato del Régimen y charreteras doradas
+        r('#1e293b', 3, 1, 10, 2); r('#0f172a', 2, 3, 12, 1); r('#fbbf24', 7, 1, 2, 1);
+        r('#fbbf24', 1, 13, 3, 1); r('#fbbf24', 12, 13, 3, 1);
+    },
+    LEINA: (r, p) => { // Diadema de operadora con micrófono de pértiga
+        r('#334155', 4, 2, 8, 1); r('#334155', 3, 3, 1, 4); r('#64748b', 3, 6, 1, 2);
+        r('#64748b', 4, 8, 3, 1); p('#34d399', 7, 8);
+    },
+    ELARA: (r, p) => { // Pañuelo de fábrica rojo anudado
+        r('#b91c1c', 4, 2, 8, 2); r('#7f1d1d', 12, 3, 2, 1); p('#b91c1c', 13, 4); p('#fca5a5', 6, 2);
+    },
+    NAKASTHU: (r, p) => { // No es una persona: marco de monitor con barrido rojo
+        r('#27272a', 2, 1, 12, 1); r('#27272a', 2, 12, 12, 1); r('#27272a', 2, 1, 1, 12); r('#27272a', 13, 1, 1, 12);
+        r('#ef4444', 3, 6, 10, 1); p('#fecaca', 8, 6);
+        r('#18181b', 6, 13, 4, 2);
+    }
+};
+
+// Color de contorno propio (evita que dos personajes compartan tono, p. ej. Kael y Elara).
+const LORE_OUTLINE = { ELARA: '#fb7185' };
+
+/** Contorno de 1 px en el color del personaje: lo distingue dentro del propio píxel art. */
+const outline = (ctx, color) => {
+    const img = ctx.getImageData(0, 0, W, H);
+    const d = img.data, solid = (x, y) => x >= 0 && y >= 0 && x < W && y < H && d[(y * W + x) * 4 + 3] > 0;
+    const edge = [];
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        if (!solid(x, y) && (solid(x - 1, y) || solid(x + 1, y) || solid(x, y - 1) || solid(x, y + 1))) edge.push([x, y]);
+    }
+    ctx.fillStyle = color;
+    edge.forEach(([x, y]) => ctx.fillRect(x, y, 1, 1));
+};
+
 const draw = (ctx, seed, morph, hooded, corrupt, role, species, loreKey) => {
     ctx.clearRect(0, 0, W, H);
     const r = (c, x, y, w = 1, h = 1) => {
@@ -544,8 +600,14 @@ const draw = (ctx, seed, morph, hooded, corrupt, role, species, loreKey) => {
     // 1. Si es personaje del lore, dibujar su sprite canónico
     const loreMatch = findLoreCharacter(loreKey || seed);
     if (loreMatch) {
-        const drawn = drawLoreCharacter(ctx, loreMatch.loreKey || loreMatch.name, r, p);
-        if (drawn) return;
+        const key = loreMatch.loreKey || loreMatch.name;
+        const drawn = drawLoreCharacter(ctx, key, r, p);
+        if (drawn) {
+            const erase = (c, x, y, w = 1, h = 1) => (c ? r(c, x, y, w, h) : ctx.clearRect(x, y, w, h));
+            LORE_PROPS[key]?.(erase, p);
+            outline(ctx, LORE_OUTLINE[key] || loreMatch.glowColor || '#22d3ee');
+            return;
+        }
     }
 
     // 2. Si no es lore, dibujar el sistema procedimental refinado

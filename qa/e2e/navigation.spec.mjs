@@ -25,7 +25,7 @@ test.describe('E2E · navegación', () => {
         const soundAfter = (await sound.textContent()).trim();
         await snap(page, testInfo, 'e2e-config');
 
-        await modal.getByRole('button', { name: /✕/ }).click();
+        await modal.getByRole('button', { name: 'Cerrar', exact: true }).first().click();
         await home(page);
 
         await page.reload();

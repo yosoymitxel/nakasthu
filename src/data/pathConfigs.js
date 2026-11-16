@@ -95,9 +95,9 @@ export const PATH_CONFIGS = {
             header: 'SINCRONIZACIÓN NEURAL',
             instruction: 'MANTÉN PULSADO EL MONOLITO (O ESPACIO) PARA SINCRONIZAR',
             complete: 'SINCRONIZACIÓN COMPLETADA',
-            statusSyncing: '◆ SINCRONIZANDO... ◆',
-            statusComplete: '◆ SINCRONIZADO ◆',
-            statusWaiting: '◇ EN ESPERA ◇'
+            statusSyncing: 'SINCRONIZANDO...',
+            statusComplete: 'SINCRONIZADO',
+            statusWaiting: 'EN ESPERA'
         },
         bioscan: {
             title: 'BIOSCANNER_UNIT',
@@ -266,9 +266,9 @@ export const PATH_CONFIGS = {
             header: 'COMUNIÓN ONÍRICA',
             instruction: 'MANTENGA [ESPACIO] PARA COMULGAR',
             complete: 'ASCENSIÓN COMPLETADA',
-            statusSyncing: '◆ COMULGANDO... ◆',
-            statusComplete: '◆ ASCENSIÓN ◆',
-            statusWaiting: '◇ EN ESPERA ◇'
+            statusSyncing: 'COMULGANDO...',
+            statusComplete: 'ASCENSIÓN',
+            statusWaiting: 'EN ESPERA'
         },
         bioscan: {
             title: 'ALTAR DE EXAMEN v4.02',

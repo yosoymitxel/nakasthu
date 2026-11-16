@@ -22,6 +22,7 @@ import { VerdictLogButton } from './Verdicts.js';
 import { SCAN_TYPES } from '../../systems/Scanner.js';
 import { findLoreCharacter } from '../../data/loreCharactersConfig.js';
 
+import { Icon } from '../shared/Icon.js';
 const { useState, useEffect, useRef } = React;
 
 export const Operations = () => {
@@ -303,11 +304,11 @@ export const Operations = () => {
                             ${labels.quotaLabel}
                         </span>
                         <div className="flex items-center gap-3">
-                            ${isSectarian && html`<span className="text-purple-900/40 text-xl">✧</span>`}
+                            ${isSectarian && html`<span className="text-purple-900/60 text-xl"><${Icon} name="moon-stars" /></span>`}
                             <span className=${`text-2xl font-black font-mono ${isSectarian ? 'text-purple-500/80 [text-shadow:0_0_10px_rgba(168,85,247,0.3)]' : 'text-emerald-600/70'}`}>
                                 <span key=${processedCount} className="feel-pop">${processedCount}</span> / ${finiteQuota ? quota : '∞'}
                             </span>
-                            ${isSectarian && html`<span className="text-purple-900/40 text-xl">✧</span>`}
+                            ${isSectarian && html`<span className="text-purple-900/60 text-xl"><${Icon} name="moon-stars" /></span>`}
                         </div>
                     </div>
                     
@@ -423,7 +424,7 @@ export const Operations = () => {
                                     ${labels.pendingValidation}
                                 </span>
                                 <span className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest z-10">
-                                    [${labels.scanRequired}: ${scanName}] ▸
+                                    [${labels.scanRequired}: ${scanName}] <${Icon} name="chevron-right" />
                                 </span>
                             </button>
                         `: null}
@@ -437,7 +438,7 @@ export const Operations = () => {
                             className="flex-1 max-w-[210px] h-full relative group border border-amber-500/40 text-amber-400/80 bg-amber-950/20 hover:bg-amber-950/30 uppercase tracking-[0.15em] font-black text-[10px] flex items-center justify-center gap-1 transition-all cursor-not-allowed shadow-[0_0_15px_rgba(245,158,11,0.08)]"
                             title=${loreChar.blockedSacrificeMsg}
                         >
-                            <span className="text-amber-400 text-xs">⚿</span>
+                            <span className="text-amber-400 text-xs"><${Icon} name="lock" /></span>
                             <span className="truncate">${loreChar.blockedSacrificeLabel}</span>
                             <kbd className="key-hint">S</kbd>
                         </button>
@@ -473,13 +474,13 @@ export const Operations = () => {
                             disabled=${isTyping}
                             className=${`flex-1 max-w-[220px] h-full relative group border uppercase tracking-[0.15em] font-black text-[11px] transition-all flex items-center justify-center gap-1.5 shadow-lg
                                 ${loreChar.theme === 'purple' 
-                                    ? 'border-purple-400 text-purple-200 bg-purple-950/40 hover:bg-purple-900/60 shadow-[0_0_25px_rgba(168,85,247,0.4)] animate-pulse'
+                                    ? 'border-purple-400 text-purple-200 bg-purple-950/40 hover:bg-purple-900/60'
                                     : loreChar.theme === 'amber'
-                                        ? 'border-amber-400 text-amber-200 bg-amber-950/40 hover:bg-amber-900/60 shadow-[0_0_25px_rgba(245,158,11,0.4)] animate-pulse'
+                                        ? 'border-amber-400 text-amber-200 bg-amber-950/40 hover:bg-amber-900/60'
                                         : loreChar.theme === 'emerald'
-                                            ? 'border-emerald-400 text-emerald-200 bg-emerald-950/40 hover:bg-emerald-900/60 shadow-[0_0_25px_rgba(16,185,129,0.4)] animate-pulse'
-                                            : 'border-cyan-400 text-cyan-200 bg-cyan-950/40 hover:bg-cyan-900/60 shadow-[0_0_25px_rgba(6,182,212,0.4)] animate-pulse'}`}>
-                            <span className="text-[12px] text-yellow-400">★</span>
+                                            ? 'border-emerald-400 text-emerald-200 bg-emerald-950/40 hover:bg-emerald-900/60'
+                                            : 'border-cyan-400 text-cyan-200 bg-cyan-950/40 hover:bg-cyan-900/60'}`}>
+                            <span className="text-[12px]"><${Icon} name="shield" /></span>
                             <span className="truncate">${loreChar.authorizeLabel}</span>
                             <kbd className="key-hint">A</kbd>
                         </button>

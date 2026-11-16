@@ -7,6 +7,7 @@ import { bus } from '../../core/Bus.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { CONFIG } from '../../data/gameConfig.js';
 
+import { Icon } from '../shared/Icon.js';
 const { useState, useEffect } = React;
 
 export const PortalMonitor = () => {
@@ -134,7 +135,7 @@ export const PortalMonitor = () => {
                 className=${`portal-fix relative z-10 ${flux.stability < 40 ? 'urgent' : ''} ${fixes ? 'em-done' : ''}`}
             >
                 <span>${isSectarian ? 'Sellar el velo' : 'Estabilizar'}</span>
-                <span className="portal-fix-hint">−${CONFIG.PORTAL.STABILIZE_COST}⚡ +${CONFIG.PORTAL.STABILIZE_AMOUNT}%</span>
+                <span className="portal-fix-hint">−${CONFIG.PORTAL.STABILIZE_COST}<${Icon} name="zap" tone="energy" /> +${CONFIG.PORTAL.STABILIZE_AMOUNT}%</span>
             </button>
 
         </div>
