@@ -115,7 +115,7 @@ test('flujo jugable inicial: cinemática → sincronización del monolito → si
 
   // La mecánica real requiere mantener espacio; se completa mediante teclado.
   await page.keyboard.down('Space');
-  await expect(progressBar).toHaveAttribute('style', /width:\\s*100%/, { timeout: 12_000 });
+  await expect(progressBar).toHaveAttribute('style', /width: 100%/, { timeout: 12_000 });
   await page.keyboard.up('Space');
 
   await expect(page.locator('.cinematic-screen')).toBeVisible({ timeout: 12_000 });
