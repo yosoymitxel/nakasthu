@@ -439,8 +439,8 @@ export const Operations = () => {
                                         ? isSectarian 
                                             ? 'border-indigo-500/40 text-indigo-400/70 hover:bg-indigo-500/10 hover:border-indigo-500 hover:text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.05)] hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] bg-indigo-950/5 rounded-tl-xl rounded-br-sm'
                                             : 'border-red-500/40 text-red-500/70 hover:bg-red-500/10 hover:border-red-500 hover:text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.05)] hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] bg-red-950/5'
-                                        : 'border-zinc-800 text-zinc-800 pointer-events-none'`}>
-                            <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSectarian ? 'bg-indigo-500/5' : 'bg-red-500/5'`}></div>
+                                        : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}>
+                            <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSectarian ? 'bg-indigo-500/5' : 'bg-red-500/5'}`}></div>
                             ${isSectarian && html`
                                 <div className="absolute top-1 left-1 w-1.5 h-1.5 bg-indigo-500/30 rotate-45 group-hover:bg-indigo-400 transition-colors"></div>
                                 <div className="absolute bottom-1 right-1 w-1.5 h-1.5 bg-indigo-500/30 rotate-45 group-hover:bg-indigo-400 transition-colors"></div>
@@ -452,7 +452,7 @@ export const Operations = () => {
                         </button>
                     `}
                     
-                    <div className=${`w-px h-6 ${isSectarian ? 'bg-indigo-900/30' : 'bg-zinc-800/50'`}></div>
+                    <div className=${`w-px h-6 ${isSectarian ? 'bg-indigo-900/30' : 'bg-zinc-800/50'}`}></div>
 
                     ${loreChar ? html`
                         <button 
@@ -465,7 +465,7 @@ export const Operations = () => {
                                         ? 'border-amber-400 text-amber-200 bg-amber-950/40 hover:bg-amber-900/60 shadow-[0_0_25px_rgba(245,158,11,0.4)] animate-pulse'
                                         : loreChar.theme === 'emerald'
                                             ? 'border-emerald-400 text-emerald-200 bg-emerald-950/40 hover:bg-emerald-900/60 shadow-[0_0_25px_rgba(16,185,129,0.4)] animate-pulse'
-                                            : 'border-cyan-400 text-cyan-200 bg-cyan-950/40 hover:bg-cyan-900/60 shadow-[0_0_25px_rgba(6,182,212,0.4)] animate-pulse'`}>
+                                            : 'border-cyan-400 text-cyan-200 bg-cyan-950/40 hover:bg-cyan-900/60 shadow-[0_0_25px_rgba(6,182,212,0.4)] animate-pulse'}`}>
                             <span className="text-[12px] text-yellow-400">★</span>
                             <span className="truncate">${loreChar.authorizeLabel}</span>
                             <kbd className="key-hint">A</kbd>
@@ -487,8 +487,8 @@ export const Operations = () => {
                                                     : stepColor === 'cyan'
                                                         ? 'border-cyan-500/40 text-cyan-500/70 hover:bg-cyan-500/10 hover:border-cyan-500 hover:text-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.05)] hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] bg-cyan-950/5'
                                                         : 'border-emerald-500/40 text-emerald-500/70 hover:bg-emerald-500/10 hover:border-emerald-500 hover:text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.05)] hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] bg-emerald-950/5')
-                                        : 'border-zinc-800 text-zinc-800 pointer-events-none'`}>
-                            <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSectarian ? 'bg-purple-500/5' : 'bg-emerald-500/5'`}></div>
+                                        : 'border-zinc-800 text-zinc-800 pointer-events-none'}`}>
+                            <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isSectarian ? 'bg-purple-500/5' : 'bg-emerald-500/5'}`}></div>
                             ${isSectarian && html`
                                 <div className="absolute top-1 left-1 w-1.5 h-1.5 border border-purple-500/30 rotate-45 group-hover:border-purple-400 transition-colors"></div>
                                 <div className="absolute bottom-1 right-1 w-1.5 h-1.5 border border-purple-500/30 rotate-45 group-hover:border-purple-400 transition-colors"></div>

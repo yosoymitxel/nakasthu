@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "test": "vitest run __tests__"
+    "check:syntax": "node tools/check-syntax.mjs",
+    "test": "node tools/check-syntax.mjs && vitest run __tests__"
   },
   "devDependencies": {
     "vitest": "^1.0.0",
