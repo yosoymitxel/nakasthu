@@ -69,6 +69,10 @@ test.describe('E2E · gameplay', () => {
 
         await expect(page.getByRole('button', { name: /^AUTORIZAR/ })).toBeEnabled({ timeout: 10_000 });
         await expect(page.getByRole('button', { name: /^SACRIFICAR/ })).toBeEnabled();
+        // El indicio de corrupción debe verse junto a la sentencia (también en móvil, pestaña Mando).
+        const estimate = await page.evaluate(() => window.state.currentEntity.corruptionEstimate);
+        expect(Number.isInteger(estimate)).toBe(true);
+        await expect(page.getByText(`Corrupción ${estimate}% · 1 lectura`)).toBeVisible();
         await snap(page, testInfo, 'e2e-step4-decision');
     });
 

@@ -33,7 +33,7 @@ export const STEPS_CONFIG = {
         briefingText: 'Orval Drexler, desde Talok, ha ordenado la reconstrucción. Necesita técnicos. Evalúa a cada sujeto por lo que sabe hacer.',
         subjectCount: 10,
         meta: {
-            requiredTechnicians: 6,
+            requiredTechnicians: 2, // Con 1 de cada 4 sujetos técnico, 6 de 10 era casi imposible
             hiddenGoal: 'Estabilizar el país con técnicos cualificados',
             coreColorOverride: 'cyan'
         }

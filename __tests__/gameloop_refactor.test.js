@@ -1,3 +1,4 @@
+import { CONFIG } from '../src/data/gameConfig.js';
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { gameLoop } from '../src/core/GameLoop.js';
 import { state } from '../src/core/State.js';
@@ -49,7 +50,7 @@ describe('GameLoop Refactor Tests', () => {
 
         // El drenaje ahora permite precisión decimal para suavizar la caída
         // El valor viene de CONFIG.ENERGY.TICK_DRAIN (actualmente 0.5)
-        expect(state.energy).toBe(100 - 0.5);
+        expect(state.energy).toBe(100 - CONFIG.ENERGY.TICK_DRAIN);
         expect(MechanicManager.updateResonance).toHaveBeenCalled();
     });
 

@@ -40,13 +40,13 @@ describe('getStepObjective: metas visibles por paso', () => {
         const objective = getStepObjective(STEPS_CONFIG[4], {
             processed: 3,
             quota: 10,
-            technicians: 4,
+            technicians: 1,
             influence: 0
         });
-        expect(objective.label).toBe('Reclutar 6 técnicos');
-        expect(objective.countLabel).toBe('4/6');
+        expect(objective.label).toBe('Reclutar 2 técnicos');
+        expect(objective.countLabel).toBe('1/2');
         expect(objective.complete).toBe(false);
-        expect(getObjectivePercent(objective)).toBe(67);
+        expect(getObjectivePercent(objective)).toBe(50);
     });
 
     it('marca cumplida la meta de técnicos al alcanzarla', () => {

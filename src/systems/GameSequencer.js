@@ -7,7 +7,6 @@
  */
 import { bus } from '../core/Bus.js';
 import { state } from '../core/State.js';
-import { html } from '../ui/utils/html.js';
 import { quotaTracker } from './QuotaTracker.js';
 import { factionSystem } from './FactionSystem.js';
 import { cancelScan } from './Scanner.js';
@@ -16,10 +15,15 @@ import { STEPS_CONFIG } from '../data/stepsConfig.js';
 import { MechanicManager } from '../services/MechanicManager.js';
 import { calculateJudgmentRecommendation, checkStepMeta } from '../utils/gameplayUtils.js';
 import { storageSet } from '../utils/storage.js';
+import { persistenceManager } from './PersistenceManager.js';
 
 /**
  * Clase GameSequencer - Gestiona la progresión narrativa
  */
+// Margen de error proporcional al turno: 3 fallos sobre 15 sujetos (paso 10) exigía un 80% de acierto.
+// Con quota infinita se mantiene el mínimo.
+export const errorBudget = (quota) => Math.max(CONFIG.MAX_JUDGMENT_ERRORS, Number.isFinite(quota) ? Math.ceil(quota * 0.3) : 0);
+
 class GameSequencer {
     constructor() {
         this.currentStep = 1;
@@ -193,6 +197,9 @@ class GameSequencer {
             bus.emit('ACT_CHANGE', { newAct: this.storyPath });
         }
 
+        // Autoguardado al entrar en cada paso: "Continuar Partida" retoma desde aquí.
+        if (this.currentStep < 12) persistenceManager.saveGame(state, { silent: true });
+
         const stepData = this.getCurrentStepData();
 
         console.log(`%c[SEQUENCER] Avanzando a paso ${this.currentStep}: ${stepData.config.name} (Status: ${nextStatus})`, 'color: #10b981;');
@@ -212,6 +219,7 @@ class GameSequencer {
 
         state.worldTime = 0;
         state.quota = currentConfig.subjectCount || currentConfig.quota || CONFIG.DEFAULT_QUOTA;
+        state.maxErrors = errorBudget(state.quota);
 
         // Limpiar sujeto actual para que el nuevo nivel empiece de cero
         state.currentEntity = null;
@@ -276,6 +284,7 @@ class GameSequencer {
         state.faith = 0;
         state.activeScan = null;
         state.quota = currentConfig.subjectCount || CONFIG.DEFAULT_QUOTA;
+        state.maxErrors = errorBudget(state.quota);
 
         // Limpiar estados de emergencia
         state.emergencies = {
@@ -336,7 +345,7 @@ class GameSequencer {
         console.log(`%c[SEQUENCER] Status Check - Step: ${this.currentStep}, Processed: ${state.processedCount}, Quota: ${state.quota}`, 'color: #3b82f6;');
 
         // 1. Verificar Fallo Crítico (Errores de Juicio)
-        if (state.judgmentErrors >= CONFIG.MAX_JUDGMENT_ERRORS) {
+        if (state.judgmentErrors >= (state.maxErrors || CONFIG.MAX_JUDGMENT_ERRORS)) {
             console.log('%c[SEQUENCER] Límite de errores alcanzado. FALLO DE SISTEMA.', 'color: #ef4444; font-weight: bold;');
             const maxErrors = state.maxErrors || CONFIG.MAX_JUDGMENT_ERRORS;
             const runStats = state.runStats || { processed: 0, errors: 0 };

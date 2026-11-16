@@ -343,6 +343,8 @@ export const Operations = () => {
                 isSectarian=${isSectarian}
                 hasSubject=${!!currentEntity}
                 scanDone=${isScanComplete}
+                estimate=${currentEntity?.corruptionEstimate}
+                readings=${currentEntity?.scannedData?.corruptionHistory?.length || 0}
                 scanName=${scanName}
                 talking=${!!activeDialogue}
             />

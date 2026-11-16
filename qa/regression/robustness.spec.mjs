@@ -212,10 +212,27 @@ test.describe('REGRESIÓN · estados inesperados y recuperación', () => {
         expect(e1, `energía ${e0} → ${e1} con el modal de tutorial abierto`).toBe(e0);
     });
 
-    test('persistencia: un guardado de partida permite reanudar desde el menú', async ({ page }) => {
-        test.fail(true, 'GAP CONOCIDO: saveGame() escribe nakasthu_save_v1 pero no existe flujo de carga en el menú.');
-        await bootGame(page, { nakasthu_save_v1: JSON.stringify({ currentStep: 4, storyPath: 0, unlockedModules: [], timestamp: Date.now() }) });
-        await expect(page.getByRole('button', { name: /Cargar Partida|Reanudar|Continuar/i })).toBeVisible({ timeout: 3_000 });
+    test('persistencia: el autoguardado permite "Continuar Partida" desde el menú tras recargar @responsive', async ({ page }) => {
+        await bootGame(page, { ...SKIP_TUTORIALS, nakasthu_max_step: '4' });
+        await jumpToStep(page, 4);
+        await startOperations(page);
+        await page.reload();
+        const resume = page.getByRole('button', { name: /Continuar Partida/ });
+        await expect(resume).toBeVisible();
+        await expect(resume).toContainText('Paso 04');
+        await resume.click();
+        await expect(page.locator('.game-modal-overlay')).toBeVisible();
+        expect(await page.evaluate(() => window.state.currentStep)).toBe(4);
+    });
+
+    test('persistencia: sin guardado no aparece "Continuar Partida"', async ({ page }) => {
+        await bootGame(page);
+        await expect(page.getByRole('button', { name: /Continuar Partida/ })).toHaveCount(0);
+    });
+
+    test('persistencia: guardado corrupto no ofrece "Continuar Partida"', async ({ page }) => {
+        await bootGame(page, { nakasthu_save_v1: '{"currentStep":"x"}' });
+        await expect(page.getByRole('button', { name: /Continuar Partida/ })).toHaveCount(0);
     });
 });
 

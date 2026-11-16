@@ -45,7 +45,8 @@ Modelos 3D de polyfork.dev, texturas y audio se sustituyen por stubs mínimos.
 `QA_CDN=live` desactiva el espejo. Si una URL de CDN nueva no tiene regla, la prueba falla con
 "Dependencias de CDN sin espejo" → añadirla en `support/cdn-mirror.mjs`.
 
-## Gap conocido (marcado `test.fail`)
+## Balance
 
-El menú de pausa guarda `nakasthu_save_v1`, pero no existe "Continuar partida" en el menú.
-Cuando se implemente, la prueba empezará a "fallar por pasar": quitar el `test.fail`.
+`__tests__/balance_step4.test.js` simula miles de turnos con las fórmulas reales y exige que cada
+turno jugable sea ganable (≥ 55% sólo con el escaneo obligatorio, ≥ 70–75% usando escaneos extra).
+Si se toca `gameConfig.js`, `scannerUtils.js` o `stepsConfig.js`, `npm test` avisa si un nivel vuelve a ser imposible.

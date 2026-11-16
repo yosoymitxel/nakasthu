@@ -51,8 +51,10 @@ export const analyzeSubjectProbability = (scanType, entity, currentMode) => {
         case 'NEURAL': precision = 0.9; break;
         case 'NAKARA': precision = 0.95; break;
         case 'RESONANCE': precision = 0.7; break;
-        case 'THERMAL': precision = 0.6; break;
-        case 'BIOMETRIC': precision = 0.5; break;
+        case 'THERMAL': precision = 0.65; break;
+        // El escaneo OBLIGATORIO debe ser informativo: a 0.5 era una moneda y el paso 4
+        // se ganaba el ~5% de las veces siguiendo las reglas (simulación Monte Carlo).
+        case 'BIOMETRIC': precision = 0.8; break;
     }
     
     const eclipseInterference = currentMode === 'ECLIPSE' ? 0.2 : 0;

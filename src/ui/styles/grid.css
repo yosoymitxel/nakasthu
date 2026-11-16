@@ -356,6 +356,7 @@ body {
         border-right: 1px solid #18181b;
     }
     .mobile-tabs button.on { color: var(--tab-color, #22d3ee); box-shadow: inset 0 2px 0 var(--tab-color, #22d3ee); background: rgba(255, 255, 255, 0.03); }
+    .mobile-tabs button.tab-pause { flex: 0 0 48px; letter-spacing: 0; border-right: 0; color: #a1a1aa; }
     .mobile-tabs .tab-dot.alert { background: #ef4444; animation-duration: 0.7s; }
     .mobile-tabs .tab-dot { position: absolute; top: 8px; right: 14%; width: 6px; height: 6px; background: #f59e0b; animation: pulse-slow 1.2s ease-in-out infinite; }
 }

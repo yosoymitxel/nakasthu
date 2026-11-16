@@ -32,8 +32,9 @@ import { FeelLayer, fxReduced, setFxReduced } from './FeelLayer.js';
 import { soundOn, setSoundOn } from '../juice.js';
 import { AchievementToast, AchievementsPanel } from './AchievementsUI.js';
 import { persistenceManager } from '../../systems/PersistenceManager.js';
+import { tutorialProposalContent, tutorialProposalFooter } from './TutorialProposal.js';
 
-const { useState, useEffect } = React;
+const { useState, useEffect, useMemo } = React;
 
 // Mapeo de Áreas de Grid a IDs de Módulo para el sistema de bloqueo
 const AREA_TO_MODULE = CONFIG.UI.AREA_TO_MODULE;
@@ -281,6 +282,9 @@ export const Layout = () => {
     const isCriticalStability = stability < 15;
     const isGameOver = gameStatus === 'GAME_OVER';
     const isStartMenu = gameStatus === 'START_MENU';
+    // Se relee al volver al menú: el autoguardado ocurre en cada cambio de paso.
+    const savedGame = useMemo(() => (isStartMenu ? persistenceManager.loadGame() : null), [isStartMenu]);
+
     const isLoreArchive = gameStatus === 'LORE_ARCHIVE';
     const isPaused = state.isPaused;
     // Cinemáticas y mecánicas piden su plano de cámara a la escena 3D
@@ -398,6 +402,15 @@ export const Layout = () => {
                     </div>
                     
                     <div className="flex flex-col gap-4 w-64 max-w-[80vw]">
+                        ${savedGame && html`
+                            <button
+                                onClick=${() => gameSequencer.jumpToStep(savedGame.currentStep)}
+                                className="group relative border border-emerald-500/40 bg-emerald-950/20 px-8 py-3 hover:bg-emerald-500/20 transition-all"
+                            >
+                                <span className="text-emerald-400 font-mono text-sm tracking-widest uppercase">Continuar Partida</span>
+                                <span className="block text-[9px] text-emerald-700 tracking-widest uppercase mt-1">${`Paso ${String(savedGame.currentStep).padStart(2, '0')} · ${STEPS_CONFIG[savedGame.currentStep]?.name || ''}`}</span>
+                            </button>
+                        `}
                         <button 
                             onClick=${() => {
             bus.emit('GAME_START');
@@ -639,7 +652,7 @@ export const Layout = () => {
                             <button onClick=${() => setModal(null)} className="text-zinc-500 hover:text-zinc-300">✕</button>
                         </div>
                         <div className="text-zinc-400 font-mono text-[12px] leading-relaxed my-4">
-                            ${modal.content}
+                            ${modal.kind === 'TUTORIAL_PROPOSAL' ? tutorialProposalContent(modal) : modal.content}
                             ${modal.title === 'CONFIGURACIÓN' && html`
                                 <!-- Un único nodo raíz: htm devuelve un array sin keys si hay hermanos en la raíz -->
                                 <div>
@@ -697,7 +710,7 @@ export const Layout = () => {
                                 </div>
                             `}
                         </div>
-                        ${modal.footer ? modal.footer : html`
+                        ${modal.kind === 'TUTORIAL_PROPOSAL' ? tutorialProposalFooter(modal) : modal.footer ? modal.footer : html`
                             <button 
                                 onClick=${() => setModal(null)}
                                 className="w-full py-2 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:bg-zinc-800 transition-all uppercase text-[12px] tracking-widest"

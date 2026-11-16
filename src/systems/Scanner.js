@@ -7,7 +7,7 @@ import { state } from '../core/State.js';
 import { bus } from '../core/Bus.js';
 import { CONFIG } from '../data/gameConfig.js';
 import { toInt } from '../utils/mathUtils.js';
-import { calculateScanCost, calculateAdjustedDuration } from '../utils/scannerUtils.js';
+import { calculateScanCost, calculateAdjustedDuration, analyzeSubjectProbability } from '../utils/scannerUtils.js';
 
 export const SCAN_TYPES = CONFIG.SCANNER.TYPES;
 
@@ -112,19 +112,6 @@ export const executeScan = async (typeId) => {
                 
                 console.log(`%c[SCANNER] ${scan.name} completado.`, "color: #00ff00;");
                 
-                // Notificar al MOD-05 (COMS) y otros
-                bus.emit('SCAN_COMPLETED', {
-                    type: scan, 
-                    result: 'DATA_EXTRACTED',
-                    subject: state.currentEntity,
-                    timestamp: Date.now()
-                });
-
-                // REGLA: Si el escaneo es BIOMÉTRICO, emitir señal para habilitar decisiones
-                if (scan.id === 'BIOMETRIC') {
-                    bus.emit('BIOMETRICO_COMPLETO', { subjectId: state.currentEntity?.id });
-                }
-
                 // Registrar el tipo de escaneo y el historial en el sujeto
                 if (state.currentEntity) {
                     const currentScans = state.currentEntity.scannedTypes || [];
@@ -134,14 +121,33 @@ export const executeScan = async (typeId) => {
                         ? [...currentScans, scan.id] 
                         : currentScans;
                         
+                    // La lectura de corrupción es lógica de juego: vive en el motor, no en la vista.
+                    const probability = analyzeSubjectProbability(scan.id, state.currentEntity, state.mode);
+                    const scannedData = state.currentEntity.scannedData || {};
+                    const corruptionHistory = [...(scannedData.corruptionHistory || []), probability];
                     state.currentEntity = {
                         ...state.currentEntity,
                         scannedTypes: newScans,
                         scanHistory: {
                             ...scanHistory,
                             [scan.id]: (scanHistory[scan.id] || 0) + 1
-                        }
+                        },
+                        scannedData: { ...scannedData, corruptionHistory },
+                        corruptionEstimate: Math.round(corruptionHistory.reduce((a, b) => a + b, 0) / corruptionHistory.length)
                     };
+                    console.log(`%c[SCANNER] Lectura ${scan.id}: ${probability}%`, 'color: #00ff00;');
+                    bus.emit('SCAN_COMPLETED', {
+                        type: scan,
+                        result: 'DATA_EXTRACTED',
+                        probability,
+                        subject: state.currentEntity,
+                        timestamp: Date.now()
+                    });
+                }
+
+                // REGLA: Si el escaneo es BIOMÉTRICO, emitir señal para habilitar decisiones
+                if (scan.id === 'BIOMETRIC') {
+                    bus.emit('BIOMETRICO_COMPLETO', { subjectId: state.currentEntity?.id });
                 }
 
                 // Limpiar estado

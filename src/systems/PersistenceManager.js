@@ -17,7 +17,7 @@ class PersistenceManager {
     /**
      * Guarda el estado actual del juego.
      */
-    saveGame(gameState) {
+    saveGame(gameState, { silent = false } = {}) {
         const data = {
             currentStep: gameState.currentStep,
             storyPath: gameState.storyPath,
@@ -26,7 +26,7 @@ class PersistenceManager {
         };
         storageSet(this.SAVE_KEY, JSON.stringify(data));
         console.log("%c[SAVE] Partida guardada.", "color: #0ea5e9; font-weight: bold;");
-        bus.emit('SYSTEM_LOG', { msg: 'SISTEMA_GUARDADO: PROGRESO_SINCRONIZADO' });
+        if (!silent) bus.emit('SYSTEM_LOG', { msg: 'SISTEMA_GUARDADO: PROGRESO_SINCRONIZADO' });
     }
 
     /**

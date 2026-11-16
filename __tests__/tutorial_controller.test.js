@@ -34,7 +34,8 @@ describe('Modular TutorialController Tests (tutorial_controller.test.js)', () =>
         // Debe mostrar modal de propuesta
         expect(spy).toHaveBeenCalledWith('UI_MODAL_OPEN', expect.objectContaining({
             title: 'NUEVO SISTEMA DETECTADO',
-            content: expect.anything()
+            kind: 'TUTORIAL_PROPOSAL',
+            onStart: expect.any(Function)
         }));
     });
 

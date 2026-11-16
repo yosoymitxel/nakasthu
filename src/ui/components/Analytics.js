@@ -9,7 +9,7 @@ import { useGameState } from '../hooks/useGameState.js';
 import { CONFIG } from '../../data/gameConfig.js';
 import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 import { STEPS_CONFIG } from '../../data/stepsConfig.js';
-import { analyzeSubjectProbability, formatScanDetail } from '../../utils/scannerUtils.js';
+import { formatScanDetail } from '../../utils/scannerUtils.js';
 
 const { useState, useEffect, useMemo, memo } = React;
 
@@ -65,8 +65,9 @@ export const Analytics = memo(() => {
 
         const onScanComplete = (data) => {
             setIsProcessing(false);
-            if (currentEntity) {
-                const { scannedData } = currentEntity;
+            const entity = data.subject || currentEntity;
+            if (entity) {
+                const { scannedData } = entity;
                 
                 const valMap = {
                     BIOMETRIC: Math.floor(scannedData.temperature),
@@ -83,21 +84,14 @@ export const Analytics = memo(() => {
                     ? formatScanDetail(pattern, valMap[data.type.id])
                     : pattern.replace('{val}', valMap[data.type.id]);
                 
-                const newProb = analyzeSubjectProbability(data.type.id, currentEntity, mode);
+                // El motor ya calculó y guardó la lectura (Scanner.js); la vista solo la pinta.
+                const newProb = data.probability ?? null;
 
                 let trendColor = "text-zinc-400";
                 if (newProb !== null) {
                     if (newProb > anaConstants.PROB_CRITICAL) trendColor = "text-red-400";
                     else if (newProb > anaConstants.PROB_WARNING) trendColor = "text-orange-400";
                     else trendColor = isSectarian ? "text-purple-400" : "text-cyan-400";
-
-                    // Actualizar el historial de indicios en el estado global
-                    if (currentEntity.scannedData) {
-                        if (!currentEntity.scannedData.corruptionHistory) {
-                            currentEntity.scannedData.corruptionHistory = [];
-                        }
-                        currentEntity.scannedData.corruptionHistory.push(newProb);
-                    }
                 }
 
                 const scanName = bioLabels.scans[data.type.id] || data.type.name;
@@ -113,7 +107,7 @@ export const Analytics = memo(() => {
                 // ENVIAR A LORE (MOD-09)
                 bus.emit('LORE_DATA_EMITTED', {
                     content: dataString,
-                    entityId: currentEntity.id,
+                    entityId: entity.id,
                     timestamp: Date.now()
                 });
             } else {

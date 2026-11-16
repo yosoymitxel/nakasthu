@@ -11,7 +11,7 @@ export const CONFIG = {
         AUTHORIZE_COST: 5,
         SACRIFICE_CORRUPT_BONUS: 20,
         SACRIFICE_INOCENT_BONUS: 5,
-        TICK_DRAIN: 0.5,
+        TICK_DRAIN: 0.25, // A 0.5/s un jugador que lee los diálogos (~20 s/sujeto) se quedaba sin energía
         ECLIPSE_DRAIN: 1.0,
         REPAIR_COST: 10
     },

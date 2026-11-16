@@ -201,8 +201,7 @@ export async function scanBiometric(page) {
 }
 
 export async function openPause(page) {
-    const pause = page.locator('button[title="PAUSA"]');
-    await revealOnMobile(page, pause, 'Registro');
-    await pause.click();
+    // Escritorio: botón del panel de control. Móvil: botón fijo en la barra de pestañas.
+    await page.locator('button[title="PAUSA"]:visible').first().click();
     await expect(page.getByRole('heading', { name: 'SISTEMA EN ESPERA' })).toBeVisible();
 }

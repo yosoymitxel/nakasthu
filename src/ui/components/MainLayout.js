@@ -86,6 +86,8 @@ export const MainLayout = memo(({ children }) => {
                         ${id === 'sistemas' && emergencyActive && tab !== id && html`<span className="tab-dot alert"></span>`}
                     </button>
                 `)}
+                <!-- Pausa siempre a mano en móvil: antes sólo existía dentro de la pestaña Registro -->
+                <button className="tab-pause" title="PAUSA" aria-label="Pausa" onClick=${() => { state.isPaused = true; bus.emit('GAME_PAUSE', { paused: true }); }}>❚❚</button>
             </nav>
             <!-- Grid Debugger Overlay (Opcional, se puede activar via CSS) -->
             <div className="grid-debug-overlay pointer-events-none absolute inset-0 z-0 opacity-5 border border-zinc-500/10"></div>

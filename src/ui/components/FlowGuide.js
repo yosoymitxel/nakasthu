@@ -6,11 +6,11 @@
 import { html } from '../utils/html.js';
 import { bus } from '../../core/Bus.js';
 
-export const FlowGuide = ({ isSectarian, hasSubject, scanDone, scanName, talking }) => {
+export const FlowGuide = ({ isSectarian, hasSubject, scanDone, scanName, talking, estimate, readings = 0 }) => {
     const color = isSectarian ? '#a855f7' : '#f59e0b';
     const words = isSectarian
-        ? { scan: 'Revelar', talk: 'Comulgar', judge: 'Dictamen', scanDone: 'Esencia leída', talkHint: 'Opcional · gasta dogma', judgeWait: 'Falta la revelación', judgeGo: 'Purgar o consagrar', empty: 'Sin alma en el altar' }
-        : { scan: 'Escanear', talk: 'Interrogar', judge: 'Sentencia', scanDone: 'Validado', talkHint: 'Opcional · gasta energía', judgeWait: 'Falta el escaneo', judgeGo: 'Sacrificar o autorizar', empty: 'Cámara vacía' };
+        ? { scan: 'Revelar', talk: 'Comulgar', judge: 'Dictamen', scanDone: 'Esencia leída', talkHint: 'Opcional · gasta dogma', judgeWait: 'Falta la revelación', judgeGo: 'Purgar o consagrar', omen: 'Impureza', empty: 'Sin alma en el altar' }
+        : { scan: 'Escanear', talk: 'Interrogar', judge: 'Sentencia', scanDone: 'Validado', talkHint: 'Opcional · gasta energía', judgeWait: 'Falta el escaneo', judgeGo: 'Sacrificar o autorizar', omen: 'Corrupción', empty: 'Cámara vacía' };
 
     const steps = [
         {
@@ -27,7 +27,10 @@ export const FlowGuide = ({ isSectarian, hasSubject, scanDone, scanName, talking
         },
         {
             name: words.judge,
-            hint: scanDone ? words.judgeGo : words.judgeWait,
+            // El indicio vive junto a la sentencia: en móvil el panel de análisis está en otra pestaña.
+            hint: !scanDone ? words.judgeWait
+                : Number.isFinite(estimate) ? `${words.omen} ${estimate}% · ${readings} ${readings === 1 ? 'lectura' : 'lecturas'}`
+                : words.judgeGo,
             state: scanDone && !talking ? 'now' : '',
             go: () => bus.emit('UI_FOCUS_AREA', { area: scanDone ? 'C_MAIN' : 'L_UPPER', color })
         }
