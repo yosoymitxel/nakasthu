@@ -76,7 +76,7 @@ test.describe('E2E · gameplay', () => {
         await snap(page, testInfo, 'e2e-step4-decision');
     });
 
-    test('paso 4 completo: 10 sujetos procesados → avanza al paso 5 y desbloquea el selector', async ({ page }, testInfo) => {
+    test('paso 4 completo: 10 sujetos procesados → avanza al paso 5 y desbloquea el selector @responsive', async ({ page }, testInfo) => {
         test.setTimeout(180_000);
         await bootGame(page, { ...SKIP_TUTORIALS, nakasthu_max_step: '4' });
         await jumpToStep(page, 4);
@@ -95,6 +95,8 @@ test.describe('E2E · gameplay', () => {
         const summary = page.locator('.game-modal-overlay');
         await expect(summary.getByRole('heading', { name: /Turno cerrado: Reconstrucción/ })).toBeVisible({ timeout: 30_000 });
         await expect(summary).toContainText('Procesados');
+        // El objetivo del turno tiene consecuencia y el resumen la anuncia.
+        await expect(summary).toContainText(/Objetivo cumplido: \+1 error|Próximo turno: −20 de energía/);
         await snap(page, testInfo, 'e2e-step4-summary');
         await summary.getByRole('button', { name: 'CONTINUAR' }).click();
         await expect.poll(() => page.evaluate(() => window.state.currentStep), { timeout: 30_000 }).toBe(5);
