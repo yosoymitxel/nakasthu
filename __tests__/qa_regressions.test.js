@@ -30,11 +30,14 @@ describe('storage seguro', () => {
     });
 
     it('no lanza si localStorage está bloqueado', () => {
-        const spy = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new DOMException('denied', 'SecurityError'); });
-        const spySet = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('quota', 'QuotaExceededError'); });
+        // happy-dom 20+ no pasa setItem por Storage.prototype: se sustituye el objeto entero.
+        vi.stubGlobal('localStorage', {
+            getItem() { throw new DOMException('denied', 'SecurityError'); },
+            setItem() { throw new DOMException('quota', 'QuotaExceededError'); },
+        });
         expect(storageGet('x', 'fb')).toBe('fb');
         expect(storageSet('x', 1)).toBe(false);
-        spy.mockRestore(); spySet.mockRestore();
+        vi.unstubAllGlobals();
     });
 
     it('PersistenceManager tolera lore y guardado corruptos', () => {

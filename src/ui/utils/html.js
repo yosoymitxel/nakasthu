@@ -1,4 +1,4 @@
-import htm from 'https://unpkg.com/htm?module';
+import htm from 'https://unpkg.com/htm@3.1.1?module';
 
 // Bind htm to React.createElement. 
 // Assumes React is loaded globally via UMD script in index.html
