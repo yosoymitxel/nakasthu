@@ -8,7 +8,7 @@ export default defineConfig({
     silent: true, // los logs del motor tapaban el resultado
     reporters: process.env.CI ? ['default'] : ['dot'],
     alias: {
-      'https://unpkg.com/htm?module': path.resolve(__dirname, './__tests__/mocks/html.js'),
+      'https://unpkg.com/htm@3.1.1?module': path.resolve(__dirname, './__tests__/mocks/html.js'),
       '../ui/utils/html.js': path.resolve(__dirname, './__tests__/mocks/html.js'),
     },
   },
