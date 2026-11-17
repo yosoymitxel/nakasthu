@@ -365,7 +365,7 @@ export const Layout = () => {
     const stabilityAlertClass = isCriticalStability ? 'shadow-[inset_0_0_100px_rgba(220,38,38,0.4)]' : '';
 
     return html`
-        <div className=${`relative min-h-screen min-h-[100dvh] bg-[#0b0b0d] text-zinc-300 overflow-hidden cursor-default select-none font-mono transition-all duration-[1000ms] ${isPaused ? 'grayscale' : ''} ${criticalClass}`}>
+        <div className=${`relative min-h-screen min-h-[100dvh] bg-[#0b0b0d] text-zinc-300 overflow-hidden cursor-default select-none font-mono transition-all duration-[1000ms] ${criticalClass}`}>
             
             <${Backdrop3D}
                 dim=${!isStartMenu && !sceneShot}
@@ -544,7 +544,7 @@ export const Layout = () => {
             </div>
 
             <!-- Renderizado Dinámico de Pantallas según Paso Narrativo -->
-            <div className=${`transition-all duration-[2000ms] ${isGameOver || isStartMenu || isLoreArchive ? 'opacity-0 pointer-events-none' : ''}`}>
+            <div className=${`transition-all duration-[2000ms] ${isGameOver || isStartMenu || isLoreArchive ? 'opacity-0 pointer-events-none' : ''} ${isPaused ? 'grayscale' : ''}`}>
                 ${(!isGameOver && !isStartMenu && !isLoreArchive) && html`
                     <${LevelContainer} 
                         stepConfig=${stepConfig} 

@@ -116,6 +116,9 @@ export const SubjectVisual = () => {
             ${cardOpen && html`<${SubjectCard} subject=${subject} onClose=${() => setCardOpen(false)} />`}
 
             <!-- Silueta o Representación Visual (Maximizado 80%) -->
+            ${isSectarian && !loreChar && html`
+                <div className="flex-none max-w-[90%] truncate text-[8px] font-mono tracking-wider text-purple-400/80 leading-tight" title=${id}>᚛ ${id} ᚜</div>
+            `}
                 <button onClick=${() => setCardOpen(true)} aria-label="Abrir ficha del sujeto" className=${`
                     relative w-[85%] flex-1 min-h-0 mt-1 border flex items-center justify-center overflow-hidden transition-all duration-500
                     ${loreChar 
@@ -175,11 +178,9 @@ export const SubjectVisual = () => {
 
                     <!-- ID del sujeto: chapa mínima en la esquina; antes era un recuadro que tapaba la cabeza.
                          El lore ya lleva su nombre arriba, así que no se repite. -->
-                    ${!loreChar && html`
+                    ${!loreChar && !isSectarian && html`
                         <div className="absolute top-0.5 left-0.5 max-w-[60%] px-1 bg-black/70 z-30 truncate leading-tight" title=${id}>
-                            <span className=${`text-[8px] font-mono tracking-wider ${isSectarian ? 'text-purple-400/80' : 'text-zinc-400'}`}>
-                                ${isSectarian ? `᚛ ${id} ᚜` : id}
-                            </span>
+                            <span className="text-[8px] font-mono tracking-wider text-zinc-400">${id}</span>
                         </div>
                     `}
                 </button>

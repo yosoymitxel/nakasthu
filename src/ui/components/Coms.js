@@ -88,11 +88,12 @@ export const Coms = () => {
     }, [labels]);
 
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        const el = messagesEndRef.current;
+        el?.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
     }, [messages]);
 
     return html`
-        <div className=${`flex-grow overflow-y-auto p-4 space-y-3 custom-scrollbar min-h-0 relative ${isSectarian ? 'bg-indigo-950/10' : 'bg-black/5'}`}>
+        <div className=${`flex-grow min-h-0 relative flex flex-col overflow-hidden ${isSectarian ? 'bg-indigo-950/10' : 'bg-black/5'}`}>
             <!-- MOD-05 TAG -->
             <div className=${`absolute top-1 right-2 text-[8px] font-bold pointer-events-none z-10 ${isSectarian ? 'text-purple-700/60' : 'text-zinc-700'}`}>
                 ${isSectarian ? 'MOD-05: CANAL_DE_PLEGARIAS' : 'MOD-05: COMMS'}
@@ -135,6 +136,7 @@ export const Coms = () => {
                 </div>
             `}
 
+            <div ref=${messagesEndRef} className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 custom-scrollbar relative z-10">
             ${messages.map((msg, i) => html`
                 <div key=${`msg-${msg.timestamp}-${i}`} className=${`flex flex-col animate-fade-in relative z-10 ${msg.type === 'SYSTEM'
                 ? `border-l-2 ${isSectarian ? 'border-purple-600/40 bg-purple-900/5 backdrop-blur-[1px]' : 'border-zinc-800'} pl-3 py-1` :
@@ -189,7 +191,7 @@ export const Coms = () => {
                     `}
                 </div>
             `}
-            <div ref=${messagesEndRef} />
+            </div>
         </div>
     `;
 };
