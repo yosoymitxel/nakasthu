@@ -2,6 +2,7 @@
     "dialogues": [
         {
             "id": "DLG_P1_KAEL_CUARENTENA",
+            "priority": true,
             "minStep": 4,
             "maxStep": 4,
             "npcTraits": {
@@ -23,7 +24,9 @@
                     "next": [
                         {
                             "text": "*Le devuelves la ropa con la bota sin abrir.*",
-                            "set": { "libreta": "guardada" },
+                            "set": {
+                                "libreta": "guardada"
+                            },
                             "energyCost": 0.1,
                             "stabilityImpact": 2,
                             "corruptionImpact": -1,
@@ -31,7 +34,9 @@
                         },
                         {
                             "text": "*Abres el forro de la bota izquierda.*",
-                            "set": { "libreta": "requisada" },
+                            "set": {
+                                "libreta": "requisada"
+                            },
                             "energyCost": 0.3,
                             "stabilityImpact": 3,
                             "corruptionImpact": -2,
@@ -49,7 +54,9 @@
                     "next": [
                         {
                             "text": "*Le devuelves la ropa con la bota sin abrir.*",
-                            "set": { "libreta": "guardada" },
+                            "set": {
+                                "libreta": "guardada"
+                            },
                             "energyCost": 0.1,
                             "stabilityImpact": 2,
                             "corruptionImpact": -1,
@@ -57,7 +64,9 @@
                         },
                         {
                             "text": "*Abres el forro de la bota izquierda.*",
-                            "set": { "libreta": "requisada" },
+                            "set": {
+                                "libreta": "requisada"
+                            },
                             "energyCost": 0.3,
                             "stabilityImpact": 3,
                             "corruptionImpact": -2,
@@ -70,6 +79,7 @@
         },
         {
             "id": "DLG_P1_ESTATICA_317",
+            "priority": true,
             "minStep": 4,
             "maxStep": 6,
             "speaker": "REGISTRO 03:17",
@@ -77,7 +87,9 @@
             "options": [
                 {
                     "text": "*Copias las letras en el parte y lo firmas.*",
-                    "set": { "aviso_317": "anotado" },
+                    "set": {
+                        "aviso_317": "anotado"
+                    },
                     "energyCost": 0.2,
                     "stabilityImpact": 2,
                     "corruptionImpact": -2,
@@ -85,7 +97,9 @@
                 },
                 {
                     "text": "*Marcas la casilla por defecto: reinicio no programado.*",
-                    "set": { "aviso_317": "borrado" },
+                    "set": {
+                        "aviso_317": "borrado"
+                    },
                     "energyCost": 0.1,
                     "stabilityImpact": -1,
                     "corruptionImpact": 2,
@@ -134,6 +148,7 @@
         },
         {
             "id": "DLG_P1_LEINA_CACHE",
+            "priority": true,
             "minStep": 4,
             "maxStep": 4,
             "npcTraits": {
@@ -148,7 +163,9 @@
             "options": [
                 {
                     "text": "Has visto un fallo de caché.",
-                    "set": { "leina_palabra": "descartada" },
+                    "set": {
+                        "leina_palabra": "descartada"
+                    },
                     "energyCost": 0.1,
                     "stabilityImpact": 2,
                     "corruptionImpact": -1,
@@ -156,7 +173,9 @@
                 },
                 {
                     "text": "¿Qué cinco letras?",
-                    "set": { "leina_palabra": "escuchada" },
+                    "set": {
+                        "leina_palabra": "escuchada"
+                    },
                     "energyCost": 0.3,
                     "stabilityImpact": -2,
                     "corruptionImpact": 4,

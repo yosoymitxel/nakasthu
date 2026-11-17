@@ -2,6 +2,7 @@
     "dialogues": [
         {
             "id": "DLG_P4_KAEL_PASILLO",
+            "priority": true,
             "minStep": 10,
             "maxStep": 10,
             "exclusive": false,
@@ -31,7 +32,9 @@
                 },
                 {
                     "text": "*Le señalas la bota izquierda.*",
-                    "if": { "libreta": "guardada" },
+                    "if": {
+                        "libreta": "guardada"
+                    },
                     "energyCost": 0.3,
                     "stabilityImpact": 4,
                     "corruptionImpact": -3,
@@ -39,7 +42,9 @@
                 },
                 {
                     "text": "¿Y la libreta?",
-                    "if": { "libreta": "requisada" },
+                    "if": {
+                        "libreta": "requisada"
+                    },
                     "energyCost": 0.2,
                     "stabilityImpact": 2,
                     "corruptionImpact": -1,
@@ -47,7 +52,9 @@
                 },
                 {
                     "text": "Las tres y diecisiete. Mi registro también lo tiene.",
-                    "if": { "aviso_317": "anotado" },
+                    "if": {
+                        "aviso_317": "anotado"
+                    },
                     "energyCost": 0.3,
                     "stabilityImpact": 4,
                     "corruptionImpact": -3,
@@ -55,7 +62,9 @@
                 },
                 {
                     "text": "Kamin, A. Geólogo. Fallecido en servicio hace quince años.",
-                    "if": { "kamin_expediente": "leido" },
+                    "if": {
+                        "kamin_expediente": "leido"
+                    },
                     "energyCost": 0.3,
                     "stabilityImpact": 5,
                     "corruptionImpact": -4,
@@ -74,7 +83,9 @@
             "id": "DLG_P4_ESTATICA_317",
             "minStep": 10,
             "maxStep": 10,
-            "requires": { "aviso_317": "anotado" },
+            "requires": {
+                "aviso_317": "anotado"
+            },
             "speaker": "REGISTRO 03:17",
             "text": "*03:17. Reinicio no programado. El parte que firmaste sigue abierto en la bandeja. Durante un parpadeo, el panel no da cifras.* 'NO ABRAS'.",
             "options": [
@@ -89,6 +100,7 @@
         },
         {
             "id": "DLG_P4_LEINA_CERTEZA",
+            "priority": true,
             "minStep": 10,
             "maxStep": 10,
             "exclusive": false,
@@ -126,7 +138,9 @@
             "minStep": 10,
             "maxStep": 10,
             "exclusive": false,
-            "requires": { "kamin_expediente": "callado" },
+            "requires": {
+                "kamin_expediente": "callado"
+            },
             "npcTraits": {
                 "id": "LEINA",
                 "type": "TÉCNICO"
@@ -250,6 +264,7 @@
         },
         {
             "id": "DLG_P4_BEREN",
+            "priority": true,
             "minStep": 10,
             "maxStep": 10,
             "exclusive": false,
@@ -277,6 +292,7 @@
         },
         {
             "id": "DLG_P4_MAREK",
+            "priority": true,
             "minStep": 10,
             "maxStep": 10,
             "npcTraits": {
@@ -291,7 +307,9 @@
             "options": [
                 {
                     "text": "*Lees la ficha en voz alta: fotografía generada, plantilla del bloque 4-C, estabilizador familiar, lote 118.*",
-                    "set": { "marek": "lote" },
+                    "set": {
+                        "marek": "lote"
+                    },
                     "energyCost": 0.3,
                     "stabilityImpact": -4,
                     "corruptionImpact": 4,
@@ -299,7 +317,9 @@
                 },
                 {
                     "text": "*Le dices que aparece. Ficha completa, certificado de defunción.*",
-                    "set": { "marek": "existio" },
+                    "set": {
+                        "marek": "existio"
+                    },
                     "energyCost": 0.2,
                     "stabilityImpact": 3,
                     "corruptionImpact": -1,
@@ -343,6 +363,7 @@
         },
         {
             "id": "DLG_P4_MAREN_KALL",
+            "priority": true,
             "minStep": 10,
             "maxStep": 10,
             "exclusive": false,
@@ -500,7 +521,9 @@
             "minStep": 13,
             "maxStep": 13,
             "exclusive": false,
-            "requires": { "marek": "lote" },
+            "requires": {
+                "marek": "lote"
+            },
             "npcTraits": {
                 "id": "MADRE DE MAREK",
                 "type": "HUMANO"
@@ -528,7 +551,9 @@
             "minStep": 13,
             "maxStep": 13,
             "exclusive": false,
-            "requires": { "marek": "existio" },
+            "requires": {
+                "marek": "existio"
+            },
             "npcTraits": {
                 "id": "MADRE DE MAREK",
                 "type": "HUMANO"

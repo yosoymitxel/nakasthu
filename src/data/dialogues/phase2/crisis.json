@@ -258,6 +258,7 @@
         },
         {
             "id": "DLG_P2_SERIN_LIBRETA",
+            "priority": true,
             "minStep": 6,
             "maxStep": 6,
             "requires": {
@@ -291,6 +292,7 @@
         },
         {
             "id": "DLG_P2_ESTATICA_317",
+            "priority": true,
             "minStep": 6,
             "maxStep": 8,
             "requires": {
@@ -311,6 +313,7 @@
         },
         {
             "id": "DLG_P2_BEL_OSTRAN",
+            "priority": true,
             "minStep": 6,
             "maxStep": 6,
             "npcTraits": {
@@ -345,6 +348,7 @@
         },
         {
             "id": "DLG_P2_MINERO_FACTURA",
+            "priority": true,
             "minStep": 6,
             "maxStep": 6,
             "npcTraits": {
@@ -386,6 +390,7 @@
         },
         {
             "id": "DLG_P2_OVID",
+            "priority": true,
             "minStep": 6,
             "maxStep": 6,
             "npcTraits": {
