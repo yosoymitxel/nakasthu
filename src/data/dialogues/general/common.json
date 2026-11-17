@@ -2,46 +2,46 @@
     "dialogues": [
         {
             "id": "DLG_COMM_ATMOS_01",
-            "minStep": 1,
-            "maxStep": 12,
-            "text": "*El sujeto exhala un vaho que se congela instantáneamente en el aire de la cámara, a pesar de que la temperatura es de 22°C.* '¿Sientes ese sabor metálico? Es el sabor de los soles gemelos'.",
+            "minStep": 4,
+            "maxStep": 10,
+            "text": "*El sujeto exhala un vaho que se condensa en el aire de la cámara, aunque la temperatura es de 22 °C.* '¿Notas ese sabor a metal? Como las monedas que te ponían bajo la lengua en los días de hambre'.",
             "options": [
                 {
-                    "text": "¿Cómo es posible que tu temperatura interna esté cayendo por debajo de los niveles biológicos sin entrar en shock hipovolémico?",
+                    "text": "¿Cómo es posible que tu temperatura interna esté cayendo por debajo de los niveles biológicos sin entrar en shock?",
                     "energyCost": 0.2,
                     "stabilityImpact": -1,
                     "loreUnlock": "LORE_ZHYR_TEMP",
-                    "consequence": "'Mi cuerpo recuerda el frío de la noche en el cañón de Zhyr. El shock es una reacción humana; yo ya no soy solo humano, operador'."
+                    "consequence": "'No lo sé. Empezó en los dedos y sube un poco cada noche'. *Te enseña la pared de la celda: cuatro rayas hechas con la uña.* 'Lo apunto. Por si alguien pregunta'."
                 }
             ]
         },
         {
             "id": "DLG_COMM_ATMOS_02",
-            "minStep": 1,
-            "maxStep": 12,
-            "text": "*El escáner detecta una vibración de 14Hz proveniente del esternón del sujeto. No es un latido, es una frecuencia de radio antigua que emite estática constante.* 'Escucha. La Tierra se está desgarrando'.",
+            "minStep": 8,
+            "maxStep": 10,
+            "text": "*El escáner registra un pulso en el pecho del sujeto. Uno cada diez segundos.* 'Algo en el esternón late una vez cada diez segundos. No es un corazón'.",
             "options": [
                 {
-                    "text": "Estoy intentando aislar la señal de 14Hz. ¿Es una transmisión de la Orden o algo más profundo?",
+                    "text": "Voy a aislar ese pulso. ¿Desde cuándo lo tienes?",
                     "energyCost": 0.4,
                     "stabilityImpact": -2,
-                    "loreUnlock": "LORE_EARTH_SCREAM",
-                    "consequence": "*La señal se aclara un segundo. Una voz lejana y distorsionada:* '...la arena está en los conductos de ventilación de Itzinol... no hay salida...'"
+                    "loreUnlock": "LORE_HEART_SYNC",
+                    "consequence": "*Cuenta en voz baja hasta diez. El escáner marca el pulso en el diez.* 'Desde la primera vez que fui a escuchar a Kamin. Él tiene el mismo. Dice que no hay que tenerle miedo'."
                 }
             ]
         },
         {
             "id": "DLG_COMM_ATMOS_03",
-            "minStep": 1,
-            "maxStep": 12,
-            "text": "*El sujeto te mira directamente a través del sensor de la cámara. Sus ojos parecen ser dos agujeros que dan al vacío absoluto.* '¿Sabes por qué NAKASTHU te eligió a ti? Porque eres el único que no aparta la mirada cuando el abismo parpadea'.",
+            "minStep": 4,
+            "maxStep": 6,
+            "text": "*El sujeto mira directamente al sensor de la cámara.* '¿Cuánto llevas en esta consola? Yo llevaba diecinueve años en la Custodia y sé que preguntar por un fallo es recordarle a alguien que existes'.",
             "options": [
                 {
                     "text": "NAKASTHU me eligió por mi eficiencia en el procesamiento de reasignaciones. Nada más.",
                     "energyCost": 0.2,
                     "stabilityImpact": 20,
                     "loreUnlock": "LORE_PROTOCOL_SLAVE",
-                    "consequence": "'Eficiencia... qué palabra tan ruidosa. Te eligió porque tu alma tiene la misma grieta que el cielo de Zhyr. Solo era cuestión de tiempo que nos encontráramos'."
+                    "consequence": "'Eficiencia. Eso ponía también en mi ficha'. *Se encoge de hombros.* 'Diecinueve años sin preguntar. Y aquí me tienes, en la silla de enfrente'."
                 }
             ]
         }

@@ -8,17 +8,14 @@
         "general/interrogations.json"
     ],
     "flags": {
-        "vargas_fuerza": [
-            "letal",
-            "contencion"
-        ],
-        "agua_norte": [
-            "sellada",
-            "forzada"
-        ],
-        "elara_contacto": [
-            "confia",
-            "desconfia"
-        ]
+        "vargas_fuerza": ["letal", "contencion"],
+        "agua_norte": ["sellada", "forzada"],
+        "elara_contacto": ["confia", "desconfia"],
+        "libreta": ["guardada", "requisada"],
+        "aviso_317": ["anotado", "borrado"],
+        "leina_palabra": ["escuchada", "descartada"],
+        "lichesth": ["fue", "no_fue"],
+        "kamin_expediente": ["leido", "callado"],
+        "marek": ["lote", "existio"]
     }
 }

@@ -107,22 +107,22 @@ export const CONFIG = {
     UI: {
         NARRATIVE_FRAGMENTS: {
             drexler: [
-                '"La distracción es un lujo que no podemos permitirnos. Cada sujeto procesado es un paso hacia la estabilidad." — Orval Drexler',
+                '"Nadie miente gratis; sale caro." — Orval Drexler',
                 '"El monolito es la clave, y Talok lo reclamará antes que nadie. No habrá interferencias." — Orval Drexler',
-                '"El caos es útil. Deja que griten, que se desahoguen. Cuando estén cansados, vendrán a nosotros." — Orval Drexler',
-                '"No subestimen a Kamin. Es más que un fanático. Sabe manipular a las masas." — Orval Drexler'
+                '"El caos es útil. Que griten. Que se cansen. Cuando estén cansados vendrán a pedirnos orden." — Orval Drexler',
+                '"Este hombre está juntando más gente de la que podemos permitirle." — Orval Drexler'
             ],
             kamin: [
-                '"El portal no es solo una puerta; es un espejo. Nos refleja lo que hemos ignorado." — Kamin, Mensajero de Aitor',
-                '"La verdad siempre cuesta caro. Pero vale la pena pagar el precio." — Kamin',
-                '"Nos han mentido durante meses. La respuesta no está en sus tecnologías vacías." — Kamin',
-                '"Hay algo allí. Observándonos. El Renacimiento está cerca." — Kamin'
+                '"Hay una puerta. Y del otro lado está la gente que perdimos." — Kamin',
+                '"La verdad siempre cuesta caro. Pero se paga." — Kamin',
+                '"Abrirla no es gratis. Requiere trabajo, requiere fe y requiere que alguien pague la diferencia." — Kamin',
+                '"Cobraba doce créditos por sesión. Si quieren la lista de los sitios donde estafé a gente, se la doy entera." — Kamin'
             ],
             sistema: [
                 '>>> ALERTA: Desviación detectada en patrones neurales de la población.',
                 '>>> INFORME: Protestas en aumento. Índice de estabilidad: CRÍTICO.',
-                '>>> REGISTRO: Sujeto #7 presenta anomalías incompatibles con protocolo estándar.',
-                '>>> ADVERTENCIA: Interferencia del Eidolon detectada en subsistema de decisiones.'
+                '>>> REGISTRO: Reinicio no programado a las 03:17. Causa: sin determinar.',
+                '>>> REGISTRO: Reasignaciones del trimestre: 412.000. Retorno previsto: ninguno.'
             ]
         },
         AREA_TO_MODULE: {

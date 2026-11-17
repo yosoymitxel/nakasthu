@@ -9,6 +9,7 @@ import { state } from '../../../core/State.js';
 import { gameSequencer } from '../../../systems/GameSequencer.js';
 import { STEPS_CONFIG } from '../../../data/stepsConfig.js';
 import { factionSystem } from '../../../systems/FactionSystem.js';
+import { narrativeFlags } from '../../../systems/NarrativeFlags.js';
 
 import { Icon } from '../../shared/Icon.js';
 const { useState, useEffect, memo } = React;
@@ -26,7 +27,7 @@ export const CinematicScreen = memo(({ config }) => {
         const endings = STEPS_CONFIG[12]?.meta?.endings;
         const faction = endingFaction || factionSystem.getDominance();
         tone = endings[faction] ? `cine-${faction}` : 'cine-orden';
-        pages = (endings[faction] || endings.orden).pages;
+        pages = (endings[faction] || endings.orden).pages.filter(p => narrativeFlags.matches(p.if));
     }
     const current = pages[Math.min(page, pages.length - 1)];
     const content = current.text;

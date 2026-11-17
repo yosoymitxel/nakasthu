@@ -177,17 +177,17 @@ export const processCommand = (input) => {
         return formatTerminalResponse(
             isSectarian
                 ? "[GÉNESIS_ZHYR] Zhyr: Tierra Prometida. El Monolito es la llave. Los símbolos son el lenguaje de Dios, grabado en nuestra esencia."
-                : "[ZH_HISTORY] Zhyr: Planeta de clase X-9. Descubierto por la Orden. El Monolito no es nativo. Los símbolos en su superficie son un mapa de la red neural humana.",
+                : "[ZH_HISTORY] Zhyr: planeta de clase X-9. Explorado por la Custodia. Archivado «sin interés» hace quince años; desarchivado cuatro meses antes del tercio, con firma de sección. El monolito no es nativo.",
             isSectarian ? 'success' : 'INFO'
         );
     }
 
     if (effectiveCmd === '/kamin-intel') {
-        if (!state.unlockedCommands?.includes('KAMIN_INTEL')) return formatTerminalResponse(isSectarian ? "ERROR: NO HAS SIDO LLAMADO POR EL MENSAJERO." : "ERROR: ACCESO DENEGADO.", 'error');
+        if (!state.unlockedCommands?.includes('KAMIN_INTEL')) return formatTerminalResponse(isSectarian ? "ERROR: TU NOMBRE NO ESTÁ EN LA LISTA." : "ERROR: ACCESO DENEGADO.", 'error');
         return formatTerminalResponse(
             isSectarian
-                ? "[SUSURROS_KAMIN] El Mensajero ha cruzado el Velo. Sus seguidores llevan la marca sagrada. El Bastión es ahora el centro de la Comunión."
-                : "[INTEL_KAMIN] El Mensajero afirma haber cruzado. Informes de infiltrados sugieren que sus seguidores están grabando símbolos en su piel. El Bastión se está convirtiendo en un templo.",
+                ? "[SUSURROS_KAMIN] Kamin no levanta la voz. Abrirla no es gratis: alguien paga la diferencia. En el pasillo central del Bastión, la lista de a quién buscamos ocupa dos paredes."
+                : "[INTEL_KAMIN] Kamin, A. Geólogo de campo, grado dos. Expedición a Zhyr. Fallecido en servicio hace quince años. Restos no recuperados. Tres infiltrados en el Bastión: mil doscientos devotos en dos meses.",
             isSectarian ? 'success' : 'INFO'
         );
     }

@@ -8,6 +8,7 @@ import { useGameState } from '../../hooks/useGameState.js';
 import { bus } from '../../../core/Bus.js';
 import { gameSequencer } from '../../../systems/GameSequencer.js';
 import { calculateJudgmentRecommendation } from '../../../utils/gameplayUtils.js';
+import { narrativeFlags } from '../../../systems/NarrativeFlags.js';
 
 const { memo, useState, useEffect } = React;
 
@@ -28,6 +29,13 @@ export const MechanicScreen = memo(({ config }) => {
     if (config.meta?.dualChoice) {
         const { leftOption, rightOption } = config.meta;
         const recommendation = calculateJudgmentRecommendation();
+        // Las marcas ya no cambian en el paso 11: leerlas una vez al pintar basta.
+        const echoes = (opt) => (opt.echoes || []).filter(e => narrativeFlags.matches(e.if));
+        const sideText = (opt) => html`
+            <p className="text-xs text-zinc-400 max-w-xs leading-relaxed font-mono">${opt.quote}</p>
+            <p className="text-[11px] text-zinc-500 max-w-xs leading-relaxed font-mono uppercase">${opt.price}</p>
+            ${echoes(opt).map(e => html`<p key=${e.text} className="text-[11px] text-zinc-600 max-w-xs leading-relaxed font-mono">${e.text}</p>`)}
+        `;
 
         return html`
             <div className="mechanic-screen fixed inset-0 bg-black/75 flex items-center justify-center z-[450] p-3 sm:p-8 overflow-y-auto">
@@ -39,45 +47,41 @@ export const MechanicScreen = memo(({ config }) => {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-8 w-full" style=${{ minHeight: 'min(46vh, 420px)' }}>
-                        <!-- Lado Izquierdo: ORDEN (Leina) -->
+                        <!-- Lado Izquierdo: cerrar (final 'orden') -->
                         <div 
                             className=${`relative border border-cyan-900/40 bg-cyan-950/5 p-4 pt-8 sm:p-8 flex flex-col items-center justify-center gap-4 sm:gap-8 transition-all hover:bg-cyan-950/10 ${judgmentChoice === 'orden' ? 'ring-2 ring-cyan-500' : ''}`}
                             onClick=${() => setJudgmentChoice('orden')}
                         >
-                            <div className="absolute top-4 left-4 text-[10px] text-cyan-600 font-bold tracking-widest uppercase">FACCIÓN: ORDEN</div>
+                            <div className="absolute top-4 left-4 text-[10px] text-cyan-600 font-bold tracking-widest uppercase">${leftOption.tag}</div>
                             <div className="text-cyan-500 text-center space-y-4">
                                 <h3 className="text-2xl font-black tracking-widest">${leftOption.name}</h3>
-                                <p className="text-xs text-zinc-500 max-w-xs leading-relaxed font-mono">
-                                    "La estabilidad es la única forma de salvar lo que queda. Cierra la brecha, Operador. Protege el mundo real."
-                                </p>
+                                ${sideText(leftOption)}
                             </div>
                             
                             <button 
                                 onClick=${(e) => { e.stopPropagation(); handleFinalJudgment('orden'); }}
                                 className="px-8 py-3 bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 text-xs font-black uppercase tracking-[0.3em] hover:bg-cyan-500 hover:text-black transition-all"
                             >
-                                EJECUTAR SENTENCIA
+                                ${leftOption.action}
                             </button>
                         </div>
 
-                        <!-- Lado Derecho: CAOS (Kamin) -->
+                        <!-- Lado Derecho: ampliar (final 'caos') -->
                         <div 
                             className=${`relative border border-purple-900/40 bg-purple-950/5 p-4 pt-8 sm:p-8 flex flex-col items-center justify-center gap-4 sm:gap-8 transition-all hover:bg-purple-950/10 ${judgmentChoice === 'caos' ? 'ring-2 ring-purple-500' : ''}`}
                             onClick=${() => setJudgmentChoice('caos')}
                         >
-                            <div className="absolute top-4 right-4 text-[10px] text-purple-600 font-bold tracking-widest uppercase text-right">FACCIÓN: CAOS</div>
+                            <div className="absolute top-4 right-4 text-[10px] text-purple-600 font-bold tracking-widest uppercase text-right">${rightOption.tag}</div>
                             <div className="text-purple-500 text-center space-y-4">
                                 <h3 className="text-2xl font-black tracking-widest">${rightOption.name}</h3>
-                                <p className="text-xs text-zinc-500 max-w-xs leading-relaxed font-mono">
-                                    "El renacimiento exige sacrificio. Trasciende los límites de la carne. Deja que las sombras nos consuman."
-                                </p>
+                                ${sideText(rightOption)}
                             </div>
 
                             <button 
                                 onClick=${(e) => { e.stopPropagation(); handleFinalJudgment('caos'); }}
                                 className="px-8 py-3 bg-purple-900/20 border border-purple-500/50 text-purple-400 text-xs font-black uppercase tracking-[0.3em] hover:bg-purple-500 hover:text-black transition-all"
                             >
-                                ABRAZAR EL VACÍO
+                                ${rightOption.action}
                             </button>
                         </div>
                     </div>

@@ -207,7 +207,7 @@ const drawLoreCharacter = (ctx, loreKey, r, p) => {
     }
 
     if (key === 'KAMIN') {
-        // --- KAMIN: Profeta de la Orden de los Vínculos con capucha litúrgica púrpura ---
+        // --- KAMIN: fundador de la Orden del Renacimiento Lumínico, capucha litúrgica púrpura ---
         // Torso: Vestidura sacerdotal púrpura real con bordado ceremonial de oro
         r('#2e1065', 2, 13, 12, 7);
         r('#3b0764', 3, 14, 10, 6);

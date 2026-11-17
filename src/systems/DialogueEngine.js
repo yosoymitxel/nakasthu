@@ -16,6 +16,15 @@ export const isExclusive = (dialogue) => dialogue?.exclusive !== false;
 // Opciones visibles según lo que el operador decidió antes (`if`).
 const visibleOptions = (options = []) => options.filter(o => narrativeFlags.matches(o.if));
 
+// Kamin entra en la cola del paso 6 con su identidad: un diálogo con `npcTraits` de otro personaje
+// lo convertía en ese otro. `forEntity` reserva un diálogo para un sujeto concreto.
+const fitsEntity = (dialogue, entity) => {
+    if (dialogue.forEntity) return dialogue.forEntity === entity?.id;
+    if (entity?.id !== 'KAMIN') return true;
+    const npcId = String(dialogue.npcTraits?.id || '').toUpperCase();
+    return !npcId || npcId.includes('KAMIN');
+};
+
 /**
  * Quién habla, explícito en los datos: `speaker` de la opción o del diálogo, si no el NPC
  * del diálogo y, en último caso, el sujeto en cámara. La UI pone su etiqueta genérica si es null.
@@ -96,7 +105,7 @@ class DialogueEngine {
         if (this.dialogues.length === 0) return;
 
         const currentStep = state.currentStep || 1;
-        const eligible = this.dialogues.filter(d => narrativeFlags.matches(d.requires));
+        const eligible = this.dialogues.filter(d => narrativeFlags.matches(d.requires) && fitsEntity(d, state.currentEntity));
         if (eligible.length === 0) return;
 
         // 1. Filtrar diálogos por el paso actual (minStep/maxStep)
@@ -123,6 +132,10 @@ class DialogueEngine {
 
         // 4. Fallback final: Si aún así no hay nada, usar todo el pool disponible
         if (unusedPool.length === 0) unusedPool = pool.length > 0 ? pool : eligible;
+
+        // Las anclas de cada hilo (`priority`) y los diálogos reservados al sujeto salen antes que el resto
+        const anchors = unusedPool.filter(d => d.priority || d.forEntity);
+        if (anchors.length) unusedPool = anchors;
 
         const randomIndex = Math.floor(Math.random() * unusedPool.length);
         this.startDialogue(unusedPool[randomIndex]);

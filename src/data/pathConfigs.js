@@ -230,7 +230,7 @@ export const PATH_CONFIGS = {
             },
             sacrifice: {
                 success: '[SACRIFICIO] OFRENDA ACEPTADA: LAS ALMAS FLUYEN.',
-                fail: '[BLASFEMIA] SACRIFICIO ERRÓNEO: LA IRA DE AITOR SE SIENTE.'
+                fail: '[BLASFEMIA] SACRIFICIO ERRÓNEO: LA PUERTA NO LO ACEPTA.'
             }
         },
         operations: {
@@ -294,7 +294,7 @@ export const PATH_CONFIGS = {
             manualQuote: '"La fe es el único velo contra la mentira de Drexler. No cuestione. No dude. Solo purifique."',
             skipTutorialMsg: '[RITUAL] INDUCCIÓN ABORTADA. PROCEDIENDO A LA COMUNIÓN.',
             manual: {
-                objective: { label: 'DOGMA:', text: 'Separar el trigo de la paja. La Nakara revela la verdad a través del Altar de Examen.' },
+                objective: { label: 'DOGMA:', text: 'Separar el trigo de la paja. El nakara revela la verdad a través del Altar de Examen.' },
                 sacrifice: { label: 'PURGAR:', text: 'Libera almas corruptas por Kamin para alimentar el fuego (+30 Energía). Error en devoto: -25 Estabilidad.' },
                 authorize: { label: 'CONSAGRAR:', text: 'Permite la ascensión de devotos puros (+10 Estabilidad, -10 Energía). Error en corrupto: -30 Estabilidad.' },
                 resonance: { label: 'ARMONÍA:', text: 'Unifique las almas en disonancia con la vibración del Velo para recuperar la paz espiritual.' },
