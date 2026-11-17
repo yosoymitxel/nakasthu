@@ -5,7 +5,7 @@
         "LORE_KAEL_REPORT": "Kael no tocó la piedra. Tocó la arena, con la izquierda. Lo repitió en cada sesión de los cuatro días de interrogatorio; el informe salió «inconcluso».",
         "LORE_DRON_VOICE": "Piedad no se apagó de golpe. Los sensores se apagaron en orden, de atrás hacia delante, y el dron cayó entero junto a la piedra. El registro lo guarda con fecha y sin causa.",
         "LORE_DEYAR_FEAR": "Deyar fue el primero en escribir en un informe que aquello no se podía medir. La Custodia archivó el informe. Meses después lo citó para justificar las reasignaciones.",
-        "LORE_ALEXIA_TOUCH": "El tercer día apareció la piedra. Alexia se acercó como quien llega a una cita y la tocó. Hubo un destello blanco sin ruido y después nada: ni sangre ni restos. Kael pasó la noche de rodillas en la arena donde había estado.",
+        "LORE_ALEXIA_TOUCH": "El tercer día apareció la piedra. Alexia se acercó sin miedo, con la cara de quien llega a una cita, y la tocó. Hubo un destello blanco sin ruido y después nada: ni sangre ni restos.",
         "LORE_ZHYR_ANATOMY": "Las muestras del cañón se ablandan al calentarlas, como cartílago. La masa del monolito dio tres valores en tres tomas con el mismo instrumento. Nadie repitió la medición.",
         "LORE_ALEXIA_PREMONITION": "Antes de la expedición, Alexia llenó un cuaderno con diagramas de una red que cubría el planeta. En el margen de la última página había escrito: 'nos recuerda'.",
         "LORE_MONOLITH_DESCRIPTION": "Ninguna cámara enfoca el Monolito. Los que lo miran de frente describen formas distintas, y casi siempre algo de su propia casa.",
@@ -27,7 +27,7 @@
         "LORE_TALOK_AMBITION": "Orval Drexler no quiere más poder en Talok. Quiere ser el primero en cruzar a Zhyr sin perder el nombre.",
         "LORE_ORVAL_SECRET": "Orval Drexler guarda un fragmento del Monolito en el cajón de su despacho. Lo saca a las tres de la mañana, le hace preguntas en voz baja y anota las respuestas en un cuaderno que nunca sale de Talok.",
         "LORE_NEURAL_RESONANCE": "NAKASTHU sintoniza el cerebro del operador con la agonía de Zhyr para procesar biomasa.",
-        "LORE_ALEXIA_VISION": "En la libreta, Alexia dibujó el monolito tres veces. Dibujaba fatal. Debajo del tercero escribió: «Es como si este planeta nos invitara a algo que no queremos encontrar».",
+        "LORE_ALEXIA_VISION": "En el cañón, Alexia dijo: «Es como si este planeta nos invitara a algo que no queremos encontrar». Escribía en papel mientras el traje grababa. «El registro guarda lo que mide el traje. Yo apunto lo que me parece.»",
         "LORE_PORTAL_FUTURE": "El Portal no lleva a otro sitio. Según los cálculos de Leina, lleva a otro desenlace: el mismo mundo, más adelante y peor.",
         "--- FASE 3: EL GRAN DESVÍO ---": "Un tercio de la población dejó de estar en cuatro días.",
         "LORE_TECH_MODS": "Los implantes de la Custodia siguen funcionando en los que vuelven por el portal. Lo único que cambia es el residuo negro bajo las uñas: da tres análisis distintos.",
@@ -85,7 +85,7 @@
         "LORE_KAMIN_EXPEDIENTE": "Expediente de la Directiva: Kamin, A. Geólogo de campo, grado dos. Expedición de prospección a Zhyr. Fallecido en servicio. Restos no recuperados. Hace quince años.",
         "LORE_TXACUL": "Anexo sin autorizar al expediente de Zhyr: los Txacul habitaron el planeta hace cincuenta mil años. No dejaron restos óseos, ni necrópolis, ni escombros. Solo el monolito. Lo escribió alguien que tenía miedo.",
         "LORE_PUREZA": "Proyecto Pureza: escritura de memoria a escala de población. Infancias, hermanos, duelos con fecha y aniversario. Un veintiséis por ciento de las seis Distribuciones recuerda a un familiar que nunca existió. Once mil rostros usados más de una vez.",
-        "LORE_GALERIA_SIETE": "La galería siete de Prisiat no sale en ningún mapa. Se cerró con un informe que firmó Leina Karst junto a otros once, sin leer ninguno. Tres meses después se cayó.",
+        "LORE_GALERIA_SIETE": "La galería siete de Prisiat no sale en ningún mapa. Hace ocho años Leina Karst tenía doce informes en la mesa y los selló todos sin leer ninguno. Uno era el de la galería. Tres meses después, la galería se cayó.",
         "LORE_LOS_46": "En dos días salieron cuarenta y seis. Sin heridas, sin hambre, sin sed. A la pregunta de qué había al otro lado: que estaban esperando, que estaba tranquilo, que allí no faltaba nada. Ninguno describió un lugar.",
         "LORE_TRATADOS": "Hace cuarenta años que hay contacto. Tres tratados firmados, con una cláusula común que nadie de la Tierra pudo negociar: la humanidad figura como parte «de capacidad limitada»."
     }
