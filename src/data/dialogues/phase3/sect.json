@@ -24,6 +24,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": -2,
                     "corruptionImpact": 4,
+                    "loreUnlock": "LORE_KAMIN_ORIGIN",
                     "consequence": "*No se inmuta. Se pasa la mano por la nuca.* 'Cobraba. Doce créditos por sesión. Si quiere la lista de los sitios donde he estafado a gente, se la doy entera y con fechas'."
                 },
                 {
@@ -31,6 +32,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": -2,
                     "corruptionImpact": 5,
+                    "loreUnlock": "LORE_MESSENGER",
                     "consequence": "'La verdad siempre cuesta caro. Pero se paga'."
                 }
             ]
@@ -62,6 +64,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": 3,
                     "corruptionImpact": -2,
+                    "loreUnlock": "LORE_KAMIN_ESPEJO",
                     "consequence": "*Sigue exactamente donde lo había dejado, con el mismo tono.* 'Mañana es un día importante'."
                 }
             ]
@@ -112,6 +115,7 @@
                             "energyCost": 0.3,
                             "stabilityImpact": -2,
                             "corruptionImpact": 4,
+                            "loreUnlock": "LORE_PUREZA",
                             "consequence": "'Ochocientos gigas. Un proyecto que se llama Pureza. No borra memorias, las escribe. Una infancia, un duelo, un hijo que nunca existió. Margen de error aceptado, cuatro por ciento. Hay una nota al pie sobre qué hacer con ese cuatro por ciento'."
                         }
                     ]
@@ -167,6 +171,7 @@
                     "energyCost": 0.3,
                     "stabilityImpact": -2,
                     "corruptionImpact": 5,
+                    "loreUnlock": "LORE_AITOR_FATE",
                     "consequence": "'Todo el pórtico. Alguien de atrás dijo la palabra en voz alta. Después la dijeron cuatro más. Kamin esperó a que terminaran y siguió hablando'."
                 },
                 {
@@ -264,6 +269,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": 2,
                     "corruptionImpact": -1,
+                    "loreUnlock": "LORE_OS_ORIGIN_TWIST",
                     "consequence": "*Se ajusta la insignia.* 'He ascendido dos veces'."
                 }
             ]
@@ -391,6 +397,7 @@
                     "energyCost": 0.3,
                     "stabilityImpact": -2,
                     "corruptionImpact": 5,
+                    "loreUnlock": "LORE_SECT_HACK",
                     "consequence": "*Ciento doce nombres. El último está escrito con otra letra, más pequeña, sin apellido.*"
                 },
                 {
@@ -444,6 +451,7 @@
                     "energyCost": 0.3,
                     "stabilityImpact": 3,
                     "corruptionImpact": 0,
+                    "loreUnlock": "LORE_TALOK_AMBITION",
                     "consequence": "'Cuarenta años pidiendo asiento en una mesa donde nos dejan mirar. Para que se sienten'."
                 },
                 {

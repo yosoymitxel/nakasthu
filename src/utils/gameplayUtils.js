@@ -5,17 +5,30 @@
 import { state } from '../core/State.js';
 import { factionSystem } from '../systems/FactionSystem.js';
 import { CONFIG } from '../data/gameConfig.js';
+import { STEPS_CONFIG } from '../data/stepsConfig.js';
+import { narrativeFlags } from '../systems/NarrativeFlags.js';
+
+// Los ecos del paso 11 son el mapa marca → lado: cada eco cumplido inclina la balanza hacia su opción.
+const matchedEchoes = (opt) => (opt?.echoes || []).filter(e => narrativeFlags.matches(e.if)).length;
 
 /**
- * Calcula la recomendación del sistema para el Juicio Final basada en reclutamiento.
+ * Calcula la recomendación del sistema para el Juicio Final: facción acumulada + marcas de diálogo.
  */
 export const calculateJudgmentRecommendation = () => {
     // Los contadores de reclutas se reinician en cada paso; la facción acumula toda la partida
-    const techScore = (factionSystem.alignments.ORDEN / (CONFIG.JUDGMENT?.MAX_TECH || 10)) * 100;
-    const faithScore = (factionSystem.alignments.CAOS / (CONFIG.JUDGMENT?.MAX_FAITH || 10)) * 100;
+    const { leftOption, rightOption } = STEPS_CONFIG[11]?.meta || {};
+    const echoPoints = CONFIG.JUDGMENT?.ECHO_POINTS ?? 0;
+    const techBonus = matchedEchoes(leftOption) * echoPoints;
+    const faithBonus = matchedEchoes(rightOption) * echoPoints;
 
-    const weightedTech = techScore * (CONFIG.JUDGMENT?.WEIGHT_TECH || 0.6);
-    const weightedFaith = faithScore * (CONFIG.JUDGMENT?.WEIGHT_FAITH || 0.4);
+    const techBase = (factionSystem.alignments.ORDEN / (CONFIG.JUDGMENT?.MAX_TECH || 10)) * 100;
+    const faithBase = (factionSystem.alignments.CAOS / (CONFIG.JUDGMENT?.MAX_FAITH || 10)) * 100;
+    const techScore = techBase + techBonus;
+    const faithScore = faithBase + faithBonus;
+
+    // El bonus va fuera de la ponderación para que una marca pese lo mismo hacia cualquier lado.
+    const weightedTech = techBase * (CONFIG.JUDGMENT?.WEIGHT_TECH || 0.6) + techBonus;
+    const weightedFaith = faithBase * (CONFIG.JUDGMENT?.WEIGHT_FAITH || 0.4) + faithBonus;
 
     return {
         techPercentage: Math.min(100, Math.round(techScore)),

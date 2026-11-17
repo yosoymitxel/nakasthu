@@ -181,7 +181,6 @@
                     "text": "¿Llegaste a oír lo que le dijo?",
                     "energyCost": 0.6,
                     "stabilityImpact": -8,
-                    "loreUnlock": "LORE_TALOK_AMBITION",
                     "consequence": "'Una sola palabra: «Aprobado». Le devolvió la hoja. La había leído por encima'."
                 }
             ]
@@ -509,7 +508,6 @@
                     "text": "¿Cómo sabes que son lo que queda de nosotros?",
                     "energyCost": 1,
                     "stabilityImpact": -20,
-                    "loreUnlock": "LORE_ALEXIA_VISION",
                     "consequence": "'Porque se mueven con prisa. Como quien llega tarde a casa. Todavía no saben que ya no tienen casa'."
                 }
             ]

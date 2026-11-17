@@ -28,6 +28,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": 2,
                     "corruptionImpact": -1,
+                    "loreUnlock": "LORE_ALEXIA_VISION",
                     "consequence": "*Tarda.* 'Escribía en papel. Decía que el registro guarda lo que mide el traje y que ella apuntaba lo que le parecía'. *Se mira las manos.* 'Deyar le preguntaba de qué servía. Ella decía que de nada. Que por eso lo escribía en papel'."
                 },
                 {
@@ -186,6 +187,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": 1,
                     "corruptionImpact": 0,
+                    "loreUnlock": "LORE_LOS_46",
                     "consequence": "'Ninguno. Ninguno tenía hambre ni sed. Ninguno tenía una herida'."
                 },
                 {
@@ -458,6 +460,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": -1,
                     "corruptionImpact": 3,
+                    "loreUnlock": "LORE_PROTOCOL_14",
                     "consequence": "'Dijo que no estaba preparado'. *Mira al suelo.* 'Kamin le dijo que nadie lo está. Que la pureza está en el acto'."
                 },
                 {
@@ -596,6 +599,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": -1,
                     "corruptionImpact": 2,
+                    "loreUnlock": "LORE_EARTH_SCREAM",
                     "consequence": "*En los edificios. En los vehículos. Dentro de los depósitos sellados. En los huesos. Los trajes parpadean tres veces y siguen andando.*"
                 }
             ]

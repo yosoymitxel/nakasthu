@@ -20,6 +20,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": 1,
                     "corruptionImpact": 0,
+                    "loreUnlock": "LORE_ALEXIA_TOUCH",
                     "consequence": "'No. Ella la tocó al tercer día. Yo estaba a cuatro metros. No hubo ruido'. *Cuenta algo con los dedos contra el muslo y para.*",
                     "next": [
                         {
@@ -50,6 +51,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": 1,
                     "corruptionImpact": 0,
+                    "loreUnlock": "LORE_KAEL_REPORT",
                     "consequence": "'No'. *Le sostienes la mirada nueve segundos. Él no la aparta.*",
                     "next": [
                         {
@@ -103,6 +105,7 @@
                     "energyCost": 0.1,
                     "stabilityImpact": -1,
                     "corruptionImpact": 2,
+                    "loreUnlock": "LORE_ALEXIA_BRIDGE",
                     "consequence": "*El historial guarda el reinicio. Nada más.*"
                 }
             ]
@@ -126,6 +129,7 @@
                     "energyCost": 0.1,
                     "stabilityImpact": 1,
                     "corruptionImpact": 0,
+                    "loreUnlock": "LORE_DEYAR_SKEPTICISM",
                     "consequence": "'Me han preguntado seis veces por Piedad. Que dónde está la memoria. Que por qué le puse nombre'. *Se frota el pulgar contra el índice.* 'Que le puse nombre porque estaba solo'."
                 },
                 {
@@ -133,6 +137,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": 2,
                     "corruptionImpact": -1,
+                    "loreUnlock": "LORE_DRON_VOICE",
                     "consequence": "'Se acercó tres metros. Los sensores se apagaron en orden. De atrás hacia delante. Cayó entera'. *Pausa.* 'Eso no es un fallo. Un fallo no va en orden'."
                 },
                 {
@@ -169,6 +174,7 @@
                     "energyCost": 0.1,
                     "stabilityImpact": 2,
                     "corruptionImpact": -1,
+                    "loreUnlock": "LORE_EIDOLON_DETECT",
                     "consequence": "*Firma el parte sin leerlo.* 'Eso dijo él'."
                 },
                 {

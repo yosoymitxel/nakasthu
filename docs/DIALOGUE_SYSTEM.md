@@ -64,7 +64,7 @@ Los diálogos sólo salen en los pasos de juego 4, 6, 8, 10 (y 13). Las marcas s
 
 Fuera de los JSON:
 - `priority: true` en un diálogo lo pone delante del resto del paso (anclas de cada hilo). `forEntity: "KAMIN"` lo reserva para ese sujeto; Kamin en la cola del paso 6 sólo recibe diálogos suyos o sin `npcTraits`, para no convertirse en otro personaje.
-- Paso 11 (`stepsConfig[11].meta.leftOption/rightOption`): `quote`, `price`, `action` y `echoes` (`{ if, text }`); `MechanicScreen` pinta los ecos cuyas marcas coinciden.
+- Paso 11 (`stepsConfig[11].meta.leftOption/rightOption`): `quote`, `price`, `action` y `echoes` (`{ if, text }`); `MechanicScreen` pinta los ecos cuyas marcas coinciden, y cada eco cumplido suma `CONFIG.JUDGMENT.ECHO_POINTS` a su lado en `calculateJudgmentRecommendation` (orienta, no bloquea).
 - Epílogo (`stepsConfig[12].meta.endings.*.pages`): una página con `if` sólo sale si la marca coincide.
 
 ### Verificación (`npm test`)

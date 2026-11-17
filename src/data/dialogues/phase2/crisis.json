@@ -306,6 +306,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": 3,
                     "corruptionImpact": -3,
+                    "loreUnlock": "LORE_FIRST_LINK",
                     "consequence": "*Dos líneas en la misma hoja, a la misma hora. La segunda es más larga. El panel vuelve a marcar la hora.*"
                 }
             ],
@@ -334,6 +335,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": 1,
                     "corruptionImpact": 0,
+                    "loreUnlock": "LORE_REVERSE_SIGNAL",
                     "consequence": "'Anur Vey, el del turno siguiente. Firmó una nota: «No se percibe voz humana en el segmento final. Solo portadora y ruido». Comemos juntos desde hace nueve años. Ya lo hablaremos'. *Mira el calendario.* 'El jueves me voy de vacaciones. Once días'."
                 },
                 {

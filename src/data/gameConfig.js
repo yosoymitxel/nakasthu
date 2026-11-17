@@ -95,7 +95,9 @@ export const CONFIG = {
         MAX_TECH: 16,
         MAX_FAITH: 20,
         WEIGHT_TECH: 0.7,
-        WEIGHT_FAITH: 0.3
+        WEIGHT_FAITH: 0.3,
+        // Puntos por eco del paso 11 cumplido (marcas de diálogo); orientan, no deciden.
+        ECHO_POINTS: 8
     },
     MODULES: {
         BIOSCAN: 'MOD-01',
