@@ -27,6 +27,7 @@ const PARTS = [
 ];
 const MONOLITH = [0, 26];
 const PORTAL = [-26, -20];
+const MEADOW = 300;
 const SCALE = 3; // píxeles de pantalla por píxel renderizado
 
 // Planos: la cámara va de `from` a `to` en `dur` s mirando a `look`; `tint` es la luz del núcleo.
@@ -37,7 +38,16 @@ const SHOTS = {
     riot: { from: [-20, 1.8, 16], to: [-9, 2.4, 11], look: [0, 4.5, 0], dur: 18, tint: 0xef4444 },
     messenger: { from: [-22, 2.5, 4], to: [-17, 5, -1], look: [-12, 10, -8], dur: 18, tint: 0x9333ea },
     faith: { from: [-24, 1.6, 18], to: [-19, 2.6, 15], look: [-12, 3, 8], dur: 18, tint: 0x9333ea },
-    portal: { from: [-4, 2, 2], to: [-10, 3.5, -5], look: [-26, 6, -20], dur: 20, tint: 0x9333ea }
+    portal: { from: [-4, 2, 2], to: [-10, 3.5, -5], look: [-26, 6, -20], dur: 20, tint: 0x9333ea },
+    // Epílogo: `closing` encoge el portal, `twin` alza el segundo monolito, `queue` muestra la fila,
+    // `sky` cambia cielo y niebla; la pradera vive lejos (x = MEADOW) para que la niebla oculte la base.
+    portalClose: { from: [-6, 2.5, 4], to: [-9, 3, -2], look: [-26, 6, -20], dur: 14, tint: 0x22d3ee, closing: true },
+    bastion: { from: [16, 20, 22], to: [9, 24, 10], look: [0, 0, 0], dur: 20, tint: 0x9333ea, sky: 0x0d0a14 },
+    mirror: { from: [4.5, 3, 66], to: [4.5, 4, 60], look: [4.5, 5, 26], dur: 18, tint: 0x22d3ee, twin: true, sky: 0x16303a },
+    mirrorVoid: { from: [4.5, 3, 66], to: [4.5, 4, 60], look: [4.5, 5, 26], dur: 18, tint: 0x9333ea, twin: true, sky: 0x3a1450 },
+    meadow: { from: [MEADOW - 6, 3.5, 26], to: [MEADOW - 2, 2.6, 16], look: [MEADOW, 3, -10], dur: 20, tint: 0xfbbf24, sky: 0xd9b46a },
+    meadowClose: { from: [MEADOW + 3, 1.8, 8], to: [MEADOW + 1, 1.5, 4], look: [MEADOW - 1, 1, 0], dur: 20, tint: 0xfbbf24, sky: 0xd9b46a, sink: true },
+    exodus: { from: [14, 7, 24], to: [4, 4, 10], look: [-26, 5, -20], dur: 20, tint: 0x9333ea, queue: true, sky: 0x1a0626 }
 };
 
 export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
@@ -107,6 +117,47 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
             ringLight.position.set(PORTAL[0] + 2, 6, PORTAL[1] + 2);
             scene.add(ringLight);
 
+            const twin = monolith.clone();
+            twin.position.x += 9;
+            scene.add(twin);
+
+            const flesh = new THREE.MeshLambertMaterial({ color: 0xb98272, flatShading: true });
+            const skin = [0xe8c4a8, 0xc99a7c, 0x8d5f4a, 0xf1d6c2].map(c => new THREE.MeshLambertMaterial({ color: c }));
+            const body = new THREE.CapsuleGeometry(0.32, 1.1, 2, 6);
+            const figure = (x, z, i) => {
+                const m = new THREE.Mesh(body, skin[i % skin.length]);
+                m.position.set(x, 0.85, z);
+                return m;
+            };
+
+            // Pradera dorada: colinas de carne y gente fundiéndose en parejas
+            const meadow = new THREE.Group();
+            const grass = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), new THREE.MeshLambertMaterial({ color: 0xb59a3c }));
+            grass.rotation.x = -Math.PI / 2;
+            grass.position.y = 0.01;
+            meadow.add(grass);
+            [[-20, -24, 10], [6, -30, 13], [26, -22, 9], [-34, -12, 8], [36, -8, 7]].forEach(([x, z, r]) => {
+                const hill = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 1), flesh);
+                hill.scale.y = 0.45;
+                hill.position.set(x, 0, z);
+                meadow.add(hill);
+            });
+            const sinkers = [];
+            for (let i = 0; i < 14; i++) {
+                const x = (i % 7) * 3.2 - 10 + (i > 6 ? 1.4 : 0), z = -4 - Math.floor(i / 7) * 5;
+                const a = figure(x, z, i), b = figure(x + 0.5, z, i + 1);
+                meadow.add(a, b);
+                sinkers.push(a, b);
+            }
+            meadow.position.x = MEADOW;
+            scene.add(meadow);
+
+            // Éxodo: la fila hacia el portal
+            const queue = new THREE.Group();
+            const walkers = Array.from({ length: 70 }, (_, i) => { const m = figure(0, 0, i); queue.add(m); return m; });
+            scene.add(queue);
+            const QA = [8, 16], QB = [PORTAL[0] + 3, PORTAL[1] + 3];
+
             scene.add(new THREE.HemisphereLight(0x8fa4c4, 0x16120f, 1.4));
             const rim = new THREE.DirectionalLight(0x6e9eaa, 1.1);
             rim.position.set(-20, 30, 10);
@@ -151,6 +202,23 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
                     camera.position.set(Math.sin(angle) * 34, 9 + Math.sin(angle * 3) * 1.5, Math.cos(angle) * 34);
                     camera.lookAt(0, 4, 0);
                 }
+
+                const k = s ? Math.min(1, (t - shotStart) / (s.dur * 1000)) : 0;
+                const sky = s?.sky ?? 0x07080c;
+                scene.background.setHex(sky);
+                scene.fog.color.setHex(sky);
+                ring.scale.setScalar(s?.closing ? Math.max(0.02, 1 - k * 1.2) : 1);
+                voidDisc.scale.copy(ring.scale);
+                ringLight.intensity = s?.closing ? 40 * (1 - k) : 40;
+                twin.visible = !!s?.twin;
+                twin.position.y = -6 + 11.5 * Math.min(1, k * 1.4);
+                meadow.visible = !!s?.sky && shot.startsWith('meadow');
+                for (const m of sinkers) m.position.y = s?.sink ? 0.85 - k * 1.2 : 0.85;
+                queue.visible = !!s?.queue;
+                if (queue.visible) walkers.forEach((m, i) => {
+                    const f = ((i / walkers.length) + t * 0.00002) % 1;
+                    m.position.set(QA[0] + (QB[0] - QA[0]) * f + (i % 2) * 0.7, 0.85, QA[1] + (QB[1] - QA[1]) * f);
+                });
 
                 core.color.set(s ? s.tint : (sect ? 0x9333ea : 0xff8c00));
                 core.intensity = 50 + Math.sin(t * 0.002) * 18;

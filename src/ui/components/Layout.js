@@ -289,7 +289,8 @@ export const Layout = () => {
     const isLoreArchive = gameStatus === 'LORE_ARCHIVE';
     const isPaused = state.isPaused;
     // Cinemáticas y mecánicas piden su plano de cámara a la escena 3D
-    const sceneShot = (!isStartMenu && !isGameOver && !isLoreArchive && stepConfig?.type !== 'gameplay') ? stepConfig?.shot : null;
+    const cineShot = useGameState('cineShot');
+    const sceneShot = (!isStartMenu && !isGameOver && !isLoreArchive && stepConfig?.type !== 'gameplay') ? (cineShot || stepConfig?.shot) : null;
 
     const isEnding = Boolean(deathReason && deathReason.includes('FINAL'));
 

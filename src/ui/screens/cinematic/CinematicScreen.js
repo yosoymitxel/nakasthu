@@ -5,6 +5,7 @@
  */
 import { html } from '../../utils/html.js';
 import { useGameState } from '../../hooks/useGameState.js';
+import { state } from '../../../core/State.js';
 import { gameSequencer } from '../../../systems/GameSequencer.js';
 import { STEPS_CONFIG } from '../../../data/stepsConfig.js';
 import { factionSystem } from '../../../systems/FactionSystem.js';
@@ -33,6 +34,8 @@ export const CinematicScreen = memo(({ config }) => {
     const last = page >= pages.length - 1;
 
     useEffect(() => setPage(0), [config.name, endingFaction]);
+    useEffect(() => { state.cineShot = current.shot || null; }, [current.shot]);
+    useEffect(() => () => { state.cineShot = null; }, []);
 
     useEffect(() => {
         setShown(0);

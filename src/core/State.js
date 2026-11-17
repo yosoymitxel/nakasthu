@@ -48,6 +48,7 @@ const initialState = {
     maxErrors: CONFIG.MAX_JUDGMENT_ERRORS, // Agregado para visibilidad en UI
     // Totales de la partida: sobreviven al reset de cada nivel y alimentan el informe final
     runStats: { processed: 0, errors: 0 },
+    cineShot: null, // plano 3D de la página de cinemática actual
     endingFaction: null, // 'orden' | 'caos': el epílogo sigue la elección, no la facción dominante
     unrest: 0,           // 0-100: Nivel de agitación civil
     faith: 0,            // 0-100: Nivel de herejía/devoción (storyPath 1)
