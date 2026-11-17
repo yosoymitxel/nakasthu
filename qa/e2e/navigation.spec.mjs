@@ -67,13 +67,13 @@ test.describe('E2E · navegación', () => {
         await expect(page.getByRole('button').filter({ hasText: 'PASO_07' })).toBeDisabled();
     });
 
-    test('Archivo de Lore: vacío al inicio y "Cerrar Terminal" vuelve al menú @responsive', async ({ page }, testInfo) => {
+    test('Archivo de Lore: vacío al inicio y "Cerrar" vuelve al menú @responsive', async ({ page }, testInfo) => {
         await bootGame(page);
         await page.getByRole('button', { name: 'Archivo de Lore', exact: true }).click();
         await expect(page.getByRole('heading', { name: 'Archivo de Datos Zhyr' })).toBeVisible();
         await expect(page.getByText('Sin datos fragmentados')).toBeVisible();
         await snap(page, testInfo, 'e2e-lore');
-        await page.getByRole('button', { name: /Cerrar Terminal/ }).click();
+        await page.getByRole('button', { name: /^Cerrar/ }).click();
         await home(page);
     });
 
@@ -97,7 +97,7 @@ test.describe('E2E · navegación', () => {
             await page.getByRole('button', { name: 'Expediente', exact: true }).click();
             await page.getByRole('dialog', { name: 'Expediente del operador' }).getByRole('button', { name: 'Cerrar' }).click();
             await page.getByRole('button', { name: 'Archivo de Lore', exact: true }).click();
-            await page.getByRole('button', { name: /Cerrar Terminal/ }).click();
+            await page.getByRole('button', { name: /^Cerrar/ }).click();
         }
         await home(page);
         await expect(page.locator('.modal-overlay')).toHaveCount(0);
