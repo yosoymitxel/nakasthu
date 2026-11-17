@@ -216,7 +216,7 @@ test.describe('E2E · gameplay', () => {
 
 test.describe('E2E · finales', () => {
     for (const [choice, text] of [
-        ['EJECUTAR SENTENCIA', 'Cierras el portal. La humanidad sobrevive'],
+        ['EJECUTAR SENTENCIA', 'Ejecutas la sentencia. Leina'],
         ['ABRAZAR EL VACÍO', 'Kamin empuja a Leina hacia la grieta'],
     ]) {
         test(`final "${choice}": epílogo propio y PROTOCOLOS COMPLETADOS @responsive`, async ({ page }, testInfo) => {
@@ -229,7 +229,7 @@ test.describe('E2E · finales', () => {
             await expect(epi.locator('.cine-title')).toHaveText('Epílogo');
             await epi.click();
             await expect(epi.locator('.cine-text')).toContainText(text);
-            await epi.click();
+            await advanceCinematic(page);
             await expect(page.getByRole('heading', { name: 'PROTOCOLOS COMPLETADOS' })).toBeVisible();
             await snap(page, testInfo, `e2e-final-${choice.split(' ')[0].toLowerCase()}`);
 

@@ -518,7 +518,7 @@ class GameSequencer {
      */
     setEnding(faction) {
         const endings = STEPS_CONFIG[12].meta.endings;
-        const endingText = endings[faction];
+        const endingText = endings[faction].summary;
         const runStats = state.runStats || { processed: 0, errors: 0 };
         // El límite de errores del informe final es de partida, no de nivel
         const maxErrors = Math.max(CONFIG.MAX_JUDGMENT_ERRORS, Math.ceil((runStats.processed || 0) / 5));

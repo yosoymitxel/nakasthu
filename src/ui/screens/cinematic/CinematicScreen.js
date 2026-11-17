@@ -16,16 +16,23 @@ export const CinematicScreen = memo(({ config }) => {
     const currentStep = useGameState('currentStep');
     const endingFaction = useGameState('endingFaction');
     const [shown, setShown] = useState(0);
+    const [page, setPage] = useState(0);
 
     // El epílogo no trae texto: sigue la elección final, no la facción dominante
-    let content = config.briefingText;
-    if (config.name === 'Epílogo' && !content) {
+    let pages = [{ title: config.name, text: config.briefingText || '' }];
+    let tone = '';
+    if (config.name === 'Epílogo' && !config.briefingText) {
         const endings = STEPS_CONFIG[12]?.meta?.endings;
         const faction = endingFaction || factionSystem.getDominance();
-        content = endings[faction] || endings.orden;
+        tone = endings[faction] ? `cine-${faction}` : 'cine-orden';
+        pages = (endings[faction] || endings.orden).pages;
     }
-    content = content || '';
+    const current = pages[Math.min(page, pages.length - 1)];
+    const content = current.text;
     const done = shown >= content.length;
+    const last = page >= pages.length - 1;
+
+    useEffect(() => setPage(0), [config.name, endingFaction]);
 
     useEffect(() => {
         setShown(0);
@@ -36,30 +43,34 @@ export const CinematicScreen = memo(({ config }) => {
         return () => clearInterval(timer);
     }, [content]);
 
-    // Un toque completa el texto; el siguiente avanza
-    const advance = () => (done ? gameSequencer.nextStep() : setShown(content.length));
+    // Un toque completa el texto; el siguiente pasa de página o avanza
+    const advance = () => {
+        if (!done) return setShown(content.length);
+        if (last) return gameSequencer.nextStep();
+        setPage(page + 1);
+    };
 
     useEffect(() => {
         const onKey = (e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); advance(); } };
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
-    }, [done, content]);
+    }, [done, content, last, page]);
 
     return html`
-        <div className="cinematic-screen" onClick=${advance}>
+        <div className=${`cinematic-screen ${tone} ${current.black ? 'cine-black' : ''}`} onClick=${advance}>
             <div className="cine-bar cine-top">
                 <span className="cine-seq">SECUENCIA ${String(currentStep).padStart(2, '0')}</span>
                 <span className="cine-rec"><i></i>ARCHIVO ZHYR</span>
             </div>
 
-            <h2 key=${config.name} className="cine-title">${config.name}</h2>
+            <h2 key=${current.title} className="cine-title">${current.title}</h2>
 
             <div className="cine-bar cine-bottom">
                 <p className="cine-text">
                     ${content.slice(0, shown)}${!done && html`<span className="cine-caret"></span>`}
                 </p>
                 <button className=${`cine-next ${done ? 'on' : ''}`}>
-                    ${done ? html`<span>Continuar <${Icon} name="chevron-right" /></span>` : html`<span>Saltar <${Icon} name="next" /></span>`}
+                    ${done ? html`<span>${last ? 'Continuar' : 'Siguiente'} <${Icon} name="chevron-right" /></span>` : html`<span>Saltar <${Icon} name="next" /></span>`}
                 </button>
             </div>
         </div>

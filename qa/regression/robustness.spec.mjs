@@ -3,7 +3,7 @@
  * Cada prueba fija un bug encontrado (o un riesgo plausible) para que no vuelva.
  */
 import {
-    test, expect, bootGame, SKIP_TUTORIALS, jumpToStep, startOperations, snap, scanBiometric, openPause, MENU,
+    test, expect, bootGame, SKIP_TUTORIALS, advanceCinematic, jumpToStep, startOperations, snap, scanBiometric, openPause, MENU,
 } from '../support/fixtures.mjs';
 
 const emit = (page, event, payload) => page.evaluate(async ([e, p]) => {
@@ -338,8 +338,7 @@ test.describe('REGRESIÓN · responsive @responsive', () => {
         await page.getByRole('button', { name: 'EJECUTAR SENTENCIA', exact: true }).click();
         const epi = page.locator('.cinematic-screen');
         await expect(epi.locator('.cine-title')).toHaveText('Epílogo');
-        await epi.click();
-        await epi.click();
+        await advanceCinematic(page);
         await expect(page.getByRole('heading', { name: 'PROTOCOLOS COMPLETADOS' })).toBeVisible();
         await page.getByRole('button', { name: 'Ir al Inicio' }).scrollIntoViewIfNeeded();
         await expect(page.getByRole('button', { name: 'Ir al Inicio' })).toBeInViewport();
