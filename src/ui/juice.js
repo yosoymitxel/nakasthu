@@ -4,13 +4,14 @@
  * si no cargan, todo sigue funcionando en silencio y sin animar.
  */
 import { fxReduced } from './components/FeelLayer.js';
+import { bus } from '../core/Bus.js';
 
 let zzfxMod = null;
 import('zzfx').then(m => { zzfxMod = m; }).catch(() => { /* sin red: sin sonido */ });
 
 const SOUND_KEY = 'nakasthu_sound';
 export const soundOn = () => { try { return localStorage.getItem(SOUND_KEY) !== '0'; } catch { return true; } };
-export const setSoundOn = (on) => { try { localStorage.setItem(SOUND_KEY, on ? '1' : '0'); } catch { /* sin almacenamiento */ } };
+export const setSoundOn = (on) => { try { localStorage.setItem(SOUND_KEY, on ? '1' : '0'); } catch { /* sin almacenamiento */ } bus.emit('SOUND_TOGGLE'); };
 
 // Parámetros ZzFX: [volumen, aleatoriedad, frecuencia, ataque, sostén, caída, forma, ...]
 const SFX = {

@@ -4,101 +4,82 @@
  * Regla 2.A: Vanilla JS puro.
  */
 import { bus } from './Bus.js';
+import { state } from './State.js';
+import { soundOn } from '../ui/juice.js';
+
+const MUSIC_VOLUME = 0.35;
 
 class AudioManager {
     constructor() {
         this.sounds = {};
         this.config = null;
-        this.currentAmbient = null;
+        this.buffers = {};
+        this.music = null;
+        this.musicId = null;
     }
 
     async init() {
         try {
             const response = await fetch('./src/data/AudioConfig.json');
             this.config = await response.json();
-            console.log("%c[AUDIO] Engine inicializado. Configuración de frecuencias cargada.", "color: #8b5cf6;");
-            
-            // Suscribirse a eventos para disparar SFX
             bus.on('TERMINAL_PRINT', () => this.play('sfx_terminal'));
             bus.on('CRITICAL_ERROR_FEEDBACK', () => this.play('sfx_alert'));
-            
-            // Suscribirse a cambios de fase para el ambiente
-            bus.on('STATE_CHANGE:mode', (mode) => {
-                if (state.gameStatus !== 'PLAYING') return;
-                if (mode === 'ECLIPSE') {
-                    this.playAmbient('ambient_eclipse');
-                } else {
-                    this.playAmbient('ambient_solar');
-                }
-            });
-
-            // Iniciar ambiente al comenzar el juego
-            bus.on('STATE_CHANGE:gameStatus', (status) => {
-                if (status === 'PLAYING') {
-                    const ambient = state.mode === 'ECLIPSE' ? 'ambient_eclipse' : 'ambient_solar';
-                    this.playAmbient(ambient);
-                } else if (status === 'GAME_OVER' || status === 'START_MENU') {
-                    this.stopAmbient();
-                }
-            });
-
-            // Modular volumen según ciclo orbital (Fase 16)
-            bus.on('STATE_CHANGE:orbitalCycle', (cycle) => {
-                if (state.mode === 'ECLIPSE' && this.currentAmbient && this.currentAmbient.dataset.id === 'ambient_eclipse') {
-                    const baseVol = this.config['ambient_eclipse'].volume;
-                    // Aumentar intensidad hasta un 50% extra según el ciclo
-                    this.currentAmbient.volume = baseVol + (cycle / 100) * 0.3;
-                }
-            });
-
         } catch (error) {
             console.error("[AUDIO] Error crítico al cargar configuración:", error);
         }
+        bus.on('STATE_CHANGE', (s) => this.updateMusic(s));
+        bus.on('SOUND_TOGGLE', () => this.updateMusic(state));
+        // El navegador no deja sonar nada hasta el primer gesto
+        const unlock = () => { this.ctx?.resume(); this.updateMusic(state); };
+        window.addEventListener('pointerdown', unlock);
+        window.addEventListener('keydown', unlock);
+    }
+
+    trackFor(s) {
+        if (s.gameStatus === 'CINEMATIC') return s.endingFaction ? 'final' : 'cinematica';
+        if (s.gameStatus === 'GAME_OVER') return s.endingFaction ? 'final' : null;
+        if (['PLAYING', 'MECHANIC', 'PAUSED', 'LOADING'].includes(s.gameStatus)) return s.storyPath === 1 ? 'ruta-fe' : 'ruta-operador';
+        return null;
+    }
+
+    async updateMusic(s) {
+        const id = soundOn() ? this.trackFor(s) : null;
+        const gain = s.isPaused ? MUSIC_VOLUME * 0.4 : MUSIC_VOLUME;
+        if (id === this.musicId) {
+            this.music?.gain.gain.setTargetAtTime(gain, this.ctx.currentTime, 0.3);
+            return;
+        }
+        this.musicId = id;
+        if (this.music) {
+            const old = this.music;
+            old.gain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.5);
+            old.src.stop(this.ctx.currentTime + 3);
+            this.music = null;
+        }
+        if (!id) return;
+        this.ctx ||= new AudioContext();
+        this.buffers[id] ||= fetch(`./assets/musica/${id}.mp3`)
+            .then(r => r.arrayBuffer()).then(b => this.ctx.decodeAudioData(b));
+        let buffer;
+        try { buffer = await this.buffers[id]; } catch { delete this.buffers[id]; return; }
+        if (this.musicId !== id || this.music) return;
+        const src = this.ctx.createBufferSource();
+        src.buffer = buffer;
+        src.loop = true;
+        const g = this.ctx.createGain();
+        g.gain.value = 0;
+        g.gain.setTargetAtTime(gain, this.ctx.currentTime, 0.8);
+        src.connect(g).connect(this.ctx.destination);
+        src.start();
+        this.music = { src, gain: g };
     }
 
     play(id) {
         if (!this.config || !this.config[id]) return;
         const sound = new Audio(this.config[id].src);
+        if (!soundOn()) return;
         sound.volume = this.config[id].volume;
         sound.play().catch(() => {}); // Ignorar errores de interacción
-    }
-
-    playAmbient(id) {
-        if (!this.config || !this.config[id]) return;
-        
-        // No reiniciar si ya está sonando el mismo ambiente
-        if (this.currentAmbient && this.currentAmbient.dataset.id === id) return;
-        
-        if (this.currentAmbient) {
-            this.stopAmbient();
-        }
-
-        const audio = new Audio(this.config[id].src);
-        audio.loop = true;
-        audio.volume = this.config[id].volume;
-        audio.dataset.id = id;
-        this.currentAmbient = audio;
-
-        audio.play().catch(() => {
-            console.warn("[AUDIO] Ambiente en espera de interacción del usuario.");
-        });
-    }
-
-    stopAmbient() {
-        if (this.currentAmbient) {
-            const oldAmbient = this.currentAmbient;
-            let vol = oldAmbient.volume;
-            const fade = setInterval(() => {
-                vol -= 0.05;
-                if (vol <= 0) {
-                    oldAmbient.pause();
-                    clearInterval(fade);
-                } else {
-                    oldAmbient.volume = Math.max(0, vol);
-                }
-            }, 50);
-            this.currentAmbient = null;
-        }
     }
 }
 
