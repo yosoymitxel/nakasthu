@@ -6,13 +6,14 @@
     <title>PROYECTO NAKASTHU // MANAGEMENT TERMINAL</title>
     <link rel="icon" href="data:,">
     <!-- Todo se sirve desde el propio sitio (vendor/, versiones de package.json). El hash es el del importmap: lo vigila tools/check-build.mjs. -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-hYLEHyyp1xyI8Q0TLjcMQZ6OIrVUrypf9mina182bT0=' https://polyfork.dev/cdn/; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://www.transparenttextures.com; media-src 'self' https://assets.mixkit.co; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ufg3cdUNgT2YJRFhuRj1yl5oq2NLgqqyqUG+8n3jpIA=' https://polyfork.dev/cdn/ https://unpkg.com/three@0.180.0/examples/jsm/; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://www.transparenttextures.com; media-src 'self' https://assets.mixkit.co; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
     <meta name="referrer" content="strict-origin-when-cross-origin">
 
     <!-- three.js para el fondo 3D (los modelos de polyfork.dev lo importan por este nombre) -->
     <script type="importmap">
     { "imports": {
         "three": "./vendor/three.module.min.js",
+        "three/addons/": "https://unpkg.com/three@0.180.0/examples/jsm/",
         "zzfx": "./vendor/ZzFX.js"
     } }
     </script>

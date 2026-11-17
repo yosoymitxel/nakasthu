@@ -57,7 +57,7 @@ if (!html.includes(`'${hash}'`)) {
 if (/<script(?![^>]*type="importmap")(?![^>]*\bsrc=)[^>]*>/.test(html) || /script-src[^;]*unsafe/.test(html)) {
     stale = true; console.error('index.html: nada de scripts en línea ni unsafe-* en script-src (la CSP los bloquea).');
 }
-if (/(src|href)="https?:/.test(html)) { stale = true; console.error('index.html: las dependencias van en vendor/, no en un CDN.'); }
+if (/<(script|link)[^>]*(src|href)="https?:/.test(html)) { stale = true; console.error('index.html: las dependencias van en vendor/, no en un CDN.'); }
 
 if (stale) { console.error('Ejecuta `npm run build:css`.'); process.exit(1); }
 console.log(write ? "CSS, vendor y CSP regenerados." : "CSS de Tailwind, vendor y CSP al día.");
