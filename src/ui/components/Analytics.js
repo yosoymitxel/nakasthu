@@ -21,7 +21,6 @@ export const Analytics = memo(() => {
     const [prevProb, setPrevProb] = useState(null);
 
     const currentEntity = useGameState('currentEntity');
-    const stability = useGameState('stability');
     const mode = useGameState('mode');
     const focusMode = useGameState('focusMode');
     const storyPath = useGameState('storyPath') || 0;
@@ -36,7 +35,6 @@ export const Analytics = memo(() => {
     const bioLabels = pathConfig.bioscan;
     const opsLabels = pathConfig.operations;
 
-    const isUnstable = stability < anaConstants.UNSTABLE_THRESHOLD;
     const isSectarian = storyPath === 1;
 
     // Obtener color dinámico del paso actual
@@ -206,7 +204,7 @@ export const Analytics = memo(() => {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className=${`text-3xl font-black font-mono tracking-tighter transition-all duration-700 ${
-                            isUnstable || (corruptionProb > anaConstants.PROB_CRITICAL) ? 'animate-glitch text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]' : 
+                            corruptionProb > anaConstants.PROB_CRITICAL ? 'animate-glitch text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]' : 
                             corruptionProb > anaConstants.PROB_WARNING ? 'text-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.4)]' :
                             stepColor === 'purple' || stepColor === 'indigo' ? 'text-purple-500' :
                             stepColor === 'zinc' || stepColor === 'slate' ? 'text-zinc-400' :

@@ -149,7 +149,7 @@ const ResonanceModule = ({ isActive, storyPath }) => {
     // Como una tarea de panel: al encajar las dos muescas se cierra sola
     useEffect(() => {
         if (!isActive || !freqHit || !phaseHit) return;
-        const id = setTimeout(synchronize, 700);
+        const id = setTimeout(synchronize, 250);
         return () => clearTimeout(id);
     }, [isActive, freqHit && phaseHit]);
 
@@ -238,7 +238,7 @@ const OxygenModule = ({ isActive, storyPath }) => {
     const [sequence, setSequence] = useState([]);
     const [userInput, setUserInput] = useState([]);
     const [wrong, setWrong] = useState(0);
-    useEffect(() => { if (isActive && sequence.length === 0 && !engineState.o2Stabilized) startMinigame(); }, [isActive]);
+    useEffect(() => { if (isActive && sequence.length === 0) startMinigame(); }, [isActive]);
 
     const startMinigame = () => {
         const newSeq = [1, 2, 3, 4];
@@ -272,11 +272,8 @@ const OxygenModule = ({ isActive, storyPath }) => {
             // Activar estabilización en el estado global
             engineState.o2Stabilized = true;
             bus.emit('O2_STABILIZED', { duration: 10000 });
-            
-            setTimeout(() => {
-                engineState.o2Stabilized = false;
-                bus.emit('EMERGENCY_END', { type: 'oxygen' });
-            }, 10000);
+            bus.emit('EMERGENCY_END', { type: 'oxygen' });
+            setTimeout(() => { engineState.o2Stabilized = false; }, 10000);
         }
     };
 
