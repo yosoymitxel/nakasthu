@@ -39,11 +39,9 @@ Proyectos: `smoke`, `e2e`, `regression` (1440×960) y `mobile` (Pixel 7, pruebas
 
 ## Espejo CDN
 
-`unpkg.com` y `cdn.tailwindcss.com` se sirven desde `node_modules` (versiones fijadas en `package.json`).
-Tailwind se precompila en `qa/.cache/` con la configuración inline de `index.html`.
-Modelos 3D de polyfork.dev, texturas y audio se sustituyen por stubs mínimos.
-`QA_CDN=live` desactiva el espejo. Si una URL de CDN nueva no tiene regla, la prueba falla con
-"Dependencias de CDN sin espejo" → añadirla en `support/cdn-mirror.mjs`.
+Las librerías y la fuente se sirven desde `vendor/` y Tailwind va compilado en `src/ui/styles/tailwind.css`
+(`npm run build:css` tras tocar clases, `tailwind.config.cjs` o el importmap; `npm test` avisa si falta).
+Modelos 3D de polyfork.dev, texturas y audio se sustituyen por stubs mínimos; `QA_CDN=live` los deja ir a la red.
 
 ## Balance
 

@@ -11,7 +11,6 @@ export default defineConfig({
     testDir: '.',
     testMatch: ['smoke/**/*.spec.mjs', 'e2e/**/*.spec.mjs', 'regression/**/*.spec.mjs'],
     outputDir: resolve(ROOT, 'test-results'),
-    globalSetup: './support/build-tailwind.mjs',
     fullyParallel: true,
     forbidOnly: Boolean(process.env.CI),
     retries: process.env.CI ? 1 : 0,

@@ -7,8 +7,8 @@ updates:
     groups:
       dev:
         patterns: ["*"]
-    # Estas librerías las carga index.html desde CDN con versión fija; en npm solo son el espejo
-    # de los tests (qa/support/cdn-mirror.mjs). Se suben a mano, a la vez en index.html y package.json.
+    # El juego las sirve desde vendor/ (copia de node_modules) y el CSS de Tailwind va compilado en el repo.
+    # Se suben a mano: cambiar package.json, `npm install`, `npm run build:css` y probar.
     ignore:
       - dependency-name: react
       - dependency-name: react-dom

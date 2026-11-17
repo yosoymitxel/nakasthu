@@ -5,137 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PROYECTO NAKASTHU // MANAGEMENT TERMINAL</title>
     <link rel="icon" href="data:,">
-    
-    <!-- Fonts: JetBrains Mono -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet">
-    
+    <!-- Todo se sirve desde el propio sitio (vendor/, versiones de package.json). El hash es el del importmap: lo vigila tools/check-build.mjs. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-hYLEHyyp1xyI8Q0TLjcMQZ6OIrVUrypf9mina182bT0=' https://polyfork.dev/cdn/; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://www.transparenttextures.com; media-src 'self' https://assets.mixkit.co; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
     <!-- three.js para el fondo 3D (los modelos de polyfork.dev lo importan por este nombre) -->
     <script type="importmap">
     { "imports": {
-        "three": "https://unpkg.com/three@0.180.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.180.0/examples/jsm/",
-        "zzfx": "https://unpkg.com/zzfx@1.4.0/ZzFX.js"
+        "three": "./vendor/three.module.min.js",
+        "zzfx": "./vendor/ZzFX.js"
     } }
     </script>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preload" href="vendor/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="src/ui/styles/tailwind.css">
     <link rel="stylesheet" href="src/ui/styles/grid.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        nakasthu: {
-                            black: '#050505',
-                            carbon: '#0a0a0a',
-                            panel: '#111111',
-                            amber: '#FF8C00',
-                            cyan: '#00FFFF',
-                            red: '#FF0000',
-                        }
-                    },
-                    fontFamily: {
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
-                    animation: {
-                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'glitch': 'glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite',
-                        'scanline': 'scanline 8s linear infinite',
-                        'scanline-h': 'scanline-h 4s linear infinite',
-                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
-                        'float': 'float 6s ease-in-out infinite',
-                        'neural-scan': 'neural-scan 4s linear infinite',
-                        'loading-bar': 'loading-bar 2s ease-in-out infinite',
-                        'glitch-line': 'glitch-line 2s linear infinite',
-                        'glitch-line-delayed': 'glitch-line 2.5s linear infinite 0.5s',
-                        'scan-line': 'scan-line 4s linear infinite',
-                        'vibrate-subtle': 'vibrate-subtle 0.15s linear infinite',
-                        'pulse-border-critical': 'pulse-border-critical 2s ease-in-out infinite',
-                        'fade-in': 'fade-in 0.5s ease-out forwards',
-                        'spin-slow': 'spin 10s linear infinite',
-                        'slow-spin': 'spin 15s linear infinite',
-                        'ritual-glow': 'ritual-glow 4s ease-in-out infinite',
-                        'whisper-flow': 'whisper-flow 8s ease-in-out infinite',
-                        'float-slow': 'float 10s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        'ritual-glow': {
-                            '0%, 100%': { opacity: '0.3', filter: 'blur(5px) brightness(1)' },
-                            '50%': { opacity: '0.7', filter: 'blur(10px) brightness(1.5)' },
-                        },
-                        'whisper-flow': {
-                            '0%, 100%': { transform: 'translateX(-5%) translateY(0)', opacity: '0.2' },
-                            '50%': { transform: 'translateX(5%) translateY(-10px)', opacity: '0.5' },
-                        },
-                        'fade-in': {
-                            '0%': { opacity: '0', transform: 'scale(0.98)' },
-                            '100%': { opacity: '1', transform: 'scale(1)' },
-                        },
-                        'vibrate-subtle': {
-                            '0%, 100%': { transform: 'translate(0)' },
-                            '25%': { transform: 'translate(-0.5px, 0.5px)' },
-                            '50%': { transform: 'translate(0.5px, -0.5px)' },
-                            '75%': { transform: 'translate(-0.5px, -0.5px)' },
-                        },
-                        'pulse-border-critical': {
-                            '0%, 100%': { opacity: '0.2', borderWidth: '4px' },
-                            '50%': { opacity: '0.6', borderWidth: '8px' },
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        },
-                        'neural-scan': {
-                            '0%': { transform: 'translateY(-100%)' },
-                            '100%': { transform: 'translateY(500%)' },
-                        },
-                        'loading-bar': {
-                            '0%': { transform: 'translateX(-100%)' },
-                            '100%': { transform: 'translateX(100%)' },
-                        },
-                        'glitch-line': {
-                            '0%': { transform: 'translateX(-100%)', opacity: '0' },
-                            '50%': { opacity: '0.5' },
-                            '100%': { transform: 'translateX(100%)', opacity: '0' },
-                        },
-                        'scan-line': {
-                            '0%': { top: '0' },
-                            '100%': { top: '100%' }
-                        },
-                        glitch: {
-                            '0%': { transform: 'translate(0)' },
-                            '20%': { transform: 'translate(-2px, 2px)' },
-                            '40%': { transform: 'translate(-2px, -2px)' },
-                            '60%': { transform: 'translate(2px, 2px)' },
-                            '80%': { transform: 'translate(2px, -2px)' },
-                            '100%': { transform: 'translate(0)' }
-                        },
-                        scanline: {
-                            '0%': { transform: 'translateY(-100%)' },
-                            '100%': { transform: 'translateY(100%)' }
-                        },
-                        'scanline-h': {
-                            '0%': { transform: 'translateX(-100%)' },
-                            '100%': { transform: 'translateX(500%)' }
-                        },
-                        shake: {
-                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
-                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
-                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
-                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     
 
     
     <style>
+        @font-face {
+            font-family: 'JetBrains Mono'; font-style: normal; font-weight: 100 800; font-display: swap;
+            src: url('vendor/fonts/jetbrains-mono-latin-ext.woff2') format('woff2');
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+        @font-face {
+            font-family: 'JetBrains Mono'; font-style: normal; font-weight: 100 800; font-display: swap;
+            src: url('vendor/fonts/jetbrains-mono-latin.woff2') format('woff2');
+        }
         :root {
             --color-bg-main: #1a1a1c; /* Gris industrial muy oscuro */
             --color-bg-panel: rgba(24, 24, 27, 0.4); /* bg-zinc-900/40 */
@@ -288,20 +185,10 @@
 <body>
     <div id="root"></div>
 
-    <!-- Scripts -->
-    <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin></script>
+    <script src="vendor/react.production.min.js"></script>
+    <script src="vendor/react-dom.production.min.js"></script>
     <!-- Motion (animaciones): expone window.Motion -->
-    <script src="https://unpkg.com/motion@11.18.2/dist/motion.js"></script>
-    
-    <!-- App Entry Point -->
-    <script type="module">
-        import { html } from './src/ui/utils/html.js';
-        import App from './src/ui/components/App.js';
-        import './src/core/Boot.js'; // Initialize all Systems
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(html`<${App} />`);
-    </script>
+    <script src="vendor/motion.js"></script>
+    <script type="module" src="src/entry.js"></script>
 </body>
 </html>

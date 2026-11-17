@@ -5,7 +5,8 @@
   "scripts": {
     "check:syntax": "node tools/check-syntax.mjs",
     "check:registry": "node tools/check-registry.mjs",
-    "test": "node tools/check-syntax.mjs && node tools/check-registry.mjs && vitest run __tests__",
+    "build:css": "node tools/check-build.mjs --write",
+    "test": "node tools/check-syntax.mjs && node tools/check-registry.mjs && node tools/check-build.mjs && vitest run __tests__",
     "test:smoke": "playwright test --config=qa/playwright.config.mjs --project=smoke",
     "test:e2e": "playwright test --config=qa/playwright.config.mjs --project=e2e --project=mobile",
     "test:regression": "playwright test --config=qa/playwright.config.mjs --project=regression",

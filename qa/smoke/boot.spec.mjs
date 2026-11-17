@@ -24,18 +24,16 @@ test.describe('SMOKE · carga inicial', () => {
         expect(modules.filter((m) => m.status !== 200 && m.status !== 304)).toEqual([]);
     });
 
-    test('librerías globales disponibles (React, ReactDOM, Motion, Tailwind)', async ({ page }) => {
+    test('librerías globales disponibles (React, ReactDOM, Motion)', async ({ page }) => {
         await bootGame(page);
         const libs = await page.evaluate(() => ({
             react: window.React?.version,
             reactDom: typeof window.ReactDOM?.createRoot,
             motion: typeof window.Motion?.animate,
-            tailwind: typeof window.tailwind,
         }));
         expect(libs.react).toMatch(/^18\./);
         expect(libs.reactDom).toBe('function');
         expect(libs.motion).toBe('function');
-        expect(libs.tailwind).toBe('object');
     });
 
     test('motor expuesto e inicializado (state, sistemas, secuenciador)', async ({ page }) => {

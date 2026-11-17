@@ -20,7 +20,7 @@ This project enforces a strict separation between **Game Logic (Vanilla JS)** an
 - **Pattern:** Subscription-based. React components subscribe to specific State slices to avoid unnecessary re-renders.
 
 ### C. THE VIEW (`/src/ui`)
-- **Technology:** React (via CDN structure), Tailwind CSS.
+- **Technology:** React (UMD global from `vendor/`, no CDN), Tailwind CSS precompiled to `src/ui/styles/tailwind.css` (run `npm run build:css` after changing classes; dynamic `${}` classes go in `tailwind.config.cjs` safelist).
 - **Responsibility:** Dumb rendering based on props/state. Dispatches commands to Engine.
 - **Styling:** Tailwind utility classes. Use "zinc", "slate", "cyan", "red" scales.
 - **Optimization:** Use `memo` for high-frequency updates (like progress bars).
