@@ -2,16 +2,16 @@
     "dialogues": [
         {
             "id": "DLG_S1_01",
-            "minStep": 1,
-            "maxStep": 3,
-            "text": "'He oído que enviaron a alguien a Zhyr. Mi hermano estaba en la logística de la Orden. No ha vuelto a llamar'.",
+            "minStep": 4,
+            "maxStep": 4,
+            "text": "'He oído que enviaron a alguien a Zhyr. Mi hermano estaba en carga de la Custodia. No ha vuelto a llamar'.",
             "options": [
                 {
-                    "text": "¿En qué unidad de logística estaba tu hermano?",
+                    "text": "¿En qué unidad de la Custodia estaba tu hermano?",
                     "energyCost": 0.25,
                     "stabilityImpact": -2,
                     "loreUnlock": "LORE_ORDER_SECRETS",
-                    "consequence": "*Se frota las manos.* 'En carga especial. Decía que subían gente al transporte y que bajaba con cicatrices nuevas en el pecho. Modificados, decía'."
+                    "consequence": "*Se frota las manos.* 'En carga especial. Decía que subían gente al transporte y que bajaba con el pecho cosido y un filtro debajo. Modificados, los llamaba'."
                 },
                 {
                     "text": "Los rumores no te ayudan. Limítate a responder al escaneo.",
@@ -23,60 +23,60 @@
         },
         {
             "id": "DLG_S1_02",
-            "minStep": 1,
-            "maxStep": 3,
-            "text": "'¿Es cierto que el aire en Zhyr quema los pulmones? Dicen que Kael y su equipo llevan filtros integrados en el pecho'.",
+            "minStep": 4,
+            "maxStep": 4,
+            "text": "'¿Es cierto que el aire de Zhyr se come los filtros? Dicen que a Kael le pusieron uno en el pecho y que tose cada tres minutos'.",
             "options": [
                 {
-                    "text": "Es cierto. La expedición lleva filtros químicos implantados bajo el esternón.",
+                    "text": "Es cierto. Tose cada tres minutos por un fallo de fábrica que nadie reparó.",
                     "energyCost": 0.5,
                     "stabilityImpact": -5,
                     "loreUnlock": "LORE_TECH_MODS",
-                    "consequence": "*Palidece y se lleva la mano al pecho.* '¿Y a nosotros también nos los van a poner? No... mejor no me lo diga'."
+                    "consequence": "*Se lleva la mano al pecho y cuenta en voz baja hasta tres.* '¿Y a nosotros también nos los van a poner? No. Mejor no me lo diga'."
                 }
             ]
         },
         {
             "id": "DLG_S1_03",
-            "minStep": 1,
-            "maxStep": 3,
-            "text": "'Mi esposa se desvaneció frente a mis ojos. No hubo sangre, solo un destello blanco. ¡Dígame que está en Zhyr!'",
+            "minStep": 4,
+            "maxStep": 4,
+            "text": "'Me llamo Nera Okonjo. Bloque veintitrés, sector cuatro de Kanatsia. Puse agua a hervir para dos y estuve nueve minutos esperando a que mi marido saliera del cuarto'.",
             "options": [
                 {
-                    "text": "Cuéntame exactamente qué viste en el momento del destello.",
+                    "text": "Cuéntame exactamente qué encontraste en el cuarto.",
                     "energyCost": 0.25,
                     "stabilityImpact": -5,
                     "loreUnlock": "LORE_GREAT_SHIFT",
-                    "consequence": "'Ella servía el café. Luego, solo luz. Ni sangre ni ceniza. La taza se quedó en el aire un segundo antes de caer'."
+                    "consequence": "'La cama deshecha por los dos lados. Sus zapatillas, colocadas. El vaso de la mesilla, medio'. *Se calla un momento.* 'Bajé a preguntar a la vecina. La vecina tampoco estaba'."
                 }
             ]
         },
         {
             "id": "DLG_S1_04",
-            "minStep": 1,
-            "maxStep": 3,
-            "text": "'Los símbolos... los veo cuando cierro los ojos. Símbolos que bailan sobre piedra negra. ¿Es eso lo que hay en el otro lado?'",
+            "minStep": 4,
+            "maxStep": 4,
+            "text": "'Los veo cuando cierro los ojos. Cinco rayas sobre piedra negra, todas con la misma inclinación. ¿Es eso lo que hay al otro lado?'",
             "options": [
                 {
-                    "text": "Descríbeme esos símbolos. Despacio.",
+                    "text": "Descríbeme esas rayas. Despacio.",
                     "energyCost": 0.6,
                     "stabilityImpact": -8,
                     "loreUnlock": "LORE_SYMBOLS_SHAPE",
-                    "consequence": "*Traza en el aire figuras que se doblan sobre sí mismas.* 'Se mueven mientras los dibujo. Y zumban. ¿Usted también oye el zumbido?'"
+                    "consequence": "*Traza cinco líneas en el aire, separadas, limpias.* 'Siempre cinco. Siempre igual de torcidas. Las he contado en la cal del desagüe de mi casa'."
                 }
             ]
         },
         {
             "id": "DLG_S1_07",
-            "minStep": 1,
-            "maxStep": 3,
-            "text": "'Vi los soles gemelos de Zhyr en un archivo clasificado. El horizonte púrpura es hermoso, pero Alexia decía que era una invitación al desastre'.",
+            "minStep": 4,
+            "maxStep": 4,
+            "text": "'Vi los soles gemelos de Zhyr en un archivo clasificado. Hay una grabación de la simbóloga, Alexia. Dice: «Es como si este planeta nos invitara a algo que no queremos encontrar»'.",
             "options": [
                 {
                     "text": "¿Quién te dio acceso a ese archivo?",
                     "energyCost": 0.5,
                     "stabilityImpact": -5,
-                    "consequence": "*Tarda demasiado en contestar.* 'Nadie. Estaba abierto en una terminal de la Orden. Por favor... no lo anote'."
+                    "consequence": "*Tarda demasiado en contestar.* 'Nadie. Estaba abierto en una terminal de la Custodia. Por favor, no lo anote'."
                 }
             ]
         },
@@ -97,7 +97,7 @@
                     "energyCost": 0.75,
                     "stabilityImpact": -10,
                     "loreUnlock": "LORE_NEBOT_VOID",
-                    "consequence": "'Nadie. Se fue con todo su gabinete el mismo día. En Kanatsia no queda nadie que firme nada'."
+                    "consequence": "'Nadie. Se fue con su segundo el mismo día. En Kanatsia no queda nadie que firme nada'."
                 }
             ]
         },
@@ -108,7 +108,7 @@
             "text": "'Soy técnico de nivel 4 en la central de Itzinol. Por favor, mi familia desapareció en el Gran Desvío. Necesito encontrarlos'.",
             "options": [
                 {
-                    "text": "Tu familia no es prioridad ahora. Tus manos sí: quedas asignado al Bastión.",
+                    "text": "Tu familia no es prioridad ahora. Tus manos sí: vuelves a tu turno en la central.",
                     "energyCost": 0.25,
                     "stabilityImpact": 2,
                     "consequence": "*Traga saliva y asiente.* 'Entendido. Pero si aparecen en alguna lista... avíseme'."
@@ -118,7 +118,7 @@
                     "energyCost": 0.5,
                     "stabilityImpact": -5,
                     "loreUnlock": "LORE_GREAT_SHIFT",
-                    "consequence": "'Un tercio de la planta se evaporó en un parpadeo. Quedaron los bancos, la ropa, la sangre de los que estaban cerca. Nadie vino a explicarlo'."
+                    "consequence": "'Un tercio del turno dejó de estar en mitad de una frase. Ni sangre ni ruido. Las máquinas siguieron en marcha y nadie vino a explicarlo'."
                 }
             ]
         },
@@ -161,7 +161,7 @@
             "id": "DLG_S4_05",
             "minStep": 4,
             "maxStep": 6,
-            "text": "'He trabajado en las minas de Nakasthu toda mi vida. Mis manos están manchadas de grasa y mineral. ¿Sirve eso de algo aquí?'",
+            "text": "'He trabajado en las minas de nakara de Prisiat toda mi vida. Mis manos están manchadas de grasa y mineral. ¿Sirve eso de algo aquí?'",
             "options": [
                 {
                     "text": "Sirve. ¿Sabes reparar maquinaria pesada?",
@@ -175,14 +175,98 @@
             "id": "DLG_S4_08",
             "minStep": 4,
             "maxStep": 6,
-            "text": "'Vi a Serin Voke susurrarle al oído a Orval Drexler. Su mirada era como un bisturí. Talok tiene planes que no incluyen nuestra supervivencia'.",
+            "text": "'Vi a Serin Voke pasarle una hoja a Orval Drexler. Cifras de reasignación del trimestre. Ninguno de los dos subió la voz'.",
             "options": [
                 {
                     "text": "¿Llegaste a oír lo que le dijo?",
                     "energyCost": 0.6,
                     "stabilityImpact": -8,
                     "loreUnlock": "LORE_TALOK_AMBITION",
-                    "consequence": "'Una sola palabra: «extracción». Después miró hacia la cola de ciudadanos. Como quien mira el material'."
+                    "consequence": "'Una sola palabra: «Aprobado». Le devolvió la hoja. La había leído por encima'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_S4_PERLA",
+            "minStep": 4,
+            "maxStep": 4,
+            "text": "'Dieciocho incubadoras. Las ordené por gravedad, de izquierda a derecha. Salieron catorce. En el parte pone incidencia de dotación'.",
+            "options": [
+                {
+                    "text": "¿Cuántas horas estuviste sola en la unidad?",
+                    "energyCost": 0.25,
+                    "stabilityImpact": -5,
+                    "corruptionImpact": 2,
+                    "consequence": "'Cincuenta y dos. Treinta y un años en el oficio'. *Se mira las manos.* 'El parte lo firma alguien que no estaba. Nadie de Talok ha bajado a contar las cunas'."
+                },
+                {
+                    "text": "La incidencia está registrada. No hay nada que añadir.",
+                    "energyCost": 0.1,
+                    "stabilityImpact": 3,
+                    "consequence": "*Asiente una vez.* 'Ya. Está registrada'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_S4_ANALISTA",
+            "minStep": 4,
+            "maxStep": 4,
+            "text": "'Ochenta y tres desaparecidos en un bloque de doscientas viviendas. Los ochenta y tres pagaban al mismo fondo de socorro. En Prisiat faltó el turno de noche entero de una galería y nadie del de día. Compartían capilla'.",
+            "options": [
+                {
+                    "text": "¿Dónde dejaste escrita esa observación?",
+                    "energyCost": 0.4,
+                    "stabilityImpact": -5,
+                    "consequence": "'En un anexo. El anexo no llegó a ninguna reunión'. *Ordena las hojas por el borde.* 'No es al azar, operador. Se lleva a los que ya estaban juntos'."
+                },
+                {
+                    "text": "Coincidencias. Con tantos datos salen patrones en cualquier parte.",
+                    "energyCost": 0.1,
+                    "stabilityImpact": 2,
+                    "consequence": "'Eso me dijeron'. *Guarda las hojas.* 'Lo dejé en el anexo igual'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_S6_PETRO",
+            "minStep": 6,
+            "maxStep": 6,
+            "text": "*Deja en la bandeja una bolsa precintada. Dentro, una piedra de río con arena pegada.* 'Mi hijo, Petro Ilm. Bajaron trece y volvieron cuatro. Me han devuelto esto'.",
+            "options": [
+                {
+                    "text": "¿Qué te pidieron que firmaras?",
+                    "energyCost": 0.25,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -2,
+                    "consequence": "'Un formulario. Si acepto la indemnización o no. Si no contesto en treinta días, se acepta sola'. *Pasa el dedo por el precinto sin abrirlo.* 'Llevo veintinueve'."
+                },
+                {
+                    "text": "*Le devuelves la bolsa sin abrirla.*",
+                    "energyCost": 0.1,
+                    "stabilityImpact": 4,
+                    "consequence": "*La aprieta contra el pecho.* 'Era su primera vez fuera del sistema solar. La llevaba porque un compañero le dijo que daba suerte. De allí no volvió nada más'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_S6_NINA_AITOR",
+            "minStep": 6,
+            "maxStep": 6,
+            "text": "*Desdobla una hoja de cuaderno. Una palabra a lápiz: AITOR. Letra firme, inclinada, de adulto.* 'La escribió mi hija. Tiene siete años. Me despertó a las cuatro y dijo que un señor le había enseñado en el sueño la palabra que salva'.",
+            "options": [
+                {
+                    "text": "¿Tu hija sabe escribir así?",
+                    "energyCost": 0.5,
+                    "stabilityImpact": -8,
+                    "corruptionImpact": 3,
+                    "loreUnlock": "LORE_AITOR_NETWORK",
+                    "consequence": "'Su nombre no lo escribe así. Al día siguiente no supo repetirla'. *Dobla la hoja en cuatro.* 'En Lichesth dicen que no es la única niña. Allí apuntan a quién le ha pasado'."
+                },
+                {
+                    "text": "Deja la hoja en la bandeja. Queda archivada.",
+                    "energyCost": 0.1,
+                    "stabilityImpact": 3,
+                    "consequence": "*No la suelta.* 'La Custodia ya buscó la palabra en catorce bases. No sale en ninguna. Archivar no sirve de nada'."
                 }
             ]
         },
@@ -190,14 +274,14 @@
             "id": "DLG_S7_01",
             "minStep": 7,
             "maxStep": 9,
-            "text": "'Kamin dice que el portal no es el fin, sino el Renacimiento. ¿Por qué el Bastión intenta ocultar la verdad?'",
+            "text": "'Kamin dice que la piedra no es el fin, que es el Renacimiento. ¿Por qué Talok intenta ocultar la verdad?'",
             "options": [
                 {
                     "text": "Recítame lo que predica Kamin.",
                     "energyCost": 0.75,
                     "stabilityImpact": -20,
                     "loreUnlock": "LORE_SACRIFICE_TRUTH",
-                    "consequence": "*Cierra los ojos y recita en voz baja.* 'La piedra no devora: la piedra recuerda'. *En el pasillo, tres guardias se detienen a escuchar.*"
+                    "consequence": "*Cierra los ojos y recita en voz baja.* 'Abrirla no es gratis. Requiere trabajo, requiere fe y requiere que alguien pague la diferencia'. *En el pasillo, tres guardias se detienen a escuchar.*"
                 },
                 {
                     "text": "Eso es herejía. Vas a recibir un sedante.",
@@ -241,13 +325,13 @@
             "id": "DLG_S7_04",
             "minStep": 7,
             "maxStep": 10,
-            "text": "'La Orden de los Vínculos Ancestrales nos ha condenado. Su ciencia es arrogancia. Solo la voluntad de enfrentar la verdad nos salvará'.",
+            "text": "'La Custodia nos ha condenado. Cataloga, archiva y no mira. Solo la voluntad de enfrentar la verdad nos salvará'.",
             "options": [
                 {
                     "text": "¿Qué entiendes tú por «enfrentar la verdad»?",
                     "energyCost": 0.5,
                     "stabilityImpact": -10,
-                    "consequence": "'Lo que dice Kamin: mirar a la piedra sin pedirle nada'. *Fuera de la cámara, dos técnicos de turno repiten la frase en voz baja.*"
+                    "consequence": "'Lo que dice Kamin: la verdad siempre cuesta caro, pero se paga'. *Fuera de la cámara, dos técnicos de turno repiten la frase en voz baja.*"
                 }
             ]
         },
@@ -255,13 +339,13 @@
             "id": "DLG_S7_05",
             "minStep": 7,
             "maxStep": 10,
-            "text": "'El aire de Zhyr no es veneno, es aliento divino. Kael no huyó, fue el primero en entenderlo. ¿Cuándo me dejarás cruzar?'",
+            "text": "'El aire de Zhyr corroe los filtros en catorce horas. Kamin dice que allí ya no hace falta filtro. ¿Cuándo me dejarás cruzar?'",
             "options": [
                 {
                     "text": "Ese aire quema los pulmones. Nadie cruza desde esta sala.",
                     "energyCost": 0.75,
                     "stabilityImpact": -5,
-                    "consequence": "'Quema la carne que todavía te da miedo perder. Kael lo entendió. No eres el primero que me dice que no esta semana'."
+                    "consequence": "'Quema a los que todavía tienen algo que perder aquí. No eres el primero que me dice que no esta semana'."
                 }
             ]
         },
@@ -269,14 +353,14 @@
             "id": "DLG_S7_06",
             "minStep": 7,
             "maxStep": 9,
-            "text": "'La periodista de Dispay fue silenciada. Estaba entrevistando a un chico con una bufanda que hablaba de «El Mensajero». ¿Es Kamin el mensajero?'",
+            "text": "'La emisión de Dispay se cortó dieciocho segundos. Cuando volvió, el chico que hablaba ya no estaba en el encuadre'.",
             "options": [
                 {
-                    "text": "¿Qué llegó a publicar esa periodista sobre «El Mensajero»?",
+                    "text": "¿Qué decía el chico antes del corte?",
                     "energyCost": 0.5,
                     "stabilityImpact": -12,
-                    "loreUnlock": "LORE_MESSENGER",
-                    "consequence": "'Que así llama la secta a Kamin: el Mensajero de Aitor. Lo escribió una noche. A la mañana siguiente ya no estaba'."
+                    "loreUnlock": "LORE_PROTEST_RAGE",
+                    "consequence": "'Que su hermana llevaba siete semanas desaparecida. Que cómo se confía en gente que no sabe qué está pasando'. *Se encoge de hombros.* 'Ovid Ferrer, se llama. Ahora lo repiten en todas las colas'."
                 }
             ]
         },
@@ -298,13 +382,13 @@
             "id": "DLG_S7_09",
             "minStep": 7,
             "maxStep": 10,
-            "text": "'Renata Sykes gritó en la reunión que enviar humanos al portal es un crimen. Ertak solo se encogió de hombros. Dicen que Ertak ya no tiene alma'.",
+            "text": "'Renata Sykes dijo en la reunión que meter gente en esa cosa nos convertía en lo que dice la calle. Nadie le contestó. Pidió que constara en acta'.",
             "options": [
                 {
                     "text": "¿Qué pasó con Renata Sykes después de esa reunión?",
                     "energyCost": 0.4,
                     "stabilityImpact": 5,
-                    "consequence": "'La marcaron como «obstáculo operativo». Nadie discutió la etiqueta. Nadie la ha vuelto a ver'."
+                    "consequence": "'Lleva semanas sin aparecer. Nadie ha preguntado. El comité de ética no se ha vuelto a convocar'."
                 }
             ]
         },
@@ -347,13 +431,13 @@
             "id": "DLG_S10_03",
             "minStep": 10,
             "maxStep": 12,
-            "text": "'Kamin empujará a Leina hacia la grieta si es necesario. El renacimiento nunca es sencillo. ¿De qué lado estarás cuando el portal se abra del todo?'",
+            "text": "'Kamin le preguntó a Leina si el aparato funciona sin ella. Hace tres semanas. ¿De qué lado estarás cuando la puerta se abra del todo?'",
             "options": [
                 {
                     "text": "¿Qué piensa hacer Kamin con Leina?",
                     "energyCost": 0.75,
                     "stabilityImpact": -15,
-                    "consequence": "'Ella sostendrá el cable. Él sostendrá el cuchillo. Alguien tiene que cortar el último hilo con la Tierra'."
+                    "consequence": "'No lo dijo. Kamin no explica, pregunta'. *Se queda callado un momento.* 'Y no pregunta nada que no tenga ya contestado'."
                 }
             ]
         },
@@ -434,20 +518,41 @@
             "id": "DLG_S10_09",
             "minStep": 10,
             "maxStep": 12,
-            "text": "'La Orden de los Vínculos Ancestrales nos mintió. No buscaban expandir el imperio, buscaban un Dios mecánico en Zhyr'.",
+            "text": "'La Directiva nos mintió. Cuarenta años de contacto, tres tratados, y en los tres pone lo mismo: capacidad limitada'.",
             "options": [
                 {
                     "text": "¿Qué pruebas tienes de eso?",
                     "energyCost": 0.75,
                     "stabilityImpact": -15,
-                    "consequence": "'Los registros de Talok tienen décadas, mucho antes de la expedición de Kael. El Bastión no se construyó para protegernos: es el pago de un trato'."
+                    "consequence": "'Los registros de Talok tienen décadas, de mucho antes de la expedición de Kael. Firmamos como firma un menor. Al otro lado de la mesa nos explican las cosas despacio'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_S10_CORVIN",
+            "minStep": 10,
+            "maxStep": 10,
+            "text": "'Mi hermano, Corvin. Lo reconocí en una grabación de la Orden, en la fila del portal. Viajé cuatro días para verlo'.",
+            "options": [
+                {
+                    "text": "¿Llegaste a hablar con él?",
+                    "energyCost": 0.4,
+                    "stabilityImpact": 4,
+                    "corruptionImpact": -3,
+                    "consequence": "'Cuando llegué ya había cruzado'. *Saca un papel doblado en cuatro.* 'En la lista pone su nombre y una hora. Nada más. De los que cruzaron no ha vuelto ninguno a buscar a nadie'."
+                },
+                {
+                    "text": "*Anotas el nombre de Corvin en el registro de ausencias.*",
+                    "energyCost": 0.1,
+                    "stabilityImpact": 2,
+                    "consequence": "'Con uve'. *Mira cómo lo escribes.* 'En la grabación sonreía. Como quien deja pasar a alguien'."
                 }
             ]
         },
         {
             "id": "DLG_GEN_01",
-            "minStep": 1,
-            "maxStep": 12,
+            "minStep": 4,
+            "maxStep": 4,
             "text": "'¿Cuánto tiempo llevo aquí? Las paredes de metal me están volviendo loco. Solo quiero volver a casa'.",
             "options": [
                 {
@@ -460,8 +565,8 @@
         },
         {
             "id": "DLG_GEN_02",
-            "minStep": 1,
-            "maxStep": 12,
+            "minStep": 10,
+            "maxStep": 10,
             "text": "'He oído que los que cruzan el portal nunca vuelven iguales. Que sus ojos brillan y no parpadean'.",
             "options": [
                 {
@@ -473,24 +578,9 @@
             ]
         },
         {
-            "id": "DLG_GEN_03",
-            "minStep": 4,
-            "maxStep": 12,
-            "text": "'Dicen que Orval Drexler tiene un fragmento de la Piedra en su despacho. Que habla con ella por las noches'.",
-            "options": [
-                {
-                    "text": "¿Quién te contó eso?",
-                    "energyCost": 0.75,
-                    "stabilityImpact": -10,
-                    "loreUnlock": "LORE_ORVAL_SECRET",
-                    "consequence": "'Un guardia del turno de noche. A las tres de la mañana se oye a Drexler hablar solo en el despacho. Y algo le contesta'."
-                }
-            ]
-        },
-        {
             "id": "DLG_GEN_05",
-            "minStep": 1,
-            "maxStep": 12,
+            "minStep": 4,
+            "maxStep": 4,
             "text": "'No soy un número. Tengo un nombre. Me llamo... me llamo... ¡Maldita sea, NAKASTHU me ha borrado el nombre!'",
             "options": [
                 {
@@ -503,9 +593,9 @@
         },
         {
             "id": "DLG_GEN_07",
-            "minStep": 4,
-            "maxStep": 12,
-            "text": "'Trabajaba en la logística de reasignación. Vi las listas. No enviamos gente a trabajar, los enviamos a... a alimentar algo'.",
+            "minStep": 6,
+            "maxStep": 6,
+            "text": "'Trabajaba en reasignación. Vi la hoja del trimestre. Cuatrocientos doce mil traslados a Prisiat en trece semanas. En la columna de retorno previsto pone: ninguno'.",
             "options": [
                 {
                     "text": "Esa información es clasificada. No vuelvas a mencionarla.",
@@ -517,23 +607,23 @@
         },
         {
             "id": "DLG_GEN_08",
-            "minStep": 1,
-            "maxStep": 12,
+            "minStep": 6,
+            "maxStep": 6,
             "text": "'Mi madre desapareció en el Sector 4. Me dijeron que fue un error de cálculo del BioScan. ¡Dígame la verdad!'",
             "options": [
                 {
-                    "text": "No fue un error. El Sector 4 fue el epicentro del Gran Desvío.",
+                    "text": "No fue un error. Tu madre no figura en ningún registro desde esa noche.",
                     "energyCost": 0.6,
                     "stabilityImpact": -20,
                     "loreUnlock": "LORE_SECTOR4_TRUTH",
-                    "consequence": "*Se queda inmóvil.* '¿Entonces nadie? ¿Nadie salió de ahí?'"
+                    "consequence": "*Se queda inmóvil.* '¿Y los demás del bloque? ¿Salió alguien de ahí?'"
                 }
             ]
         },
         {
             "id": "DLG_GEN_09",
-            "minStep": 7,
-            "maxStep": 12,
+            "minStep": 8,
+            "maxStep": 8,
             "text": "'Kamin me dio esto. Es una pequeña piedra negra. Dice que me protegerá cuando el portal se abra. ¿Quieres verla?'",
             "options": [
                 {
@@ -541,28 +631,14 @@
                     "energyCost": 0.25,
                     "stabilityImpact": 5,
                     "loreUnlock": "LORE_VOID_FRAGMENT",
-                    "consequence": "*La deja con cuidado. Sobre el metal, la piedra late como un corazón pequeño.* 'Cuídela. Ahora ya sabe cómo se llama usted'."
-                }
-            ]
-        },
-        {
-            "id": "DLG_GEN_11",
-            "minStep": 1,
-            "maxStep": 12,
-            "text": "'¿Oyes eso? Arena contra el metal. Y no hay viento'.",
-            "options": [
-                {
-                    "text": "No oigo nada. Los sensores tampoco.",
-                    "energyCost": 0.25,
-                    "stabilityImpact": 2,
-                    "consequence": "*Se tapa los oídos.* 'Entonces está dentro de mí. Ya está dentro'."
+                    "consequence": "*La deja con cuidado. Sobre el metal, la piedra late una vez cada diez segundos.* 'Cuídela. Ahora ya sabe cómo se llama usted'."
                 }
             ]
         },
         {
             "id": "DLG_GEN_13",
-            "minStep": 7,
-            "maxStep": 12,
+            "minStep": 8,
+            "maxStep": 8,
             "text": "'Kamin dice que la Piedra es el catalizador de nuestra evolución. Que sin dolor no hay cambio. Siento que voy a cambiar mucho hoy'.",
             "options": [
                 {
@@ -576,7 +652,7 @@
         {
             "id": "DLG_GEN_15",
             "minStep": 10,
-            "maxStep": 12,
+            "maxStep": 10,
             "text": "'El Monolito está brillando más que nunca. Puedo verlo a través de las paredes. Me está llamando por mi nombre de nacimiento'.",
             "options": [
                 {
