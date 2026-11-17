@@ -165,11 +165,12 @@ const stateManager = {
         const freshState = JSON.parse(JSON.stringify(initialState));
         const tutorialSeen = this.hasSeenTutorial; // Preservar estado del tutorial
         const maxStep = this.maxStepReached;      // Preservar progreso máximo
+        const lore = this.loreArchive;            // El archivo de lore es de jugador, no de partida
 
         this.startBatch();
         Object.keys(freshState).forEach(key => {
             // No resetear flags persistentes
-            if (key === 'hasSeenTutorial' || key === 'maxStepReached') return;
+            if (key === 'hasSeenTutorial' || key === 'maxStepReached' || key === 'loreArchive') return;
             this[key] = freshState[key];
         });
 
@@ -182,6 +183,7 @@ const stateManager = {
 
         this.hasSeenTutorial = tutorialSeen;
         this.maxStepReached = maxStep;
+        this.loreArchive = lore.filter(e => e.loreId);
         this.endBatch();
 
         bus.emit('SYSTEM_LOG', { msg: 'REINICIO_COMPLETO_ESTADO' });
