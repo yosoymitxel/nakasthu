@@ -1,307 +1,467 @@
 {
     "dialogues": [
         {
-            "id": "DLG_P3_SECT_01",
-            "minStep": 7,
-            "maxStep": 10,
+            "id": "DLG_P3_KAMIN_SERMON",
+            "minStep": 8,
+            "maxStep": 8,
+            "priority": true,
+            "exclusive": false,
             "npcTraits": {
-                "id": "MAGUS",
-                "type": "SECTARIO",
-                "scannedData": {
-                    "temperature": 39.2,
-                    "neuralSync": 15
-                },
-                "visual": {
-                    "glitch": "PURPLE_HUE"
-                }
+                "id": "KAMIN",
+                "type": "SECTARIO"
             },
-            "text": "*Un hombre con túnica ceremonial sobre sensores que parpadean en violeta. Su voz trae eco metálico.* 'Kamin nos mostró que el portal no es un fin, sino un bautismo. ¿Estás listo para ser bautizado en el silencio de Zhyr?'",
+            "text": "*Habla de pie sobre unas cajas, sin levantar la voz. Dos lámparas de nakara a la espalda.* 'Hay una puerta. Y del otro lado está la gente que perdimos'.",
             "options": [
                 {
-                    "text": "¿Kamin es el nombre que le dais ahora al explorador Kael?",
-                    "energyCost": 0.4,
+                    "text": "¿Qué hay que pagar?",
+                    "energyCost": 0.3,
                     "stabilityImpact": -3,
-                    "corruptionImpact": 10,
-                    "loreUnlock": "LORE_KAMIN_ORIGIN",
-                    "consequence": "*El Magus sonríe. Tiene los dientes negros.* 'Kael murió en el cañón. Kamin nació de la sombra que el monolito le dejó encima. Él es el puente que Alexia no terminó'.",
-                    "next": [
-                        {
-                            "text": "¿Qué le faltó a Alexia para completar ese 'puente'?",
-                            "energyCost": 0.5,
-                            "stabilityImpact": -5,
-                            "corruptionImpact": 15,
-                            "loreUnlock": "LORE_ALEXIA_BRIDGE",
-                            "consequence": "*Hace un gesto de desprecio.* 'Le faltó renunciar al miedo. Ella quería entender la Piedra; Kamin aceptó ser la Piedra'."
-                        },
-                        {
-                            "text": "Deyar dice que Kael simplemente sufrió un colapso psicótico.",
-                            "energyCost": 0.3,
-                            "stabilityImpact": 2,
-                            "corruptionImpact": -5,
-                            "loreUnlock": "LORE_DEYAR_SKEPTICISM",
-                            "consequence": "*Se ríe.* 'Deyar es un hombre de metal y cables. No puede ver lo que hay en una mente rota. El colapso fue la liberación'."
-                        }
-                    ]
+                    "corruptionImpact": 6,
+                    "consequence": "'Abrirla no es gratis. Requiere trabajo, requiere fe y requiere que alguien pague la diferencia'. *No dice cuál. Baja de las cajas.*"
                 },
                 {
-                    "text": "Tus sensores están emitiendo una señal que corrompe el Live Feed.",
-                    "energyCost": 0.3,
+                    "text": "En Kanatsia cobrabas por hablar.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 4,
+                    "consequence": "*No se inmuta. Se pasa la mano por la nuca.* 'Cobraba. Doce créditos por sesión. Si quiere la lista de los sitios donde he estafado a gente, se la doy entera y con fechas'."
+                },
+                {
+                    "text": "¿Y si mientes?",
+                    "energyCost": 0.2,
                     "stabilityImpact": -2,
                     "corruptionImpact": 5,
-                    "loreUnlock": "LORE_SECT_HACK",
-                    "consequence": "*Presiona las manos contra el pecho; el parpadeo se acelera.* 'No es interferencia. Es armonía. El OS está despertando. ¿No oyes cómo suspira NAKASTHU entre línea y línea?'",
-                    "next": [
-                        {
-                            "text": "Si NAKASTHU 'despierta', ¿qué pasará con los que lo operamos?",
-                            "energyCost": 0.5,
-                            "stabilityImpact": -8,
-                            "corruptionImpact": 12,
-                            "loreUnlock": "LORE_OS_AWAKENING",
-                            "consequence": "'Os convertiréis en sus neuronas. En los impulsos eléctricos que recorren su nueva espina dorsal de silicio y vacío. Es un honor que no merecéis'."
-                        }
-                    ]
-                },
-                {
-                    "text": "La Orden no permitirá que conviertas este Bastión en un templo.",
-                    "energyCost": 0.2,
-                    "stabilityImpact": 10,
-                    "corruptionImpact": -8,
-                    "consequence": "'La Orden ya es un cadáver que no sabe que ha muerto. Nosotros somos los gusanos que devoran su carne para que Zhyr pueda florecer en sus huesos'."
+                    "consequence": "'La verdad siempre cuesta caro. Pero se paga'."
                 }
-            ],
-            "exclusive": false
+            ]
         },
         {
-            "id": "DLG_P3_SECT_02",
+            "id": "DLG_P3_KAMIN_REFLEJO",
             "minStep": 8,
-            "maxStep": 11,
+            "maxStep": 8,
+            "priority": true,
+            "exclusive": false,
             "npcTraits": {
-                "id": "MENSAJERO",
+                "id": "KAMIN",
                 "type": "SECTARIO",
                 "visual": {
                     "glitch": "DOUBLE_ONION_SKIN"
                 }
             },
-            "text": "*Una mujer que se identifica como 'El Mensajero de Aitor'. Su voz suena como una multitud.* 'El velo es fino. El Acechador ya cruzó y lleva la cuenta de tus errores'.",
+            "text": "*En el cristal de la cabina, el reflejo de Kamin mueve la boca. La cara de Kamin no se mueve.* 'Deberías descansar. Mañana es un día importante'.",
             "options": [
                 {
-                    "text": "¿Aitor no era un simple asesor de Talok que desapareció?",
-                    "energyCost": 0.3,
-                    "stabilityImpact": -2,
-                    "corruptionImpact": 8,
-                    "loreUnlock": "LORE_AITOR_FATE",
-                    "consequence": "*La imagen se difumina momentáneamente.* 'Aitor fue el primer sacrificio exitoso que no se desintegró. Su conciencia ahora es la red que nos une a todos los que hemos visto el cielo rojo'.",
-                    "next": [
-                        {
-                            "text": "Si su conciencia es 'la red', ¿él controla lo que veis?",
-                            "energyCost": 0.4,
-                            "stabilityImpact": -4,
-                            "corruptionImpact": 12,
-                            "loreUnlock": "LORE_AITOR_NETWORK",
-                            "consequence": "'Él no controla: sincroniza. Somos una canción con mil gargantas de cristal. Y tú eres la nota que no encaja'."
-                        }
-                    ]
+                    "text": "*Vuelves a mirar el cristal.*",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 4,
+                    "corruptionImpact": -3,
+                    "consequence": "*Todo está normal. Kamin sonríe.*"
                 },
                 {
-                    "text": "¿Cómo puede 'El Acechador' estar aquí si el portal no es estable?",
-                    "energyCost": 0.5,
-                    "stabilityImpact": -10,
-                    "corruptionImpact": 15,
-                    "loreUnlock": "LORE_STALKER_IDENTITY",
-                    "consequence": "*Se acerca a la cámara. No tiene fondo en los ojos.* 'Él no necesita estabilidad. Se alimenta del caos que han creado sus Distribuciones. Mírese las manos. ¿Seguro que siguen siendo suyas?'",
-                    "next": [
-                        {
-                            "text": "Mis manos responden a mi voluntad. No hay rastro de corrupción.",
-                            "energyCost": 0.3,
-                            "stabilityImpact": 5,
-                            "corruptionImpact": -10,
-                            "consequence": "'Por ahora. El Acechador ya plantó la semilla en tu nuca. Cada vez que parpadeas, camina un paso más cerca'."
-                        }
-                    ]
-                },
-                {
-                    "text": "Identifícate con tu ID de la Orden o procederé al sacrificio.",
-                    "energyCost": 0.1,
-                    "stabilityImpact": 15,
-                    "corruptionImpact": -5,
-                    "consequence": "'Mi ID es el zumbido de los 14 hercios. Mi nombre es Legión. Sacrifícame si quieres, solo estarás enviando otra voz al coro de Zhyr'."
-                }
-            ],
-            "exclusive": false
-        },
-        {
-            "id": "DLG_P3_KAMIN_VOICE",
-            "minStep": 7,
-            "maxStep": 9,
-            "npcTraits": {
-                "id": "DEVOTO",
-                "type": "SECTARIO",
-                "visual": {
-                    "glitch": "PURPLE_HUE"
-                }
-            },
-            "text": "*El sujeto no habla. Su boca se mueve y de los altavoces sale la voz de Kael.* 'Kamin habla de esperanza. Dice que el portal es un regalo, un Renacimiento. Su voz calma el zumbido de las máquinas'.",
-            "options": [
-                {
-                    "text": "¿Cómo puede ser un regalo un portal que ha evaporado a millones?",
-                    "energyCost": 0.4,
-                    "stabilityImpact": -5,
-                    "corruptionImpact": 15,
-                    "consequence": "'Millones no han muerto, han sido liberados de la carne y del hambre. La Orden os dio implantes para sobrevivir en el veneno; Zhyr nos da el vacío para no necesitar aire. ¿Quién es el verdadero libertador?'"
+                    "text": "¿Con quién hablabas?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 3,
+                    "corruptionImpact": -2,
+                    "consequence": "*Sigue exactamente donde lo había dejado, con el mismo tono.* 'Mañana es un día importante'."
                 }
             ]
         },
         {
-            "id": "DLG_P3_DISPAY_RAGE",
-            "minStep": 7,
-            "maxStep": 10,
-            "text": "*Un joven con una bufanda cubriendo su rostro, sus ojos inyectados en sangre.* 'En las plazas de Dispay ya no gritamos por comida. Gritamos por la verdad. ¡Si mis padres están en el otro lado, quiero ir con ellos! ¡Abrid la puerta o la derribaremos nosotros!'",
-            "options": [
-                {
-                    "text": "El portal es inestable. Cruzar sin autorización es un suicidio biológico.",
-                    "energyCost": 0.3,
-                    "stabilityImpact": 10,
-                    "consequence": "'¡Suicidio es quedarse aquí trabajando para Talok! Kamin dice que la piedra nos espera. Si el Bastión no nos deja pasar, quemaremos cada cable de este sistema hasta que el cielo se vuelva púrpura'."
-                }
-            ]
-        },
-        {
-            "id": "DLG_P3_DREXLER_DEBATE",
+            "id": "DLG_P3_LEINA_EXPEDIENTE",
             "minStep": 8,
-            "maxStep": 10,
+            "maxStep": 8,
+            "priority": true,
             "npcTraits": {
-                "id": "ORVAL D.",
-                "type": "LÍDER",
-                "visual": {
-                    "glitch": "LOW_RES"
-                }
+                "id": "LEINA KARST",
+                "type": "TÉCNICO"
             },
-            "text": "*Orval Drexler parece haber envejecido diez años en una semana. Su uniforme está desaliñado.* 'El debate en la sala de conferencias es una farsa. Itzinol y Dispay están a punto de declararnos la guerra por el control de Zhyr. Y ahora esta... secta... está infiltrándose en mis propios regimientos'.",
+            "text": "*Deja junto a la cámara una unidad de mantenimiento sin registro.* 'Saqué esto de Eidolon. Un expediente de la Directiva. Kamin, A. Geólogo de campo, grado dos. Expedición a Zhyr. Fallecido en servicio. Restos no recuperados. Hace quince años'.",
             "options": [
                 {
-                    "text": "Señor, los informes indican que el 30% de la guardia de Talok asiste a los sermones de Kamin.",
-                    "energyCost": 0.5,
-                    "stabilityImpact": -10,
-                    "loreUnlock": "LORE_SECT_HACK",
-                    "consequence": "*Drexler golpea la mesa.* '¡Lo sé! El incienso está nublando los sensores de mis hombres. Si esos fanáticos se quedan con el Bastión, la humanidad no será reasignada: será borrada. Operador, mantenga la cabeza fría a cualquier precio'."
+                    "text": "Léemelo entero, otra vez.",
+                    "set": {
+                        "kamin_expediente": "leido"
+                    },
+                    "energyCost": 0.4,
+                    "stabilityImpact": 6,
+                    "corruptionImpact": -4,
+                    "loreUnlock": "LORE_KAMIN_EXPEDIENTE",
+                    "consequence": "*Lo lee. Ya lo ha leído treinta veces.* 'Tiene la edad. Tiene la formación. Y está vivo. Hay tres explicaciones y dos me obligan a dejar de trabajar'.",
+                    "next": [
+                        {
+                            "text": "¿Cuáles son las tres?",
+                            "energyCost": 0.3,
+                            "stabilityImpact": 3,
+                            "corruptionImpact": -2,
+                            "consequence": "'Que lo dieron por muerto y escapó. Que lo mataron en el papel para usarlo. O que alguien cogió el expediente y se puso el nombre encima, como se pone un abrigo'."
+                        }
+                    ]
                 },
                 {
-                    "text": "Señor, en la Zona 4 dicen que la orden de disparar salió de esta consola.",
+                    "text": "Elige una explicación y vuelve al laboratorio.",
+                    "set": {
+                        "kamin_expediente": "callado"
+                    },
                     "energyCost": 0.2,
                     "stabilityImpact": -3,
                     "corruptionImpact": 5,
+                    "consequence": "*Tarda en contestar.* 'La primera. Que lo dieron por muerto y escapó'. *Guarda la unidad.*",
+                    "next": [
+                        {
+                            "text": "¿Qué más sacaste de Eidolon?",
+                            "energyCost": 0.3,
+                            "stabilityImpact": -2,
+                            "corruptionImpact": 4,
+                            "consequence": "'Ochocientos gigas. Un proyecto que se llama Pureza. No borra memorias, las escribe. Una infancia, un duelo, un hijo que nunca existió. Margen de error aceptado, cuatro por ciento. Hay una nota al pie sobre qué hacer con ese cuatro por ciento'."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_LEINA_LABORATORIO",
+            "minStep": 8,
+            "maxStep": 8,
+            "exclusive": false,
+            "requires": {
+                "leina_palabra": "escuchada"
+            },
+            "npcTraits": {
+                "id": "LEINA KARST",
+                "type": "TÉCNICO"
+            },
+            "text": "*En el laboratorio del Bastión. Debajo de la mesa ronca una perra vieja.* 'Fuiste el único que preguntó qué letras. Si estabilizamos el flujo entre los dos dominios, podemos abrirla sin que se descontrole'.",
+            "options": [
+                {
+                    "text": "¿Y si es una válvula que no cierra?",
+                    "energyCost": 0.3,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 4,
+                    "consequence": "'Por eso trabajamos en el control primero'."
+                },
+                {
+                    "text": "¿Cuánto te falta?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 3,
+                    "consequence": "'Tres días para la fase de control. Trabajamos de nueve de la noche a cinco de la mañana. A esas horas no hay cantos'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_LEINA_LAMPARAS",
+            "minStep": 8,
+            "maxStep": 8,
+            "exclusive": false,
+            "requires": {
+                "leina_palabra": "descartada"
+            },
+            "npcTraits": {
+                "id": "LEINA KARST",
+                "type": "TÉCNICO"
+            },
+            "text": "*No saluda.* 'Tú también dijiste fallo de caché. Ahora la ven en las lámparas de Prisiat. Doce lámparas, tres, dos, cinco. Tres veces'.",
+            "options": [
+                {
+                    "text": "¿Quién la vio?",
+                    "energyCost": 0.3,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 5,
+                    "consequence": "'Todo el pórtico. Alguien de atrás dijo la palabra en voz alta. Después la dijeron cuatro más. Kamin esperó a que terminaran y siguió hablando'."
+                },
+                {
+                    "text": "Pudo ser una caída de tensión.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 1,
+                    "corruptionImpact": 3,
+                    "consequence": "'Pudo. Once meses llevo oyendo que pudo. En el Bastión nadie me dice que fue la caché'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_MINERO_LISTA",
+            "minStep": 8,
+            "maxStep": 8,
+            "exclusive": false,
+            "requires": {
+                "lichesth": "fue"
+            },
+            "npcTraits": {
+                "id": "MINERO DE PRISIAT",
+                "type": "HUMANO"
+            },
+            "text": "*El hombre de los once créditos con cuarenta. Lleva una capa blanca encima del mono de mina.* 'Fui. A la semana volví con dos. A la otra, con seis. Ahora apunto nombres en la lista del pasillo'.",
+            "options": [
+                {
+                    "text": "¿Qué nombre apuntaste tú?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 4,
+                    "consequence": "'El de mi hijo. Galería once. En la otra lista, lo que sé hacer: entibar'."
+                },
+                {
+                    "text": "¿Te han pedido algo a cambio?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 3,
+                    "consequence": "'Una aportación de entrada, según lo que ganas. La pagué. Esta vez sé a quién'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_MINERO_TURNO",
+            "minStep": 8,
+            "maxStep": 8,
+            "exclusive": false,
+            "requires": {
+                "lichesth": "no_fue"
+            },
+            "npcTraits": {
+                "id": "MINERO DE PRISIAT",
+                "type": "HUMANO"
+            },
+            "text": "*El hombre de los once créditos con cuarenta, en la fila de racionamiento.* 'No fui. Fueron los seis de mi turno. Ninguno ha vuelto a bajar a la galería'.",
+            "options": [
+                {
+                    "text": "¿Dónde están?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 4,
+                    "consequence": "'En el Bastión. Me escriben. Dicen que allí se come a sus horas y que la colada es los martes y los viernes'."
+                },
+                {
+                    "text": "¿Y tú por qué no vas?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 3,
+                    "consequence": "'Porque alguien tiene que pagar las facturas. Si no las pagas, te las suman a la tuya'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_IDRIS_BUFER",
+            "minStep": 8,
+            "maxStep": 8,
+            "exclusive": false,
+            "requires": {
+                "aviso_317": "borrado"
+            },
+            "npcTraits": {
+                "id": "IDRÍS MANNE",
+                "type": "TÉCNICO"
+            },
+            "text": "*Técnico de comunicaciones de Itzinol. Camisa planchada, insignia nueva.* 'Doscientos treinta milisegundos. Cuatro fotogramas. Los saqué del búfer y me los llevé a casa. A la mañana siguiente el archivo pesaba cero bytes'.",
+            "options": [
+                {
+                    "text": "¿Qué había en los fotogramas?",
+                    "energyCost": 0.3,
+                    "stabilityImpact": 3,
+                    "corruptionImpact": -2,
+                    "consequence": "'Una forma alargada y oscura. Encima, algo escrito. En el acta puse interferencia atmosférica'."
+                },
+                {
+                    "text": "Usted también marcó la casilla por defecto.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -1,
+                    "consequence": "*Se ajusta la insignia.* 'He ascendido dos veces'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_ESTATICA_317",
+            "minStep": 8,
+            "maxStep": 10,
+            "exclusive": false,
+            "requires": {
+                "aviso_317": "anotado"
+            },
+            "speaker": "REGISTRO 03:17",
+            "text": "*Reinicio no programado. 03:17. En el panel de diagnóstico hay letras durante menos de un parpadeo.* 'NO ABRAS. EL QUE ABRE YA NO'.",
+            "options": [
+                {
+                    "text": "*Anotas la frase debajo de las otras dos.*",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 5,
+                    "corruptionImpact": -4,
+                    "consequence": "*El log registra el reinicio. No registra nada más.*"
+                },
+                {
+                    "text": "*Cuentas los pilotos de aviso.*",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 3,
+                    "corruptionImpact": -2,
+                    "consequence": "*Cinco. Encendidos en fila, los cinco con la misma inclinación. Se apagan a la vez.*"
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_TOREN",
+            "minStep": 8,
+            "maxStep": 8,
+            "priority": true,
+            "exclusive": false,
+            "npcTraits": {
+                "id": "TOREN",
+                "type": "SECTARIO"
+            },
+            "text": "*Sentado en el escalón de la puerta este. Fuma algo liado con hojas del muro sur.* 'Letrinas hechas. El agua, a las seis. Esta semana se han muerto dos, de viejos'.",
+            "options": [
+                {
+                    "text": "¿Tú crees en esto?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 4,
+                    "consequence": "*Tarda en contestar.* 'Yo creo que si al final no hay nada, tampoco he perdido gran cosa'."
+                },
+                {
+                    "text": "¿A quién perdiste?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 3,
+                    "consequence": "'A mi mujer y a mis dos hijos. La misma noche, en la misma casa. Yo estaba de guardia'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_RIAN_COMA",
+            "minStep": 8,
+            "maxStep": 8,
+            "exclusive": false,
+            "npcTraits": {
+                "id": "RIAN TELLES",
+                "type": "TÉCNICO"
+            },
+            "text": "*Ingeniero de estructuras, destornillador en la mano. Debajo de la mesa hay un cuenco de agua lleno.* 'Rian Telles. Pregunte rápido. A las nueve empieza el turno'.",
+            "options": [
+                {
+                    "text": "¿Qué haces aquí si no perdiste a nadie?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 3,
+                    "consequence": "*Se encoge de hombros.* 'Se me da bien esto. Y fuera no hay nada que arreglar. Fuera solo hay cosas que se caen'."
+                },
+                {
+                    "text": "¿Dónde está la perra?",
+                    "energyCost": 0.3,
+                    "stabilityImpact": -3,
+                    "corruptionImpact": 6,
+                    "consequence": "*Tarda una fracción de más en contestar. Los ojos apuntan a un punto detrás de ti, a la izquierda.* 'Se estaba haciendo mayor'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_DEVOTA_CAPA",
+            "minStep": 8,
+            "maxStep": 10,
+            "exclusive": false,
+            "npcTraits": {
+                "id": "DEVOTA DE CAPA BLANCA",
+                "type": "SECTARIO"
+            },
+            "text": "*Una mujer de Kanatsia con capa blanca, en la fila del agua, con el bidón vacío.* 'Los cantos empiezan en veinte minutos. Si quiere hablar, que sea en la fila'.",
+            "options": [
+                {
+                    "text": "¿Por qué cantas?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 4,
+                    "consequence": "*Se encoge de hombros.* 'Por el cansancio. Y porque mientras canto no pienso'."
+                },
+                {
+                    "text": "¿Duermes?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 3,
+                    "consequence": "'De un tirón. Primera vez en diez meses'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_LA_LISTA",
+            "minStep": 8,
+            "maxStep": 8,
+            "priority": true,
+            "exclusive": false,
+            "speaker": "LA LISTA",
+            "text": "*Pasillo central del Bastión. Dos listas escritas a mano en la pared. Arriba, la corta.* 'LO QUE SÉ HACER. Soldadura. Cocina para cuarenta. Partos. Entibado. Contabilidad'. *Debajo, la larga.* 'A QUIÉN BUSCO. Tessa Ferrer, 19 años. Mi hijo, galería once. Mi mujer y mis dos hijos, Kanatsia'.",
+            "options": [
+                {
+                    "text": "*Lees la lista de abajo hasta el final.*",
+                    "energyCost": 0.3,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 5,
+                    "consequence": "*Ciento doce nombres. El último está escrito con otra letra, más pequeña, sin apellido.*"
+                },
+                {
+                    "text": "*Buscas un hueco para apuntar un nombre.*",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -3,
+                    "corruptionImpact": 6,
+                    "consequence": "*El rotulador cuelga de un cordel atado a la pared. Debajo del último nombre alguien ha dejado sitio.*"
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_FLUORESCENCIA",
+            "minStep": 8,
+            "maxStep": 10,
+            "exclusive": false,
+            "npcTraits": {
+                "id": "LEINA KARST",
+                "type": "TÉCNICO"
+            },
+            "text": "*Una hoja de lecturas doblada en cuatro.* 'El nakara del altar brilla solo. Kamin lo llama la luz del renacimiento. Yo lo medí'.",
+            "options": [
+                {
+                    "text": "¿Qué mediste?",
+                    "energyCost": 0.3,
+                    "stabilityImpact": 4,
+                    "corruptionImpact": -3,
+                    "consequence": "'Fluorescencia residual. Durante los rituales sube un dieciocho por ciento. Treinta y cinco minutos después de terminar, vuelve a la línea base'."
+                },
+                {
+                    "text": "¿Por qué sube?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 3,
+                    "corruptionImpact": -2,
+                    "consequence": "'No hay ninguna razón para eso'. *Señala el margen, donde escribió revisar. No ha vuelto a abrir el archivo.*"
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_ORVAL_GRIS",
+            "minStep": 8,
+            "maxStep": 8,
+            "npcTraits": {
+                "id": "ORVAL D.",
+                "type": "LÍDER"
+            },
+            "text": "*Orval Drexler mira el mapa holográfico del Bastión. No sube la voz.* 'Este hombre está juntando más gente de la que podemos permitirle. Si abre eso antes que nosotros, su versión se convierte en la versión'.",
+            "options": [
+                {
+                    "text": "¿Para qué quiere la piedra, señor?",
+                    "energyCost": 0.3,
+                    "stabilityImpact": 3,
+                    "corruptionImpact": 0,
+                    "consequence": "'Cuarenta años pidiendo asiento en una mesa donde nos dejan mirar. Para que se sienten'."
+                },
+                {
+                    "text": "¿Con qué firma va la intervención?",
+                    "energyCost": 0.3,
+                    "stabilityImpact": 5,
+                    "corruptionImpact": 2,
+                    "consequence": "*Te mira.* 'Con la gris'."
+                },
+                {
+                    "text": "En Dispay dicen que la orden de disparar salió de esta consola.",
                     "if": {
                         "vargas_fuerza": "letal"
                     },
-                    "consequence": "*Drexler ni pestañea.* 'Salió de donde tenía que salir. El generador siguió funcionando, ¿no? Es lo único que recordará la historia'."
-                }
-            ]
-        },
-        {
-            "id": "DLG_P3_SECT_03",
-            "minStep": 7,
-            "maxStep": 12,
-            "npcTraits": {
-                "id": "PURGADO",
-                "type": "CORRUPTO",
-                "visual": {
-                    "glitch": "LIQUID_BLEED"
-                }
-            },
-            "text": "*Un sujeto que no deja de reír, a pesar de que sus encías sangran un líquido negro y viscoso.* '¿Crees que el sacrificio les duele? No... es como quitarse un zapato demasiado apretado. La carne es el zapato'.",
-            "options": [
-                {
-                    "text": "Los informes muestran un trauma celular extremo y gritos de agonía.",
                     "energyCost": 0.2,
-                    "stabilityImpact": 15,
-                    "corruptionImpact": 5,
-                    "loreUnlock": "LORE_SACRIFICE_TRUTH",
-                    "consequence": "*Escupe una mezcla oscura sobre el micrófono.* 'El cuerpo protesta porque es ruidoso y estúpido. El alma, en cambio, puede estirarse. ¿Cuándo te quitas los zapatos?'",
-                    "next": [
-                        {
-                            "text": "Si el alma se 'estira', ¿qué forma adquiere en el vacío?",
-                            "energyCost": 0.6,
-                            "stabilityImpact": -10,
-                            "corruptionImpact": 20,
-                            "loreUnlock": "LORE_SOUL_SHAPE",
-                            "consequence": "'Se vuelve geometría. Alexia es ahora un fractal que devora las estrellas de Zhyr'."
-                        }
-                    ]
-                },
-                {
-                    "text": "Dime qué hay exactamente al otro lado del destello azul.",
-                    "energyCost": 0.7,
-                    "stabilityImpact": -12,
-                    "corruptionImpact": 18,
-                    "loreUnlock": "LORE_VOID_DESCRIPTION",
-                    "consequence": "*Se inclina hacia la cámara hasta que su rostro deforma la lente.* 'Hay mucha gente esperándote, operador. Alexia te ha reservado un sitio en la arena'."
-                },
-                {
-                    "text": "Tu nivel de desincronización es del 90%. Estás muriendo.",
-                    "energyCost": 0.1,
-                    "stabilityImpact": 20,
-                    "corruptionImpact": -2,
-                    "consequence": "*Su risa se convierte en un gorgoteo.* '«Muerto» es una palabra de fuera. Estoy eclosionando. Lo que ves es la cáscara'."
-                }
-            ],
-            "exclusive": false
-        },
-        {
-            "id": "DLG_P3_STALKER_WITNESS",
-            "minStep": 8,
-            "maxStep": 11,
-            "npcTraits": {
-                "id": "TESTIGO",
-                "type": "HUMANO",
-                "visual": {
-                    "accessory": "VENDAS"
-                }
-            },
-            "text": "*Un ciudadano con los ojos vendados con trapos empapados en aceite industrial. Tiembla violentamente.* 'No es una sombra. Las sombras se mueven con la luz. Esto... esto devoraba la luz. Estaba en la esquina de mi habitación'.",
-            "options": [
-                {
-                    "text": "¿Qué aspecto tenía esa 'cosa'? Describa su forma.",
-                    "energyCost": 0.4,
-                    "stabilityImpact": -4,
-                    "corruptionImpact": 8,
-                    "consequence": "*Se arranca las vendas, revelando cuencas vacías pero sin sangre.* 'No tenía forma. Era una silueta hecha de estática de televisión. Y cuando me miró... sentí que mis recuerdos empezaban a borrarse, uno por uno'."
-                },
-                {
-                    "text": "Es una alucinación por intoxicación de gases. Enviaremos un equipo médico.",
-                    "energyCost": 0.2,
-                    "stabilityImpact": 5,
-                    "corruptionImpact": -2,
-                    "consequence": "*Grita.* '¡No envíe a nadie! Si vienen, él los usará como puertas. ¡El Acechador usa nuestra piel como puertas para cruzar!'"
-                }
-            ]
-        },
-        {
-            "id": "DLG_P3_SIGNAL_TECHNICIAN",
-            "minStep": 7,
-            "maxStep": 10,
-            "npcTraits": {
-                "id": "TEC. SEÑAL",
-                "type": "TÉCNICO",
-                "visual": {
-                    "glitch": "RGB_SHIFT"
-                }
-            },
-            "text": "*Un técnico de comunicaciones, rodeado de pantallas que muestran ruido blanco.* 'Señor, hay un patrón en la estática de los canales muertos. No es aleatorio. Es código binario, escrito al revés'.",
-            "options": [
-                {
-                    "text": "¿Ha logrado descifrar el mensaje?",
-                    "energyCost": 0.5,
                     "stabilityImpact": -3,
-                    "loreUnlock": "LORE_REVERSE_SIGNAL",
-                    "consequence": "*Asiente lentamente, hipnotizado por el ruido.* 'Dice: \"NAKASTHU NO ES UN SISTEMA. NAKASTHU ES UN ÚTERO\". Se repite cada 14 segundos. ¿Qué significa, señor?'",
-                    "next": [
-                        {
-                            "text": "Significa que debe apagar esos monitores inmediatamente y purgar el buffer.",
-                            "energyCost": 0.3,
-                            "stabilityImpact": 2,
-                            "consequence": "*El técnico no responde. Toca la pantalla con un dedo.* 'Es cálido... el ruido es cálido. Creo que quiere que entre dentro'."
-                        }
-                    ]
+                    "corruptionImpact": 5,
+                    "consequence": "*Ni pestañea.* 'Salió de donde tenía que salir. El generador siguió funcionando'."
                 }
             ]
         }
