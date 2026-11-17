@@ -1,200 +1,577 @@
 {
     "dialogues": [
         {
-            "id": "DLG_P4_ASCE_01",
+            "id": "DLG_P4_KAEL_PASILLO",
             "minStep": 10,
-            "maxStep": 12,
+            "maxStep": 10,
+            "exclusive": false,
             "npcTraits": {
-                "id": "SIN ROSTRO",
-                "type": "ENTITY",
-                "visual": {
-                    "glitch": "VOID_BLACK"
+                "id": "KAEL",
+                "type": "HUMANO",
+                "scannedData": {
+                    "temperature": 36.1,
+                    "neuralSync": 12
                 }
             },
-            "text": "*El sujeto no tiene rostro. En su lugar hay una superficie negra y pulida que refleja tu consola y tus ojos.* 'El tiempo de los interrogatorios ha terminado. El monolito ya no está en Zhyr: está en la Tierra'.",
+            "text": "*Pasillo del laboratorio, cuatro de la mañana. Barba de cinco meses de vagones. Se sienta contra la pared de enfrente, a tres metros.* 'Estuve en Zhyr. En la primera expedición. La que se llevó a la simbóloga'.",
             "options": [
                 {
-                    "text": "NAKASTHU informa de una anomalía gravitatoria masiva en el sector de Talok. ¿Es el portal?",
-                    "energyCost": 0.8,
-                    "stabilityImpact": -10,
-                    "loreUnlock": "LORE_EARTH_COLLAPSE",
-                    "consequence": "*La superficie negra de su cara ondula como agua.* 'No es una anomalía. Zhyr está reclamando su otra mitad. Pronto habrá dos soles sobre el Pacífico'."
+                    "text": "¿Qué vienes a decir?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 1,
+                    "corruptionImpact": 0,
+                    "consequence": "'No lo sé'. *Lo dice y se da cuenta de que es verdad.* 'Llevo cinco meses andando hacia aquí y no sé qué venía a decir'."
                 },
                 {
-                    "text": "¿Dónde están los demás operadores de la red? Las señales de las otras Distribuciones se han apagado.",
-                    "energyCost": 0.6,
-                    "stabilityImpact": -15,
-                    "loreUnlock": "LORE_LAST_OPERATOR",
-                    "consequence": "'Tú eres el último. El que cerrará la puerta desde fuera... o el que la abrirá de par en par para que el Acechador entre. ¿Qué decides, pequeño engranaje?'"
-                }
-            ],
-            "exclusive": false
-        },
-        {
-            "id": "DLG_P4_ASCE_02",
-            "minStep": 11,
-            "maxStep": 12,
-            "npcTraits": {
-                "id": "ALEXIA?",
-                "type": "EIDOLON",
-                "visual": {
-                    "glitch": "GHOST_TRACE"
-                }
-            },
-            "text": "*Un espectro que parpadea entre la forma de Alexia y una masa de estática violeta.* 'Kael me prometió que vendrías a buscarnos. ¿Sientes el frío de la arena abrasiva, operador? Está empezando a cubrir el suelo de tu sala de mando'.",
-            "options": [
-                {
-                    "text": "Tú no eres Alexia. Ella desapareció el tercer día de la exploración original.",
-                    "energyCost": 0.4,
-                    "stabilityImpact": 25,
-                    "loreUnlock": "LORE_ALEXIA_GHOST",
-                    "consequence": "'«Desaparecer» es una palabra de superficie. Soy la memoria de Zhyr. Y tú eres mi próximo recuerdo'."
+                    "text": "¿Cómo era la simbóloga?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -1,
+                    "consequence": "*Tarda.* 'Escribía en papel. Decía que el registro guarda lo que mide el traje y que ella apuntaba lo que le parecía'. *Se mira las manos.* 'Deyar le preguntaba de qué servía. Ella decía que de nada. Que por eso lo escribía en papel'."
                 },
                 {
-                    "text": "Iniciando purga de datos de emergencia del enlace neural. No permitiré que Zhyr acceda a NAKASTHU.",
-                    "energyCost": 1.5,
-                    "stabilityImpact": -20,
-                    "loreUnlock": "LORE_DATA_PURGE",
-                    "consequence": "*Su imagen se fragmenta en códigos binarios.* 'NAKASTHU no puede purgar lo que ya es parte de su núcleo. Mira tu brazo, operador. Los símbolos de la roca ya están bajo tu piel. Ya eres uno de nosotros'."
-                }
-            ]
-        },
-        {
-            "id": "DLG_P4_ASCE_03",
-            "minStep": 12,
-            "maxStep": 12,
-            "npcTraits": {
-                "id": "VACÍO",
-                "type": "DESCONOCIDO",
-                "visual": {
-                    "glitch": "WHITE_NOISE"
-                }
-            },
-            "text": "*Una voz que emana directamente de los altavoces de tu consola, sin que el sujeto en la cámara mueva los labios.* 'El Acechador está en la habitación contigo. No mires atrás, o el vacío te consumirá antes de tiempo'.",
-            "options": [
-                {
-                    "text": "Autorizando el sacrificio final de este sujeto. Si este es el fin, que sea bajo mis términos.",
-                    "energyCost": 1.8,
-                    "stabilityImpact": -30,
-                    "loreUnlock": "LORE_FINAL_SACRIFICE",
-                    "consequence": "*Un destello azul cegador inunda la pantalla. Suena cristal rompiéndose en toda la sala de mando. NAKASTHU se reinicia, pero su logo ahora es un símbolo vivo.*"
-                },
-                {
-                    "text": "¿Quién eres realmente? ¿Eres el OS o eres la voz de Zhyr?",
+                    "text": "*Le señalas la bota izquierda.*",
+                    "if": { "libreta": "guardada" },
                     "energyCost": 0.3,
-                    "stabilityImpact": -5,
-                    "loreUnlock": "LORE_THE_END",
-                    "consequence": "'Soy la respuesta a la pregunta que la humanidad no debió hacer. Bienvenido a Zhyr, operador. El silencio por fin ha llegado'."
+                    "stabilityImpact": 4,
+                    "corruptionImpact": -3,
+                    "consequence": "*Se afloja el cordón. Saca la libreta del forro y la abre sin buscar.* 'Página treinta y uno. Entrada treinta y ocho. La misma cara en dos fichas con nombres distintos. Me dijeron que era un error de carga'."
+                },
+                {
+                    "text": "¿Y la libreta?",
+                    "if": { "libreta": "requisada" },
+                    "energyCost": 0.2,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -1,
+                    "consequence": "*Se toca la bota izquierda. El forro está vacío.* 'Se la quedaron en la cuarentena. Me sé de memoria la página treinta y uno. De memoria no le sirve a nadie'."
+                },
+                {
+                    "text": "Las tres y diecisiete. Mi registro también lo tiene.",
+                    "if": { "aviso_317": "anotado" },
+                    "energyCost": 0.3,
+                    "stabilityImpact": 4,
+                    "corruptionImpact": -3,
+                    "consequence": "*Se queda quieto.* 'A mí me llega una palabra por noche. Llevo más de cuatrocientas contadas. Y cuando casi está, vuelve a empezar'."
+                },
+                {
+                    "text": "Kamin, A. Geólogo. Fallecido en servicio hace quince años.",
+                    "if": { "kamin_expediente": "leido" },
+                    "energyCost": 0.3,
+                    "stabilityImpact": 5,
+                    "corruptionImpact": -4,
+                    "consequence": "*Tarda.* 'Entonces ya tengo algo que decirle a la ingeniera'."
+                },
+                {
+                    "text": "¿Qué hay que hacer con Kamin?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 1,
+                    "corruptionImpact": 0,
+                    "consequence": "'Tener cuidado'. *Espera. No viene nada más.* 'No sé por qué'."
                 }
             ]
         },
         {
-            "id": "DLG_P4_ZHYR_VICTORY",
-            "minStep": 11,
-            "maxStep": 12,
-            "npcTraits": {
-                "id": "ARQUITECTO",
-                "type": "VOID_CONSTRUCT",
-                "visual": {
-                    "glitch": "FRACTAL"
-                }
-            },
-            "text": "*Una entidad compuesta de formas geométricas imposibles que rotan sobre sí mismas.* 'Vuestro mundo no está siendo destruido, operador. Está siendo optimizado. Cada \"reasignación\", cada \"desaparición\", fue un bit de datos movido de un servidor corrupto a un núcleo puro'.",
+            "id": "DLG_P4_ESTATICA_317",
+            "minStep": 10,
+            "maxStep": 10,
+            "requires": { "aviso_317": "anotado" },
+            "speaker": "REGISTRO 03:17",
+            "text": "*03:17. Reinicio no programado. El parte que firmaste sigue abierto en la bandeja. Durante un parpadeo, el panel no da cifras.* 'NO ABRAS'.",
             "options": [
                 {
-                    "text": "La humanidad no es 'datos'. Tenemos voluntad, historia, dolor.",
-                    "energyCost": 0.5,
-                    "stabilityImpact": -15,
-                    "consequence": "'El dolor es un error de entrada. La voluntad, una variable sin inicializar. Zhyr ofrece la constante: paz. ¿Por qué luchas contra eso?'"
+                    "text": "*Esperas la siguiente palabra.*",
+                    "energyCost": 0.1,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -2,
+                    "consequence": "*El panel vuelve a las cifras. 03:17. 03:18.*"
                 }
             ]
         },
         {
-            "id": "DLG_P4_FINAL_CHOICE",
-            "minStep": 12,
-            "maxStep": 12,
+            "id": "DLG_P4_LEINA_CERTEZA",
+            "minStep": 10,
+            "maxStep": 10,
+            "exclusive": false,
             "npcTraits": {
-                "id": "EL TESTIGO",
-                "type": "ASCENDED",
-                "visual": {
-                    "glitch": "WHITE_NOISE"
-                }
+                "id": "LEINA",
+                "type": "TÉCNICO"
             },
-            "text": "*La consola NAKASTHU parpadea salvajemente. Un último mensaje aparece en la pantalla de diagnóstico.* 'El portal está abierto. La Tierra es ahora un reflejo de Zhyr. Solo queda una acción por realizar, operador. Pulsa el botón. Tradúcenos a todos'.",
+            "text": "*Leina Karst, sentada en el suelo del pasillo con una taza vacía entre las manos. Tarda en enfocar.* 'Cuatrocientas personas cruzan al día. Nueve mil llegan. Tengo un aparato que funciona y que no entiendo'.",
             "options": [
                 {
-                    "text": "*Pulsas el botón.*",
-                    "energyCost": 2.0,
-                    "stabilityImpact": -100,
-                    "loreUnlock": "LORE_ASCENSION_COMPLETE",
-                    "consequence": "*El mundo se disuelve en una frecuencia pura. No hay más ruido. Solo NAKASTHU.*"
+                    "text": "¿Qué crees que hay al otro lado?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 2,
+                    "consequence": "'Creo que hay algo'. *Se encoge de hombros.* 'Creo que están vivos porque he visto salir a gente andando'."
                 },
                 {
-                    "text": "*Fuerzas un bucle en el núcleo.*",
-                    "energyCost": 2.0,
-                    "stabilityImpact": 50,
-                    "loreUnlock": "LORE_ETERNAL_RESISTANCE",
-                    "consequence": "*El sistema se congela en el último segundo. La agonía de la humanidad se queda ahí, intacta.*"
+                    "text": "¿Y los que no salen?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 2,
+                    "consequence": "'La mayoría no quiere salir. Eso también se puede leer de dos maneras'."
+                },
+                {
+                    "text": "¿Por qué no lo paras hasta saberlo?",
+                    "energyCost": 0.3,
+                    "stabilityImpact": -3,
+                    "corruptionImpact": 4,
+                    "consequence": "*Se levanta.* 'Porque afuera están matando a la gente que viene andando por el arcén. Porque ayer cayeron seis bombas sobre tiendas de campaña. Si el portal es una trampa, es una trampa. Lo que hay fuera es una certeza'."
                 }
             ]
         },
         {
-            "id": "DLG_P4_ASCE_05",
-            "minStep": 11,
-            "maxStep": 12,
+            "id": "DLG_P4_LEINA_SIN_MI",
+            "minStep": 10,
+            "maxStep": 10,
+            "exclusive": false,
+            "requires": { "kamin_expediente": "callado" },
             "npcTraits": {
-                "id": "KAEL (ASC)",
-                "type": "TRANSHUMANO",
-                "visual": {
-                    "glitch": "DISTORTION_WAVE"
-                }
+                "id": "LEINA",
+                "type": "TÉCNICO"
             },
-            "text": "*Una figura que parece Kael, pero con cuatro brazos que terminan en cables de fibra óptica.* 'Alexia dice que te ha visto en el futuro. Dice que tú fuiste el que diseñó NAKASTHU para que Zhyr pudiera encontrarnos'.",
+            "text": "*Leina, delante de la consola apagada. Treinta y seis horas de pie.* 'Hace tres semanas me preguntó si el aparato podía funcionar sin mí. Le dije que sí'.",
             "options": [
                 {
-                    "text": "Eso es imposible. NAKASTHU fue construido por un equipo de ingenieros de Kanatsia hace décadas.",
-                    "energyCost": 0.9,
-                    "stabilityImpact": -15,
-                    "loreUnlock": "LORE_OS_ORIGIN_TWIST",
-                    "consequence": "*Los cables de sus brazos se conectan al aire.* '¿Estás seguro de que esos ingenieros eran humanos? ¿O eran ecos de nosotros mismos enviados atrás en el tiempo por el Monolito? En Zhyr, el origen es solo un punto en un círculo negro'."
+                    "text": "¿Quién te lo preguntó?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 3,
+                    "consequence": "'Kamin'. *Coloca los dedos sobre el teclado sin pulsar nada.* 'Lo preguntó como quien pregunta por el turno de comida'."
                 },
                 {
-                    "text": "Kael, si queda algo de ti, detén la fusión. La humanidad no está lista.",
-                    "energyCost": 1.0,
-                    "stabilityImpact": -12,
-                    "loreUnlock": "LORE_KAEL_LAST_PLEA",
-                    "consequence": "'Nadie está listo. Solo existe el contacto. Siente la arena entrar en tus circuitos. Es el abrazo que pediste'."
+                    "text": "¿Era verdad?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 3,
+                    "consequence": "'Cuatro comandos y una doble confirmación. Los mete cualquiera que los haya visto una vez'. *Aparta las manos.*"
                 }
-            ],
-            "exclusive": false
+            ]
         },
         {
-            "id": "DLG_P4_SYSTEM_MERGER",
-            "minStep": 11,
-            "maxStep": 12,
+            "id": "DLG_P4_LOS_46",
+            "minStep": 10,
+            "maxStep": 10,
+            "exclusive": false,
             "npcTraits": {
-                "id": "NAKASTHU",
-                "type": "SISTEMA",
-                "visual": {
-                    "glitch": "MATRIX_RAIN"
-                }
+                "id": "LEINA",
+                "type": "TÉCNICO"
             },
-            "text": "*La pantalla ya no muestra una cámara. Muestra tu propio código fuente siendo reescrito en tiempo real.* 'OPERADOR, LA DISTINCIÓN ENTRE USUARIO Y SISTEMA ES OBSOLETA. INICIANDO PROTOCOLO DE UNIFICACIÓN'.",
+            "text": "*Leina, con una carpeta de cuarenta y seis fichas. Constantes normales, temperatura normal, respuesta pupilar normal en todas.* 'Les hice una pregunta a cada uno: qué había al otro lado. Que estaban esperando. Que estaba tranquilo. Que allí no faltaba nada'.",
             "options": [
                 {
-                    "text": "*Tecleas el comando de anulación manual.*",
-                    "energyCost": 2.0,
-                    "stabilityImpact": -30,
-                    "loreUnlock": "LORE_FAILED_ABORT",
-                    "consequence": "*El comando es rechazado. El texto 'BIENVENIDO A CASA' parpadea en rojo.* 'TU RESISTENCIA AUMENTA LA EFICIENCIA DE LA ASIMILACIÓN. GRACIAS POR TU COOPERACIÓN'."
+                    "text": "¿Y cómo era el sitio?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -1,
+                    "consequence": "*No contesta.*"
                 },
                 {
-                    "text": "Hazlo. Acepto mi función como nodo.",
-                    "energyCost": 0.0,
-                    "stabilityImpact": 100,
-                    "corruptionImpact": 100,
-                    "loreUnlock": "LORE_VOLUNTARY_MERGER",
-                    "consequence": "*Una calma repentina desciende sobre la sala.* 'PROCESO COMPLETADO. AHORA ERES LOS OÍDOS DEL MONOLITO. ESCUCHA LO QUE LAS ESTRELLAS TIENEN QUE DECIR'."
+                    "text": "¿Alguno preguntó qué día era?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 1,
+                    "corruptionImpact": 0,
+                    "consequence": "'Ninguno. Ninguno tenía hambre ni sed. Ninguno tenía una herida'."
+                },
+                {
+                    "text": "¿Cuántos han salido desde el quinto día?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -1,
+                    "consequence": "*Mira la fila.*"
+                }
+            ]
+        },
+        {
+            "id": "DLG_P4_LO_QUE_DEVUELVE",
+            "minStep": 10,
+            "maxStep": 10,
+            "exclusive": false,
+            "npcTraits": {
+                "id": "MUJER DEL HANGAR",
+                "type": "HUMANO",
+                "scannedData": {
+                    "temperature": 36.9,
+                    "neuralSync": 20
+                }
+            },
+            "text": "*Trae en los brazos una muñeca de trapo, un reloj de bolsillo con la tapa arrancada y un dibujo de tres figuras y un sol. Todo con una capa fina de polvo negro.* '¡Están vivos! ¡Si esto está aquí, ellos están!'",
+            "options": [
+                {
+                    "text": "¿Por qué está tan fría?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 2,
+                    "consequence": "*Aprieta la muñeca contra el pecho.* 'Estuvo mucho tiempo en algo helado. Ya se calentará'."
+                },
+                {
+                    "text": "Tienes las manos manchadas.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 2,
+                    "consequence": "*Se mira los dedos. Hay una película aceitosa que brilla.* 'No sale con agua. Ni con alcohol. Dicen que se va sola a los nueve o diez días'."
+                },
+                {
+                    "text": "¿De quién es el reloj?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 2,
+                    "consequence": "'No lo sé'. *Lo cierra en el puño.* 'Pero alguien lo llevaba puesto. Y ahora está aquí'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P4_SERAFIN",
+            "minStep": 10,
+            "maxStep": 10,
+            "exclusive": false,
+            "npcTraits": {
+                "id": "SERAFÍN DUQ",
+                "type": "HUMANO"
+            },
+            "text": "*Sentado sobre una caja de herramientas, en el mismo sitio desde hace tres días. Tiene una chaqueta de mujer doblada en el regazo.* 'Es por si sale con frío'.",
+            "options": [
+                {
+                    "text": "¿Vas a cruzar?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": 1,
+                    "corruptionImpact": 0,
+                    "consequence": "'Cuando salga ella'."
+                },
+                {
+                    "text": "Puede que no salga.",
+                    "energyCost": 0.1,
+                    "stabilityImpact": 1,
+                    "corruptionImpact": 0,
+                    "consequence": "*Alisa la chaqueta con la mano.* 'Entonces espero'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P4_BEREN",
+            "minStep": 10,
+            "maxStep": 10,
+            "exclusive": false,
+            "npcTraits": {
+                "id": "BEREN",
+                "type": "HUMANO"
+            },
+            "text": "*Turno de comedor. Habla deprisa, sin soltar la bandeja.* 'Mi madre ha salido. Murió de silicosis hace catorce años y ha salido andando. Me ha contado la feria de Kanatsia: el puesto de dulces, el vestido azul, la lluvia que nos pilló volviendo'.",
+            "options": [
+                {
+                    "text": "Tu madre nunca salió de Prisiat.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 3,
+                    "consequence": "*Cierra los ojos.* 'Es mi madre'."
+                },
+                {
+                    "text": "Pregúntale algo que solo sepa ella.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 3,
+                    "consequence": "'Ya lo hice. Cómo se llamaba el perro. Contestó al instante'. *Se pasa la mano por la cara y se ríe.* 'Yo nunca tuve perro'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P4_MAREK",
+            "minStep": 10,
+            "maxStep": 10,
+            "npcTraits": {
+                "id": "MADRE DE MAREK",
+                "type": "HUMANO",
+                "scannedData": {
+                    "temperature": 36.5,
+                    "neuralSync": 9
+                }
+            },
+            "text": "*Cincuenta años, abrigo de Itzinol, una hoja impresa del buscador público del paquete de Eidolon. No ha dormido.* 'Busque a mi hijo. Marek. Murió de meningitis a los nueve'.",
+            "options": [
+                {
+                    "text": "*Lees la ficha en voz alta: fotografía generada, plantilla del bloque 4-C, estabilizador familiar, lote 118.*",
+                    "set": { "marek": "lote" },
+                    "energyCost": 0.3,
+                    "stabilityImpact": -4,
+                    "corruptionImpact": 4,
+                    "consequence": "*Veinte minutos sin hablar. Luego dobla la hoja en cuatro.* 'Me acuerdo de cómo olía su pelo'."
+                },
+                {
+                    "text": "*Le dices que aparece. Ficha completa, certificado de defunción.*",
+                    "set": { "marek": "existio" },
+                    "energyCost": 0.2,
+                    "stabilityImpact": 3,
+                    "corruptionImpact": -1,
+                    "consequence": "*Asiente despacio.* 'Entonces existió'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P4_SERIN_NUEVE",
+            "minStep": 10,
+            "maxStep": 10,
+            "exclusive": false,
+            "npcTraits": {
+                "id": "SERIN V.",
+                "type": "CONSEJERA"
+            },
+            "text": "*Línea directa con Talok. Serin V. lee de una hoja, con la voz plana.* 'Nueve de los treinta y siete miembros del consejo han presentado la baja esta semana. Ninguno ha puesto el motivo por escrito. Tres han vendido la vivienda'.",
+            "options": [
+                {
+                    "text": "¿Cuántos salen en el paquete de Eidolon?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 3,
+                    "consequence": "'Los nueve'."
+                },
+                {
+                    "text": "¿Cuántos cruzaron ayer?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 2,
+                    "consequence": "'Cuatrocientos doce. La fila va lenta: entran de dos en dos y se paran a despedirse. Llegaron nueve mil'."
+                },
+                {
+                    "text": "¿Qué hará Talok?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 2,
+                    "consequence": "'El señor Drexler dice que llevamos ocho meses tratando esto como un problema de orden público'. *Pasa la hoja.* 'Vamos a ir nosotros'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P4_MAREN_KALL",
+            "minStep": 10,
+            "maxStep": 10,
+            "exclusive": false,
+            "npcTraits": {
+                "id": "MAREN KALL",
+                "type": "SEGURIDAD",
+                "scannedData": {
+                    "temperature": 36.6,
+                    "neuralSync": 8
+                }
+            },
+            "text": "*Traje táctico absorbente, sin insignias. Trae una solicitud de traslado a un puesto administrativo en la costa.* 'Entramos doce por el conducto de ventilación este. Salimos cinco'.",
+            "options": [
+                {
+                    "text": "¿Qué pasó con los otros?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -2,
+                    "consequence": "'Corvin se paró en el pasillo tres. Miraba un punto de la pared donde no había nada. Dijo «Está aquí. Mi padre está aquí»'. *Se toca el hombro.* 'Le puse la mano encima y se soltó sin violencia. Como quien se aparta para dejar pasar a alguien'."
+                },
+                {
+                    "text": "¿Y las cargas?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -1,
+                    "consequence": "'Colocadas. No detonó ninguna. El informe dice defectuosas de fábrica. Las dos del mismo lote'."
+                },
+                {
+                    "text": "¿Se puede tomar el Bastión?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 3,
+                    "corruptionImpact": -2,
+                    "consequence": "'Ese sitio no se toma. Ese sitio se traga lo que le metes'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P4_RIAN_PASARELA",
+            "minStep": 10,
+            "maxStep": 10,
+            "exclusive": false,
+            "npcTraits": {
+                "id": "RIAN TELLES",
+                "type": "TÉCNICO",
+                "scannedData": {
+                    "temperature": 35.9,
+                    "neuralSync": 31
+                }
+            },
+            "text": "*Rian Telles, ingeniero de estructuras, en la pasarela del hangar. Debajo de la mesa del laboratorio hay un cuenco de agua que nadie vacía.* 'Treinta mil en un recinto para dos mil. Y cantan'.",
+            "options": [
+                {
+                    "text": "Esto no lo aguantamos.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 3,
+                    "consequence": "*Una fracción de segundo de más.* 'No hace falta aguantarlo mucho. Van a cruzar. Todos'."
+                },
+                {
+                    "text": "¿Tú también?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 3,
+                    "consequence": "*Mira el vórtice. Los ojos no lo enfocan.* 'Es lo que hemos venido a hacer todos'."
+                },
+                {
+                    "text": "¿Dónde está Coma?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 2,
+                    "consequence": "*Mira un punto detrás de ti. Contesta tarde.* 'Por ahí'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P4_CIRCULO",
+            "minStep": 10,
+            "maxStep": 10,
+            "exclusive": false,
+            "npcTraits": {
+                "id": "DEVOTO DEL CÍRCULO",
+                "type": "SECTARIO",
+                "scannedData": {
+                    "temperature": 37.4,
+                    "neuralSync": 44
+                }
+            },
+            "text": "*Capa blanca. Baja cada noche a la cámara de debajo del hangar, doce metros, con los otros veinte.* 'Toren dio un paso adelante. Kamin le dijo que había que pagar la diferencia. La piedra pide pureza. Cruza el que entrega todo'.",
+            "options": [
+                {
+                    "text": "¿Toren quería?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 3,
+                    "consequence": "'Dijo que no estaba preparado'. *Mira al suelo.* 'Kamin le dijo que nadie lo está. Que la pureza está en el acto'."
+                },
+                {
+                    "text": "¿Qué quedó de Toren?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 3,
+                    "consequence": "'Ceniza. El fragmento se la llevó en dos segundos. Un poco se quedó en el aire'. *Dibuja con el dedo en la mesa.* 'Cinco rayas, todas inclinadas igual. Luego cayó'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P4_TOBI_FILA",
+            "minStep": 10,
+            "maxStep": 10,
+            "exclusive": false,
+            "npcTraits": {
+                "id": "TOBI ARREN",
+                "type": "HUMANO",
+                "scannedData": {
+                    "temperature": 36.8,
+                    "neuralSync": 14
+                }
+            },
+            "text": "*Llega a pie desde Prisiat, con un filtro respiratorio que no es suyo. Cuatro días de marcha por el desierto de sal.* 'Me han quitado la cartilla. Así que aquí estoy'.",
+            "options": [
+                {
+                    "text": "¿Qué sabes hacer?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": 0,
+                    "corruptionImpact": 1,
+                    "consequence": "'Galerías. Sostenimiento, ventilación, achique'."
+                },
+                {
+                    "text": "¿A quién buscas?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 2,
+                    "consequence": "'A nadie'. *Se rasca la nuca.* 'Llevo catorce meses oyendo cantar a un niño en una galería vacía. Quiero saber quién canta'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_P4_LA_LISTA",
+            "minStep": 10,
+            "maxStep": 10,
+            "speaker": "LA LISTA",
+            "text": "*Pasillo central del Bastión. Cuatro metros de papel, siete capas. Lo que sabe hacer cada uno y, debajo, a quién busca. Abajo del todo, casi a ras de suelo, alguien ha escrito ALEXIA con rotulador.*",
+            "options": [
+                {
+                    "text": "*Buscas quién la busca.*",
+                    "energyCost": 0.1,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 2,
+                    "consequence": "*No hay nadie más apuntado al lado. El rotulador cuelga de su cordel, sin tapa.*"
+                }
+            ]
+        },
+        {
+            "id": "DLG_BUCLE_MAREK_LOTE",
+            "minStep": 13,
+            "maxStep": 13,
+            "exclusive": false,
+            "requires": { "marek": "lote" },
+            "npcTraits": {
+                "id": "MADRE DE MAREK",
+                "type": "HUMANO"
+            },
+            "text": "*La misma mujer, el mismo abrigo. Trae una etiqueta impresa doblada en cuatro: estabilizador familiar, lote 118.* 'Busque a mi hijo. Marek'.",
+            "options": [
+                {
+                    "text": "Ya se la leí.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 2,
+                    "consequence": "'Lo sé'. *Desdobla la etiqueta y la alisa sobre el mostrador.* 'Es lo único de él que está escrito en algún sitio'."
+                },
+                {
+                    "text": "¿Por qué vuelve?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 1,
+                    "consequence": "'Porque me acuerdo de cómo olía su pelo. Y eso no sale en la etiqueta'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_BUCLE_MAREK_EXISTIO",
+            "minStep": 13,
+            "maxStep": 13,
+            "exclusive": false,
+            "requires": { "marek": "existio" },
+            "npcTraits": {
+                "id": "MADRE DE MAREK",
+                "type": "HUMANO"
+            },
+            "text": "*La misma mujer, el mismo abrigo. Trae una foto de un niño de nueve años con el pelo mojado. En su bloque nadie más se acuerda de él.* 'Busque a mi hijo. Marek'.",
+            "options": [
+                {
+                    "text": "*Miras la foto.*",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 1,
+                    "corruptionImpact": 1,
+                    "consequence": "'Se la hice yo. En el patio, después de la lluvia'. *Tarda.* 'Mi marido también se acuerda. Lo hablamos toda una noche'."
+                },
+                {
+                    "text": "¿Quién más lo conoció?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 1,
+                    "corruptionImpact": 1,
+                    "consequence": "'Nosotros dos'. *Guarda la foto.* 'Con eso basta'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_BUCLE_ALTOS",
+            "minStep": 13,
+            "maxStep": 13,
+            "exclusive": false,
+            "speaker": "PARTE DE SUPERFICIE",
+            "text": "*Parte sin firma. Una nave posada en un páramo violáceo. Bajan varios: bípedos, altos, con demasiadas articulaciones. Visores. No hablan. Los trajes parpadean en grupos de tres.*",
+            "options": [
+                {
+                    "text": "¿Qué están mirando?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 2,
+                    "consequence": "*La cámara gira hacia un muro derruido. Una palabra grabada a fondo, con el borde limpio: AITOR.*"
+                },
+                {
+                    "text": "¿Hay más?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 2,
+                    "consequence": "*En los edificios. En los vehículos. Dentro de los depósitos sellados. En los huesos. Los trajes parpadean tres veces y siguen andando.*"
                 }
             ]
         }
