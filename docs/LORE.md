@@ -5,6 +5,8 @@ La humanidad intentó conquistar Zhyr, pero Zhyr conquistó a la humanidad. Tras
 
 ## FACCIONES
 
+> **Nota de nombres (canon de la novela).** La **Orden** es la secta de Kamin: Orden del Renacimiento Lumínico, fundada en el Bastión. El régimen es otra cosa: la **Custodia** (explora y cataloga; Kael, Deyar y Alexia trabajaban para ella) y la **Directiva** (la banda gris: adjudicaciones y expedientes con firma de sección, no de persona). El final `orden` del código (ESTABILIZAR, cerrar la puerta) es lo *contrario* de la Orden; la clave interna se queda, pero en texto para el jugador «la Orden» es siempre la secta y el botón dice CERRAR. Kamin no es Kael ni un explorador: hay un geólogo Kamin, A., muerto en Zhyr hace quince años. AITOR es una palabra, no una persona. Lo de abajo es la versión vieja y se mantiene por historia.
+
 ### 1. LA ORDEN DE LOS VÍNCULOS (Los Fanáticos)
 - **Líder:** Kamin (anteriormente un explorador, ahora un profeta transhumanista).
 - **Filosofía:** "El sacrificio es evolución". Creen que cruzar el portal es ascender.

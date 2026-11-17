@@ -44,11 +44,28 @@ El sistema de diálogos está desacoplado de la UI y se gestiona mediante datos 
 - **La historia se expande, no da instrucciones:** una decisión relevante deja una marca (`set`) y un diálogo posterior la recuerda (`requires` o `if`).
 
 ### Memoria narrativa actual
-| Marca | Se fija en | La leen |
-|---|---|---|
-| `vargas_fuerza` letal / contencion | DLG_P2_RIOT_CHIEF (pasos 3-5) | DLG_P2_ZONA4_WIDOW, DLG_P2_VARGAS_RETURN, opción de DLG_P3_DREXLER_DEBATE |
-| `agua_norte` sellada / forzada | DLG_P2_SUPPLY_OFFICER (4-6) | DLG_P2_WATER_SEALED, DLG_P2_WATER_FORCED |
-| `elara_contacto` confia / desconfia | DLG_P2_ELARA_FEAR (4-6) | DLG_P3_ELARA_TRUST, DLG_P3_ELARA_DISTANT |
+Dos hilos, los dos verdad a la vez (la novela «La piedra y los Desaparecidos» es la fuente canónica):
+- **Hilo A, «NO ABRAS»** (lleva a ESTABILIZAR, final `orden`): lo que sale del portal no describe un lugar; Kamin lleva la cara de un geólogo muerto. Hablante recurrente `REGISTRO 03:17`, que añade una palabra por paso y se reinicia.
+- **Hilo B, «LA LISTA»** (lleva a TRASCENDER, final `caos`): el régimen miente (Eidolon, reasignaciones, galería siete) y el portal devuelve objetos y gente. Hablante recurrente `LA LISTA`, con más nombres en cada paso.
+
+Los diálogos sólo salen en los pasos de juego 4, 6, 8, 10 (y 13). Las marcas son igualdades, sin contadores.
+
+| Marca | Hilo | Se fija en | La leen |
+|---|---|---|---|
+| `vargas_fuerza` letal / contencion | B | DLG_P2_RIOT_CHIEF (4-6) | DLG_P2_ZONA4_WIDOW, DLG_P2_VARGAS_RETURN, opción de DLG_P3_ORVAL_GRIS; eco del paso 11 (letal) |
+| `agua_norte` sellada / forzada (galería once) | A / B | DLG_P2_SUPPLY_OFFICER (4-6) | DLG_P2_WATER_SEALED, DLG_P2_WATER_FORCED (Tobi, 8); eco del paso 11 (sellada) |
+| `elara_contacto` confia / desconfia | bisagra | DLG_P2_ELARA_FEAR (4-6) | DLG_P3_ELARA_TRUST (guardia), DLG_P3_ELARA_DISTANT (padre); eco del paso 11 (confia) |
+| `libreta` guardada / requisada | A | DLG_P1_KAEL_CUARENTENA (4) | DLG_P2_SERIN_LIBRETA (requisada), opción de DLG_P4_KAEL_PASILLO (guardada); eco del paso 11 y página del epílogo `orden` (guardada) |
+| `aviso_317` anotado / borrado | A | DLG_P1_ESTATICA_317 (4-6) | DLG_P2/P3/P4_ESTATICA_317 y opción de KAEL_PASILLO (anotado); DLG_P3_IDRIS_BUFER (borrado); eco del paso 11 (anotado) |
+| `leina_palabra` escuchada / descartada | B | DLG_P1_LEINA_CACHE (4) | DLG_P3_LEINA_LABORATORIO, DLG_P3_LEINA_LAMPARAS; eco del paso 11 (escuchada) |
+| `lichesth` fue / no_fue | B | DLG_P2_MINERO_FACTURA (6) | DLG_P3_MINERO_LISTA, DLG_P3_MINERO_TURNO; eco del paso 11 y página del epílogo `caos` (fue) |
+| `kamin_expediente` leido / callado | A | DLG_P3_LEINA_EXPEDIENTE (8) | opción de DLG_P4_KAEL_PASILLO (leido), DLG_P4_LEINA_SIN_MI (callado); eco del paso 11 (leido) |
+| `marek` lote / existio | B | DLG_P4_MAREK (10) | DLG_BUCLE_MAREK_LOTE / _EXISTIO (13); eco del paso 11 y página del epílogo `caos` (existio) |
+
+Fuera de los JSON:
+- `priority: true` en un diálogo lo pone delante del resto del paso (anclas de cada hilo). `forEntity: "KAMIN"` lo reserva para ese sujeto; Kamin en la cola del paso 6 sólo recibe diálogos suyos o sin `npcTraits`, para no convertirse en otro personaje.
+- Paso 11 (`stepsConfig[11].meta.leftOption/rightOption`): `quote`, `price`, `action` y `echoes` (`{ if, text }`); `MechanicScreen` pinta los ecos cuyas marcas coinciden.
+- Epílogo (`stepsConfig[12].meta.endings.*.pages`): una página con `if` sólo sale si la marca coincide.
 
 ### Verificación (`npm test`)
 `__tests__/dialogue_paths.test.js` reproduce con el motor real cada camino de elecciones de cada diálogo: comprueba hablante, respuesta, que no haya callejones sin salida, que una decisión cierre sus alternativas y que cada `set` quede guardado. También valida que toda marca esté declarada, que lo leído se pueda fijar en un paso anterior y que todo lo fijado se lea en algún sitio.

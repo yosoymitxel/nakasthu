@@ -2,7 +2,7 @@
     "dialogues": [
         {
             "id": "DLG_P2_ORVAL_COLD",
-            "minStep": 3,
+            "minStep": 4,
             "maxStep": 6,
             "npcTraits": {
                 "id": "ORVAL D.",
@@ -13,39 +13,37 @@
                     "corruption": 0
                 }
             },
-            "text": "*Transmisión de alta seguridad desde Talok. Orval Drexler se ajusta los guantes mientras habla.* 'Operador, deje que el caos haga su trabajo. No se distraiga con los susurros de los desaparecidos'.",
+            "text": "*Transmisión desde la sala de guerra de Talok. Orval Drexler, en una silla soldada al suelo. Delante, pan, un huevo y una pieza de fruta.* 'Tiene tres minutos, operador. No levante la voz. Le oigo igual'.",
             "options": [
                 {
-                    "text": "Señor, las manifestaciones en Dispay están fuera de control.",
+                    "text": "¿Y las protestas de Dispay?",
                     "energyCost": 0.2,
-                    "stabilityImpact": -2,
-                    "corruptionImpact": 15,
-                    "consequence": "*Orval niega con la cabeza, sin perder la compostura.* 'Deje que griten. Cuando el hambre pese más que la rabia, vendrán a pedir orden'.",
-                    "next": [
-                        {
-                            "text": "¿Es cierto que Talok quiere reclamar el monolito para sí misma?",
-                            "energyCost": 0.3,
-                            "stabilityImpact": -5,
-                            "corruptionImpact": 20,
-                            "loreUnlock": "LORE_TALOK_AMBITION",
-                            "consequence": "'Talok no quiere la piedra. Quiere controlar el Renacimiento. Si el monolito es el diafragma, nosotros ponemos la lente'."
-                        }
-                    ]
+                    "stabilityImpact": 2,
+                    "corruptionImpact": 0,
+                    "consequence": "*No cambia el tono.* 'El caos es útil. Que griten. Que se cansen. Cuando estén cansados vendrán a pedirnos orden. Y se lo daremos con nuestras condiciones'."
                 },
                 {
-                    "text": "¿Qué sabe sobre la desaparición de Erick Nebot?",
+                    "text": "¿Qué quiere hacer con la piedra?",
+                    "energyCost": 0.3,
+                    "stabilityImpact": 1,
+                    "corruptionImpact": 0,
+                    "loreUnlock": "LORE_TRATADOS",
+                    "consequence": "*Pela el huevo sin mirarlo.* 'Saber si se puede ajustar'. *No dice en qué sentido.*"
+                },
+                {
+                    "text": "¿Qué sabe de Nebot?",
                     "energyCost": 0.1,
                     "stabilityImpact": 1,
-                    "corruptionImpact": 5,
-                    "consequence": "'Nebot tenía la vista corta. Su ausencia deja Kanatsia en manos del comité temporal'."
+                    "corruptionImpact": 0,
+                    "consequence": "'Tenía un dibujo del monolito en su despacho. Hecho a mano. Lo investigó por su cuenta durante meses y no lo puso en ninguna agenda'. *Una pausa.* 'Se lo llevó'."
                 }
             ],
             "exclusive": false
         },
         {
-            "id": "DLG_P2_SERIN_LOGIC",
+            "id": "DLG_P2_SERIN_EXPEDIENTE",
             "minStep": 4,
-            "maxStep": 7,
+            "maxStep": 6,
             "npcTraits": {
                 "id": "SERIN V.",
                 "type": "CONSEJERA",
@@ -53,57 +51,62 @@
                     "glitch": "NONE"
                 }
             },
-            "text": "*Serin Voke, consejera de Talok. Habla sin mirar el datapad, como si ya supiera las respuestas.* 'He analizado los patrones de desaparición. No hay azar. Hay selección por resonancia neural'.",
+            "text": "*Serin Voke, consejera de Talok, con un expediente abierto. No levanta la vista del papel.* 'Zhyr. Expedición de prospección, hace quince años. Tres geólogos, dos técnicos, un piloto. Conclusión: «sin interés». Dos palabras. Se desarchivó cuatro meses antes de que saliera la nave de la simbóloga'.",
             "options": [
                 {
-                    "text": "¿Selección? ¿Insinúa que el monolito está 'cosechando' mentes?",
+                    "text": "¿Quién firmó?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -2,
+                    "consequence": "'La firma es de sección; no de persona. La de la reapertura, tampoco'."
+                },
+                {
+                    "text": "¿Qué dice el anexo?",
                     "energyCost": 0.3,
-                    "stabilityImpact": -4,
-                    "corruptionImpact": 12,
-                    "loreUnlock": "LORE_NEURAL_RESONANCE",
-                    "consequence": "*Serin asiente y proyecta un gráfico de ondas cerebrales que se cortan a la mitad.* 'Exacto. Zhyr busca armonía; nosotros somos ruido. Los que desaparecen son los que mejor sintonizan con el monolito'.",
-                    "next": [
-                        {
-                            "text": "¿Cómo podemos protegernos de esa 'traducción'?",
-                            "energyCost": 0.4,
-                            "stabilityImpact": -6,
-                            "corruptionImpact": 18,
-                            "consequence": "'No podemos. Solo podemos... dirigirla. El Bastión es nuestra única herramienta para filtrar quién es apto para el Renacimiento y quién debe ser purgado'."
-                        }
-                    ]
+                    "stabilityImpact": 3,
+                    "corruptionImpact": -3,
+                    "loreUnlock": "LORE_TXACUL",
+                    "consequence": "*Pasa dos hojas.* 'Lo añadió alguien después del archivo, sin autorización. Una civilización en Zhyr: los Txacul. Cincuenta mil años. Sin restos óseos, sin necrópolis, sin escombros. Solo queda el monolito. Lo sostenía un lingüista de Xionis y lo refutó otro. Los dos han muerto'."
+                },
+                {
+                    "text": "¿Usted qué cree?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": 1,
+                    "corruptionImpact": 0,
+                    "consequence": "*No contesta. Pasa la hoja.* 'Las cifras de reasignación del trimestre. Cuatrocientos doce mil. Retorno previsto: ninguno'."
                 }
-            ]
+            ],
+            "exclusive": false
         },
         {
             "id": "DLG_P2_SCIENTIST_ITZINOL",
-            "minStep": 3,
-            "maxStep": 7,
+            "minStep": 4,
+            "maxStep": 6,
             "npcTraits": {
-                "id": "DRA. ARIS",
+                "id": "CIENTÍFICA DE ITZINOL",
                 "type": "HUMANO",
                 "visual": {
                     "glitch": "LOW_RES"
                 }
             },
-            "text": "*Una científica de Itzinol con la bata manchada de aceite rojizo. Su identificación de la Orden está tachada.* 'Drexler cree que el monolito es un arma. No es un arma. Es un espejo'.",
+            "text": "*Itzinol, una sala con demasiada gente y poco aire. Una mujer de mediana edad golpea la mesa con la palma abierta.* 'La sonda pasiva de órbita alta registró emisiones del objeto seis días antes de las desapariciones. Seis días antes de que lo tocara nadie'.",
             "options": [
                 {
-                    "text": "¿Por qué dices que el monolito es un 'espejo'?",
+                    "text": "¿Qué forma tienen los picos?",
                     "energyCost": 0.3,
-                    "stabilityImpact": 4,
-                    "loreUnlock": "LORE_MONOLITH_MIRROR",
-                    "consequence": "*La doctora se frota los ojos, dejando un rastro de grasa en su frente.* 'Porque lo que ves en su superficie no es tu reflejo, sino lo que Zhyr quiere que seas. Yo vi mis pulmones convertidos en arena antes de que Alexia desapareciera'.",
-                    "next": [
-                        {
-                            "text": "¿Alexia vio lo mismo que tú en el espejo?",
-                            "energyCost": 0.4,
-                            "stabilityImpact": -3,
-                            "loreUnlock": "LORE_ALEXIA_VISION",
-                            "consequence": "'Ella no vio arena. Ella vio... un hogar. Por eso no gritó cuando el destello la reclamó. Tenía una expresión de alivio que me perseguirá hasta que Zhyr me trague a mí también'."
-                        }
-                    ]
+                    "stabilityImpact": 3,
+                    "corruptionImpact": -2,
+                    "consequence": "*Proyecta el gráfico y los cuenta con el dedo.* 'Cinco. Con la misma inclinación. Él dice que es pareidolia. Yo no les he puesto ningún nombre'."
+                },
+                {
+                    "text": "Su colega pide más datos.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -3,
+                    "corruptionImpact": 5,
+                    "consequence": "'Mientras pide más datos, las calles arden y la gente se muere. No hay tiempo para el método'. *Al fondo, el hombre mayor contesta sin levantarse: «El método es lo único que hay».*"
                 }
-            ]
+            ],
+            "exclusive": false
         },
         {
             "id": "DLG_P2_RIOT_CHIEF",
@@ -120,24 +123,24 @@
                     "glitch": "STATIC"
                 }
             },
-            "text": "*El jefe de seguridad de la Zona 4 aparece con el casco agrietado. De fondo se oyen sirenas y explosiones lejanas.* '¡Control! La multitud ha roto el perímetro del generador auxiliar. Gritan que la electricidad es \"la voz de los muertos\". ¡Solicito permiso para usar fuerza letal!'",
+            "text": "*Mando de seguridad de Dispay, distrito de gobierno. La máscara de gas subida a la frente. Detrás, humo blanco y el zumbido de los drones de dispersión.* 'Control, el gas no los para. Por cada bloque que retrocede entra otro por una calle lateral. Hay un chico con bufanda en un contenedor, con megáfono, y lo están sacando en todas las pantallas. Solicito fuerza letal'.",
             "options": [
                 {
-                    "text": "Autorización denegada. Use contención no letal y proteja el generador.",
+                    "text": "Autorización denegada. Use contención no letal y despeje la avenida.",
                     "energyCost": 0.5,
                     "stabilityImpact": 5,
                     "corruptionImpact": -5,
-                    "consequence": "*Vargas maldice mientras esquiva un objeto arrojado.* '¡Entendido, pero nos están superando! Están... mordiendo los cables. ¡Están locos!'",
+                    "consequence": "*Se baja la máscara.* 'Entendido. Gas y drones, nada más. Si los dejo cansarse, se cansan. Si los dejo llegar, llegan'.",
                     "set": {
                         "vargas_fuerza": "contencion"
                     }
                 },
                 {
-                    "text": "Prioridad absoluta: mantener el flujo de energía. Haga lo que sea necesario.",
+                    "text": "Prioridad absoluta: mantener el distrito de gobierno. Haga lo que sea necesario.",
                     "energyCost": 0.2,
                     "stabilityImpact": -5,
                     "corruptionImpact": 10,
-                    "consequence": "*Carga su arma con un movimiento brusco.* 'A la orden. Que el Bastión perdone nuestras almas, porque ellos no lo harán'. *El sonido de disparos corta la transmisión.*",
+                    "consequence": "*Se gira hacia alguien fuera de plano.* 'Ya lo han oído. Lo que sea necesario'. *Se corta la transmisión. Lo último que entra es el megáfono.*",
                     "set": {
                         "vargas_fuerza": "letal"
                     }
@@ -149,30 +152,30 @@
             "minStep": 4,
             "maxStep": 6,
             "npcTraits": {
-                "id": "LOGÍSTICA",
+                "id": "CAPATAZ DE PRISIAT",
                 "type": "HUMANO",
                 "visual": {
                     "accessory": "GAFAS"
                 }
             },
-            "text": "*Un oficial de logística repasa listas de inventario.* 'Señor, los envíos de agua del norte se han detenido. Los conductores dicen que el agua brilla en la oscuridad. Se niegan a transportarla'.",
+            "text": "*Un capataz de Prisiat con el filtro respiratorio colgado del cuello. Lee de una tablilla.* 'Control, el turno de la galería once no quiere bajar. Dicen que por la rampa cuatro se oye cantar a un niño. Abajo no hay nadie desde hace treinta años. Lo he oído yo. Seis o siete segundos'.",
             "options": [
                 {
-                    "text": "¿El agua es radiactiva? Envíe un equipo de materiales peligrosos.",
+                    "text": "Cierre la galería y precinte la rampa.",
                     "energyCost": 0.3,
-                    "stabilityImpact": -2,
-                    "corruptionImpact": 5,
-                    "consequence": "'No es radiación. Los contadores están en silencio. Los que bebieron dicen que ahora oyen pensar a sus vecinos. Estamos sellando los pozos'.",
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -2,
+                    "consequence": "*Tacha una línea de la tablilla.* 'La once, cerrada. Al turno lo mando a revisar otra. Me han pasado una lista'.",
                     "set": {
                         "agua_norte": "sellada"
                     }
                 },
                 {
-                    "text": "Es histeria colectiva. Ordene el transporte inmediato bajo pena de corte marcial.",
+                    "text": "Que bajen. Los turnos se cuentan a la salida.",
                     "energyCost": 0.1,
-                    "stabilityImpact": -8,
-                    "corruptionImpact": 15,
-                    "consequence": "*El oficial traga saliva.* 'Sí, señor. Pero le advierto: si esa agua llega a la ciudad, la sed no será lo único que saciemos'.",
+                    "stabilityImpact": -6,
+                    "corruptionImpact": 10,
+                    "consequence": "*Asiente sin levantar la vista.* 'Se cuentan a la salida. Se lo digo así. El que no baje va al ala de sanción, y en el ala de sanción no dan filtro'.",
                     "set": {
                         "agua_norte": "forzada"
                     }
@@ -190,23 +193,25 @@
                     "glitch": "LOW_RES"
                 }
             },
-            "text": "*Una operadora de fábrica con las uñas mordidas hasta el dedo. Habla sin levantar la vista.* '¿Has oído lo que dicen? Que todo empezó con un experimento de la Orden en Zhyr. Que nosotros somos biomasa de repuesto'.",
+            "text": "*Planta de conformado, Dispay. Una operadora ajusta la consola con las manos temblando. En la fila superior del panel parpadean cinco pilotos de aviso con la misma cadencia.* 'Llevan así desde el jueves y mantenimiento no viene. Yo llevo cuarenta y una horas de turno. ¿Has oído lo que dicen? Que todo empezó con un experimento de la Custodia en Zhyr'.",
             "options": [
                 {
-                    "text": "La Orden busca la supervivencia de la humanidad. Esos rumores son peligrosos.",
+                    "text": "La Custodia trabaja para que esto acabe. Esos rumores son peligrosos.",
                     "energyCost": 0.2,
                     "stabilityImpact": 5,
-                    "consequence": "*Elara baja la voz hasta que es apenas un susurro.* 'Eso dicen ellos. Pero el técnico mayor dice que si sabemos demasiado, seremos los próximos en desvanecernos. El Bastión no nos protege, nos procesa'.",
+                    "corruptionImpact": 0,
+                    "consequence": "*Vuelve a la consola.* 'Eso mismo dice el técnico mayor. Que tenga cuidado con lo que digo. Que la Custodia tiene oídos en todas partes, y si creen que sabes demasiado, la próxima eres tú'.",
                     "set": {
                         "elara_contacto": "desconfia"
                     }
                 },
                 {
-                    "text": "¿Qué más dice ese 'técnico mayor' sobre las desapariciones?",
+                    "text": "¿Qué más dice el técnico mayor?",
                     "energyCost": 0.5,
-                    "stabilityImpact": -8,
+                    "stabilityImpact": -6,
+                    "corruptionImpact": 5,
                     "loreUnlock": "LORE_ELARA_RUMORS",
-                    "consequence": "'Dice que el monolito no es un objeto, sino un depredador. Y que las Distribuciones están alimentándolo con nosotros para ganar tiempo. ¿Es cierto, operador? ¿Soy solo comida para esa piedra?'",
+                    "consequence": "*Mira alrededor antes de contestar.* 'Que en los partes de reasignación hay una columna de retorno y está en blanco. Que nadie la rellena porque nadie vuelve'. *Baja más la voz.* 'Los jueves ceno con mi padre. Este no he ido. Encadeno turnos'.",
                     "set": {
                         "elara_contacto": "confia"
                     }
@@ -217,29 +222,248 @@
             "id": "DLG_P2_INFRASTRUCTURE_FAIL",
             "minStep": 4,
             "maxStep": 6,
-            "text": "*El sujeto viste un uniforme de hospital andrajoso. Sus manos están manchadas de antiséptico seco.* 'No hay doctores en el Sector 7. Las máquinas de diálisis se han detenido porque nadie sabe cómo calibrarlas. ¿Dónde están todos?'",
+            "npcTraits": {
+                "id": "PERLA SUAY",
+                "type": "HUMANO"
+            },
+            "text": "*Hospital central de Itzinol, unidad de neonatos. Una enfermera sentada en el suelo, entre la cuarta y la quinta incubadora.* 'Treinta y un años en el oficio. Cincuenta y dos horas sola con dieciocho incubadoras. Las ordené por gravedad, de izquierda a derecha'.",
             "options": [
                 {
-                    "text": "Se han realizado reasignaciones de emergencia para estabilizar los núcleos de energía.",
+                    "text": "Se han hecho reasignaciones de emergencia para cubrir los puestos.",
                     "energyCost": 0.3,
-                    "stabilityImpact": 10,
-                    "consequence": "'¿Reasignaciones? Mi hija desapareció en medio de una cirugía. ¡No fue reasignada, se evaporó! El Bastión está mintiendo. El orden de Itzinol es una tumba bien pintada'."
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 5,
+                    "consequence": "'De dieciocho salieron catorce. El parte lo llama «incidencia de dotación». Dos palabras. Nadie ha venido a preguntar cómo se llamaban los cuatro'."
                 }
             ]
         },
         {
             "id": "DLG_P2_KANATSIA_VACUUM",
-            "minStep": 5,
-            "maxStep": 7,
-            "text": "*Un ciudadano de Kanatsia con el rostro desencajado.* 'Erick Nebot se ha ido. Nuestra distribución está descabezada y Talok está enviando «comités temporales» que huelen a ocupación militar. ¡Esto es un golpe de estado bajo el velo del desastre!'",
+            "minStep": 4,
+            "maxStep": 6,
+            "npcTraits": {
+                "id": "VECINO DE KANATSIA",
+                "type": "HUMANO"
+            },
+            "text": "*Un vecino de Kanatsia con trapo mojado en los oídos.* 'Erick Nebot se fue con su segundo. Ahora manda un comité temporal: un hombre gris que habla poco y anota mucho. En las plazas siguen los pulsos sónicos. Anoche ardieron cuatro edificios administrativos'.",
             "options": [
                 {
-                    "text": "El comité temporal de Talok solo busca evitar el colapso de Kanatsia.",
+                    "text": "El comité temporal intenta que Kanatsia no se hunda.",
                     "energyCost": 0.4,
-                    "stabilityImpact": 12,
-                    "consequence": "'¡Mientes! Orval Drexler solo quiere el monolito. Nos está usando como escudos de carne mientras sus agentes saquean nuestros archivos clasificados sobre Zhyr'."
+                    "stabilityImpact": 6,
+                    "corruptionImpact": 0,
+                    "consequence": "'Lo intenta anotando. Nebot tenía un dibujo del monolito, hecho a mano, y se lo llevó. Si sabía algo, el comité no lo sabe. Y si lo sabe, no lo apunta donde se pueda leer'."
                 }
             ]
+        },
+        {
+            "id": "DLG_P2_SERIN_LIBRETA",
+            "minStep": 6,
+            "maxStep": 6,
+            "requires": {
+                "libreta": "requisada"
+            },
+            "npcTraits": {
+                "id": "SERIN V.",
+                "type": "CONSEJERA",
+                "visual": {
+                    "glitch": "NONE"
+                }
+            },
+            "text": "*Serin Voke deja sobre la mesa una libreta cosida, con las tapas dobladas.* 'La libreta de la simbóloga llegó a mi mesa. Página treinta y uno: «Cosas que no cuadran». La treinta y ocho: Ceres, sector nueve, la misma cara en dos fichas de personal con nombres distintos'.",
+            "options": [
+                {
+                    "text": "¿Qué va a hacer con ella?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -2,
+                    "consequence": "'Ponerla encima de la mesa. Lo que se haga después lo carga otro'."
+                },
+                {
+                    "text": "¿Qué dice la piedra, según ella?",
+                    "energyCost": 0.3,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -3,
+                    "consequence": "*Busca una página con la esquina doblada.* 'Tres veces que no. No tocar, no creer, no ofrecer. O lo contrario, si se lee al revés'."
+                }
+            ],
+            "exclusive": false
+        },
+        {
+            "id": "DLG_P2_ESTATICA_317",
+            "minStep": 6,
+            "maxStep": 8,
+            "requires": {
+                "aviso_317": "anotado"
+            },
+            "speaker": "REGISTRO 03:17",
+            "text": "*Reinicio no programado a las 03:17. Esta vez las letras aguantan en el panel once segundos.* 'NO ABRAS. EL QUE ABRE'.",
+            "options": [
+                {
+                    "text": "*Copias las letras debajo de las de la otra noche.*",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 3,
+                    "corruptionImpact": -3,
+                    "consequence": "*Dos líneas en la misma hoja, a la misma hora. La segunda es más larga. El panel vuelve a marcar la hora.*"
+                }
+            ],
+            "exclusive": false
+        },
+        {
+            "id": "DLG_P2_BEL_OSTRAN",
+            "minStep": 6,
+            "maxStep": 6,
+            "npcTraits": {
+                "id": "BEL OSTRÁN",
+                "type": "TÉCNICO"
+            },
+            "text": "*Sala de enlace de Talok. Un técnico con los cascos al cuello y un parte impreso delante.* 'Nueve años en enlace. El equipo de Talok en Zhyr: bajaron trece, volvieron cuatro. El soldado que vio sombras transmitió antes de que cayera la señal'.",
+            "options": [
+                {
+                    "text": "¿Qué dijo al final?",
+                    "energyCost": 0.3,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -2,
+                    "consequence": "'Lo escuché cuatro veces. Transcribí la última palabra que se entiende y la puse en mayúsculas, porque había que escribirla así'. *Tapa el parte con la mano.*"
+                },
+                {
+                    "text": "¿Lo ha confirmado alguien?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 1,
+                    "corruptionImpact": 0,
+                    "consequence": "'Anur Vey, el del turno siguiente. Firmó una nota: «No se percibe voz humana en el segmento final. Solo portadora y ruido». Comemos juntos desde hace nueve años. Ya lo hablaremos'. *Mira el calendario.* 'El jueves me voy de vacaciones. Once días'."
+                },
+                {
+                    "text": "¿Quién era el soldado?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -1,
+                    "consequence": "'Petro Ilm. Veinte años. No estaba entre los cuatro. Su piedra del río sí: en el suelo del vehículo, junto a su asiento, con la arena pegada'."
+                }
+            ],
+            "exclusive": false
+        },
+        {
+            "id": "DLG_P2_MINERO_FACTURA",
+            "minStep": 6,
+            "maxStep": 6,
+            "npcTraits": {
+                "id": "MINERO DE PRISIAT",
+                "type": "HUMANO"
+            },
+            "text": "*Un minero de Prisiat con las manos negras. Lleva un papel doblado en el bolsillo de la camisa y no lo saca.* 'Mi hijo bajó a la galería once y no volvió. Lo peor no es eso. Al mes me llegó la factura del filtro respiratorio del chico, prorrateada hasta el día de la baja. Once con cuarenta. Y la pagué'.",
+            "options": [
+                {
+                    "text": "¿Por qué la pagaste?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 2,
+                    "consequence": "'Porque si no la pagas te la suman a la tuya'. *Se toca el antebrazo.* 'Un hombre de gabardina me escuchó hora y media. No me aconsejó nada. Me puso la mano aquí y se quedó hasta que cerraron. Mañana habla. Calle Lichesth 435, a las 18:15'.",
+                    "next": [
+                        {
+                            "text": "Ve a escucharlo.",
+                            "energyCost": 0.2,
+                            "stabilityImpact": -3,
+                            "corruptionImpact": 8,
+                            "consequence": "'Voy con dos amigos. Dice que allí contesta todo lo que el régimen no contesta'.",
+                            "set": {
+                                "lichesth": "fue"
+                            }
+                        },
+                        {
+                            "text": "No vayas. Talok ya tiene esa dirección.",
+                            "energyCost": 0.3,
+                            "stabilityImpact": 2,
+                            "corruptionImpact": -2,
+                            "consequence": "*Vuelve a doblar el papel.* 'Entonces me quedo con la factura. Es lo único del chico que me han mandado'.",
+                            "set": {
+                                "lichesth": "no_fue"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "DLG_P2_OVID",
+            "minStep": 6,
+            "maxStep": 6,
+            "npcTraits": {
+                "id": "OVID FERRER",
+                "type": "HUMANO"
+            },
+            "text": "*Un portal de Dispay, cuatro de la mañana. Un chico con bufanda y un megáfono a los pies. Tiene un mensaje abierto en la pantalla de la muñeca.* 'Mi hermana desapareció hace siete semanas. Los líderes nos dicen que confiemos. ¿Cómo confiamos en gente que no sabe qué está pasando?'",
+            "options": [
+                {
+                    "text": "¿Cómo se llama tu hermana?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 4,
+                    "consequence": "'Tessa. Diecinueve años. Se fue de casa a los diecisiete por una discusión de dinero. Llevábamos catorce meses sin hablarnos'. *Mira el megáfono.* 'Lo último que le dije fue «haz lo que quieras»'."
+                },
+                {
+                    "text": "¿Qué dice ese mensaje?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 3,
+                    "consequence": "*Gira la muñeca para que lo leas. Es de su madre: «Vuelve a casa».* 'Contesto mañana'."
+                },
+                {
+                    "text": "¿Vas a volver a subir?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -3,
+                    "corruptionImpact": 5,
+                    "consequence": "'Mañana. Llevo siete semanas sin dormir más de tres horas seguidas. La rabia rinde más que el sueño'."
+                }
+            ],
+            "exclusive": false
+        },
+        {
+            "id": "DLG_P2_ANALISTA_REFLEJO",
+            "minStep": 6,
+            "maxStep": 6,
+            "npcTraits": {
+                "id": "ANALISTA DE VIGILANCIA",
+                "type": "TÉCNICO",
+                "visual": {
+                    "glitch": "STATIC"
+                }
+            },
+            "text": "*Un analista de vigilancia de Dispay con una grabación en pausa. Duración: catorce segundos.* 'Protestas del distrito de gobierno. Mire el escaparate, no la calle. En el reflejo, ese manifestante sale con la cara alargada y la boca abierta. El grito no está en el audio. Detrás de él, en el reflejo, hay una figura oscura. En la imagen real no hay nadie'.",
+            "options": [
+                {
+                    "text": "¿Cuántas veces la has visto?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -1,
+                    "consequence": "'Once. Cuento los fotogramas cada vez. La figura está los catorce segundos enteros. Cuando él se mueve, ella no'."
+                },
+                {
+                    "text": "¿Qué ha hecho tu supervisor con ella?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -2,
+                    "consequence": "*Señala la etiqueta del archivo: «artefacto óptico».* 'La ha clasificado. Pasa a acceso restringido. Mañana ni usted ni yo la podremos abrir'."
+                }
+            ],
+            "exclusive": false
+        },
+        {
+            "id": "DLG_P2_LA_LISTA",
+            "minStep": 6,
+            "maxStep": 6,
+            "speaker": "LA LISTA",
+            "text": "*En la plaza, una pancarta. La gente corea detrás hasta que se hace de noche.* 'Nuestros seres queridos no son datos. Queremos respuestas, no promesas'.",
+            "options": [
+                {
+                    "text": "*Lees los nombres escritos por detrás.*",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 5,
+                    "consequence": "*Rotulador sobre tela, letras de muchas manos. Tessa Ferrer, diecinueve años. El marido de Nera Okonjo, Kanatsia, bloque veintitrés, sin nombre. Petro Ilm, Zhyr. Debajo queda sitio, y alguien ha atado el rotulador a la pancarta con un cordel.*"
+                }
+            ],
+            "exclusive": false
         },
         {
             "id": "DLG_P2_ZONA4_WIDOW",
@@ -249,23 +473,23 @@
                 "vargas_fuerza": "letal"
             },
             "npcTraits": {
-                "id": "VIUDA ZONA 4",
+                "id": "MADRE DE DISPAY",
                 "type": "HUMANO"
             },
-            "text": "*Una mujer con un brazalete negro de la Zona 4. Aprieta la placa de identificación de un chico.* 'Dicen que la orden vino de Control. Que alguien en esta sala dijo «haga lo que sea necesario». ¿Fuiste tú?'",
+            "text": "*Una mujer de Dispay con un brazalete negro. Aprieta la cartilla de racionamiento de un chico.* 'Dicen que la orden vino de Control. Que alguien en esta sala dijo «haga lo que sea necesario». ¿Fuiste tú?'",
             "options": [
                 {
-                    "text": "Fue para mantener el generador en marcha.",
+                    "text": "Fue para mantener el distrito de gobierno.",
                     "energyCost": 0.2,
                     "stabilityImpact": -4,
                     "corruptionImpact": 5,
-                    "consequence": "*Aprieta la placa hasta clavársela en la palma.* 'El generador sigue en marcha. Mi hijo no. Ojalá le dé buena luz, operador'."
+                    "consequence": "*Aprieta la cartilla hasta doblarla.* 'El distrito sigue en pie. Mi hijo no. Veinte años. Montaba filtros. Mañana me retiran la cartilla de él'."
                 },
                 {
                     "text": "No sé quién dio esa orden.",
                     "energyCost": 0.1,
                     "stabilityImpact": 1,
-                    "consequence": "*Te sostiene la mirada un rato largo.* 'Los de Seguridad sí lo saben. Repiten la frase en la cantina, como un chiste'."
+                    "consequence": "*Te sostiene la mirada un rato largo.* 'Los de seguridad sí lo saben. Repiten la frase en la cantina, como un chiste'."
                 }
             ]
         },
@@ -284,132 +508,144 @@
                     "neuralSync": 35
                 }
             },
-            "text": "*Vargas vuelve con el brazo en cabestrillo.* 'Contuvimos a la multitud sin muertos civiles. Perdí a dos hombres, operador. Los mordieron hasta el hueso y ahora no despiertan'.",
+            "text": "*Vargas vuelve con la máscara de gas colgada del cinturón y los ojos rojos.* 'Contuvimos el distrito sin muertos civiles. Gas y drones, nada más. El chico del megáfono se nos escapó. Salió hora y media en seis Distribuciones'.",
             "options": [
                 {
-                    "text": "Hiciste lo correcto. ¿Qué les pasa a tus hombres?",
-                    "energyCost": 0.4,
+                    "text": "Hiciste lo correcto. ¿Dónde está ahora el chico?",
+                    "energyCost": 0.3,
                     "stabilityImpact": 2,
-                    "corruptionImpact": 5,
-                    "consequence": "'Están fríos, pero el monitor dice que sueñan. Repiten la misma frase que gritaba la multitud: «la voz de los muertos»'."
+                    "corruptionImpact": 0,
+                    "consequence": "'No lo sabe nadie. Lo que sí sabe todo el mundo es que tiene una hermana desaparecida. Lo dijo por el megáfono'."
                 },
                 {
-                    "text": "Dos bajas es un precio aceptable. Vuelve a tu puesto.",
+                    "text": "Si vuelve a subirse a un contenedor, lo detienes.",
                     "energyCost": 0.1,
                     "stabilityImpact": -2,
-                    "consequence": "*Endereza la espalda con esfuerzo.* 'Sí, señor. Pero la próxima vez no me pida que elija entre los míos y los de fuera'."
+                    "corruptionImpact": 3,
+                    "consequence": "*Endereza la espalda.* 'Sí, señor. Lo detengo y al día siguiente suben dos. Por cada bloque que retrocede entra otro'."
                 }
             ]
         },
         {
             "id": "DLG_P2_WATER_SEALED",
-            "minStep": 7,
-            "maxStep": 9,
+            "minStep": 8,
+            "maxStep": 8,
             "requires": {
                 "agua_norte": "sellada"
             },
             "npcTraits": {
-                "id": "AGRICULTOR",
+                "id": "TOBI ARREN",
                 "type": "HUMANO"
             },
-            "text": "*Un agricultor del norte con los labios agrietados por la sed.* 'Sellaron los pozos, como usted ordenó. Ahora el agua sube sola por las grietas del suelo. Brilla de noche y canta. Mis hijos se acercan a escucharla'.",
+            "text": "*Un minero joven con el filtro bajado. Se rasca la nuca.* 'Cerraron la once. Nos mandan a mirar la siete. La siete no sale en ningún mapa de los que nos dan. Ni en los viejos. Una galería cerrada se tacha, pero sale'.",
             "options": [
                 {
-                    "text": "Mantén a tus hijos lejos de las grietas.",
-                    "energyCost": 0.2,
-                    "stabilityImpact": -2,
-                    "corruptionImpact": 5,
-                    "consequence": "'Lo intento. Pero ellos dicen que el agua sabe cómo se llaman'."
+                    "text": "¿Qué pasó en la siete?",
+                    "energyCost": 0.3,
+                    "stabilityImpact": 2,
+                    "corruptionImpact": -3,
+                    "loreUnlock": "LORE_GALERIA_SIETE",
+                    "consequence": "'Los viejos dicen que se cayó. Que hubo un informe antes y alguien lo selló sin leerlo'. *Cuenta con los dedos.* 'Sostenimiento, ventilación, achique. Ahí abajo no hay ninguna de las tres'."
                 },
                 {
-                    "text": "¿Qué canta el agua?",
-                    "energyCost": 0.4,
-                    "stabilityImpact": -4,
-                    "corruptionImpact": 10,
-                    "consequence": "*Tararea tres notas que no terminan de cerrar.* 'Eso. Siempre eso. Y cada noche un poco más fuerte'."
+                    "text": "¿Sigues oyendo al niño?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 1,
+                    "corruptionImpact": 0,
+                    "consequence": "'Desde que precintaron la rampa, no. Ahora lo oye el turno de la siete. Seis o siete segundos, siempre de abajo'."
                 }
             ]
         },
         {
             "id": "DLG_P2_WATER_FORCED",
-            "minStep": 7,
-            "maxStep": 9,
+            "minStep": 8,
+            "maxStep": 8,
             "requires": {
                 "agua_norte": "forzada"
             },
             "npcTraits": {
-                "id": "BEBEDOR",
+                "id": "TOBI ARREN",
                 "type": "HUMANO",
                 "scannedData": {
                     "neuralSync": 30
                 }
             },
-            "text": "*Un ciudadano con los ojos muy abiertos. Habla rápido, como si siguiera varias conversaciones a la vez.* 'Bebí del agua del norte, la que trajeron los camiones. Ahora oigo pensar a mis vecinos. Y ellos piensan en usted, operador'.",
+            "text": "*Un minero joven sentado en el borde de un catre. Desdobla una carta escrita a lápiz por el dorso.* 'Bajamos a la once, como dijo. El saldo se amortiza a razón de un turno por crédito. Pero el alojamiento, la comida, el agua y el filtro también se facturan. Lo he comprobado tres veces. Me salen cuatrocientos seis años'.",
             "options": [
                 {
-                    "text": "¿Qué piensan de mí?",
-                    "energyCost": 0.4,
+                    "text": "¿Y el niño de la rampa?",
+                    "energyCost": 0.3,
                     "stabilityImpact": -3,
-                    "corruptionImpact": 10,
-                    "consequence": "'Que usted mandó el agua. Algunos le dan las gracias. La mayoría no'."
+                    "corruptionImpact": 8,
+                    "consequence": "'Canta cada turno. Ya no se para nadie a escucharlo'. *Dobla la carta.* 'En Lichesth hay uno que dice que los de abajo están mejor que nosotros. Le escuchan más que al capataz'."
                 },
                 {
-                    "text": "Es un efecto de la deshidratación. Te darán suero.",
+                    "text": "Esas cuentas tienen que estar mal.",
                     "energyCost": 0.2,
-                    "stabilityImpact": -5,
-                    "corruptionImpact": 10,
-                    "consequence": "*Sonríe sin ganas.* 'Eso mismo está pensando usted ahora. Lo estoy oyendo'."
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 5,
+                    "consequence": "*Te da la carta.* 'Hágalas usted'."
                 }
             ]
         },
         {
             "id": "DLG_P3_ELARA_TRUST",
-            "minStep": 7,
-            "maxStep": 9,
+            "minStep": 8,
+            "maxStep": 8,
             "requires": {
                 "elara_contacto": "confia"
             },
             "npcTraits": {
-                "id": "ELARA",
-                "type": "OPERADORA"
+                "id": "GUARDIA DE TALOK",
+                "type": "SEGURIDAD"
             },
-            "text": "*Elara trae una tarjeta de acceso escondida en la manga.* 'Me preguntaste por el técnico mayor. Nadie más lo hizo. Así que te traigo esto: su tarjeta. Él ya no está, operador'.",
+            "text": "*Un guardia de Talok habla por la ranura de una puerta, muy bajo.* 'Dicen que hay un hombre en Prisiat que sabe lo que significa esa palabra. Si lo encuentras, dile que mi hija se llamaba Elara. Elara Voss. Tenía diez años'.",
             "options": [
                 {
-                    "text": "¿Qué abre esa tarjeta?",
-                    "energyCost": 0.5,
-                    "stabilityImpact": -4,
+                    "text": "Conocí a una Elara. Operadora de conformado. Treinta y un años.",
+                    "energyCost": 0.4,
+                    "stabilityImpact": -3,
                     "corruptionImpact": 5,
-                    "consequence": "'Los archivos de reasignación del Sector 4. Él decía que ahí están los nombres de los que no se evaporaron: los que se llevaron'."
+                    "consequence": "*Te enseña una foto: una niña con uniforme escolar de Talok, un lunar bajo la ceja izquierda.* 'Tenía diez'."
                 },
                 {
-                    "text": "Guárdala. Si te la encuentran, no podré protegerte.",
+                    "text": "Si lo encuentro, se lo diré.",
                     "energyCost": 0.1,
-                    "stabilityImpact": 3,
-                    "consequence": "*Asiente y vuelve a esconderla.* 'Entonces guárdame tú el secreto. Ya somos dos'."
+                    "stabilityImpact": 2,
+                    "corruptionImpact": 0,
+                    "consequence": "'Dile que no la hemos olvidado'. *Cierra la ranura.*"
                 }
             ]
         },
         {
             "id": "DLG_P3_ELARA_DISTANT",
-            "minStep": 7,
-            "maxStep": 9,
+            "minStep": 8,
+            "maxStep": 8,
             "requires": {
                 "elara_contacto": "desconfia"
             },
             "npcTraits": {
-                "id": "ELARA",
-                "type": "OPERADORA"
+                "id": "PADRE DE UNA OPERADORA",
+                "type": "HUMANO"
             },
-            "text": "*Elara evita la cámara. Contesta en tono oficial, con frases cortas.* 'Operadora 4471, presente. Sin novedades que reportar'.",
+            "text": "*Un hombre mayor en una cabina pública de Dispay, con un número apuntado en la palma de la mano.* 'La llamo los domingos. Dejó de presentarse. Nadie preguntó'.",
             "options": [
                 {
-                    "text": "Elara, la última vez hablaste de un técnico mayor.",
+                    "text": "¿Cómo se llama su hija?",
                     "energyCost": 0.2,
                     "stabilityImpact": -2,
-                    "consequence": "*Por un segundo levanta la vista.* 'Tú me dijiste que esos rumores eran peligrosos. Tenías razón. Ya no hay técnico mayor'."
+                    "corruptionImpact": 2,
+                    "consequence": "'Elara. Operadora de conformado, planta cuatro. Los jueves cenábamos juntos. El último jueves no vino: encadenó turnos'. *Mira el número de la palma.* 'Sigo llamando'."
+                },
+                {
+                    "text": "Puedo abrir una consulta de paradero.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": 1,
+                    "corruptionImpact": 0,
+                    "consequence": "'Ya la abrí yo. Me devolvieron un formulario. Si no contesto en treinta días, se da por aceptado'."
                 }
-            ]
+            ],
+            "exclusive": false
         }
     ]
 }
