@@ -110,8 +110,8 @@
         },
         {
             "id": "DLG_P2_RIOT_CHIEF",
-            "minStep": 3,
-            "maxStep": 5,
+            "minStep": 6,
+            "maxStep": 6,
             "npcTraits": {
                 "id": "CMD. VARGAS",
                 "type": "SEGURIDAD",
@@ -233,7 +233,7 @@
                     "energyCost": 0.3,
                     "stabilityImpact": -2,
                     "corruptionImpact": 5,
-                    "consequence": "'De dieciocho salieron catorce. El parte lo llama «incidencia de dotación». Dos palabras. Nadie ha venido a preguntar cómo se llamaban los cuatro'."
+                    "consequence": "'De dieciocho salieron catorce. El parte lo llama «incidencia de dotación». Nadie ha venido a preguntar cómo se llamaban los cuatro'."
                 }
             ]
         },
@@ -271,7 +271,7 @@
                     "glitch": "NONE"
                 }
             },
-            "text": "*Serin Voke deja sobre la mesa una libreta cosida, con las tapas dobladas.* 'La libreta de la simbóloga llegó a mi mesa. Página treinta y uno: «Cosas que no cuadran». La treinta y ocho: Ceres, sector nueve, la misma cara en dos fichas de personal con nombres distintos'.",
+            "text": "*Serin Voke deja sobre la mesa una libreta cosida, con las tapas dobladas.* 'La libreta de la simbóloga llegó a mi mesa. Página treinta y uno: «Cosas que no cuadran». La entrada treinta y ocho: Ceres, sector nueve, la misma cara en dos fichas de personal con nombres distintos'.",
             "options": [
                 {
                     "text": "¿Qué va a hacer con ella?",
@@ -474,7 +474,7 @@
         },
         {
             "id": "DLG_P2_ZONA4_WIDOW",
-            "minStep": 6,
+            "minStep": 8,
             "maxStep": 8,
             "requires": {
                 "vargas_fuerza": "letal"
@@ -502,7 +502,7 @@
         },
         {
             "id": "DLG_P2_VARGAS_RETURN",
-            "minStep": 6,
+            "minStep": 8,
             "maxStep": 8,
             "requires": {
                 "vargas_fuerza": "contencion"

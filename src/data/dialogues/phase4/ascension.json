@@ -415,7 +415,7 @@
                     "neuralSync": 31
                 }
             },
-            "text": "*Rian Telles, ingeniero de estructuras, en la pasarela del hangar. Debajo de la mesa del laboratorio hay un cuenco de agua que nadie vacía.* 'Treinta mil en un recinto para dos mil. Y cantan'.",
+            "text": "*Rian Telles, ingeniero de estructuras, en la pasarela del hangar. En el laboratorio, debajo de la mesa, sigue el cuenco de agua lleno.* 'Treinta mil en un recinto para dos mil. Y cantan'.",
             "options": [
                 {
                     "text": "Esto no lo aguantamos.",
@@ -499,7 +499,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": -1,
                     "corruptionImpact": 2,
-                    "consequence": "'A nadie'. *Se rasca la nuca.* 'Llevo catorce meses oyendo cantar a un niño en una galería vacía. Quiero saber quién canta'."
+                    "consequence": "'A nadie'. *Se rasca la nuca.* 'Hace catorce meses oí cantar a un niño en una galería vacía. Quiero saber quién canta'."
                 }
             ]
         },

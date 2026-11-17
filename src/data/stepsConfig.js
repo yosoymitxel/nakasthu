@@ -125,7 +125,7 @@ export const STEPS_CONFIG = {
                     { if: { lichesth: 'fue' }, text: 'Once créditos con cuarenta. Los pagó.' },
                     { if: { leina_palabra: 'escuchada' }, text: 'AITOR. Tú preguntaste qué letras.' },
                     { if: { marek: 'existio' }, text: 'Al amanecer decidieron que existió.' },
-                    { if: { vargas_fuerza: 'letal' }, text: 'El generador siguió en marcha.' },
+                    { if: { vargas_fuerza: 'letal' }, text: 'El distrito sigue en pie.' },
                     { if: { elara_contacto: 'confia' }, text: 'Elara Voss. Tenía diez años.' }
                 ]
             }
@@ -143,8 +143,8 @@ export const STEPS_CONFIG = {
                     pages: [
                         { title: 'Epílogo', shot: 'portalClose', text: 'Leina mete la secuencia al revés. El vórtice se pliega sobre sí mismo. La aurora se apaga sobre Prisiat. Los que cruzaron no vuelven.' },
                         { title: 'El precio', shot: 'bastion', text: 'Las Distribuciones que quedan se reúnen. Se aprueban cuatro partidas y un cierre de fronteras interiores. En la columna de retorno previsto de las reasignaciones no hay nada escrito.' },
-                        { title: 'Lo que había detrás', shot: 'monolith', text: 'Hace quince años, el geólogo Kamin, A. tocó el monolito de Zhyr. El hombre que volvió y fundó la secta llevaba su cara, pero no era él. El monolito no mata: devuelve a cada uno lo que perdió, entero, y a cambio se lo queda.' },
-                        { title: 'Lo que había detrás', shot: 'bastion', text: 'Eidolon lo sabía y fabricó personas para tapar las desapariciones. Kael encuentra la prueba: una niña de diez años con la cara exacta de Elara Voss. Y desde lo alto del Bastión, la sustancia negra dibuja un mapa. Lo copia y echa a andar.' },
+                        { title: 'Lo que había detrás', shot: 'monolith', text: 'Hace quince años, el geólogo Kamin, A. tocó el monolito de Zhyr. El hombre que volvió y fundó la secta llevaba su cara, pero no era él. En su última grabación se le apagan los ojos sin cerrarse; cuatro segundos después, el cuerpo gira la cabeza hacia la cámara y sonríe.' },
+                        { title: 'Lo que había detrás', shot: 'bastion', text: 'Eidolon escribía familiares que nunca existieron para que los índices cuadraran. Kael encuentra la prueba: una niña de diez años con la cara exacta de Elara Voss. Y desde lo alto del Bastión, la sustancia negra dibuja un mapa. Lo copia y echa a andar.' },
                         // Páginas con `if`: sólo salen si la marca narrativa coincide (CinematicScreen las filtra).
                         { title: 'Lo que había detrás', shot: 'bastion', if: { libreta: 'guardada' }, text: 'Kael abre la libreta por la página treinta y uno. Esta vez tiene la otra pieza.' },
                         { title: 'El ciclo', shot: 'mirror', text: 'Cerrar la puerta no la destruye. En Zhyr emerge un segundo monolito con los símbolos invertidos. Mucho después, una nave encuentra la Tierra violácea y una palabra grabada en todas partes: AITOR. El ciclo empieza otra vez, con otros.' },
@@ -155,7 +155,7 @@ export const STEPS_CONFIG = {
                     summary: 'El portal sigue abierto. Siguen cruzando. Siguen sonriendo.',
                     pages: [
                         { title: 'Epílogo', shot: 'meadow', text: 'Kamin empuja a Leina hacia la grieta. Al otro lado hay una pradera dorada y gente que se funde: dedos que entran en mejillas sin sangre, cuerpos unidos de cintura para abajo que la colina absorbe despacio. Nadie grita. Todos sonríen.' },
-                        { title: 'Epílogo', shot: 'meadowClose', text: 'Leina mira las colinas y entiende de qué están hechas. "Tú no eres Darien." La sonrisa de su hermano no se mueve. El suelo le cierra los tobillos. Abre los ojos en la pradera. Todo está bien. Todo está bien. Todo está bien.' },
+                        { title: 'Epílogo', shot: 'meadowClose', text: 'Leina mira las colinas y entiende de qué están hechas. «Tú no eres Darien.» La sonrisa de su hermano no se mueve. El suelo le cierra los tobillos. Abre los ojos en la pradera. Todo está bien. Todo está bien. Todo está bien.' },
                         { title: 'Éxodo', shot: 'exodus', text: 'Doce mil cruzan el primer día. Después dejan de contar, porque el que contaba se pone en la fila. Kamin mira desde el Bastión; bajo el esternón algo late cada diez segundos. No es un corazón. El cielo se vuelve violeta. Siguen cruzando.' },
                         { title: 'Éxodo', shot: 'exodus', if: { lichesth: 'fue' }, text: 'El hombre de los once créditos con cuarenta cruza con los seis de su turno. Entran de dos en dos, cogidos de la mano.' },
                         { title: 'Éxodo', shot: 'exodus', if: { marek: 'existio' }, text: 'En una cocina de Itzinol, dos personas se ponen de acuerdo en cosas que no ocurrieron. Después se ponen en la fila.' },

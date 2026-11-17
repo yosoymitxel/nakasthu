@@ -75,7 +75,7 @@
             "maxStep": 8,
             "priority": true,
             "npcTraits": {
-                "id": "LEINA KARST",
+                "id": "LEINA",
                 "type": "TÉCNICO"
             },
             "text": "*Deja junto a la cámara una unidad de mantenimiento sin registro.* 'Saqué esto de Eidolon. Un expediente de la Directiva. Kamin, A. Geólogo de campo, grado dos. Expedición a Zhyr. Fallecido en servicio. Restos no recuperados. Hace quince años'.",
@@ -131,10 +131,10 @@
                 "leina_palabra": "escuchada"
             },
             "npcTraits": {
-                "id": "LEINA KARST",
+                "id": "LEINA",
                 "type": "TÉCNICO"
             },
-            "text": "*En el laboratorio del Bastión. Debajo de la mesa ronca una perra vieja.* 'Fuiste el único que preguntó qué letras. Si estabilizamos el flujo entre los dos dominios, podemos abrirla sin que se descontrole'.",
+            "text": "*En el laboratorio del Bastión. Hay planos en el suelo y un cuenco de agua bajo la mesa.* 'Fuiste el único que preguntó qué letras. Si estabilizamos el flujo entre los dos dominios, podemos abrirla sin que se descontrole'.",
             "options": [
                 {
                     "text": "¿Y si es una válvula que no cierra?",
@@ -161,7 +161,7 @@
                 "leina_palabra": "descartada"
             },
             "npcTraits": {
-                "id": "LEINA KARST",
+                "id": "LEINA",
                 "type": "TÉCNICO"
             },
             "text": "*No saluda.* 'Tú también dijiste fallo de caché. Ahora la ven en las lámparas de Prisiat. Doce lámparas, tres, dos, cinco. Tres veces'.",
@@ -297,7 +297,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": 3,
                     "corruptionImpact": -2,
-                    "consequence": "*Cinco. Encendidos en fila, los cinco con la misma inclinación. Se apagan a la vez.*"
+                    "consequence": "*Cinco. Encendidos en fila, con la misma cadencia. Se apagan a la vez.*"
                 }
             ]
         },
@@ -348,7 +348,7 @@
                     "consequence": "*Se encoge de hombros.* 'Se me da bien esto. Y fuera no hay nada que arreglar. Fuera solo hay cosas que se caen'."
                 },
                 {
-                    "text": "¿Dónde está la perra?",
+                    "text": "¿Y la perra del cuenco?",
                     "energyCost": 0.3,
                     "stabilityImpact": -3,
                     "corruptionImpact": 6,
@@ -415,7 +415,7 @@
             "maxStep": 10,
             "exclusive": false,
             "npcTraits": {
-                "id": "LEINA KARST",
+                "id": "LEINA",
                 "type": "TÉCNICO"
             },
             "text": "*Una hoja de lecturas doblada en cuatro.* 'El nakara del altar brilla solo. Kamin lo llama la luz del renacimiento. Yo lo medí'.",
@@ -469,7 +469,7 @@
                     "energyCost": 0.2,
                     "stabilityImpact": -3,
                     "corruptionImpact": 5,
-                    "consequence": "*Ni pestañea.* 'Salió de donde tenía que salir. El generador siguió funcionando'."
+                    "consequence": "*Ni pestañea.* 'Salió de donde tenía que salir. El distrito sigue en pie'."
                 }
             ]
         }

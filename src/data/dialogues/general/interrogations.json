@@ -145,7 +145,7 @@
         },
         {
             "id": "DLG_S4_04",
-            "minStep": 4,
+            "minStep": 6,
             "maxStep": 7,
             "text": "'Las calles de Dispay arden. No queremos reasignaciones, queremos respuestas. ¡Nuestros seres queridos no son datos!'",
             "options": [
@@ -189,14 +189,14 @@
             "id": "DLG_S4_PERLA",
             "minStep": 4,
             "maxStep": 4,
-            "text": "'Dieciocho incubadoras. Las ordené por gravedad, de izquierda a derecha. Salieron catorce. En el parte pone incidencia de dotación'.",
+            "text": "'Mi hija nació en Itzinol la semana del tercio. En neonatos quedó una enfermera para dieciocho incubadoras. En el parte pone incidencia de dotación'.",
             "options": [
                 {
-                    "text": "¿Cuántas horas estuviste sola en la unidad?",
+                    "text": "¿Cuántas horas estuvo sola en la unidad?",
                     "energyCost": 0.25,
                     "stabilityImpact": -5,
                     "corruptionImpact": 2,
-                    "consequence": "'Cincuenta y dos. Treinta y un años en el oficio'. *Se mira las manos.* 'El parte lo firma alguien que no estaba. Nadie de Talok ha bajado a contar las cunas'."
+                    "consequence": "'Cincuenta y dos. Las ordenó por gravedad, de izquierda a derecha. La de mi hija era la sexta'. *Se mira las manos.* 'El parte lo firma alguien que no estaba. Nadie de Talok ha bajado a contar las cunas'."
                 },
                 {
                     "text": "La incidencia está registrada. No hay nada que añadir.",
@@ -294,7 +294,7 @@
             "id": "DLG_S7_02",
             "minStep": 7,
             "maxStep": 10,
-            "text": "'He visto a los desaparecidos en mis sueños. No están muertos. Están en Zhyr, esperando que crucemos. El Monolito es la llave'.",
+            "text": "'He visto a los desaparecidos en mis sueños. No están muertos. Están en Zhyr, esperando que crucemos. El monolito es la llave'.",
             "options": [
                 {
                     "text": "Describe tu sueño. ¿A quién ves allí?",
@@ -367,13 +367,13 @@
             "id": "DLG_S7_08",
             "minStep": 7,
             "maxStep": 10,
-            "text": "'Los científicos de Itzinol se pelean por la correlación y la causalidad. ¡Idiotas! La causa es el hambre de la Piedra y nosotros somos el banquete'.",
+            "text": "'Los científicos de Itzinol se pelean por si es correlación o causalidad. Mientras, la piedra tiene hambre'.",
             "options": [
                 {
-                    "text": "Explícame eso del «hambre de la Piedra».",
+                    "text": "Explícame eso del hambre.",
                     "energyCost": 1,
                     "stabilityImpact": -25,
-                    "consequence": "*Se relame los labios secos.* 'Come lo que pensamos. Recuerdos, nombres, miedo. Por eso vosotros le servís tan bien'."
+                    "consequence": "*Se relame los labios secos.* 'Se lleva bloques enteros. Turnos enteros. Y nadie de Itzinol ha bajado a contarlos'."
                 }
             ]
         },
@@ -402,13 +402,13 @@
                     "energyCost": 1.25,
                     "stabilityImpact": -30,
                     "loreUnlock": "LORE_REASSIGN_TRAP",
-                    "consequence": "*Sonríe. Su piel empieza a brillar desde dentro.* 'Entonces ya eres de los nuestros'."
+                    "consequence": "*Sonríe sin enseñar los dientes. No parpadea.* 'Entonces ya eres de los nuestros'."
                 },
                 {
                     "text": "*Fuerzas un reinicio de los núcleos desde tu consola.*",
                     "energyCost": 0.5,
                     "stabilityImpact": 20,
-                    "consequence": "*El sistema gime y rechaza el comando.* 'No te obedece, operador. Ya no'."
+                    "consequence": "*El sistema rechaza el comando. Código de error sin texto.* 'No te obedece, operador. Ya no'."
                 }
             ]
         },
@@ -416,13 +416,13 @@
             "id": "DLG_S10_02",
             "minStep": 10,
             "maxStep": 12,
-            "text": "'Ya no hay ciudadanos, solo devotos. ¿No lo ves? La fe es el nuevo combustible. La Nakara pulsa con nuestros rezos'.",
+            "text": "'Ya no hay ciudadanos, solo devotos. ¿No lo ves? El nakara del altar brilla más cuando cantamos'.",
             "options": [
                 {
-                    "text": "Reza, entonces. Veamos qué responde la Nakara.",
+                    "text": "Canta, entonces. Veamos qué responde el nakara.",
                     "energyCost": 1,
                     "stabilityImpact": -25,
-                    "consequence": "*Murmura un rezo. La lectura de Nakara sube con cada palabra.* 'Lo notas, ¿verdad? El Bastión ya no suena como una fábrica'."
+                    "consequence": "*Murmura un canto. La lectura de nakara sube con cada verso.* 'Lo notas, ¿verdad? El Bastión ya no suena como una fábrica'."
                 }
             ]
         },
@@ -444,14 +444,14 @@
             "id": "DLG_S10_04",
             "minStep": 10,
             "maxStep": 12,
-            "text": "'Mis extremidades... están brillando. Como Alexia en el Monolito. No duele. Es... expansión'.",
+            "text": "'Tengo los dedos fríos desde que bajé a la cámara. Fríos como los objetos que salen. No duele'.",
             "options": [
                 {
                     "text": "No te muevas. Voy a registrar lo que te está pasando.",
                     "energyCost": 1.5,
                     "stabilityImpact": -40,
                     "loreUnlock": "LORE_ASCENSION_COMPLETE",
-                    "consequence": "'No hace falta... ya casi...' *Se deshace en partículas de luz blanca. La camilla queda tibia.*"
+                    "consequence": "'Regístrelo. Mañana me pongo en la fila'. *Donde ha apoyado las manos, la camilla sigue fría.*"
                 }
             ]
         },
@@ -459,13 +459,13 @@
             "id": "DLG_S10_05",
             "minStep": 10,
             "maxStep": 12,
-            "text": "'Operador, apaga las luces. Deja que las sombras de Zhyr nos devoren. Es la única forma de volver a verlos a todos'.",
+            "text": "'Operador, apaga las luces. Kamin dice que a oscuras se oye mejor a los del otro lado. Quiero oír a mi madre'.",
             "options": [
                 {
                     "text": "No. Las luces se quedan encendidas.",
                     "energyCost": 0.5,
                     "stabilityImpact": 5,
-                    "consequence": "*Gime y se cubre los ojos.* 'Entonces no los veré nunca... ¿Mamá? ¿Estás ahí?'"
+                    "consequence": "*Se tapa los ojos con las dos manos.* 'Así también vale'. *Espera.* '¿Mamá? ¿Estás ahí?'"
                 }
             ]
         },
@@ -473,14 +473,14 @@
             "id": "DLG_S10_06",
             "minStep": 10,
             "maxStep": 12,
-            "text": "'Vi a un explorador tocar la piedra en Zhyr. Su cuerpo convulsionó y luego... una explosión de silencio. El Monolito es un ojo que parpadea'.",
+            "text": "'Vi a la simbóloga tocar la piedra. Una grabación de la Custodia, con la imagen quemada por los dos soles. Un destello blanco, sin ruido, y ya no estaba'.",
             "options": [
                 {
-                    "text": "¿Cuánto duró esa «explosión de silencio»?",
+                    "text": "¿Cuánto duró ese destello?",
                     "energyCost": 1.25,
                     "stabilityImpact": -35,
                     "loreUnlock": "LORE_STALKER_IDENTITY",
-                    "consequence": "'Un latido. Después, en todo el campamento, nadie recordaba cuántos éramos. Y no era la primera vez, operador. Pasó en otros campamentos'."
+                    "consequence": "'Nada. Un parpadeo. Lo raro viene después: el registro de a bordo siguió contando tres tripulantes once segundos más'."
                 }
             ]
         },
@@ -488,13 +488,13 @@
             "id": "DLG_S10_07",
             "minStep": 10,
             "maxStep": 12,
-            "text": "'El cielo allí es rojo y negro. No hay nubes, solo fragmentos de mundos que ya no existen. Alexia me saludó desde el horizonte'.",
+            "text": "'Kamin dice que allí hay una pradera. Cielo azul, flores, olor a tierra mojada. Mi hermana me espera al fondo, donde las colinas'.",
             "options": [
                 {
-                    "text": "Mírame y dime cómo era ese horizonte.",
+                    "text": "¿Quién le ha contado a Kamin cómo es?",
                     "energyCost": 1.5,
                     "stabilityImpact": -45,
-                    "consequence": "*Clava la mirada en el sensor. Tu enlace neural se corta durante cuatro segundos.* 'Así. Era así. Ahora tú también lo has visto'."
+                    "consequence": "'Los que salen'. *Tarda.* 'Bueno. Ellos dicen que estaban esperando y que estaba tranquilo. Lo del cielo lo pongo yo'."
                 }
             ]
         },
@@ -502,13 +502,13 @@
             "id": "DLG_S10_08",
             "minStep": 10,
             "maxStep": 12,
-            "text": "'Formas grotescas se mueven en el silencio de Zhyr. No tienen rostros, solo luz enfermiza. Dicen que son lo que queda de nosotros'.",
+            "text": "'En Zhyr hay figuras que andan por la arena sin dejar huella. No tienen cara. Dicen que son lo que queda de nosotros'.",
             "options": [
                 {
                     "text": "¿Cómo sabes que son lo que queda de nosotros?",
                     "energyCost": 1,
                     "stabilityImpact": -20,
-                    "consequence": "'Porque se mueven con prisa. Como quien llega tarde a casa. Todavía no saben que ya no tienen casa'."
+                    "consequence": "'Porque se mueven con prisa. Como quien llega tarde a casa'."
                 }
             ]
         },
@@ -593,7 +593,7 @@
             "id": "DLG_GEN_07",
             "minStep": 6,
             "maxStep": 6,
-            "text": "'Trabajaba en reasignación. Vi la hoja del trimestre. Cuatrocientos doce mil traslados a Prisiat en trece semanas. En la columna de retorno previsto pone: ninguno'.",
+            "text": "'Trabajaba en reasignación. Vi la hoja del trimestre. Cuatrocientos doce mil traslados a Prisiat en trece semanas. La columna de retorno previsto está en blanco'.",
             "options": [
                 {
                     "text": "Esa información es clasificada. No vuelvas a mencionarla.",
@@ -622,7 +622,7 @@
             "id": "DLG_GEN_09",
             "minStep": 8,
             "maxStep": 8,
-            "text": "'Kamin me dio esto. Es una pequeña piedra negra. Dice que me protegerá cuando el portal se abra. ¿Quieres verla?'",
+            "text": "'Kamin me dio esto. Es una pequeña piedra negra. Dice que me protegerá cuando el portal se abra. ¿Quiere verla?'",
             "options": [
                 {
                     "text": "Déjala en la bandeja. Queda incautada.",
@@ -637,7 +637,7 @@
             "id": "DLG_GEN_13",
             "minStep": 8,
             "maxStep": 8,
-            "text": "'Kamin dice que la Piedra es el catalizador de nuestra evolución. Que sin dolor no hay cambio. Siento que voy a cambiar mucho hoy'.",
+            "text": "'Kamin dice que hay que entregarlo todo. Esta noche bajo a la cámara con el círculo. Siento que voy a cambiar mucho hoy'.",
             "options": [
                 {
                     "text": "¿Qué sientes ahora mismo en el cuerpo?",
@@ -651,7 +651,7 @@
             "id": "DLG_GEN_15",
             "minStep": 10,
             "maxStep": 10,
-            "text": "'El Monolito está brillando más que nunca. Puedo verlo a través de las paredes. Me está llamando por mi nombre de nacimiento'.",
+            "text": "'El monolito está brillando más que nunca. Puedo verlo a través de las paredes. Me está llamando por mi nombre de nacimiento'.",
             "options": [
                 {
                     "text": "Si te llama, ve. No voy a detenerte.",
