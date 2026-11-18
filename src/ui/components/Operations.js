@@ -365,13 +365,13 @@ export const Operations = () => {
                 <div className="h-[72px] flex p-1 gap-1 border-b border-zinc-800/30 bg-zinc-950/20">
                     ${activeDialogue ? html`
                         <div className="flex w-full gap-1">
-                            <div className="flex-[4] flex gap-1">
+                            <div className="flex-[4] min-w-0 flex gap-1">
                                 ${activeDialogue.options.map((opt, idx) => html`
                                     <button 
                                         key=${idx}
                                         onClick=${() => handleOptionSelect(idx)}
                                         disabled=${isTyping || opt.used}
-                                        className=${`flex-1 border text-[11px] transition-all uppercase tracking-tighter font-bold p-1 leading-tight flex flex-col justify-center items-center text-center relative group overflow-hidden
+                                        className=${`flex-1 min-w-0 border text-[11px] transition-all uppercase tracking-tighter font-bold p-1 leading-tight flex flex-col justify-center items-center text-center relative group overflow-hidden
                                             ${opt.used
                                                 ? 'border-zinc-800 bg-zinc-900/10 text-zinc-700 cursor-not-allowed opacity-50 shadow-none'
                                         : (isSectarian 
@@ -389,7 +389,7 @@ export const Operations = () => {
                             <button 
                                 onClick=${handleEndDialogue}
                                 disabled=${isTyping}
-                                className=${`flex-1 border text-[10px] transition-all uppercase tracking-tighter font-black p-1 leading-tight shadow-[0_0_10px_rgba(239,68,68,0.05)]
+                                className=${`flex-1 min-w-[64px] border text-[10px] transition-all uppercase tracking-tighter font-black p-1 leading-tight shadow-[0_0_10px_rgba(239,68,68,0.05)]
                                     ${isSectarian 
                                         ? 'border-red-900/50 bg-red-950/20 hover:bg-red-900/40 text-red-500'
                                         : 'border-red-500/30 bg-red-950/10 hover:bg-red-500/20 text-red-500/70 hover:text-red-400'}`}

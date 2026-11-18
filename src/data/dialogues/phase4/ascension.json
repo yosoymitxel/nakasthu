@@ -21,7 +21,36 @@
                     "energyCost": 0.2,
                     "stabilityImpact": 1,
                     "corruptionImpact": 0,
-                    "consequence": "'No lo sé'. *Lo dice y se da cuenta de que es verdad.* 'Llevo cinco meses andando hacia aquí y no sé qué venía a decir'."
+                    "consequence": "'No lo sé'. *Lo dice y se da cuenta de que es verdad.* 'Llevo cinco meses andando hacia aquí y no sé qué venía a decir'.",
+                    "next": [
+                        {
+                            "text": "¿Qué hay que hacer con Kamin?",
+                            "energyCost": 0.2,
+                            "stabilityImpact": 1,
+                            "corruptionImpact": 0,
+                            "consequence": "'Tener cuidado'. *Espera. No viene nada más.* 'No sé por qué'."
+                        },
+                        {
+                            "text": "Kamin, A. Geólogo. Fallecido en servicio hace quince años.",
+                            "if": {
+                                "kamin_expediente": "leido"
+                            },
+                            "energyCost": 0.3,
+                            "stabilityImpact": 5,
+                            "corruptionImpact": -4,
+                            "consequence": "*Tarda.* 'Entonces ya tengo algo que decirle a la ingeniera'."
+                        },
+                        {
+                            "text": "Las tres y diecisiete. Mi registro también lo tiene.",
+                            "if": {
+                                "aviso_317": "anotado"
+                            },
+                            "energyCost": 0.3,
+                            "stabilityImpact": 4,
+                            "corruptionImpact": -3,
+                            "consequence": "*Se queda quieto.* 'A mí me llega una palabra por noche. Llevo más de cuatrocientas contadas. Y cuando casi está, vuelve a empezar'."
+                        }
+                    ]
                 },
                 {
                     "text": "¿Cómo era la simbóloga?",
@@ -50,33 +79,6 @@
                     "stabilityImpact": 2,
                     "corruptionImpact": -1,
                     "consequence": "*Se toca la bota izquierda. El forro está vacío.* 'Se la quedaron en la cuarentena. Me sé de memoria la página treinta y uno. De memoria no le sirve a nadie'."
-                },
-                {
-                    "text": "Las tres y diecisiete. Mi registro también lo tiene.",
-                    "if": {
-                        "aviso_317": "anotado"
-                    },
-                    "energyCost": 0.3,
-                    "stabilityImpact": 4,
-                    "corruptionImpact": -3,
-                    "consequence": "*Se queda quieto.* 'A mí me llega una palabra por noche. Llevo más de cuatrocientas contadas. Y cuando casi está, vuelve a empezar'."
-                },
-                {
-                    "text": "Kamin, A. Geólogo. Fallecido en servicio hace quince años.",
-                    "if": {
-                        "kamin_expediente": "leido"
-                    },
-                    "energyCost": 0.3,
-                    "stabilityImpact": 5,
-                    "corruptionImpact": -4,
-                    "consequence": "*Tarda.* 'Entonces ya tengo algo que decirle a la ingeniera'."
-                },
-                {
-                    "text": "¿Qué hay que hacer con Kamin?",
-                    "energyCost": 0.2,
-                    "stabilityImpact": 1,
-                    "corruptionImpact": 0,
-                    "consequence": "'Tener cuidado'. *Espera. No viene nada más.* 'No sé por qué'."
                 }
             ]
         },
