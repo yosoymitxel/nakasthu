@@ -6,6 +6,7 @@
 import { html } from '../../utils/html.js';
 import { useGameState } from '../../hooks/useGameState.js';
 import { state } from '../../../core/State.js';
+import { bus } from '../../../core/Bus.js';
 import { gameSequencer } from '../../../systems/GameSequencer.js';
 import { STEPS_CONFIG } from '../../../data/stepsConfig.js';
 import { factionSystem } from '../../../systems/FactionSystem.js';
@@ -65,6 +66,8 @@ export const CinematicScreen = memo(({ config }) => {
     // Un toque completa el texto; el siguiente pasa de página o avanza
     const advance = () => {
         if (!done) return setShown(content.length);
+        // Tras el FIN del epílogo se vuelve al inicio, sin pantalla de balance
+        if (last && current.black) { bus.emit('SYSTEM_FORCE_RESET'); return state.resetState(); }
         if (last) return gameSequencer.nextStep();
         setPage(page + 1);
     };

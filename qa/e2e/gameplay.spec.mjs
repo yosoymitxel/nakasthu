@@ -216,10 +216,10 @@ test.describe('E2E · gameplay', () => {
 
 test.describe('E2E · finales', () => {
     for (const [choice, text] of [
-        ['EJECUTAR SENTENCIA', 'Ejecutas la sentencia. Leina'],
-        ['ABRAZAR EL VACÍO', 'Kamin empuja a Leina hacia la grieta'],
+        ['CERRAR', 'Leina mete la secuencia al revés'],
+        ['AMPLIAR', 'Kamin empuja a Leina hacia la grieta'],
     ]) {
-        test(`final "${choice}": epílogo propio y PROTOCOLOS COMPLETADOS @responsive`, async ({ page }, testInfo) => {
+        test(`final "${choice}": epílogo propio y vuelta al inicio @responsive`, async ({ page }, testInfo) => {
             await bootGame(page, { nakasthu_max_step: '11' });
             await jumpToStep(page, 11);
             await expect(page.getByRole('heading', { name: 'El Juicio Final', exact: true })).toBeVisible();
@@ -230,10 +230,6 @@ test.describe('E2E · finales', () => {
             await epi.click();
             await expect(epi.locator('.cine-text')).toContainText(text);
             await advanceCinematic(page);
-            await expect(page.getByRole('heading', { name: 'PROTOCOLOS COMPLETADOS' })).toBeVisible();
-            await snap(page, testInfo, `e2e-final-${choice.split(' ')[0].toLowerCase()}`);
-
-            await page.getByRole('button', { name: 'Ir al Inicio' }).click();
             await expect(page.getByRole('heading', { name: 'NAKASTHU' })).toBeVisible();
         });
     }

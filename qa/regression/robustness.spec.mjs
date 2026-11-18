@@ -102,11 +102,11 @@ test.describe('REGRESIÓN · doble ejecución de acciones', () => {
         await expect.poll(() => page.evaluate(() => window.state.processedCount), { timeout: 10_000 }).toBe(1);
     });
 
-    test('doble clic en EJECUTAR SENTENCIA avanza un único paso (epílogo, no se lo salta)', async ({ page }) => {
+    test('doble clic en CERRAR avanza un único paso (epílogo, no se lo salta)', async ({ page }) => {
         await bootGame(page, { nakasthu_max_step: '11' });
         await jumpToStep(page, 11);
         await expect(page.getByRole('heading', { name: 'El Juicio Final', exact: true })).toBeVisible();
-        await page.getByRole('button', { name: 'EJECUTAR SENTENCIA', exact: true }).dblclick();
+        await page.getByRole('button', { name: 'CERRAR', exact: true }).dblclick();
         await expect(page.locator('.cine-title')).toHaveText('Epílogo');
         expect(await page.evaluate(() => window.state.currentStep)).toBe(12);
     });
@@ -116,7 +116,7 @@ test.describe('REGRESIÓN · doble ejecución de acciones', () => {
         await bootGame(page, { nakasthu_max_step: '11' });
         await page.getByRole('button', { name: 'Selector de Secuencias', exact: true }).click();
         await page.getByRole('button').filter({ hasText: 'PASO_11' }).click();
-        await page.getByRole('button', { name: 'EJECUTAR SENTENCIA', exact: true }).click({ timeout: 2_000 });
+        await page.getByRole('button', { name: 'CERRAR', exact: true }).click({ timeout: 2_000 });
         await page.waitForTimeout(600);
         expect(await page.evaluate(() => window.state.currentStep)).toBe(12);
         await expect(page.locator('.cine-title')).toHaveText('Epílogo');
@@ -331,17 +331,15 @@ test.describe('REGRESIÓN · responsive @responsive', () => {
         await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     });
 
-    test('pantalla final legible en móvil @responsive', async ({ page }, testInfo) => {
+    test('tras el FIN vuelve al inicio en móvil @responsive', async ({ page }, testInfo) => {
         await bootGame(page, { nakasthu_max_step: '11' });
         await jumpToStep(page, 11);
         await expect(page.getByRole('heading', { name: 'El Juicio Final', exact: true })).toBeVisible();
-        await page.getByRole('button', { name: 'EJECUTAR SENTENCIA', exact: true }).click();
+        await page.getByRole('button', { name: 'CERRAR', exact: true }).click();
         const epi = page.locator('.cinematic-screen');
         await expect(epi.locator('.cine-title')).toHaveText('Epílogo');
         await advanceCinematic(page);
-        await expect(page.getByRole('heading', { name: 'PROTOCOLOS COMPLETADOS' })).toBeVisible();
-        await page.getByRole('button', { name: 'Ir al Inicio' }).scrollIntoViewIfNeeded();
-        await expect(page.getByRole('button', { name: 'Ir al Inicio' })).toBeInViewport();
+        await expect(page.getByRole('heading', { name: 'NAKASTHU' })).toBeVisible();
         await snap(page, testInfo, 'resp-final');
     });
 });
