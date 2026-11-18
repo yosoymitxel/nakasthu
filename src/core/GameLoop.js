@@ -116,6 +116,15 @@ class GameLoop {
             }
         }
 
+        // 0. Avería espontánea: con los recursos sanos también hay crisis que atender
+        const quiet = !Object.values(state.emergencies).some(Boolean);
+        if (quiet && (state.currentStep || 1) >= 4 && Math.random() < thresholds.spontaneousEmergencyChance) {
+            const type = ['resonance', 'oxygen', 'energy'][Math.floor(Math.random() * 3)];
+            bus.emit('EMERGENCY_START', { type });
+            bus.emit('TERMINAL_PRINT', { text: pathConfig.emergencies[type].alert, type: 'ERROR' });
+            return;
+        }
+
         // 3. Energía (Si energía < threshold)
         if (!state.emergencies.energy && state.energy < thresholds.energyEmergency) {
             if (Math.random() < CHANCE) {

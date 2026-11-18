@@ -290,6 +290,7 @@ test.describe('REGRESIÓN · responsive @responsive', () => {
         await bootGame(page, { ...SKIP_TUTORIALS, nakasthu_max_step: '4' });
         await jumpToStep(page, 4);
         await startOperations(page);
+        await page.evaluate(() => { window.state.requiredScan = 'BIOMETRIC'; });
         const tabs = page.locator('.mobile-tabs');
         const grid = page.locator('.main-layout-grid').first();
         await expect(tabs).toBeVisible();

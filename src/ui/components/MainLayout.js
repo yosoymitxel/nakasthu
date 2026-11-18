@@ -103,6 +103,8 @@ MainLayout.displayName = 'MainLayout';
  * El "Embudo" Nivel 2: El Bloque Modular
  * Maneja bordes, sombras y estados visuales (Highlight/Lock)
  */
+const SHIELDED_IN_FOCUS = new Set(['L_UPPER', 'R_TOP', 'C_FOOTER']);
+
 export const ModuleWrapper = memo(({ area, children, className = "", locked = false, highlighted = false }) => {
     const storyPath = useGameState('storyPath');
     const labels = useStoryLabels();
@@ -110,7 +112,7 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
     const themeColor = isSectarian ? 'purple' : 'cyan';
 
     const focusMode = useGameState('focusMode');
-    const isShielded = focusMode && area !== 'C_MAIN' && area !== 'C_HEADER' && area !== 'L_LOWER';
+    const isShielded = focusMode && SHIELDED_IN_FOCUS.has(area);
 
     // Al desbloquearse, el módulo "arranca" en vez de aparecer sin más
     const [booting, setBooting] = useState(false);
@@ -165,10 +167,9 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
 
                 border transition-all duration-[1200ms] ease-in-out
                 ${isSectarian ? 'border-indigo-900/20' : 'border-zinc-800/50'}
-                ${(locked || isShielded) ? 'opacity-50 pointer-events-none grayscale' : 'opacity-100'}
+                ${locked ? 'opacity-50 pointer-events-none grayscale' : isShielded ? 'opacity-60 pointer-events-none' : 'opacity-100'}
                 ${highlighted ? `border-${themeColor}-500/60 ring-1 ring-${themeColor}-500/30 ${isSectarian ? 'bg-indigo-950/10' : 'bg-cyan-950/5'} animate-pulse-slow` : 'bg-transparent'}
-                ${isShielded ? 'scale-[0.98]' : 'scale-100'}
-                ${className}
+                                ${className}
             `}
         >
             <!-- Borde Temático -->
@@ -197,27 +198,6 @@ export const ModuleWrapper = memo(({ area, children, className = "", locked = fa
                         <span className=${`text-[10px] font-black tracking-[0.2em] uppercase ${isSectarian ? 'text-purple-400' : 'text-red-500'}`}>
                             ${labels.layout.lockedLabel}
                         </span>
-                    </div>
-                </div>
-            `}
-
-            <!-- Indicador de Blindaje (Focus Mode) -->
-            ${isShielded && html`
-                <div className="absolute inset-0 flex items-center justify-center z-40 bg-black/80 backdrop-blur-md animate-fade-in duration-700">
-                    <div className="flex flex-col items-center gap-4 animate-flicker">
-                        <div className="w-16 h-[1px] bg-cyan-900/40"></div>
-                        <div className="flex flex-col items-center">
-                            <span className="text-[9px] text-cyan-800 font-bold tracking-[0.5em] uppercase mb-1">
-                                SISTEMA_EN_FOCO
-                            </span>
-                            <span className="text-[7px] text-cyan-900/60 font-mono tracking-[0.2em] uppercase">
-                                Blindaje Neural Activo
-                            </span>
-                        </div>
-                        <div className="w-16 h-[1px] bg-cyan-900/40"></div>
-                        
-                        <!-- Mini Scanline animada interna del bloque -->
-                        <div className="absolute inset-0 pointer-events-none opacity-10 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(6,182,212,0.1)_50%)] bg-[length:100%_2px]"></div>
                     </div>
                 </div>
             `}

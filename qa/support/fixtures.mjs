@@ -164,7 +164,11 @@ export async function startOperations(page) {
 /** Los personajes de lore llegan ya con su identidad y no se pueden sacrificar: las pruebas de sentencia usan un sujeto corriente. */
 export async function regularSubject(page) {
     await expect.poll(() => page.evaluate(() => Boolean(window.state.currentEntity && !window.state.currentEntity._processed)), { timeout: 15_000 }).toBe(true);
-    await page.evaluate(() => { for (let i = 0; i < 20 && window.state.currentEntity?.isLoreCore; i++) window.state.nextSubject(); });
+    await page.evaluate(() => {
+        for (let i = 0; i < 20 && window.state.currentEntity?.isLoreCore; i++) window.state.nextSubject();
+        // Las averías espontáneas bloquean el cierre de turno; las pruebas de emergencia las lanzan a mano
+        window.state.emergencies = { resonance: false, oxygen: false, energy: false };
+    });
 }
 
 export async function engine(page, fn, arg) {
@@ -200,6 +204,7 @@ export async function revealOnMobile(page, locator, tab) {
 /** Lanza el escaneo biométrico desde el panel del escáner (no desde la guía de pasos). */
 export async function scanBiometric(page) {
     await expect.poll(() => page.evaluate(() => Boolean(window.state.currentEntity && !window.state.currentEntity._processed)), { timeout: 15_000 }).toBe(true);
+    await page.evaluate(() => { window.state.requiredScan = 'BIOMETRIC'; });
     // Botón del panel escáner (en móvil no muestra el atajo numérico); excluye la guía "1 Escanear".
     const scanBtn = page.getByRole('button', { name: /^(REQUERIDO\s*)?(\d\s*)?BIOMÉTRICO/ });
     await revealOnMobile(page, scanBtn, 'Escáner');

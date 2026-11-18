@@ -33,6 +33,7 @@ export const LoreArchive = () => {
     });
 
     const openLoreScreen = () => {
+        if (state.focusMode) return;
         state.gameStatus = 'LORE_ARCHIVE';
     };
 

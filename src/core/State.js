@@ -83,7 +83,7 @@ const initialState = {
     // Acotado a los pasos existentes: un valor manipulado (NaN, -3, 999) rompía o desbloqueaba el selector.
     maxStepReached: storageGetInt('nakasthu_max_step', { fallback: 1, min: 1, max: Math.max(...Object.keys(STEPS_CONFIG).map(Number)) }),
     infiniteMode: false,
-    requiredScan: 'BIOMETRIC', // Tipo de escaneo requerido para decisiones (rotativo)
+    requiredScan: 'BIOMETRIC', // Cambia con cada sujeto
     usedDialogueIds: []        // Memoria de diálogos para evitar repeticiones
 };
 
@@ -139,6 +139,10 @@ const stateManager = {
         // El diálogo que cambia de identidad al sujeto se elige ya, para que entre con su cara
         bus.emit('SUBJECT_PREPARE', newSubject);
         if (forcedTech) applyTraits(newSubject, { type: 'técnico' });
+        if (!this.isTutorialActive && currentStep >= 2) {
+            const scans = Object.keys(CONFIG.SCANNER.TYPES).filter(id => id !== this.requiredScan);
+            this.requiredScan = scans[Math.floor(Math.random() * scans.length)];
+        }
         this.currentEntity = newSubject;
 
         // CRÍTICO: Emitir eventos FUERA del batch para garantizar que React se actualice

@@ -186,7 +186,7 @@ test.describe('E2E · gameplay', () => {
         await jumpToStep(page, 4);
         await startOperations(page);
         const coach = page.locator('.coach-hint');
-        await expect(coach).toContainText('BIOMÉTRICO');
+        await expect(coach).toContainText('Pulsa ESCANEAR');
         await expect(page.getByText('NUEVO SISTEMA DETECTADO')).toHaveCount(0);
         await snap(page, testInfo, 'e2e-coach-1');
         await scanBiometric(page);

@@ -20,7 +20,8 @@ export const PATH_CONFIGS = {
             resonanceEmergency: 30,
             energyEmergency: 25,
             oxygenDrain: 0.05,
-            emergencyChance: 0.05
+            emergencyChance: 0.05,
+            spontaneousEmergencyChance: 0.03
         },
         emergencies: {
             resonance: {
@@ -192,7 +193,8 @@ export const PATH_CONFIGS = {
             resonanceEmergency: 40,
             energyEmergency: 30,
             oxygenDrain: 0.08,
-            emergencyChance: 0.07
+            emergencyChance: 0.07,
+            spontaneousEmergencyChance: 0.03
         },
         emergencies: {
             resonance: {

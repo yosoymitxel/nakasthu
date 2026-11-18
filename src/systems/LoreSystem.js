@@ -120,6 +120,7 @@ class LoreSystem {
             text: `[ALERTA] NUEVA ENTRADA DE LORE DESBLOQUEADA: ${loreId}`,
             type: 'SUCCESS'
         });
+        bus.emit('HIGHLIGHT_MODULE', { areas: ['R_UPPER'], color: '#a855f7', duration: 4000 });
     }
 
     saveToArchive(data) {
