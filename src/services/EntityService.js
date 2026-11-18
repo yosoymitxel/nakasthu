@@ -127,6 +127,8 @@ export const applyTraits = (subject, traits) => {
         subject.loreCore = loreChar;
         subject.isCorrupt = false; // Personajes clave del canon no son corrupción arbitraria
         subject.tells = rollTells(false);
+        // Su retrato es arte fijo: sin glitch al azar (VOID lo dejaba en gris)
+        subject.visual = { ...subject.visual, glitch: 'NONE' };
         if (loreChar.species) subject.species = loreChar.species;
         if (!subject.scannedTypes) subject.scannedTypes = [];
         if (!subject.scannedTypes.includes('LORE_VERIFIED')) {
