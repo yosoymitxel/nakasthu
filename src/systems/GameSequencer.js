@@ -216,6 +216,11 @@ class GameSequencer {
         state.stability = CONFIG.STABILITY.INITIAL;
         state.oxygen = 100;
         state.unrest = 0; // También reiniciar agitación al cambiar de acto/nivel
+        // El eclipse tampoco pasa al nivel siguiente (su tinte se confundía con el estado crítico)
+        state.mode = 'NORMAL';
+        state.phase = 'SOLAR';
+        state.eclipseTimer = 0;
+        state.orbitalCycle = 0;
 
         state.worldTime = 0;
         state.quota = currentConfig.subjectCount || currentConfig.quota || CONFIG.DEFAULT_QUOTA;

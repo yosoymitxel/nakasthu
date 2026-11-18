@@ -279,8 +279,11 @@ export const Layout = () => {
     }, [hasSystemModal]);
 
     const isEclipse = phase === 'ECLIPSE';
-    const isCriticalEnergy = energy < 15;
-    const isCriticalStability = stability < 15;
+    // Los avisos críticos sólo con partida en curso: no sobre el resumen de turno ni al cambiar de nivel
+    const isModalOpen = useGameState('isModalOpen');
+    const inPlay = gameStatus === 'PLAYING' && !isModalOpen;
+    const isCriticalEnergy = inPlay && energy < 15;
+    const isCriticalStability = inPlay && stability < 15;
     const isGameOver = gameStatus === 'GAME_OVER';
     const isStartMenu = gameStatus === 'START_MENU';
     // Se relee al volver al menú: el autoguardado ocurre en cada cambio de paso.

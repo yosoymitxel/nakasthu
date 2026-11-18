@@ -10,6 +10,14 @@ import { bus } from '../../core/Bus.js';
 import { InvisibleUtilityBar } from './MainLayout.js';
 
 import { Icon } from '../shared/Icon.js';
+// Gravedad de una barra: la misma escala que activa los avisos de pantalla (crítico < 15)
+const sev = (v) => (v < 15 ? 'crit' : v < 30 ? 'warn' : '');
+const SEV_BAR = {
+    warn: 'bg-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.5)]',
+    crit: 'bg-red-500 animate-pulse shadow-[0_0_18px_rgba(239,68,68,0.8)]'
+};
+const SEV_TEXT = { warn: '!text-orange-400', crit: '!text-red-400 animate-pulse' };
+
 export const HeaderNucleo = () => {
     const energy = useGameState('energy');
     const stability = useGameState('stability');
@@ -94,14 +102,14 @@ export const HeaderNucleo = () => {
                     <span className=${`text-[9px] font-black uppercase tracking-[0.1em] whitespace-nowrap transition-colors ${activeHighlights.energy ? (isSectarian ? 'text-purple-400' : 'text-amber-400') : (isSectarian ? 'text-purple-700' : 'text-amber-700')}`}>
                         ${isSectarian ? 'Esencia_Vital' : 'System_Power'}
                     </span>
-                    <span data-stat="energy" className=${`text-[12px] font-mono font-bold leading-none whitespace-nowrap ${activeHighlights.energy ? (isSectarian ? 'text-purple-300' : 'text-amber-300') : (isSectarian ? 'text-purple-600' : 'text-amber-600')}`}>
+                    <span data-stat="energy" className=${`text-[12px] font-mono font-bold leading-none whitespace-nowrap ${SEV_TEXT[sev(energy)] || ''} ${activeHighlights.energy ? (isSectarian ? 'text-purple-300' : 'text-amber-300') : (isSectarian ? 'text-purple-600' : 'text-amber-600')}`}>
                         <${Icon} name=${isSectarian ? 'moon-stars' : 'zap'} tone=${isSectarian ? 'sect' : 'energy'} /> ${Math.floor(energy)}%
                     </span>
                 </div>
                 
                 <div className=${`flex-1 h-3 bg-black/40 relative border transition-all duration-300 ${activeHighlights.energy ? (isSectarian ? 'border-purple-500/50 shadow-[0_0_10px_rgba(147,51,234,0.2)]' : 'border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.2)]') : 'border-zinc-800/50'}`}>
                     <div 
-                        className=${`absolute h-full overflow-hidden transition-all duration-1000 ${isSectarian ? 'bg-gradient-to-r from-purple-900 via-purple-600 to-indigo-500 shadow-[0_0_15px_rgba(147,51,234,0.4)]' : 'bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.4)]'}`}
+                        className=${`absolute h-full overflow-hidden transition-all duration-1000 ${SEV_BAR[sev(energy)] || (isSectarian ? 'bg-gradient-to-r from-purple-900 via-purple-600 to-indigo-500 shadow-[0_0_15px_rgba(147,51,234,0.4)]' : 'bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.4)]')}`}
                         style=${{ width: `${Math.floor(energy)}%` }}
                     >
                         ${isSectarian ? html`
@@ -122,14 +130,14 @@ export const HeaderNucleo = () => {
                     <span className=${`text-[9px] font-black uppercase tracking-[0.1em] whitespace-nowrap transition-colors ${activeHighlights.stability ? (isSectarian ? 'text-purple-400' : 'text-red-500') : (isSectarian ? 'text-purple-800' : 'text-red-900')}`}>
                         ${isSectarian ? 'Paz_Espiritual' : 'Neural_Integrity'}
                     </span>
-                    <span data-stat="stability" className=${`text-[12px] font-mono font-bold leading-none whitespace-nowrap ${activeHighlights.stability ? (isSectarian ? 'text-purple-300' : 'text-red-400') : (isSectarian ? 'text-purple-600' : 'text-red-600')}`}>
+                    <span data-stat="stability" className=${`text-[12px] font-mono font-bold leading-none whitespace-nowrap ${SEV_TEXT[sev(stability)] || ''} ${activeHighlights.stability ? (isSectarian ? 'text-purple-300' : 'text-red-400') : (isSectarian ? 'text-purple-600' : 'text-red-600')}`}>
                         <${Icon} name=${isSectarian ? 'shield' : 'anchor'} tone=${isSectarian ? 'sect' : 'stability'} /> ${Math.floor(stability)}%
                     </span>
                 </div>
                 
                 <div className=${`flex-1 h-3 bg-black/40 relative border transition-all duration-300 ${activeHighlights.stability ? (isSectarian ? 'border-purple-600/50 shadow-[0_0_10px_rgba(147,51,234,0.2)]' : 'border-red-500/50 shadow-[0_0_10px_rgba(220,38,38,0.2)]') : 'border-zinc-800/50'}`}>
                     <div 
-                        className=${`absolute h-full overflow-hidden transition-all duration-1000 ${isSectarian ? 'bg-gradient-to-r from-indigo-900 via-purple-800 to-purple-600 shadow-[0_0_15px_rgba(147,51,234,0.3)]' : 'bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.4)]'}`}
+                        className=${`absolute h-full overflow-hidden transition-all duration-1000 ${(sev(stability) === 'crit' && SEV_BAR.crit) || (sev(stability) === 'warn' ? 'animate-pulse ' : '') + (isSectarian ? 'bg-gradient-to-r from-indigo-900 via-purple-800 to-purple-600 shadow-[0_0_15px_rgba(147,51,234,0.3)]' : 'bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.4)]')}`}
                         style=${{ width: `${Math.floor(stability)}%` }}
                     >
                         ${isSectarian ? html`
