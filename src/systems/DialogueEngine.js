@@ -44,6 +44,19 @@ class DialogueEngine {
 
     setupListeners() {
         // Al terminar una sesión (Sacrificio/Autorización), limpiar el diálogo actual
+        // El diálogo se elige al llegar el sujeto: si lo convierte en otro personaje, entra ya con su cara
+        bus.on('SUBJECT_PREPARE', (subject) => {
+            this.reserved = null;
+            const dialogue = this.pickDialogue(subject);
+            if (!dialogue) return;
+            if (dialogue.npcTraits) {
+                applyTraits(subject, dialogue.npcTraits);
+                subject.traitsFrom = dialogue.id;
+            }
+            this.reserved = { entityId: subject.id, dialogue };
+            if (!state.usedDialogueIds.includes(dialogue.id)) state.usedDialogueIds = [...state.usedDialogueIds, dialogue.id];
+        });
+
         bus.on('SESSION_TERMINATED', () => {
             if (this.currentDialogue) {
                 this.closeDialogue();
@@ -102,11 +115,19 @@ class DialogueEngine {
      * Inicia un diálogo aleatorio o específico basado en el contexto actual.
      */
     triggerRandomDialogue() {
-        if (this.dialogues.length === 0) return;
+        const reserved = this.reserved?.entityId === state.currentEntity?.id ? this.reserved.dialogue : null;
+        this.reserved = null;
+        const dialogue = reserved || this.pickDialogue(state.currentEntity);
+        if (dialogue) this.startDialogue(dialogue);
+    }
+
+    /** Elige el diálogo para un sujeto sin abrirlo. */
+    pickDialogue(entity) {
+        if (this.dialogues.length === 0) return null;
 
         const currentStep = state.currentStep || 1;
-        const eligible = this.dialogues.filter(d => narrativeFlags.matches(d.requires) && fitsEntity(d, state.currentEntity));
-        if (eligible.length === 0) return;
+        const eligible = this.dialogues.filter(d => narrativeFlags.matches(d.requires) && fitsEntity(d, entity));
+        if (eligible.length === 0) return null;
 
         // 1. Filtrar diálogos por el paso actual (minStep/maxStep)
         let pool = eligible.filter(d => {
@@ -137,8 +158,7 @@ class DialogueEngine {
         const anchors = unusedPool.filter(d => d.priority || d.forEntity);
         if (anchors.length) unusedPool = anchors;
 
-        const randomIndex = Math.floor(Math.random() * unusedPool.length);
-        this.startDialogue(unusedPool[randomIndex]);
+        return unusedPool[Math.floor(Math.random() * unusedPool.length)];
     }
 
     /** Abre un diálogo concreto (también lo usan los tests que recorren todas las ramas). */
@@ -152,8 +172,8 @@ class DialogueEngine {
             state.usedDialogueIds = usedIds;
         }
 
-        // Aplicar sobreescritura de rasgos de NPC si existen
-        if (this.currentDialogue.npcTraits && state.currentEntity) {
+        // Aplicar sobreescritura de rasgos de NPC si existen (salvo si ya llegó con ellos)
+        if (this.currentDialogue.npcTraits && state.currentEntity && state.currentEntity.traitsFrom !== this.currentDialogue.id) {
             console.log(`%c[DIALOGUE] Aplicando rasgos narrativos al sujeto: ${this.currentDialogue.id}`, 'color: #06b6d4; font-weight: bold;');
             state.startBatch();
             applyTraits(state.currentEntity, this.currentDialogue.npcTraits);

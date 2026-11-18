@@ -158,6 +158,13 @@ export async function startOperations(page) {
     if ((await btn.textContent().catch(() => '')).trim() !== 'INICIAR OPERACIONES') await btn.click();
     await briefing.getByRole('button', { name: 'INICIAR OPERACIONES' }).click();
     await expect(briefing).toBeHidden();
+    await regularSubject(page);
+}
+
+/** Los personajes de lore llegan ya con su identidad y no se pueden sacrificar: las pruebas de sentencia usan un sujeto corriente. */
+export async function regularSubject(page) {
+    await expect.poll(() => page.evaluate(() => Boolean(window.state.currentEntity && !window.state.currentEntity._processed)), { timeout: 15_000 }).toBe(true);
+    await page.evaluate(() => { for (let i = 0; i < 20 && window.state.currentEntity?.isLoreCore; i++) window.state.nextSubject(); });
 }
 
 export async function engine(page, fn, arg) {

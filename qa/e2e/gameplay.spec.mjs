@@ -4,13 +4,14 @@
  */
 import {
     test, expect, bootGame, SKIP_TUTORIALS, advanceCinematic, holdMonolith,
-    jumpToStep, startOperations, snap, scanBiometric, openPause,
+    jumpToStep, startOperations, snap, scanBiometric, openPause, regularSubject,
 } from '../support/fixtures.mjs';
 
 /** Procesa el sujeto actual: escaneo biométrico → decisión. Devuelve el nuevo processedCount. */
 async function processSubject(page, decision = 'auto') {
     // Esperar a que el motor haya generado un sujeto NUEVO (sin decidir): leer el anterior es una carrera.
     await expect.poll(() => page.evaluate(() => Boolean(window.state.currentEntity && !window.state.currentEntity._processed)), { timeout: 15_000 }).toBe(true);
+    await regularSubject(page);
     const before = await page.evaluate(() => window.state.processedCount);
     await scanBiometric(page);
     const corrupt = await page.evaluate(() => window.state.currentEntity?.isCorrupt);
@@ -191,7 +192,7 @@ test.describe('E2E · gameplay', () => {
         await scanBiometric(page);
         await expect(coach).toContainText(/Corrupción \d+%/);
         for (let i = 0; i < 2; i++) {
-            if (i > 0) await scanBiometric(page);
+            if (i > 0) { await regularSubject(page); await scanBiometric(page); }
             const corrupt = await page.evaluate(() => window.state.currentEntity.corruptionEstimate > 50);
             const btn = page.getByRole('button', { name: new RegExp(`^${corrupt ? 'SACRIFICAR' : 'AUTORIZAR'}`) });
             await expect(btn).toBeVisible({ timeout: 10_000 });

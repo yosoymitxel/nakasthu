@@ -112,6 +112,7 @@ const stateManager = {
         const nextPos = (this.processedCount || 0) + 1;
 
         let newSubject = generateSubject();
+        let forcedTech = false;
         if (stepMeta?.kaminAppears && nextPos === stepMeta.kaminPosition) {
             applyTraits(newSubject, {
                 id: 'KAMIN',
@@ -126,6 +127,7 @@ const stateManager = {
         const missingTechnicians = (stepMeta?.requiredTechnicians || 0) - (this.techniciansRecruited || 0);
         if (missingTechnicians > 0 && missingTechnicians > remainingAfter) {
             applyTraits(newSubject, { type: 'técnico' });
+            forcedTech = true;
         }
 
         // Misma garantía para la influencia: el último sujeto del turno puede cerrar la meta.
@@ -134,6 +136,9 @@ const stateManager = {
             newSubject.influence = Math.max(newSubject.influence || 0, missingInfluence);
         }
 
+        // El diálogo que cambia de identidad al sujeto se elige ya, para que entre con su cara
+        bus.emit('SUBJECT_PREPARE', newSubject);
+        if (forcedTech) applyTraits(newSubject, { type: 'técnico' });
         this.currentEntity = newSubject;
 
         // CRÍTICO: Emitir eventos FUERA del batch para garantizar que React se actualice
