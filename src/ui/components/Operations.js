@@ -433,23 +433,23 @@ export const Operations = () => {
                         `: null}
                     `: null}
                     
-                    <div className=${`flex items-center justify-center gap-6 w-full h-full px-4 ${(!isTutorialActive && !isScanComplete) ? 'invisible' : ''}`}>
+                    <div className=${`flex items-center justify-center gap-2 sm:gap-6 w-full h-full px-2 sm:px-4 ${(!isTutorialActive && !isScanComplete) ? 'invisible' : ''}`}>
                     ${loreChar ? html`
                         <button 
                             onClick=${() => handleAction('SACRIFICE')}
                             disabled=${isTyping}
-                            className="flex-1 max-w-[210px] h-full relative group border border-amber-500/40 text-amber-400/80 bg-amber-950/20 hover:bg-amber-950/30 uppercase tracking-[0.15em] font-black text-[10px] flex items-center justify-center gap-1 transition-all cursor-not-allowed shadow-[0_0_15px_rgba(245,158,11,0.08)]"
+                            className="flex-1 min-w-0 max-w-[210px] h-full px-1 relative group border border-amber-500/40 text-amber-400/80 bg-amber-950/20 hover:bg-amber-950/30 uppercase tracking-[0.05em] sm:tracking-[0.15em] font-black text-[10px] flex items-center justify-center gap-1 transition-all cursor-not-allowed shadow-[0_0_15px_rgba(245,158,11,0.08)]"
                             title=${loreChar.blockedSacrificeMsg}
                         >
                             <span className="text-amber-400 text-xs"><${Icon} name="lock" /></span>
-                            <span className="truncate">${loreChar.blockedSacrificeLabel}</span>
+                            <span className="leading-tight text-center sm:truncate">${loreChar.blockedSacrificeLabel}</span>
                             <kbd className="key-hint">S</kbd>
                         </button>
                     ` : html`
                         <button 
                             onClick=${() => handleAction('SACRIFICE')}
                             disabled=${isTyping || kaminOverride || (!isTutorialActive && !isScanComplete)}
-                            className=${`flex-1 max-w-[200px] h-full relative group border transition-all uppercase tracking-[0.3em] font-black text-[11px] 
+                            className=${`flex-1 min-w-0 max-w-[200px] h-full relative group border transition-all uppercase tracking-[0.1em] sm:tracking-[0.3em] font-black text-[11px] 
                                 ${kaminOverride
                                     ? 'border-purple-500/30 text-purple-500/40 animate-pulse cursor-not-allowed bg-purple-950/10'
                                     : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isScanComplete ? false : true))
@@ -475,7 +475,7 @@ export const Operations = () => {
                         <button 
                             onClick=${() => handleAction('AUTHORIZE')}
                             disabled=${isTyping}
-                            className=${`flex-1 max-w-[220px] h-full relative group border uppercase tracking-[0.15em] font-black text-[11px] transition-all flex items-center justify-center gap-1.5 shadow-lg
+                            className=${`flex-1 min-w-0 max-w-[220px] h-full px-1 relative group border uppercase tracking-[0.05em] sm:tracking-[0.15em] font-black text-[11px] transition-all flex items-center justify-center gap-1.5 shadow-lg
                                 ${loreChar.theme === 'purple' 
                                     ? 'border-purple-400 text-purple-200 bg-purple-950/40 hover:bg-purple-900/60'
                                     : loreChar.theme === 'amber'
@@ -484,14 +484,14 @@ export const Operations = () => {
                                             ? 'border-emerald-400 text-emerald-200 bg-emerald-950/40 hover:bg-emerald-900/60'
                                             : 'border-cyan-400 text-cyan-200 bg-cyan-950/40 hover:bg-cyan-900/60'}`}>
                             <span className="text-[12px]"><${Icon} name="shield" /></span>
-                            <span className="truncate">${loreChar.authorizeLabel}</span>
+                            <span className="leading-tight text-center sm:truncate">${loreChar.authorizeLabel}</span>
                             <kbd className="key-hint">A</kbd>
                         </button>
                     ` : html`
                         <button 
                             onClick=${() => handleAction('AUTHORIZE')}
                             disabled=${isTyping || (!isTutorialActive && !isScanComplete)}
-                            className=${`flex-1 max-w-[200px] h-full relative group border transition-all uppercase tracking-[0.3em] font-black text-[11px] 
+                            className=${`flex-1 min-w-0 max-w-[200px] h-full relative group border transition-all uppercase tracking-[0.1em] sm:tracking-[0.3em] font-black text-[11px] 
                                 ${kaminOverride
                                     ? 'border-purple-500 text-purple-400 bg-purple-900/30 hover:bg-purple-900/50 animate-pulse shadow-[0_0_20px_rgba(168,85,247,0.3)]'
                                     : ((isTutorialActive && activeTutorialId === 'TUTO_OPERATIONS') || (!isScanComplete ? false : true))

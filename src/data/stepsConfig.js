@@ -153,7 +153,7 @@ export const STEPS_CONFIG = {
                         // Páginas con `if`: sólo salen si la marca narrativa coincide (CinematicScreen las filtra).
                         { title: 'Lo que había detrás', shot: 'bastion', if: { libreta: 'guardada' }, text: 'Kael abre la libreta por la página treinta y uno. Esta vez tiene la otra pieza.' },
                         { title: 'El ciclo', shot: 'mirror', text: 'Cerrar la puerta no la destruye. En Zhyr emerge un segundo monolito con los símbolos invertidos. Mucho después, una nave encuentra la Tierra violácea y una palabra grabada en todas partes: AITOR. El ciclo empieza otra vez, con otros.' },
-                        { title: '', black: true, text: 'Corte a negro.\\n\\nUn corazón late. Una vez. Dos veces.\\n\\nSilencio.\\n\\nFIN.' }
+                        { title: '', black: true, text: 'Corte a negro.\n\nUn corazón late. Una vez. Dos veces.\n\nSilencio.\n\nFIN.' }
                     ]
                 },
                 caos: {
@@ -165,7 +165,7 @@ export const STEPS_CONFIG = {
                         { title: 'Éxodo', shot: 'exodus', if: { lichesth: 'fue' }, text: 'El hombre de los once créditos con cuarenta cruza con los seis de su turno. Entran de dos en dos, cogidos de la mano.' },
                         { title: 'Éxodo', shot: 'exodus', if: { marek: 'existio' }, text: 'En una cocina de Itzinol, dos personas se ponen de acuerdo en cosas que no ocurrieron. Después se ponen en la fila.' },
                         { title: 'El ciclo', shot: 'mirrorVoid', text: 'En Zhyr emerge un segundo monolito. Dentro, como en ámbar, Alexia y Leina, con los ojos abiertos. Sonríen. Mucho después, una nave baja a un páramo violáceo marcado con una palabra: AITOR. Ciento veinte bajan en fila. Ninguno se resiste.' },
-                        { title: '', black: true, text: 'Corte a negro.\\n\\nUn corazón late. Una vez. Dos veces.\\n\\nSilencio.\\n\\nFIN.' }
+                        { title: '', black: true, text: 'Corte a negro.\n\nUn corazón late. Una vez. Dos veces.\n\nSilencio.\n\nFIN.' }
                     ]
                 }
             }
