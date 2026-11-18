@@ -14,6 +14,21 @@ import { narrativeFlags } from '../../../systems/NarrativeFlags.js';
 import { Icon } from '../../shared/Icon.js';
 const { useState, useEffect, memo } = React;
 
+// Reparte el texto en tantas páginas como planos, cortando por frases y equilibrando la longitud
+const splitPages = (text, shots = [null]) => {
+    const sentences = text.match(/[^.!?»]+[.!?»]+\s*|.+$/g) || [text];
+    const out = [];
+    let left = text.length;
+    shots.forEach((shot, i) => {
+        const target = left / (shots.length - i);
+        let chunk = '';
+        while (sentences.length && (!chunk || chunk.length + sentences[0].length / 2 < target || shots.length - i === 1)) chunk += sentences.shift();
+        left -= chunk.length;
+        if (chunk.trim()) out.push([chunk.trim(), shot]);
+    });
+    return out.length ? out : [[text, shots[0]]];
+};
+
 export const CinematicScreen = memo(({ config }) => {
     const currentStep = useGameState('currentStep');
     const endingFaction = useGameState('endingFaction');
@@ -21,7 +36,7 @@ export const CinematicScreen = memo(({ config }) => {
     const [page, setPage] = useState(0);
 
     // El epílogo no trae texto: sigue la elección final, no la facción dominante
-    let pages = [{ title: config.name, text: config.briefingText || '' }];
+    let pages = splitPages(config.briefingText || '', config.shots).map(([text, shot]) => ({ title: config.name, text, shot }));
     let tone = '';
     if (config.name === 'Epílogo' && !config.briefingText) {
         const endings = STEPS_CONFIG[12]?.meta?.endings;

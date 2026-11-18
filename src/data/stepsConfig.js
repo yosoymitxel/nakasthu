@@ -8,6 +8,7 @@ export const STEPS_CONFIG = {
         type: 'cinematic',
         name: 'La Avanzadilla',
         shot: 'descent',
+        shots: ['descent', 'touch'],
         briefingText: 'Kael, Deyar y Alexia bajaron a Zhyr para la Custodia. El tercer día encontraron la piedra. Alexia la tocó y no quedó nada: ni sangre, ni restos. A la vuelta, el registro de a bordo marcó tres tripulantes durante once segundos.',
         meta: null
     },
@@ -23,6 +24,7 @@ export const STEPS_CONFIG = {
         type: 'cinematic',
         name: 'El Gran Desvío',
         shot: 'awakening',
+        shots: ['awakening', 'vanish'],
         briefingText: 'Un tercio de la población deja de estar en cuatro días: en sus camas, en sus turnos, en mitad de una frase. Las Distribuciones reasignan a los que quedan. Tú eres el Operador de reasignación: cada persona que pasa por tu consola deja una ficha.',
         meta: null
     },
@@ -42,6 +44,7 @@ export const STEPS_CONFIG = {
         type: 'cinematic',
         name: 'La Grieta Social',
         shot: 'riot',
+        shots: ['riot', 'riotCrowd', 'riot'],
         briefingText: 'Las plazas de Dispay arden. «¿Dónde están?». Un chico con bufanda pide respuestas por un megáfono; la emisión se corta dieciocho segundos y ya no está en el encuadre. En una grabación de vigilancia, un reflejo que no coincide con la imagen. En otra plaza, una pancarta: «Nuestros seres queridos no son datos».',
         meta: null
     },
@@ -62,6 +65,7 @@ export const STEPS_CONFIG = {
         type: 'cinematic',
         name: 'La Tarima',
         shot: 'messenger',
+        shots: ['messenger', 'tarima'],
         briefingText: 'Una palabra aparece grabada en una plancha de acero de un almacén cerrado: AITOR. En Prisiat, un hombre llamado Kamin sube a una tarima. En Kanatsia cobraba doce créditos por sesión de consuelo; lo dice él. Habla de una puerta, y de que abrirla no es gratis.',
         meta: { actChange: true, newStoryPath: 1 }
     },
@@ -81,6 +85,7 @@ export const STEPS_CONFIG = {
         type: 'cinematic',
         name: 'La Fe Ciega',
         shot: 'faith',
+        shots: ['altar', 'faith', 'portalOpen'],
         briefingText: 'Capas blancas, cantos, un altar de nakara. Bajo el hangar, un fragmento late una vez cada diez segundos. Leina Karst abre el portal. Caen objetos fríos. Al cuarto día sale gente, y ninguno pregunta qué día es.',
         meta: null
     },
