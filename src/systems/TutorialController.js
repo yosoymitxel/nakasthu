@@ -221,11 +221,19 @@ class TutorialController {
         this.coachDecisions = 0;
         bus.on('DECISION_MADE', () => {
             if (!isCoachActive()) return;
-            if (++this.coachDecisions >= 2) {
-                storageSet(COACH_KEY, 'true');
-                bus.emit('COACH_DONE');
-                bus.emit('TERMINAL_PRINT', { text: '>>> INDUCCIÓN COMPLETADA. EL BASTIÓN ES SUYO, OPERADOR.', type: 'SUCCESS' });
-            }
+            if (++this.coachDecisions !== 2) return;
+            // Cierre de la inducción: una emergencia guiada antes de soltar al operador
+            this.coachEmergency = true;
+            bus.emit('EMERGENCY_START', { type: 'oxygen' });
+            bus.emit('COACH_EMERGENCY');
+            bus.emit('UI_FOCUS_AREA', { area: 'C_FOOTER', color: '#ef4444' });
+        });
+        bus.on('EMERGENCY_END', ({ type }) => {
+            if (!this.coachEmergency || type !== 'oxygen') return;
+            this.coachEmergency = false;
+            storageSet(COACH_KEY, 'true');
+            bus.emit('COACH_DONE');
+            bus.emit('TERMINAL_PRINT', { text: '>>> INDUCCIÓN COMPLETADA. EL BASTIÓN ES SUYO, OPERADOR.', type: 'SUCCESS' });
         });
 
         // Avance manual desde el modal

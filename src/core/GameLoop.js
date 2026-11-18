@@ -118,7 +118,9 @@ class GameLoop {
 
         // 0. Avería espontánea: con los recursos sanos también hay crisis que atender
         const quiet = !Object.values(state.emergencies).some(Boolean);
-        if (quiet && (state.currentStep || 1) >= 4 && Math.random() < thresholds.spontaneousEmergencyChance) {
+        // Arranca suave en el primer turno jugable (paso 4) y llega al máximo en el 8
+        const ramp = Math.min(1, ((state.currentStep || 1) - 3) / 5);
+        if (quiet && ramp > 0 && Math.random() < thresholds.spontaneousEmergencyChance * ramp) {
             const type = ['resonance', 'oxygen', 'energy'][Math.floor(Math.random() * 3)];
             bus.emit('EMERGENCY_START', { type });
             bus.emit('TERMINAL_PRINT', { text: pathConfig.emergencies[type].alert, type: 'ERROR' });

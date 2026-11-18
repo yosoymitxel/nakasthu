@@ -199,6 +199,9 @@ test.describe('E2E · gameplay', () => {
             await btn.click();
             await expect.poll(() => page.evaluate(() => window.state.processedCount), { timeout: 15_000 }).toBe(i + 1);
         }
+        // Tercer paso: emergencia guiada (en móvil salta sola a la pestaña de sistemas)
+        await expect(coach).toContainText('EMERGENCIA');
+        for (let i = 0; i < 4; i++) await page.locator('button.em-next').click();
         await expect(coach).toHaveCount(0);
         expect(await page.evaluate(() => localStorage.getItem('nakasthu_coach_done'))).toBe('true');
     });
