@@ -17,7 +17,7 @@ import { MODULES } from '../../systems/ModuleRegistry.js';
 import { VerdictPips } from './Verdicts.js';
 
 import { Icon } from '../shared/Icon.js';
-const { useState, useEffect, memo } = React;
+const { useState, useEffect, useRef, memo } = React;
 
 /**
  * Componente GameModal
@@ -34,6 +34,7 @@ export const GameModal = memo(({
 }) => {
     const [animatedText, setAnimatedText] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+    const skipRef = useRef(null);
     const [fragment, setFragment] = useState('');
 
     // Efecto de tipeo para el contenido
@@ -47,6 +48,7 @@ export const GameModal = memo(({
         let index = 0;
         let accumulator = '';
 
+        skipRef.current = () => { index = content.length; accumulator = content; setAnimatedText(content); };
         const typeInterval = setInterval(() => {
             const char = content[index];
             if (char !== undefined) {
@@ -242,22 +244,23 @@ export const GameModal = memo(({
                         <${React.Fragment}>
                             <button 
                                 onClick=${() => {
+                // Mientras escribe, el primer toque completa el texto
+                if (isTyping) return skipRef.current?.();
                 if (onContinue) onContinue();
                 if (isTutorial) {
                     bus.emit('TUTORIAL_CONTINUE', {});
                 }
                 bus.emit('STORY_MODAL_CLOSE', {});
             }}
-                                disabled=${isTyping}
                                 className=${`
                                     w-full py-3 border text-sm tracking-[0.3em] uppercase font-bold
                                     transition-all duration-300
                                     ${isTyping
-                ? 'border-zinc-700 text-zinc-600 cursor-not-allowed'
+                ? 'border-zinc-700 text-zinc-500'
                 : 'border-amber-500/50 text-amber-400 hover:bg-amber-500/10 hover:border-amber-400'}
                                 `}
                             >
-                                ${isTyping ? 'RECIBIENDO TRANSMISIÓN...' : (isTutorial ? 'RECIBIDO' : 'INICIAR OPERACIONES')}
+                                ${isTyping ? 'RECIBIENDO TRANSMISIÓN · SALTAR' : (isTutorial ? 'RECIBIDO' : 'INICIAR OPERACIONES')}
                             </button>
 
                             ${isTutorial && !isTyping && html`

@@ -154,6 +154,8 @@ export async function jumpToStep(page, step) {
 export async function startOperations(page) {
     const briefing = page.locator('.game-modal-overlay');
     await expect(briefing).toBeVisible();
+    const btn = briefing.getByRole('button', { name: /RECIBIENDO TRANSMISIÓN|INICIAR OPERACIONES/ });
+    if ((await btn.textContent().catch(() => '')).trim() !== 'INICIAR OPERACIONES') await btn.click();
     await briefing.getByRole('button', { name: 'INICIAR OPERACIONES' }).click();
     await expect(briefing).toBeHidden();
 }
