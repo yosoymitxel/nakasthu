@@ -6,11 +6,11 @@ import { html } from '../utils/html.js';
 import { LIST_LAYERS } from '../../data/missingList.js';
 import { Modal } from './Verdicts.js';
 
-const Row = ({ e }) => html`
+const Row = ({ e, short }) => html`
     <li className=${`ml-row ${e.struck ? 'struck' : ''} ${e.gone ? 'gone' : ''} ${e.mine ? 'mine' : ''}`}>
         <span className="ml-name">${e.name}</span>
         ${e.tag && html`<span className="ml-tag">${e.tag}</span>`}
-        ${e.who && html`<span className="ml-who">${e.who}</span>`}
+        ${!short && e.who && html`<span className="ml-who">${e.who}</span>`}
         ${e.note && html`<span className="ml-note">${e.note}</span>`}
         ${e.struck && e.strikeNote && html`<span className="ml-strike">${e.strikeNote}</span>`}
     </li>
@@ -20,7 +20,7 @@ const Row = ({ e }) => html`
 export const MissingListPreview = ({ list, onOpen }) => html`
     <div className="flex flex-col h-full min-h-0">
         <ul className="ml-list flex-1 min-h-0 overflow-y-auto custom-scrollbar">
-            ${list.slice(-8).reverse().map(e => html`<${Row} key=${e.id} e=${e} />`)}
+            ${list.slice(-8).reverse().map(e => html`<${Row} key=${e.id} e=${e} short />`)}
         </ul>
         <button className="ml-open" onClick=${onOpen}>Leer la lista entera</button>
     </div>

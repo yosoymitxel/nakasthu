@@ -15,8 +15,10 @@ import { storageGetJSON, storageSet, storageRemove } from '../utils/storage.js';
 const KEY = 'nakasthu_lista';
 const GENERIC_ID = /^[A-Z]{2,4}-\d+$/;
 const isEntry = (e) => e && typeof e === 'object' && typeof e.name === 'string' && Number.isFinite(e.step);
+const NUMBERS = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce', 'trece', 'catorce', 'quince', 'dieciséis', 'diecisiete', 'dieciocho', 'diecinueve', 'veinte'];
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-const titleCase = (s) => String(s).toLowerCase().replace(/(^|[\s.-])(\p{L})/gu, (m, a, b) => a + b.toUpperCase());
+const SMALL = new Set(['de', 'del', 'la', 'el', 'los', 'las', 'y', 'en']);
+const titleCase = (s) => String(s).toLowerCase().split(' ').map((w, i) => (i && SMALL.has(w) ? w : w.replace(/\p{L}/u, c => c.toUpperCase()))).join(' ');
 
 class MissingList {
     constructor() {
@@ -88,7 +90,7 @@ class MissingList {
             name = `${name}, ${lo + Math.floor(Math.random() * (hi - lo + 1))}`;
         }
         const entry = {
-            id: `MINE_${step}_${this.entries.length}`, step, mine: true, tag: subject.id || '',
+            id: `MINE_${step}_${this.entries.length}`, step, mine: true, tag: named ? '' : subject.id,
             name, who: named ? '' : `De ${pick(LIST_NAMES.from)}.`, note: fate.note,
             struck: !!fate.struck
         };
@@ -108,9 +110,11 @@ class MissingList {
     readout(max = 7) {
         const mine = this.entries.filter(e => e.mine).reverse();
         const book = this.entries.filter(e => !e.mine);
-        const names = [...mine, ...book].map(e => e.name);
+        // Por la radio se leen nombres, no edades
+        const names = [...mine, ...book].map(e => e.name.replace(/, \d+$/, ''));
         const shown = names.slice(0, max).join('. ');
-        return names.length > max ? `${shown}. Y ${names.length - max} más.` : (shown ? `${shown}.` : '');
+        const rest = names.length - max;
+        return rest > 0 ? `${shown}. Y ${NUMBERS[rest] || rest} más.` : (shown ? `${shown}.` : '');
     }
 }
 

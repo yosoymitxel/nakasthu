@@ -8,6 +8,8 @@ import { useGameState } from '../hooks/useGameState.js';
 import { CONFIG } from '../../data/gameConfig.js';
 import { CROSSING } from '../../data/missingList.js';
 
+const thousands = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
 import { Icon } from '../shared/Icon.js';
 const { useState, useEffect } = React;
 
@@ -71,9 +73,9 @@ export const PortalMonitor = () => {
             </div>
 
             <dl className="portal-count relative z-10">
-                <div><dt>Cruzan</dt><dd>${(CROSSING.cross + fromDesk).toLocaleString('es-ES')}</dd></div>
-                <div><dt>Llegan</dt><dd>${CROSSING.arrive.toLocaleString('es-ES')}</dd></div>
-                <div><dt>De tu mesa</dt><dd>${fromDesk}</dd></div>
+                <div><dt>Cruzan</dt><dd>${thousands(CROSSING.cross + fromDesk)}</dd></div>
+                <div><dt>Llegan</dt><dd>${thousands(CROSSING.arrive)}</dd></div>
+                <div><dt>Tu mesa</dt><dd>${fromDesk}</dd></div>
             </dl>
 
             <!-- VISUALIZACIÓN DE ONDA / NÚCLEO -->

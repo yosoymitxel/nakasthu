@@ -58,6 +58,7 @@ export const Operations = () => {
 
     // Atajos: A autoriza, S sacrifica, I interroga. Nunca mientras se escribe ni con un modal abierto.
     const keyActions = useRef({});
+    const inboxTimers = useRef([]); // mensajes de la muñeca pendientes: se cancelan si el sujeto se va
     keyActions.current = { a: () => handleAction('AUTHORIZE'), s: () => handleAction('SACRIFICE'), i: () => handleDialogueAction('INTERROGAR') };
     useEffect(() => {
         const onKey = (e) => {
@@ -121,7 +122,8 @@ export const Operations = () => {
                 type: 'SUBJECT'
             });
             // Mensajes que el personaje lleva en la muñeca (Ovid): entran después de su primera línea
-            (dialogue.inbox || []).forEach((m, i) => setTimeout(() => {
+            inboxTimers.current.forEach(clearTimeout);
+            inboxTimers.current = (dialogue.inbox || []).map((m, i) => setTimeout(() => {
                 bus.emit('DIALOGUE_EMITTED', { sender: m.from, text: m.text, type: 'SYSTEM' });
             }, 3200 + i * 1400));
         };
@@ -153,6 +155,7 @@ export const Operations = () => {
         };
 
         const onDialogueEnded = () => {
+            inboxTimers.current.forEach(clearTimeout);
             bus.emit('DIALOGUE_EMITTED', {
                 sender: labels.systemSender,
                 text: labels.linkClosedMsg,
@@ -178,6 +181,7 @@ export const Operations = () => {
             bus.off('DIALOGUE_STARTED', onDialogueStarted);
             bus.off('DIALOGUE_OPTION_SELECTED', onDialogueOptionSelected);
             bus.off('DIALOGUE_ENDED', onDialogueEnded);
+            inboxTimers.current.forEach(clearTimeout);
         };
     }, [labels]);
 

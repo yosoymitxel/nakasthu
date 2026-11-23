@@ -147,7 +147,7 @@ describe('Nombres, monitor y epílogo', () => {
         missingList.record({ id: 'MAREN KALL' }, 'sacrifice');
         const caos = pagesFor(STEPS_CONFIG[12], 'caos');
         const radio = caos.find(p => p.doc === 'Emisora local · día 21');
-        expect(radio.text).toMatch(/^El día veintiuno lee la lista entera\.\nMaren Kall\. /);
+        expect(radio.text).toMatch(/^El día veintiuno lee la lista entera\.\nMaren Kall\. .*Y \p{L}+ más\.\n/u);
         expect(radio.text).not.toContain('{lista}');
         expect(pagesFor(STEPS_CONFIG[12], 'orden').some(p => p.text.includes('Maren Kall'))).toBe(true);
     });
