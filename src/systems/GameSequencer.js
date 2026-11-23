@@ -17,6 +17,7 @@ import { calculateJudgmentRecommendation, checkStepMeta } from '../utils/gamepla
 import { storageSet } from '../utils/storage.js';
 import { persistenceManager } from './PersistenceManager.js';
 import { missingList } from './MissingList.js';
+import { fatigueTier, fatigueStartEnergy, turnShiftHours, baseShiftHours, siegeNoticeAt, siegeDelay, kaminRegisterNew } from '../utils/pressureUtils.js';
 
 /**
  * Clase GameSequencer - Gestiona la progresión narrativa
@@ -59,10 +60,13 @@ class GameSequencer {
             } else {
                 console.warn(`[SEQUENCER] Bloqueo de cuota: Intento de exceder ${state.quota}.`);
             }
+            if (subject.returned) state.returnedProcessed = (state.returnedProcessed || 0) + 1;
 
             this.registerSubjectResult(subject, action);
+            this.applySiege();
             state.endBatch();
             missingList.record(subject, action);
+            this.printKaminRegister();
 
             this.checkGameStatus();
         });
@@ -227,6 +231,12 @@ class GameSequencer {
         state.worldTime = 0;
         state.quota = currentConfig.subjectCount || currentConfig.quota || CONFIG.DEFAULT_QUOTA;
         state.maxErrors = errorBudget(state.quota);
+        state.turnSeconds = 0;
+        state.returnedProcessed = 0;
+        state.siegeNotices = 0;
+
+        // Las horas de turno no se reinician: el cansancio se cobra al empezar cada turno jugable
+        if (currentConfig.type === 'gameplay') this.applyFatigue();
 
         // Consecuencia del objetivo del turno anterior: se cobra al empezar el siguiente turno jugable.
         if (currentConfig.type === 'gameplay' && this.turnCarry) {
@@ -265,6 +275,11 @@ class GameSequencer {
             else this.openBriefing();
         }
 
+        if (currentConfig.type === 'gameplay') this.printKaminRegister({ entering: true });
+        if (currentConfig.meta?.massAdmission) {
+            bus.emit('TERMINAL_PRINT', { text: '[ADMISIÓN EN MASA] Consagrar no gasta energía de la consola.', type: 'SYSTEM' });
+        }
+
         // Emitir evento de cambio de paso para el ModuleRegistry AL FINAL
         // Esto asegura que si se desbloquean módulos con tutoriales, 
         // el sistema ya sepa si hay un modal abierto o si estamos en cinemática.
@@ -298,6 +313,10 @@ class GameSequencer {
         state.activeScan = null;
         state.quota = currentConfig.subjectCount || CONFIG.DEFAULT_QUOTA;
         state.maxErrors = errorBudget(state.quota);
+        state.turnSeconds = 0;
+        state.returnedProcessed = 0;
+        state.siegeNotices = 0;
+        if (currentConfig.type === 'gameplay') state.energy = fatigueStartEnergy(state.shiftHours);
 
         // Limpiar estados de emergencia
         state.emergencies = {
@@ -419,6 +438,10 @@ class GameSequencer {
 
             const listLine = missingList.turnLine(this.currentStep);
             if (listLine) metaResults.messages.push(listLine);
+            if (config.meta?.cameos?.some(c => c.returned)) {
+                metaResults.messages.push(`Devueltos: ${state.returnedProcessed || 0}. Describieron un lugar: 0.`);
+            }
+            metaResults.messages.push(this.closeShift(config));
 
             if (!metaResults.success) {
                 console.log('%c[SEQUENCER] Cuota completada pero metas no alcanzadas.', 'color: #f59e0b;');
@@ -458,7 +481,7 @@ class GameSequencer {
                     console.log(`[SEQUENCER] Generando siguiente sujeto tras delay (${currentProcessed}/${state.quota})`);
                     state.nextSubject();
                 }
-            }, 400); // Reducido de 600ms a 400ms para mejor respuesta
+            }, siegeDelay(400, STEPS_CONFIG[this.currentStep]?.meta?.siege, state.siegeNotices)); // el cerco acorta la espera
         }
     }
 
@@ -476,6 +499,7 @@ class GameSequencer {
         // 1. Limpieza total del estado anterior (también la consecuencia pendiente de objetivos)
         this.turnCarry = null;
         state.resetState();
+        state.shiftHours = baseShiftHours(stepIndex);
 
         // 2. Limpieza de tutoriales activos (importar controller o emitir evento)
         // Usamos evento para desacoplar si no tenemos acceso directo, pero como es sistema central...
@@ -519,6 +543,55 @@ class GameSequencer {
             console.log(`[SEQUENCER] Salto completado.`);
             bus.emit('SYSTEM_LOG', { msg: `SALTO_SECUENCIA: PASO_${stepIndex} ACTIVADO` });
         }, 100);
+    }
+
+    /** Energía inicial según las horas de turno; a partir del primer tramo, se avisa en la terminal. */
+    applyFatigue() {
+        const hours = state.shiftHours || 0;
+        state.energy = fatigueStartEnergy(hours);
+        const tier = fatigueTier(hours);
+        if (!tier) return;
+        const F = CONFIG.FATIGUE;
+        bus.emit('TERMINAL_PRINT', {
+            type: 'ERROR',
+            text: tier === 2
+                ? `[TURNO] ${hours} h sin relevo. Energía inicial −${F.TIRED_ENERGY}. Los mensajes tardan el doble y cada decisión pide dos pulsaciones.`
+                : `[TURNO] ${hours} h sin relevo. Energía inicial −${F.TIRED_ENERGY}.`
+        });
+    }
+
+    /** Suma las horas del turno que se cierra y devuelve la línea del resumen. */
+    closeShift(config) {
+        const before = state.shiftHours || 0;
+        const after = before + turnShiftHours(config.meta, state.turnSeconds);
+        state.shiftHours = after;
+        const F = CONFIG.FATIGUE;
+        const crossed = fatigueTier(after) > fatigueTier(before);
+        const next = fatigueTier(after) === 2 ? 'leerás más despacio y cada decisión pedirá dos pulsaciones' : `la energía empezará ${F.TIRED_ENERGY} más abajo`;
+        return `Horas de turno: ${after}.${crossed ? ` Desde ahora ${next}.` : ''}`;
+    }
+
+    /** El cerco del paso 10: cada `every` sujetos un parte; los primeros alargan la cola. */
+    applySiege() {
+        const siege = STEPS_CONFIG[this.currentStep]?.meta?.siege;
+        const notice = siegeNoticeAt(siege, state.processedCount, state.siegeNotices || 0);
+        if (!notice) return;
+        state.siegeNotices = notice.index + 1;
+        if (notice.grows) {
+            const before = errorBudget(state.quota);
+            state.quota += 1;
+            state.maxErrors += errorBudget(state.quota) - before;
+            quotaTracker.setQuota(state.quota);
+        }
+        bus.emit('DIALOGUE_EMITTED', { sender: 'PARTE DEL CERCO', text: notice.text, type: 'SYSTEM' });
+        bus.emit('TERMINAL_PRINT', { text: `[CERCO] La fila crece: ${state.quota} en la cola de esta mesa.`, type: 'SYSTEM' });
+    }
+
+    /** Registro: Kamin se escribe solo en la terminal (MOD-08 lo guarda entero). */
+    printKaminRegister({ entering = false } = {}) {
+        for (const e of kaminRegisterNew(this.currentStep, state.processedCount, { entering })) {
+            bus.emit('TERMINAL_PRINT', { text: `[REGISTRO · KAMIN] ${e.technique}. ${e.scene}`, type: 'SYSTEM' });
+        }
     }
 
     /** Briefing del paso jugable actual (también al terminar su preludio). */

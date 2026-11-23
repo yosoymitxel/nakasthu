@@ -10,14 +10,20 @@ import { CONFIG } from '../src/data/gameConfig.js';
 import { GENERATION_CONFIG } from '../src/data/entityConfig.js';
 import { STEPS_CONFIG } from '../src/data/stepsConfig.js';
 import { errorBudget } from '../src/systems/GameSequencer.js';
+import { baseShiftHours, fatigueStartEnergy } from '../src/utils/pressureUtils.js';
 
-function playTurn({ secondsPerSubject, extraScan, step = 4 }) {
+// `pressure`: horas de turno acumuladas, urgencia (timeMultiplier), cerco (+cuota) y devueltos del paso.
+function playTurn({ secondsPerSubject, extraScan, step = 4, pressure = false }) {
     const scans = CONFIG.SCANNER.TYPES;
-    let energy = 100, stability = 100, errors = 0;
-    const count = STEPS_CONFIG[step].subjectCount;
+    const meta = STEPS_CONFIG[step].meta || {};
+    let energy = pressure ? fatigueStartEnergy(baseShiftHours(step)) : 100, stability = 100, errors = 0;
+    const count = STEPS_CONFIG[step].subjectCount + (pressure ? (meta.siege?.grow || 0) : 0);
+    const drain = CONFIG.ENERGY.TICK_DRAIN * (pressure ? (meta.timeMultiplier || 1) : 1);
+    const returned = new Set(pressure ? (meta.cameos || []).filter(c => c.returned).map(c => c.pos) : []);
     const maxErrors = errorBudget(count);
     for (let i = 0; i < count; i++) {
-        const subject = { isCorrupt: Math.random() < GENERATION_CONFIG.CORRUPTION_CHANCE };
+        const subject = { isCorrupt: Math.random() < GENERATION_CONFIG.CORRUPTION_CHANCE, returned: returned.has(i + 1) };
+        if (subject.returned) subject.isCorrupt = false;
         const readings = [analyzeSubjectProbability('BIOMETRIC', subject, 'NORMAL')];
         energy -= scans.BIOMETRIC.cost;
         // Un jugador atento pide siempre una segunda opinión (NEURAL, más fiable y más cara).
@@ -26,8 +32,8 @@ function playTurn({ secondsPerSubject, extraScan, step = 4 }) {
             energy -= scans.NEURAL.cost;
         }
         const estimate = readings.reduce((a, b) => a + b, 0) / readings.length;
-        const r = calculateDecisionResult(subject, estimate > 50 ? 'sacrifice' : 'authorize', CONFIG);
-        energy = Math.min(100, energy + r.energyChange - secondsPerSubject * CONFIG.ENERGY.TICK_DRAIN);
+        const r = calculateDecisionResult(subject, estimate > 50 ? 'sacrifice' : 'authorize', CONFIG, { massAdmission: pressure && !!meta.massAdmission });
+        energy = Math.min(100, energy + r.energyChange - secondsPerSubject * drain);
         stability = Math.min(100, stability + r.stabilityChange);
         if (r.isError) errors++;
         if (errors >= maxErrors || energy <= 0 || stability <= 0) return false;
@@ -72,6 +78,14 @@ describe('Balance · paso 4', () => {
         const steps = Object.entries(STEPS_CONFIG).filter(([, c]) => c.type === 'gameplay' && Number.isFinite(c.subjectCount));
         for (const [id] of steps) {
             expect(winRate({ secondsPerSubject: 20, extraScan: true, step: Number(id) }), `paso ${id}`).toBeGreaterThanOrEqual(0.7);
+        }
+    });
+
+    it('con horas de turno, urgencia, cerco y devueltos, cada turno sigue siendo ganable (≥ 70%)', () => {
+        for (const step of [4, 6, 8, 10]) {
+            // Agotado se lee más despacio: más segundos por sujeto desde el paso 10
+            const seconds = baseShiftHours(step) >= CONFIG.FATIGUE.EXHAUSTED_AT ? 26 : 20;
+            expect(winRate({ secondsPerSubject: seconds, extraScan: true, step, pressure: true }), `paso ${step}`).toBeGreaterThanOrEqual(0.7);
         }
     });
 });

@@ -207,6 +207,106 @@
                     "consequence": "*Toca el bolsillo.* 'Dejó de haber a quién pagársela. La carta no la he tirado. No se me ha ocurrido'."
                 }
             ]
+        },
+        {
+            "id": "DLG_DEV_1",
+            "minStep": 10,
+            "maxStep": 10,
+            "cameo": true,
+            "priority": true,
+            "exclusive": false,
+            "text": "*Una mujer de unos cuarenta años, con la ropa limpia y polvo negro en las costuras. Mira la mesa como quien vuelve a su cocina.* 'Estaba esperando. Estaba tranquila. Allí no falta nada'.",
+            "options": [
+                {
+                    "text": "¿Dónde estabas?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 1,
+                    "consequence": "'Esperando'. *Sonríe. No añade nada.*"
+                },
+                {
+                    "text": "¿Cómo era el sitio?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 1,
+                    "consequence": "'Tranquilo'. *Se lo preguntas otra vez con otras palabras. Contesta lo mismo con otras palabras.*"
+                }
+            ]
+        },
+        {
+            "id": "DLG_DEV_2",
+            "minStep": 10,
+            "maxStep": 10,
+            "cameo": true,
+            "priority": true,
+            "exclusive": false,
+            "text": "*Un chico descalzo. Las plantas de los pies, sin una rozadura.* 'Estuve esperando. Se estaba tranquilo. No faltaba nada'.",
+            "options": [
+                {
+                    "text": "¿Qué había allí?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 1,
+                    "consequence": "'Nada que faltara'."
+                },
+                {
+                    "text": "¿Cuánto tiempo has pasado dentro?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 1,
+                    "consequence": "*Lo piensa sin prisa.* 'El que hacía falta'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_DEV_3",
+            "minStep": 10,
+            "maxStep": 10,
+            "cameo": true,
+            "priority": true,
+            "exclusive": false,
+            "text": "*Una anciana con una bota izquierda en la mano. La otra no la busca.* 'Esperaba. Todo estaba en calma. Allí no falta de nada'.",
+            "options": [
+                {
+                    "text": "¿Viste a alguien?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 1,
+                    "consequence": "'A todos'. *No dice ningún nombre.*"
+                },
+                {
+                    "text": "¿Quieres volver?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 1,
+                    "consequence": "'Allí no hace falta volver'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_DEV_4",
+            "minStep": 10,
+            "maxStep": 10,
+            "cameo": true,
+            "priority": true,
+            "exclusive": false,
+            "text": "*Un hombre con la chaqueta de un comercio de Dispay. La etiqueta del nombre está en blanco.* 'Estuve esperando. Estaba tranquilo. Allí no falta nada'.",
+            "options": [
+                {
+                    "text": "Dime una calle. Un color. Algo.",
+                    "energyCost": 0.1,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 1,
+                    "consequence": "*Abre la boca. La cierra. Sonríe.* 'Estaba tranquilo'."
+                },
+                {
+                    "text": "¿Quién te espera aquí fuera?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 1,
+                    "consequence": "'Quien sea'."
+                }
+            ]
         }
     ]
 }

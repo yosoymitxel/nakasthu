@@ -7,6 +7,7 @@ import { html } from '../utils/html.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { STEPS_CONFIG } from '../../data/stepsConfig.js';
 import { getStepObjective, getObjectivePercent } from '../../utils/objectiveUtils.js';
+import { fatigueTier } from '../../utils/pressureUtils.js';
 
 export const ObjectiveBar = ({ isSectarian }) => {
     const currentStep = useGameState('currentStep');
@@ -14,6 +15,7 @@ export const ObjectiveBar = ({ isSectarian }) => {
     const quota = useGameState('quota');
     const technicians = useGameState('techniciansRecruited');
     const influence = useGameState('influenceGathered');
+    const shiftHours = useGameState('shiftHours') || 0;
 
     const stepConfig = STEPS_CONFIG[currentStep];
     const objective = getStepObjective(stepConfig, {
@@ -33,7 +35,7 @@ export const ObjectiveBar = ({ isSectarian }) => {
         <div className=${className} role="group" aria-label="Objetivo del turno">
             <div className="objective-head">
                 <div className="objective-title">
-                    <span className="objective-kicker">OBJETIVO // ${String(currentStep).padStart(2, '0')}</span>
+                    <span className="objective-kicker">OBJETIVO // ${String(currentStep).padStart(2, '0')}${shiftHours > 0 && html` · <span className=${`objective-shift t${fatigueTier(shiftHours)}`} title="Horas de turno sin relevo">TURNO ${shiftHours} H</span>`}</span>
                     <span className="objective-label">${objective.label}</span>
                 </div>
                 <span className="objective-state">${stateLabel}</span>

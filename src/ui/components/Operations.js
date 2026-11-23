@@ -21,6 +21,7 @@ import { ObjectiveBar } from './ObjectiveBar.js';
 import { VerdictLogButton } from './Verdicts.js';
 import { SCAN_TYPES } from '../../systems/Scanner.js';
 import { findLoreCharacter } from '../../data/loreCharactersConfig.js';
+import { fatigueTier, fatigueFactor } from '../../utils/pressureUtils.js';
 
 import { Icon } from '../shared/Icon.js';
 const { useState, useEffect, useRef } = React;
@@ -37,6 +38,11 @@ export const Operations = () => {
 
     const [isTyping, setIsTyping] = useState(false);
     const [kaminOverride, setKaminOverride] = useState(false);
+    const shiftHours = useGameState('shiftHours') || 0;
+    const exhausted = fatigueTier(shiftHours) === 2;
+    // Agotado: la primera pulsación sólo arma la decisión; la segunda, dentro de la ventana, la ejecuta
+    const [armed, setArmed] = useState(null);
+    const armTimer = useRef(null);
     const requiredScan = useGameState('requiredScan');
     const currentEntity = useGameState('currentEntity');
     const currentStep = useGameState('currentStep');
@@ -76,11 +82,17 @@ export const Operations = () => {
             if (data.target && data.target !== 'MOD04' && data.target !== 'GLOBAL') return;
             setIsTyping(true);
             // El tiempo aquí debe ser aproximado al de Coms para deshabilitar botones
-            setTimeout(() => setIsTyping(false), 2000); 
+            setTimeout(() => setIsTyping(false), 2000 * fatigueFactor(state.shiftHours));
         };
         bus.on('DIALOGUE_EMITTED', onDialogue);
         return () => bus.off('DIALOGUE_EMITTED', onDialogue);
     }, []);
+
+    useEffect(() => {
+        setArmed(null);
+        clearTimeout(armTimer.current);
+    }, [currentEntity?.id]);
+    useEffect(() => () => clearTimeout(armTimer.current), []);
 
     useEffect(() => {
         const onFlash = (data) => {
@@ -246,6 +258,15 @@ export const Operations = () => {
             bus.emit('TRIGGER_FLASH', { color: '#9333ea', duration: 100, target: 'MOD04' });
             return;
         }
+
+        if (exhausted && !isTutorialActive && armed !== type) {
+            setArmed(type);
+            clearTimeout(armTimer.current);
+            armTimer.current = setTimeout(() => setArmed(null), CONFIG.FATIGUE.CONFIRM_WINDOW);
+            return;
+        }
+        clearTimeout(armTimer.current);
+        setArmed(null);
 
         if (type === 'SACRIFICE') bus.emit('SACRIFICE_REQUEST');
         if (type === 'AUTHORIZE') {
@@ -471,7 +492,7 @@ export const Operations = () => {
                     <//>`}
                             ${kaminOverride
                                 ? labels.overrideLabel
-                                : labels.rejectLabel.toUpperCase()}
+                                : armed === 'SACRIFICE' ? 'OTRA VEZ' : labels.rejectLabel.toUpperCase()}
                             <kbd className="key-hint">S</kbd>
                         </button>
                     `}
@@ -491,7 +512,7 @@ export const Operations = () => {
                                             ? 'border-emerald-400 text-emerald-200 bg-emerald-950/40 hover:bg-emerald-900/60'
                                             : 'border-cyan-400 text-cyan-200 bg-cyan-950/40 hover:bg-cyan-900/60'}`}>
                             <span className="text-[12px]"><${Icon} name="shield" /></span>
-                            <span className="leading-tight text-center sm:truncate">${loreChar.authorizeLabel}</span>
+                            <span className="leading-tight text-center sm:truncate">${armed === 'AUTHORIZE' ? 'OTRA VEZ' : loreChar.authorizeLabel}</span>
                             <kbd className="key-hint">A</kbd>
                         </button>
                     ` : html`
@@ -517,7 +538,7 @@ export const Operations = () => {
                                 <div className="absolute top-1 left-1 w-1.5 h-1.5 border border-purple-500/30 rotate-45 group-hover:border-purple-400 transition-colors"></div>
                                 <div className="absolute bottom-1 right-1 w-1.5 h-1.5 border border-purple-500/30 rotate-45 group-hover:border-purple-400 transition-colors"></div>
                     <//>`}
-                            ${labels.authorizeLabel.toUpperCase()}
+                            ${armed === 'AUTHORIZE' ? 'OTRA VEZ' : labels.authorizeLabel.toUpperCase()}
                             <kbd className="key-hint">A</kbd>
                         </button>
                     `}

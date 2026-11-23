@@ -8,6 +8,7 @@ import { bus } from './Bus.js';
 import { MechanicManager } from '../services/MechanicManager.js';
 import { CONFIG } from '../data/gameConfig.js';
 import { PATH_CONFIGS } from '../data/pathConfigs.js';
+import { STEPS_CONFIG } from '../data/stepsConfig.js';
 import { evaluateSystemStatus, calculateNextOrbitalState } from '../utils/systemUtils.js';
 
 class GameLoop {
@@ -179,8 +180,11 @@ class GameLoop {
         this.updateOrbitalCycle();
 
         // 5. Drenaje de vitales
-        const energyDrain = state.mode === 'ECLIPSE' ? CONFIG.ENERGY.ECLIPSE_DRAIN : CONFIG.ENERGY.TICK_DRAIN;
+        // Paso 6, «La Urgencia»: `timeMultiplier` acelera el gasto
+        const urgency = STEPS_CONFIG[state.currentStep]?.meta?.timeMultiplier || 1;
+        const energyDrain = (state.mode === 'ECLIPSE' ? CONFIG.ENERGY.ECLIPSE_DRAIN : CONFIG.ENERGY.TICK_DRAIN) * urgency;
         state.energy = Math.max(0, state.energy - energyDrain);
+        state.turnSeconds = (state.turnSeconds || 0) + this.tickRate / 1000;
 
         const thresholds = PATH_CONFIGS[state.storyPath || 0].thresholds;
         if (!state.purgeActive && !state.o2Stabilized) {

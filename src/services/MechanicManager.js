@@ -93,7 +93,7 @@ class DecisionMechanic extends BaseMechanic {
             });
         } else {
             // Calcular resultado usando utilidad estándar
-            const result = calculateDecisionResult(subject, 'authorize', CONFIG);
+            const result = calculateDecisionResult(subject, 'authorize', CONFIG, { massAdmission: !!this.config?.meta?.massAdmission });
 
             // Aplicar cambios
             if (result.energyChange !== 0) state.energy = Math.max(0, Math.min(100, state.energy + result.energyChange));

@@ -54,6 +54,17 @@ export const CONFIG = {
         GLITCH: 300
     },
     MAX_JUDGMENT_ERRORS: 3,
+    // Horas de turno (Perla, 52 h; Leina, 36 h): se suman al cerrar cada turno jugable y no se reinician.
+    // Cada turno suma `meta.shiftHours` y una hora más por cada SECONDS_PER_HOUR jugados (tope MAX_EXTRA_HOURS).
+    FATIGUE: {
+        TIRED_AT: 24,         // la energía del turno empieza TIRED_ENERGY más abajo
+        EXHAUSTED_AT: 36,     // los mensajes tardan el doble y cada decisión pide dos pulsaciones
+        TIRED_ENERGY: 10,
+        SLOW_FACTOR: 2,
+        SECONDS_PER_HOUR: 90,
+        MAX_EXTRA_HOURS: 4,
+        CONFIRM_WINDOW: 2500  // ms para la segunda pulsación
+    },
     DEFAULT_QUOTA: 5,
     PORTAL: {
         INITIAL_STABILITY: 100,

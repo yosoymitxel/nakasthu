@@ -69,7 +69,7 @@ export const checkStepMeta = (stepMeta) => {
  * Calcula el resultado de una decisión (Autorizar/Sacrificar).
  * Regla: Centralización de lógica de consecuencias.
  */
-export const calculateDecisionResult = (subject, action, config) => {
+export const calculateDecisionResult = (subject, action, config, { massAdmission = false } = {}) => {
     const result = {
         energyChange: 0,
         stabilityChange: 0,
@@ -78,6 +78,14 @@ export const calculateDecisionResult = (subject, action, config) => {
         flash: null
     };
 
+    const admitChange = massAdmission ? 0 : -config.ENERGY.AUTHORIZE_COST;
+
+    // Devueltos: nada que acertar ni que fallar. Pasan o vuelven a la fila sin error.
+    if (subject.returned) {
+        result.energyChange = action === 'authorize' ? admitChange : config.ENERGY.SACRIFICE_INOCENT_BONUS;
+        return result;
+    }
+
     if (action === 'authorize') {
         if (subject.isCorrupt) {
             result.stabilityChange = -config.STABILITY.AUTHORIZE_CORRUPT_PENALTY;
@@ -85,7 +93,7 @@ export const calculateDecisionResult = (subject, action, config) => {
             result.isError = true;
             result.flash = { target: 'MOD04', intensity: 'heavy', color: 'red' };
         } else {
-            result.energyChange = -config.ENERGY.AUTHORIZE_COST;
+            result.energyChange = admitChange;
             result.stabilityChange = 20; // Bonus base
             result.unrestChange = -config.UNREST.AUTHORIZE_INOCENT_DECREASE;
         }

@@ -11,6 +11,15 @@ import { storageGet, storageGetInt } from '../utils/storage.js';
 
 let isBatching = false;
 
+// Los que salen del portal (cap. 10): constantes normales en todo. El escáner ya no sirve para ellos.
+const markReturned = (subject) => {
+    subject.returned = true;
+    subject.isCorrupt = false;
+    subject.tells = Object.fromEntries(Object.keys(subject.tells || {}).map(k => [k, false]));
+    subject.scannedData = { ...subject.scannedData, temperature: 36.6, neuralSync: 92, heatSignature: 31, voidDepth: 12, corruption: 0 };
+    subject.visual = { ...subject.visual, glitch: 'NONE' };
+};
+
 const initialState = {
     energy: CONFIG.ENERGY.INITIAL,
     stability: CONFIG.STABILITY.INITIAL,
@@ -48,6 +57,10 @@ const initialState = {
     maxErrors: CONFIG.MAX_JUDGMENT_ERRORS, // Agregado para visibilidad en UI
     // Totales de la partida: sobreviven al reset de cada nivel y alimentan el informe final
     runStats: { processed: 0, errors: 0 },
+    shiftHours: 0,       // horas de turno acumuladas (CONFIG.FATIGUE); el cambio de paso no las toca
+    turnSeconds: 0,      // segundos jugados en este turno: alargan las horas que suma al cerrarse
+    returnedProcessed: 0, // devueltos del portal pasados por la mesa en este turno
+    siegeNotices: 0,     // partes del cerco dados en este turno
     cineShot: null, // plano 3D de la página de cinemática actual
     stepIntro: null, // paso jugable cuyo preludio (`intro`) se está viendo; el briefing espera a que acabe
     endingFaction: null, // 'orden' | 'caos': el epílogo sigue la elección, no la facción dominante
@@ -118,6 +131,7 @@ const stateManager = {
         // Recurrentes: gente que vuelve en posiciones fijas de varios pasos (DialogueEngine elige su diálogo)
         const cameo = stepMeta?.cameos?.find(c => c.pos === nextPos);
         if (cameo) newSubject.cameo = cameo;
+        if (cameo?.returned) markReturned(newSubject);
         if (stepMeta?.kaminAppears && nextPos === stepMeta.kaminPosition) {
             applyTraits(newSubject, {
                 id: 'KAMIN',

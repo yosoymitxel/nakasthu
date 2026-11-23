@@ -7,6 +7,7 @@ import { bus } from '../../core/Bus.js';
 import { CONFIG } from '../../data/gameConfig.js';
 import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 import { useGameState } from '../hooks/useGameState.js';
+import { kaminRegister } from '../../utils/pressureUtils.js';
 
 const { useState, useEffect, memo } = React;
 
@@ -29,6 +30,11 @@ export const FactionTracker = memo(() => {
     const caosPerc = Math.floor((alignments.caos / total) * 100);
 
     const isSectarian = storyPath === 1;
+    const step = useGameState('currentStep') || 1;
+    const processed = useGameState('processedCount') || 0;
+    const siegeNotices = useGameState('siegeNotices') || 0;
+    const register = kaminRegister(step, processed, siegeNotices);
+    const entries = [...register.entries].reverse();
 
     return html`
         <div className="flex flex-col flex-none w-full bg-black/40 px-3 py-2 font-mono text-[10px] relative overflow-hidden">
@@ -86,6 +92,21 @@ export const FactionTracker = memo(() => {
                 </div>
             </div>
 
+            ${entries.length > 0 && html`
+                <div className="mt-3 pt-2 border-t border-zinc-800/80 relative z-10" aria-label="Registro: Kamin">
+                    <div className="flex justify-between items-baseline">
+                        <span className="text-[9px] font-bold tracking-widest text-zinc-500 uppercase">Registro: Kamin</span>
+                        <span className="text-[9px] tracking-widest text-zinc-500 uppercase">Fieles <span key=${register.faithful} className="feel-pop text-sm font-black text-purple-300">${register.faithful.toLocaleString('es-ES')}</span></span>
+                    </div>
+                    <ol className="mt-1 max-h-28 overflow-y-auto space-y-1 pr-1">
+                        ${entries.map((e, i) => html`
+                            <li key=${`${e.step}-${e.technique}`} className=${`leading-snug ${i === 0 ? 'text-zinc-200' : 'text-zinc-500'}`}>
+                                <span className="text-purple-400/80">${e.step} · ${e.technique}.</span> ${e.scene}
+                            </li>
+                        `)}
+                    </ol>
+                </div>
+            `}
         </div>
     `;
 });

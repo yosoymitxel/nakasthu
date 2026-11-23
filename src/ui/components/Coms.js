@@ -8,6 +8,8 @@ import { bus } from '../../core/Bus.js';
 import { CONFIG } from '../../data/gameConfig.js';
 import { PATH_CONFIGS } from '../../data/pathConfigs.js';
 import { useGameState } from '../hooks/useGameState.js';
+import { state } from '../../core/State.js';
+import { fatigueFactor } from '../../utils/pressureUtils.js';
 
 import { Icon } from '../shared/Icon.js';
 const { useState, useEffect, useRef } = React;
@@ -35,6 +37,8 @@ export const Coms = () => {
 
     const appendParsedMessages = async (sender, text, baseType) => {
         const blocks = parseDialogue(text);
+        // Agotado (horas de turno): todo llega más despacio
+        const slow = fatigueFactor(state.shiftHours);
         for (const block of blocks) {
             if (block.type === 'ACTION') {
                 setMessages(prev => [...prev, {
@@ -43,10 +47,10 @@ export const Coms = () => {
                     type: 'ACTION',
                     timestamp: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
                 }]);
-                await new Promise(r => setTimeout(r, 600));
+                await new Promise(r => setTimeout(r, 600 * slow));
             } else {
                 setIsTyping(true);
-                await new Promise(r => setTimeout(r, 1000));
+                await new Promise(r => setTimeout(r, 1000 * slow));
                 setMessages(prev => [...prev, {
                     sender,
                     text: block.text,
@@ -54,7 +58,7 @@ export const Coms = () => {
                     timestamp: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
                 }]);
                 setIsTyping(false);
-                await new Promise(r => setTimeout(r, 400));
+                await new Promise(r => setTimeout(r, 400 * slow));
             }
         }
     };

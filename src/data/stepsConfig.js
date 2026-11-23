@@ -16,7 +16,10 @@
  * `clock317`: lo que Kael lleva oído de la frase; cierra la cinemática o encabeza el briefing.
  * `bulletin`: parte de enlace que se lee al cerrar el turno.
  * `meta.cameos`: recurrentes en posiciones fijas de la cola. `dialogues`: el primero cuyas marcas encajan;
- *   `onDecision`: marcas que deja autorizar o reasignar/entregar a esa persona.
+ *   `onDecision`: marcas que deja autorizar o reasignar/entregar a esa persona. `returned`: sale del portal
+ *   (escáneres nominales, ninguna decisión cuenta como error).
+ * `meta.shiftHours`: horas que suma el turno al cerrarse (CONFIG.FATIGUE). `meta.timeMultiplier`: gasto de energía.
+ * `meta.siege`: el cerco del paso 10 (partes, cuota creciente, llegadas).
  */
 
 // El empuje: pase lo que pase con la secuencia, la mano en la espalda; luego lo que pensó, en orden (cap. 15).
@@ -106,6 +109,7 @@ export const STEPS_CONFIG = {
         subjectCount: 10,
         meta: {
             requiredTechnicians: 2, // Con 1 de cada 4 sujetos técnico, 6 de 10 era casi imposible
+            shiftHours: 10,
             cameos: [
                 { pos: 3, dialogues: ['DLG_S1_03'], onDecision: { sacrifice: { nera: 'reasignada' } } },
                 { pos: 6, dialogues: ['DLG_R_TOBI_DEUDA'], onDecision: { sacrifice: { tobi: 'reasignado' }, authorize: { tobi: 'se_queda' } } }
@@ -147,7 +151,8 @@ export const STEPS_CONFIG = {
                 { pos: 2, dialogues: ['DLG_P2_OVID'] },
                 { pos: 4, dialogues: ['DLG_R_TOBI_OBRA', 'DLG_R_TOBI_RAMPA'] }
             ],
-            timeMultiplier: 1.5,
+            timeMultiplier: 1.5, // la energía se gasta 1,5 veces más rápido (GameLoop)
+            shiftHours: 14,
             coreColorOverride: 'orange'
         }
     },
@@ -180,6 +185,7 @@ export const STEPS_CONFIG = {
         subjectCount: 8,
         meta: {
             requiredInfluence: 3,
+            shiftHours: 12,
             cameos: [
                 { pos: 2, dialogues: ['DLG_P3_TOREN'] },
                 // Las dos preguntas que Leina recuerda al caer (cap. 15): tienen que haberse oído antes del paso 11
@@ -216,7 +222,7 @@ export const STEPS_CONFIG = {
         name: 'La Cosecha de Adeptos',
         briefingText: 'Sigues en la mesa de admisión. Kamin quiere cuerpos, no oficios: cuantos más crucen, mejor. Eidolon ha filtrado sus carpetas: hijos que no existieron. Talok corta la luz y el agua y cada medida empuja a más gente dentro. Por el arcén llega un hombre que estuvo en Zhyr.',
         clock317: 'No abras.',
-        bulletin: 'Cerco, semana nueve: bombardeo de saturación sobre las tiendas del perímetro exterior. Seiscientos nueve muertos. Mañana, a la misma hora.',
+        bulletin: 'Décima semana: Maren Kall entra por el conducto este con doce hombres. Salen cinco. Las cargas no detonan. Al final del parte, a mano: «Ese sitio no se toma. Ese sitio se traga lo que le metes».',
         subjectCount: 15,
         // Preludio antes del briefing (cap. 10-11): Beren y su madre, el paquete de Eidolon y su buscador
         intro: [
@@ -229,8 +235,28 @@ export const STEPS_CONFIG = {
             { title: 'Eidolon', shot: 'bastion', text: '—Lo dijo hace ocho meses y os reíais. ¡Lo dijo!\nLa revelación no golpea la fe de la Orden. La confirma. Aquella semana pasa de seis mil personas a treinta y una mil.' }
         ],
         meta: {
-            massAdmission: true,
+            shiftHours: 16,
+            massAdmission: true, // Kamin quiere cuerpos: consagrar no gasta energía de la consola (MechanicManager)
+            // El cerco (cap. 12): cada `every` sujetos, un parte en Coms; los `grow` primeros suben la cuota en 1
+            // y acortan la espera entre sujetos. `arrivals`: gente que entra en el Bastión (contador de fieles).
+            siege: {
+                every: 3,
+                grow: 5,
+                delayFactor: 0.9,
+                notices: [
+                    { arrivals: 2000, text: 'Cerco, primera semana: cortada la línea de alta tensión del sector nueve. El Bastión pasa a generadores propios. Combustible: catorce veces lo previsto.' },
+                    { arrivals: 3000, text: 'Tercera semana: bloqueadas las tres carreteras de acceso. Controles cada cuatro kilómetros. La gente rodea por el desierto de sal: cuatro días a pie.' },
+                    { arrivals: 4000, text: 'Quinta semana: cortado el acueducto. Los que llegan entran deshidratados directamente en la fila.' },
+                    { arrivals: 12000, text: 'Séptima semana: listas de reasignación en los muros de Prisiat. Quien tenga un familiar en el Bastión pierde la cartilla. Doce mil familias en cuatro días.' },
+                    { arrivals: 9000, text: 'Novena semana: bombardeo de saturación sobre las tiendas del perímetro exterior. Seiscientos nueve muertos. Al día siguiente, la fila más larga desde que se abrió el portal.' }
+                ]
+            },
             cameos: [
+                // Devueltos (cap. 10): salen del portal con constantes normales; ningún escáner los distingue.
+                { pos: 3, returned: true, dialogues: ['DLG_DEV_1'] },
+                { pos: 7, returned: true, dialogues: ['DLG_DEV_2'] },
+                { pos: 11, returned: true, dialogues: ['DLG_DEV_3'] },
+                { pos: 14, returned: true, dialogues: ['DLG_DEV_4'] },
                 { pos: 2, dialogues: ['DLG_R_OVID_CAMION'], onDecision: { sacrifice: { ovid: 'entregado' } } },
                 { pos: 4, dialogues: ['DLG_R_NERA_EIDOLON'], onDecision: { sacrifice: { nera: 'entregada' } } },
                 { pos: 6, dialogues: ['DLG_R_TOBI_CONSOLA', 'DLG_P4_TOBI_FILA'], onDecision: { sacrifice: { tobi: 'entregado' } } },

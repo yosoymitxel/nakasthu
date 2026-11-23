@@ -62,6 +62,8 @@ export const rollTells = (isCorrupt, rand = Math.random) => {
 
 export const analyzeSubjectProbability = (scanType, entity, currentMode) => {
     if (!entity) return 0;
+    // Devueltos del portal: lectura nominal en todos los escáneres, también en eclipse
+    if (entity.returned) return Math.floor(Math.random() * 4);
 
     const eclipseInterference = currentMode === 'ECLIPSE' ? 0.2 : 0;
     const precision = Math.max(0.1, scanPrecision(scanType) - eclipseInterference);
