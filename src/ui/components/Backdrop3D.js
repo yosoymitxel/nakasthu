@@ -40,7 +40,8 @@ const SCALE = 3; // píxeles de pantalla por píxel renderizado
 // Entre planos se funde a negro; si comparten `place`, la cámara se desliza sin fundido. `cut` corta en seco.
 const M = MEADOW;
 const SHOTS = {
-    descent: { from: [7, 2.4, 44], to: [3.5, 2, 37], look: [0, 4, 26], dur: 16, tint: 0x22d3ee, place: 'zhyr' },
+    // `tall`: encuadre propio en vertical (móvil), donde el subtítulo tapa la parte baja
+    descent: { from: [7, 2.4, 44], to: [3.5, 2, 37], look: [0, 4, 26], tall: { from: [5, 3.6, 50], to: [2.5, 3.2, 44], look: [0, 2.4, 28] }, dur: 16, tint: 0x22d3ee, place: 'zhyr' },
     monolith: { from: [0, 1.2, 37], to: [0, 1.6, 34.5], look: [0, 5.5, 26], dur: 20, tint: 0x22d3ee, place: 'zhyr' },
     awakening: { from: [2, 5, 36], to: [16, 30, 58], look: [0, 3, 12], dur: 14, tint: 0xffffff },
     riot: { from: [-20, 1.8, 16], to: [-9, 2.4, 11], look: [0, 4.5, 0], dur: 18, tint: 0xef4444 },
@@ -80,7 +81,8 @@ const SHOTS = {
     meadowSink: { from: [M, 1.6, 4], to: [M, -0.6, 4], look: [M, 1.45, 2.6], dur: 9, tint: 0xfbbf24, meadow: true, rot: 3, rel: 'merged', darien: true, still: true, bloom: true, sink: true, dark: true, place: 'meadow' },
     // El bucle: el mismo fotograma de la primera página, sin fundido
     meadowLoop: { from: [M, 0.35, 6], to: [M, 1.6, 5.5], look: [M, 1.4, -20], dur: 9, tint: 0xfbbf24, meadow: true, rot: 0, rel: 'far', cut: true, place: 'meadow' },
-    exodus: { from: [14, 7, 24], to: [4, 4, 10], look: [-26, 5, -20], dur: 20, tint: 0x9333ea, queue: true, sky: 0x1a0626 }
+    // La fila entra por detrás de la cámara y se pierde en el portal; la base queda fuera, a la derecha
+    exodus: { from: [-19, 4.2, 9], to: [-21, 3.4, 2], look: [-25, 2.2, -18], dur: 20, tint: 0x9333ea, queue: true, sky: 0x1a0626 }
 };
 // Colores de la pradera por fase de `rot`: hierba, colinas, cielo
 const MEADOW_COLORS = [
@@ -289,7 +291,7 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
             const queue = new THREE.Group();
             const walkers = Array.from({ length: 36 }, (_, i) => { const m = figure(0, 0, i); queue.add(m); return m; });
             scene.add(queue);
-            const QA = [0, 4], QB = [PORTAL[0] + 3, PORTAL[1] + 3];
+            const QA = [-24, 14], QB = [PORTAL[0] + 0.5, PORTAL[1] + 4];
             walkers.forEach(m => { m.rotation.y = Math.atan2(QB[0] - QA[0], QB[1] - QA[1]); });
 
             scene.add(new THREE.HemisphereLight(0x8fa4c4, 0x16120f, 1.4));
@@ -362,7 +364,8 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
                 const filter = dark > 0.01 ? `brightness(${(1 - dark).toFixed(2)})` : '';
                 if (filter !== lastFilter) { canvas.style.filter = filter; lastFilter = filter; }
 
-                const s = SHOTS[shotName];
+                const s0 = SHOTS[shotName];
+                const s = s0?.tall && innerWidth < innerHeight ? (s0.tallShot ||= { ...s0, ...s0.tall }) : s0;
                 const k = s ? Math.min(1, (t - shotStart) / (s.dur * 1000)) : 0;
                 if (s) {
                     const e = k * k * (3 - 2 * k);

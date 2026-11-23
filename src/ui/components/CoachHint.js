@@ -14,7 +14,7 @@ import { Icon } from '../shared/Icon.js';
 const { useState, useEffect, memo } = React;
 const pct = (t) => `${Math.round((CONFIG.SCANNER.TYPES[t]?.precision || 0) * 100)}%`;
 
-export const CoachHint = memo(() => {
+export const CoachHint = memo(({ hidden = false }) => {
     const currentStep = useGameState('currentStep');
     const entity = useGameState('currentEntity');
     const processed = useGameState('processedCount') || 0;
@@ -33,7 +33,7 @@ export const CoachHint = memo(() => {
         return () => { bus.off('COACH_DONE', onDone); bus.off('COACH_EMERGENCY', onEmergency); };
     }, []);
 
-    if (done || !isCoachActive() || currentStep == null) return null;
+    if (hidden || done || !isCoachActive() || currentStep == null) return null;
 
     const scanned = entity?.scannedTypes?.includes(required);
     const other = required === 'NEURAL' ? 'BIOMETRIC' : 'NEURAL';

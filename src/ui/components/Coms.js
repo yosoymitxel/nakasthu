@@ -93,7 +93,7 @@ export const Coms = () => {
     }, [messages]);
 
     return html`
-        <div className=${`flex-grow min-h-0 relative flex flex-col overflow-hidden ${isSectarian ? 'bg-indigo-950/10' : 'bg-black/5'}`}>
+        <div className=${`flex-grow min-h-[88px] relative flex flex-col overflow-hidden ${isSectarian ? 'bg-indigo-950/10' : 'bg-black/5'}`}>
             <!-- MOD-05 TAG -->
             <div className=${`absolute top-1 right-2 text-[8px] font-bold pointer-events-none z-10 ${isSectarian ? 'text-purple-700/60' : 'text-zinc-700'}`}>
                 ${isSectarian ? 'MOD-05: CANAL_DE_PLEGARIAS' : 'MOD-05: COMMS'}

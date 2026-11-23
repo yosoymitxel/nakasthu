@@ -279,7 +279,7 @@ export const Operations = () => {
 
 
             <!-- SECCIÓN SUPERIOR: VISUALIZADORES -->
-            <div className="flex-none h-[140px] w-full flex border-b border-zinc-800/80">
+            <div className=${`shrink ${activeDialogue ? 'basis-[96px]' : 'basis-[140px]'} min-h-[80px] w-full flex border-b border-zinc-800/80`}>
                 <!-- Orbital: decorativo; en móvil el ancho es para sujeto y cuota (el portal vive en Sistemas). -->
                 <div className=${`ops-orbital w-1/3 h-full border-r border-zinc-800/80 relative overflow-hidden flex flex-col group ${isSectarian ? 'bg-purple-950/20' : 'bg-black/40'}`}>
                     <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ${isSectarian ? 'bg-purple-500/5' : 'bg-cyan-500/5'}`}></div>
@@ -343,18 +343,17 @@ export const Operations = () => {
                 </div>
             </div>
 
-            <${ObjectiveBar} isSectarian=${isSectarian} />
-
-            <${FlowGuide}
+            <!-- Mientras alguien habla, sus líneas mandan: objetivo, guía e inducción vuelven al cerrar (en 768 px de alto no cabían) -->
+            ${!activeDialogue && html`<${ObjectiveBar} isSectarian=${isSectarian} />`}
+            ${!activeDialogue && html`<${FlowGuide}
                 isSectarian=${isSectarian}
                 hasSubject=${!!currentEntity}
                 scanDone=${isScanComplete}
                 estimate=${currentEntity?.corruptionEstimate}
                 readings=${currentEntity?.scannedData?.corruptionHistory?.length || 0}
                 scanName=${scanName}
-                talking=${!!activeDialogue}
-            />
-            <${CoachHint} />
+            />`}
+            <${CoachHint} hidden=${!!activeDialogue} />
 
             <!-- SECCIÓN CENTRAL: CHAT / LOG (MOD-05) -->
             <${Coms} />
