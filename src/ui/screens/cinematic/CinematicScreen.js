@@ -14,6 +14,7 @@ import { factionSystem } from '../../../systems/FactionSystem.js';
 import { narrativeFlags } from '../../../systems/NarrativeFlags.js';
 import { PixelPortrait } from '../../components/PixelPortrait.js';
 import { pagesFor, corruptText } from '../../../utils/cinematicUtils.js';
+import { PLAYS } from './plays.js';
 
 import { Icon } from '../../shared/Icon.js';
 const { useState, useEffect, useLayoutEffect, useRef, memo } = React;
@@ -29,6 +30,8 @@ export const CinematicScreen = memo(({ config, pages: introPages = null, onDone 
     // Página y caracteres visibles cambian juntos: nunca se pinta la página nueva con el texto de la anterior
     const [cursor, setCursor] = useState({ page: 0, shown: 0 });
     const [leaving, setLeaving] = useState(false);
+    // Páginas con `play`: escena jugable antes de su texto; se juega una vez por página
+    const [played, setPlayed] = useState(() => new Set());
     const typing = useRef(null);
 
     const faction = endingFaction || factionSystem.getDominance();
@@ -42,10 +45,11 @@ export const CinematicScreen = memo(({ config, pages: introPages = null, onDone 
     const content = raw.split(PAUSE).join('');
     const shown = cursor.shown;
     const done = shown >= content.length;
+    const Play = current.play && !played.has(page) ? PLAYS[current.play] : null;
     const last = page >= pages.length - 1;
     const prevShot = useRef(undefined);
 
-    useLayoutEffect(() => setCursor({ page: 0, shown: 0 }), [config.name, endingFaction]);
+    useLayoutEffect(() => { setCursor({ page: 0, shown: 0 }); setPlayed(new Set()); }, [config.name, endingFaction]);
     // Antes de pintar: el plano de la página sale a la vez que su texto
     useLayoutEffect(() => { state.cineShot = current.shot || null; }, [current.shot]);
     useEffect(() => () => { state.cineShot = null; audio.cue(null, 1); }, []);
@@ -53,6 +57,7 @@ export const CinematicScreen = memo(({ config, pages: introPages = null, onDone 
 
     // Tecleo. Si el plano cambia, espera al fundido; `¦` es una pausa de un segundo que no se pinta
     useEffect(() => {
+        if (Play) return;
         const cut = prevShot.current !== undefined && (current.shot || null) !== prevShot.current;
         prevShot.current = current.shot || null;
         const speed = current.speed || 32;
@@ -66,7 +71,7 @@ export const CinematicScreen = memo(({ config, pages: introPages = null, onDone 
         };
         typing.current = setTimeout(step, cut ? CUT_MS : 150);
         return () => clearTimeout(typing.current);
-    }, [page, raw]);
+    }, [page, raw, !!Play]);
 
     const finish = () => {
         // Tras el FIN del epílogo se vuelve al inicio, sin pantalla de balance
@@ -77,7 +82,7 @@ export const CinematicScreen = memo(({ config, pages: introPages = null, onDone 
 
     // Un toque completa el texto; el siguiente pasa de página o, al final, funde a negro y avanza
     const advance = () => {
-        if (leaving) return;
+        if (leaving || Play) return;
         if (!done) { clearTimeout(typing.current); return setCursor({ page, shown: content.length }); }
         if (!last) return setCursor({ page: page + 1, shown: 0 });
         setLeaving(true);
@@ -96,7 +101,9 @@ export const CinematicScreen = memo(({ config, pages: introPages = null, onDone 
         const onKey = (e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); advance(); } };
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
-    }, [done, content, last, page, leaving]);
+    }, [done, content, last, page, leaving, !!Play]);
+
+    if (Play) return html`<${Play} onDone=${() => setPlayed(p => new Set(p).add(page))} />`;
 
     const black = current.black || current.doc || current.photo || current.clock;
     // La pradera se ve limpia: sin la viñeta violeta del final

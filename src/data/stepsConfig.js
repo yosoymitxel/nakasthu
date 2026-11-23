@@ -10,6 +10,7 @@
  * - `corrupt`: el texto se tuerce al teclearse. `auto`: pasa sola a los N ms, sin botón.
  * - `sound`: ambiente sintetizado (birds, drone, clicks, heart, silence). `music`: volumen de la música (0-1).
  * - `if`: sólo sale si la marca narrativa coincide. `unless`: no sale si coincide.
+ * - `play`: escena jugable antes del texto de la página (PLAYS en ui/screens/cinematic/plays.js).
  * - `echo`: línea gris bajo el texto, ya tecleado (el monólogo del empuje recuerda dónde lo viste).
  * - `{lista}` en el texto: los nombres de LA LISTA de la partida (MissingList.readout).
  * `clock317`: lo que Kael lleva oído de la frase; cierra la cinemática o encabeza el briefing.
@@ -164,6 +165,7 @@ export const STEPS_CONFIG = {
             { shot: 'tarima', text: '—En Kanatsia cobrabas por hablar.\n—Cobraba. Doce créditos por sesión.\nFue la respuesta más honesta de la noche. Por eso funcionó.' },
             { shot: 'tarima', text: '—Hay una puerta. Del otro lado está la gente que perdimos. Abrirla no es gratis: alguien tiene que pagar la diferencia.\n—¿Qué diferencia?\nNo respondió.' },
             { shot: 'tarima', text: 'Entre el público, Leina Karst no abrió la boca. Al salir se dio cuenta de que en hora y media no le había visto parpadear. Se dijo que era la luz.' },
+            { black: true, doc: 'Galería siete', play: 'reports', text: 'Tres meses después se vino abajo el techo de la galería siete con veintiséis hombres dentro. Uno era su hermano, Darien. La investigación no encontró negligencia.' },
             { black: true, doc: 'Elara Voss', text: 'Un guardia le deja a Kael ropa de civil en la bandeja.\n—Si lo encuentras, dile que mi hija se llamaba Elara Voss. Tenía diez años.\nEn las traviesas, el óxido baja en cinco regueros.' }
         ],
         meta: { actChange: true, newStoryPath: 1 }
