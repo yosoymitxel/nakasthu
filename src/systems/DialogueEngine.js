@@ -16,6 +16,13 @@ export const isExclusive = (dialogue) => dialogue?.exclusive !== false;
 // Opciones visibles según lo que el operador decidió antes (`if`).
 const visibleOptions = (options = []) => options.filter(o => narrativeFlags.matches(o.if));
 
+// `requires` y `unless` son igualdades sobre las marcas: la primera debe cumplirse, la segunda no.
+const allowed = (d) => narrativeFlags.matches(d.requires) && !(d.unless && narrativeFlags.matches(d.unless));
+
+// Anclas y personajes con nombre hablan nada más llegar, sin pulsar INTERROGAR: si no, casi nadie los oía.
+export const speaksOnArrival = (dialogue) => !!(dialogue && (dialogue.priority || dialogue.forEntity || dialogue.npcTraits));
+const ARRIVAL_DELAY = 900;
+
 // Kamin entra en la cola del paso 6 con su identidad: un diálogo con `npcTraits` de otro personaje
 // lo convertía en ese otro. `forEntity` reserva un diálogo para un sujeto concreto.
 const fitsEntity = (dialogue, entity) => {
@@ -47,21 +54,44 @@ class DialogueEngine {
         // El diálogo se elige al llegar el sujeto: si lo convierte en otro personaje, entra ya con su cara
         bus.on('SUBJECT_PREPARE', (subject) => {
             this.reserved = null;
-            const dialogue = this.pickDialogue(subject);
+            const dialogue = this.pickCameo(subject) || this.pickDialogue(subject);
             if (!dialogue) return;
             if (dialogue.npcTraits) {
                 applyTraits(subject, dialogue.npcTraits);
                 subject.traitsFrom = dialogue.id;
             }
+            // Se marca como usado al abrirse (startDialogue): un ancla de un sujeto que se va sin hablar vuelve al pool
             this.reserved = { entityId: subject.id, dialogue };
-            if (!state.usedDialogueIds.includes(dialogue.id)) state.usedDialogueIds = [...state.usedDialogueIds, dialogue.id];
         });
+
+        bus.on('NEW_SUBJECT_DETECTED', () => this.scheduleArrival());
+        bus.on('STORY_MODAL_CLOSE', () => this.scheduleArrival());
+        // Las propuestas de tutorial de módulo van por otro canal y no tocan state.isModalOpen
+        bus.on('UI_MODAL_OPEN', () => { this.uiModal = true; });
+        bus.on('UI_MODAL_CLOSE', () => { this.uiModal = false; this.scheduleArrival(); });
 
         bus.on('SESSION_TERMINATED', () => {
             if (this.currentDialogue) {
                 this.closeDialogue();
             }
         });
+    }
+
+    scheduleArrival() {
+        if (!speaksOnArrival(this.reserved?.dialogue)) return;
+        clearTimeout(this.arrivalTimer);
+        this.arrivalTimer = setTimeout(() => this.openOnArrival(), ARRIVAL_DELAY);
+    }
+
+    /** Abre la primera línea del sujeto reservado si sigue en cámara y nada lo tapa (briefing, tutorial, otro diálogo). */
+    openOnArrival() {
+        const reserved = this.reserved;
+        if (!speaksOnArrival(reserved?.dialogue) || reserved.entityId !== state.currentEntity?.id) return false;
+        if (state.gameStatus !== 'PLAYING' || state.isModalOpen || this.uiModal || state.isTutorialActive || state.isPaused) return false;
+        if (this.currentDialogue || state.activeDialogue) return false;
+        this.reserved = null;
+        this.startDialogue(reserved.dialogue);
+        return true;
     }
 
     async loadDialogues() {
@@ -121,12 +151,18 @@ class DialogueEngine {
         if (dialogue) this.startDialogue(dialogue);
     }
 
-    /** Elige el diálogo para un sujeto sin abrirlo. */
+    /** Recurrente en su posición: el primer diálogo de su lista cuyas marcas encajan; si ninguno, sujeto corriente. */
+    pickCameo(subject) {
+        const ids = subject?.cameo?.dialogues || [];
+        return ids.map(id => this.dialogues.find(d => d.id === id)).find(d => d && allowed(d)) || null;
+    }
+
+    /** Elige el diálogo para un sujeto sin abrirlo. Los de recurrentes (`cameo`) sólo salen en su posición. */
     pickDialogue(entity) {
         if (this.dialogues.length === 0) return null;
 
         const currentStep = state.currentStep || 1;
-        const eligible = this.dialogues.filter(d => narrativeFlags.matches(d.requires) && fitsEntity(d, entity));
+        const eligible = this.dialogues.filter(d => !d.cameo && allowed(d) && fitsEntity(d, entity));
         if (eligible.length === 0) return null;
 
         // 1. Filtrar diálogos por el paso actual (minStep/maxStep)

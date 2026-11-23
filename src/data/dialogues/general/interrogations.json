@@ -38,6 +38,8 @@
         },
         {
             "id": "DLG_S1_03",
+            "cameo": true,
+            "npcTraits": { "id": "NERA OKONJO", "type": "HUMANO" },
             "minStep": 4,
             "maxStep": 4,
             "text": "'Me llamo Nera Okonjo. Bloque veintitrés, sector cuatro de Kanatsia. Puse agua a hervir para dos y estuve nueve minutos esperando a que mi marido saliera del cuarto'.",

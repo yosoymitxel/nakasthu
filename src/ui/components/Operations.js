@@ -58,6 +58,7 @@ export const Operations = () => {
 
     // Atajos: A autoriza, S sacrifica, I interroga. Nunca mientras se escribe ni con un modal abierto.
     const keyActions = useRef({});
+    const inboxTimers = useRef([]); // mensajes de la muñeca pendientes: se cancelan si el sujeto se va
     keyActions.current = { a: () => handleAction('AUTHORIZE'), s: () => handleAction('SACRIFICE'), i: () => handleDialogueAction('INTERROGAR') };
     useEffect(() => {
         const onKey = (e) => {
@@ -120,6 +121,11 @@ export const Operations = () => {
                 text: dialogue.text,
                 type: 'SUBJECT'
             });
+            // Mensajes que el personaje lleva en la muñeca (Ovid): entran después de su primera línea
+            inboxTimers.current.forEach(clearTimeout);
+            inboxTimers.current = (dialogue.inbox || []).map((m, i) => setTimeout(() => {
+                bus.emit('DIALOGUE_EMITTED', { sender: m.from, text: m.text, type: 'SYSTEM' });
+            }, 3200 + i * 1400));
         };
 
         const onDialogueOptionSelected = async (data) => {
@@ -149,6 +155,7 @@ export const Operations = () => {
         };
 
         const onDialogueEnded = () => {
+            inboxTimers.current.forEach(clearTimeout);
             bus.emit('DIALOGUE_EMITTED', {
                 sender: labels.systemSender,
                 text: labels.linkClosedMsg,
@@ -174,6 +181,7 @@ export const Operations = () => {
             bus.off('DIALOGUE_STARTED', onDialogueStarted);
             bus.off('DIALOGUE_OPTION_SELECTED', onDialogueOptionSelected);
             bus.off('DIALOGUE_ENDED', onDialogueEnded);
+            inboxTimers.current.forEach(clearTimeout);
         };
     }, [labels]);
 
@@ -279,7 +287,7 @@ export const Operations = () => {
 
 
             <!-- SECCIÓN SUPERIOR: VISUALIZADORES -->
-            <div className="flex-none h-[140px] w-full flex border-b border-zinc-800/80">
+            <div className=${`shrink ${activeDialogue ? 'basis-[96px]' : 'basis-[140px]'} min-h-[80px] w-full flex border-b border-zinc-800/80`}>
                 <!-- Orbital: decorativo; en móvil el ancho es para sujeto y cuota (el portal vive en Sistemas). -->
                 <div className=${`ops-orbital w-1/3 h-full border-r border-zinc-800/80 relative overflow-hidden flex flex-col group ${isSectarian ? 'bg-purple-950/20' : 'bg-black/40'}`}>
                     <div className=${`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ${isSectarian ? 'bg-purple-500/5' : 'bg-cyan-500/5'}`}></div>
@@ -343,18 +351,17 @@ export const Operations = () => {
                 </div>
             </div>
 
-            <${ObjectiveBar} isSectarian=${isSectarian} />
-
-            <${FlowGuide}
+            <!-- Mientras alguien habla, sus líneas mandan: objetivo, guía e inducción vuelven al cerrar (en 768 px de alto no cabían) -->
+            ${!activeDialogue && html`<${ObjectiveBar} isSectarian=${isSectarian} />`}
+            ${!activeDialogue && html`<${FlowGuide}
                 isSectarian=${isSectarian}
                 hasSubject=${!!currentEntity}
                 scanDone=${isScanComplete}
                 estimate=${currentEntity?.corruptionEstimate}
                 readings=${currentEntity?.scannedData?.corruptionHistory?.length || 0}
                 scanName=${scanName}
-                talking=${!!activeDialogue}
-            />
-            <${CoachHint} />
+            />`}
+            <${CoachHint} hidden=${!!activeDialogue} />
 
             <!-- SECCIÓN CENTRAL: CHAT / LOG (MOD-05) -->
             <${Coms} />

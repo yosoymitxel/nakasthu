@@ -7,11 +7,11 @@ import { html } from '../utils/html.js';
 import { bus } from '../../core/Bus.js';
 
 import { Icon } from '../shared/Icon.js';
-export const FlowGuide = ({ isSectarian, hasSubject, scanDone, scanName, talking, estimate, readings = 0 }) => {
+export const FlowGuide = ({ isSectarian, hasSubject, scanDone, scanName, estimate, readings = 0 }) => {
     const color = isSectarian ? '#a855f7' : '#f59e0b';
     const words = isSectarian
-        ? { scan: 'Revelar', talk: 'Comulgar', judge: 'Dictamen', scanDone: 'Esencia leída', talkHint: 'Opcional · gasta dogma', judgeWait: 'Falta la revelación', judgeGo: 'Purgar o consagrar', omen: 'Impureza', empty: 'Sin alma en el altar' }
-        : { scan: 'Escanear', talk: 'Interrogar', judge: 'Sentencia', scanDone: 'Validado', talkHint: 'Opcional · gasta energía', judgeWait: 'Falta el escaneo', judgeGo: 'Sacrificar o autorizar', omen: 'Corrupción', empty: 'Cámara vacía' };
+        ? { scan: 'Revelar', talk: 'Comulgar', judge: 'Dictamen', scanDone: 'Esencia leída', talkHint: 'Opcional · gasta dogma', judgeWait: 'Falta la revelación', judgeGo: 'Entregar o consagrar', omen: 'Impureza', empty: 'Sin alma en el altar' }
+        : { scan: 'Escanear', talk: 'Interrogar', judge: 'Sentencia', scanDone: 'Validado', talkHint: 'Opcional · gasta energía', judgeWait: 'Falta el escaneo', judgeGo: 'Reasignar o autorizar', omen: 'Corrupción', empty: 'Cámara vacía' };
 
     const steps = [
         {
@@ -23,7 +23,7 @@ export const FlowGuide = ({ isSectarian, hasSubject, scanDone, scanName, talking
         {
             name: words.talk,
             hint: words.talkHint,
-            state: talking ? 'now' : '',
+            state: '',
             go: () => bus.emit('UI_FOCUS_AREA', { area: 'C_MAIN', color })
         },
         {
@@ -32,7 +32,7 @@ export const FlowGuide = ({ isSectarian, hasSubject, scanDone, scanName, talking
             hint: !scanDone ? words.judgeWait
                 : Number.isFinite(estimate) ? `${words.omen} ${estimate}% · ${readings} ${readings === 1 ? 'lectura' : 'lecturas'}`
                 : words.judgeGo,
-            state: scanDone && !talking ? 'now' : '',
+            state: scanDone ? 'now' : '',
             go: () => bus.emit('UI_FOCUS_AREA', { area: scanDone ? 'C_MAIN' : 'L_UPPER', color })
         }
     ];

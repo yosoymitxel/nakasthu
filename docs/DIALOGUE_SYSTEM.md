@@ -61,11 +61,18 @@ Los diálogos sólo salen en los pasos de juego 4, 6, 8, 10 (y 13). Las marcas s
 | `lichesth` fue / no_fue | B | DLG_P2_MINERO_FACTURA (6) | DLG_P3_MINERO_LISTA, DLG_P3_MINERO_TURNO; eco del paso 11 y página del epílogo `caos` (fue) |
 | `kamin_expediente` leido / callado | A | DLG_P3_LEINA_EXPEDIENTE (8) | opción de DLG_P4_KAEL_PASILLO (leido), DLG_P4_LEINA_SIN_MI (callado); eco del paso 11 (leido) |
 | `marek` lote / existio | B | DLG_P4_MAREK (10) | DLG_BUCLE_MAREK_LOTE / _EXISTIO (13); eco del paso 11 y página del epílogo `caos` (existio) |
+| `nera` reasignada / entregada | B | recurrente del paso 4 (reasignar) y de los pasos 8 y 10 (entregar) | DLG_R_NERA_GALERIA (8), `unless` de DLG_R_NERA_EIDOLON (10), tachado de LA LISTA en `caos` |
+| `tobi` reasignado / se_queda / entregado | B | recurrente del paso 4 (reasignar / autorizar) y del 10 (entregar) | DLG_R_TOBI_OBRA (6), DLG_R_TOBI_CONSOLA (10), página de Tobi en `caos` |
+| `ovid` entregado | B | recurrente del paso 10 | páginas de Ovid en `caos`, tachado de Tessa en LA LISTA |
+| `serafin` entregado | B | recurrente del paso 10 | páginas de Serafín en `caos` |
+| `rian` entregado | B | recurrente del paso 8 | `unless` de DLG_P4_RIAN_PASARELA (10) |
 
 Fuera de los JSON:
-- `priority: true` en un diálogo lo pone delante del resto del paso (anclas de cada hilo). `forEntity: "KAMIN"` lo reserva para ese sujeto; Kamin en la cola del paso 6 sólo recibe diálogos suyos o sin `npcTraits`, para no convertirse en otro personaje.
+- **Recurrentes** (`stepsConfig[n].meta.cameos`: `{ pos, dialogues, onDecision }`): Nera Okonjo (4, 8, 10), Tobi Arren (4, 6, 10), Ovid Ferrer (6, 10), Toren (8), Rian Telles (8, 10) y Serafín Duq (10) entran en su posición de la cola con el primer diálogo de su lista cuyas marcas encajan (`requires`, y `unless` para que no vuelva quien entregaste). Esos diálogos llevan `cameo: true` y nunca salen al azar. Autorizar o reasignar/entregar a la persona deja la marca de `onDecision`. `inbox` en un diálogo: mensajes de la muñeca que entran en Coms tras la primera línea (Ovid y su madre).
+- **LA LISTA** (`src/data/missingList.js` + `src/systems/MissingList.js`, en `state.missingList`): una capa del libro por paso jugable; reasignar (Talok) o entregar (Orden) pone nombre al sujeto, y en el paso 10 los que cruzan desde tu mesa quedan tachados. Se consulta en el panel del archivo (MOD-03) y la lee Idrís en el epílogo (`{lista}` en el texto de una página). Sobrevive a resetState; GAME_START la vacía.
+- `priority: true` en un diálogo lo pone delante del resto del paso (anclas de cada hilo). Las anclas, los `forEntity` y los diálogos con `npcTraits` se abren solos cuando el sujeto llega a cámara (sin pulsar INTERROGAR ni gastar energía). Un diálogo se marca como usado al abrirse, no al reservarse: si el sujeto se va sin hablar, vuelve al pool. `forEntity: "KAMIN"` lo reserva para ese sujeto; Kamin en la cola del paso 6 sólo recibe diálogos suyos o sin `npcTraits`, para no convertirse en otro personaje.
 - Paso 11 (`stepsConfig[11].meta.leftOption/rightOption`): `quote`, `price`, `action` y `echoes` (`{ if, text }`); `MechanicScreen` pinta los ecos cuyas marcas coinciden, y cada eco cumplido suma `CONFIG.JUDGMENT.ECHO_POINTS` a su lado en `calculateJudgmentRecommendation` (orienta, no bloquea).
-- Epílogo (`stepsConfig[12].meta.endings.*.pages`): una página con `if` sólo sale si la marca coincide.
+- Epílogo (`stepsConfig[12].meta.endings.*.pages`): una página con `if` sólo sale si la marca coincide; con `unless`, sólo si no coincide.
 
 ### Verificación (`npm test`)
 `__tests__/dialogue_paths.test.js` reproduce con el motor real cada camino de elecciones de cada diálogo: comprueba hablante, respuesta, que no haya callejones sin salida, que una decisión cierre sus alternativas y que cada `set` quede guardado. También valida que toda marca esté declarada, que lo leído se pueda fijar en un paso anterior y que todo lo fijado se lea en algún sitio.

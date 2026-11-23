@@ -60,8 +60,11 @@ export const MainLayout = memo(({ children }) => {
 
     useEffect(() => {
         const onFocus = ({ area }) => { if (AREA_TAB[area]) setTab(AREA_TAB[area]); };
+        // La primera línea de un personaje llega sola: en móvil, si el jugador estaba en otra pestaña (tutorial del escáner), no la veía
+        const onDialogue = () => setTab('mando');
         bus.on('UI_FOCUS_AREA', onFocus);
-        return () => bus.off('UI_FOCUS_AREA', onFocus);
+        bus.on('DIALOGUE_STARTED', onDialogue);
+        return () => { bus.off('UI_FOCUS_AREA', onFocus); bus.off('DIALOGUE_STARTED', onDialogue); };
     }, []);
 
     const sect = storyPath === 1;

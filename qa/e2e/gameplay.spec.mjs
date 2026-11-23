@@ -15,7 +15,7 @@ async function processSubject(page, decision = 'auto') {
     const before = await page.evaluate(() => window.state.processedCount);
     await scanBiometric(page);
     const corrupt = await page.evaluate(() => window.state.currentEntity?.isCorrupt);
-    const label = decision === 'auto' ? (corrupt ? 'SACRIFICAR' : 'AUTORIZAR') : decision;
+    const label = decision === 'auto' ? (corrupt ? 'REASIGNAR' : 'AUTORIZAR') : decision;
     const btn = page.getByRole('button', { name: new RegExp(`^${label}`) });
     await expect(btn).toBeVisible({ timeout: 10_000 });
     await btn.click();
@@ -55,21 +55,21 @@ test.describe('E2E · gameplay', () => {
         expect(await page.evaluate(() => window.state.currentStep)).toBe(2);
     });
 
-    test('paso 4: decisión bloqueada sin escaneo; escanear consume energía y habilita AUTORIZAR/SACRIFICAR @responsive', async ({ page }, testInfo) => {
+    test('paso 4: decisión bloqueada sin escaneo; escanear consume energía y habilita AUTORIZAR/REASIGNAR @responsive', async ({ page }, testInfo) => {
         await bootGame(page, { ...SKIP_TUTORIALS, nakasthu_max_step: '4' });
         await jumpToStep(page, 4);
         await startOperations(page);
 
         await expect(page.getByText(/AUTORIZACIÓN PENDIENTE DE VALIDACIÓN BIOMÉTRICA/)).toBeVisible();
         await expect(page.getByRole('button', { name: /^AUTORIZAR/ })).toHaveCount(0);
-        await expect(page.getByRole('button', { name: /^SACRIFICAR/ })).toHaveCount(0);
+        await expect(page.getByRole('button', { name: /^REASIGNAR/ })).toHaveCount(0);
 
         const energyBefore = await page.evaluate(() => window.state.energy);
         await scanBiometric(page);
         expect(await page.evaluate(() => window.state.energy)).toBeLessThan(energyBefore);
 
         await expect(page.getByRole('button', { name: /^AUTORIZAR/ })).toBeEnabled({ timeout: 10_000 });
-        await expect(page.getByRole('button', { name: /^SACRIFICAR/ })).toBeEnabled();
+        await expect(page.getByRole('button', { name: /^REASIGNAR/ })).toBeEnabled();
         // El indicio de corrupción debe verse junto a la sentencia (también en móvil, pestaña Mando).
         const estimate = await page.evaluate(() => window.state.currentEntity.corruptionEstimate);
         expect(Number.isInteger(estimate)).toBe(true);
@@ -194,7 +194,7 @@ test.describe('E2E · gameplay', () => {
         for (let i = 0; i < 2; i++) {
             if (i > 0) { await regularSubject(page); await scanBiometric(page); }
             const corrupt = await page.evaluate(() => window.state.currentEntity.corruptionEstimate > 50);
-            const btn = page.getByRole('button', { name: new RegExp(`^${corrupt ? 'SACRIFICAR' : 'AUTORIZAR'}`) });
+            const btn = page.getByRole('button', { name: new RegExp(`^${corrupt ? 'REASIGNAR' : 'AUTORIZAR'}`) });
             await expect(btn).toBeVisible({ timeout: 10_000 });
             await btn.click();
             await expect.poll(() => page.evaluate(() => window.state.processedCount), { timeout: 15_000 }).toBe(i + 1);

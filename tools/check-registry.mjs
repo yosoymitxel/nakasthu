@@ -54,6 +54,22 @@ for (const m of read('src/ui/screens/lore/LoreScreen.js').matchAll(/"(LORE_[A-Z0
     if (!lore[m[1]]) problems.push(`lore ${m[1]}: en NARRATIVE_ORDER pero no en lore_database.json`);
 }
 
+// 5. Recurrentes: cada posición apunta a diálogos que existen, marcados `cameo` y válidos en ese paso.
+const manifest = JSON.parse(read('src/data/dialogues/manifest.json'));
+const dialogues = manifest.files.flatMap((f) => JSON.parse(read(`src/data/dialogues/${f}`)).dialogues);
+for (const [id, c] of Object.entries(STEPS_CONFIG)) {
+    for (const cameo of c.meta?.cameos || []) {
+        if (!(cameo.pos >= 1 && cameo.pos <= c.subjectCount) || cameo.pos === c.meta.kaminPosition) problems.push(`paso ${id}: recurrente en posición ${cameo.pos} imposible u ocupada`);
+        for (const did of cameo.dialogues || []) {
+            const d = dialogues.find((x) => x.id === did);
+            if (!d) problems.push(`paso ${id}: recurrente ${did} no existe`);
+            else if (!d.cameo || Number(id) < (d.minStep || 1) || Number(id) > (d.maxStep || 12)) problems.push(`paso ${id}: ${did} sin cameo o fuera de su paso`);
+        }
+    }
+}
+const placed = new Set(Object.values(STEPS_CONFIG).flatMap((c) => (c.meta?.cameos || []).flatMap((x) => x.dialogues)));
+for (const d of dialogues) if (d.cameo && !placed.has(d.id)) problems.push(`diálogo ${d.id}: cameo sin posición en ningún paso`);
+
 if (problems.length) {
     console.error(`❌ check-registry: ${problems.length} problema(s)\n - ${problems.join('\n - ')}`);
     process.exit(1);

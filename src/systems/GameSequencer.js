@@ -16,6 +16,7 @@ import { MechanicManager } from '../services/MechanicManager.js';
 import { calculateJudgmentRecommendation, checkStepMeta } from '../utils/gameplayUtils.js';
 import { storageSet } from '../utils/storage.js';
 import { persistenceManager } from './PersistenceManager.js';
+import { missingList } from './MissingList.js';
 
 /**
  * Clase GameSequencer - Gestiona la progresión narrativa
@@ -61,6 +62,7 @@ class GameSequencer {
 
             this.registerSubjectResult(subject, action);
             state.endBatch();
+            missingList.record(subject, action);
 
             this.checkGameStatus();
         });
@@ -262,7 +264,8 @@ class GameSequencer {
             bus.emit('STORY_MODAL_OPEN', {
                 mode: 'Briefing',
                 title: stepData.config.name,
-                content: stepData.config.briefingText
+                content: stepData.config.briefingText,
+                clock: stepData.config.clock317 || null
             });
         }
 
@@ -418,6 +421,9 @@ class GameSequencer {
                 metaResults.messages.push(metaResults.success ? 'Objetivo cumplido: +1 error tolerado en el próximo turno.' : 'Próximo turno: −20 de energía.');
             }
 
+            const listLine = missingList.turnLine(this.currentStep);
+            if (listLine) metaResults.messages.push(listLine);
+
             if (!metaResults.success) {
                 console.log('%c[SEQUENCER] Cuota completada pero metas no alcanzadas.', 'color: #f59e0b;');
                 if (metaResults.messages.some(m => m.includes('Influencia'))) {
@@ -436,7 +442,8 @@ class GameSequencer {
                 bus.emit('STORY_MODAL_OPEN', {
                     mode: 'Summary',
                     title: `Turno cerrado: ${config.name}`,
-                    content: metaResults.messages.join(' ')
+                    content: metaResults.messages.join(' '),
+                    bulletin: config.bulletin || null
                 });
             } else {
                 this.nextStep();

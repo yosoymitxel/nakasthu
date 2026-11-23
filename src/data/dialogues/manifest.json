@@ -5,7 +5,8 @@
         "phase3/sect.json",
         "phase4/ascension.json",
         "general/common.json",
-        "general/interrogations.json"
+        "general/interrogations.json",
+        "general/recurrentes.json"
     ],
     "flags": {
         "vargas_fuerza": ["letal", "contencion"],
@@ -16,6 +17,11 @@
         "leina_palabra": ["escuchada", "descartada"],
         "lichesth": ["fue", "no_fue"],
         "kamin_expediente": ["leido", "callado"],
-        "marek": ["lote", "existio"]
+        "marek": ["lote", "existio"],
+        "nera": ["reasignada", "entregada"],
+        "tobi": ["reasignado", "se_queda", "entregado"],
+        "ovid": ["entregado"],
+        "serafin": ["entregado"],
+        "rian": ["entregado"]
     }
 }

@@ -37,31 +37,60 @@ const ALTAR = [44, -34]; // altar bajo el hangar
 const SCALE = 3; // píxeles de pantalla por píxel renderizado
 
 // Planos: la cámara va de `from` a `to` en `dur` s mirando a `look`; `tint` es la luz del núcleo.
+// Entre planos se funde a negro; si comparten `place`, la cámara se desliza sin fundido. `cut` corta en seco.
+const M = MEADOW;
 const SHOTS = {
-    descent: { from: [7, 2.4, 44], to: [3.5, 2, 37], look: [0, 4, 26], dur: 16, tint: 0x22d3ee },
-    monolith: { from: [0, 1.2, 37], to: [0, 1.6, 34.5], look: [0, 5.5, 26], dur: 20, tint: 0x22d3ee },
+    // `tall`: encuadre propio en vertical (móvil), donde el subtítulo tapa la parte baja
+    descent: { from: [7, 2.4, 44], to: [3.5, 2, 37], look: [0, 4, 26], tall: { from: [5, 3.6, 50], to: [2.5, 3.2, 44], look: [0, 2.4, 28] }, dur: 16, tint: 0x22d3ee, place: 'zhyr' },
+    monolith: { from: [0, 1.2, 37], to: [0, 1.6, 34.5], look: [0, 5.5, 26], dur: 20, tint: 0x22d3ee, place: 'zhyr' },
     awakening: { from: [2, 5, 36], to: [16, 30, 58], look: [0, 3, 12], dur: 14, tint: 0xffffff },
     riot: { from: [-20, 1.8, 16], to: [-9, 2.4, 11], look: [0, 4.5, 0], dur: 18, tint: 0xef4444 },
     messenger: { from: [-22, 2.5, 4], to: [-17, 5, -1], look: [-12, 10, -8], dur: 18, tint: 0x9333ea },
     faith: { from: [-24, 1.6, 18], to: [-19, 2.6, 15], look: [-12, 3, 8], dur: 18, tint: 0x9333ea },
-    portal: { from: [-4, 2, 2], to: [-10, 3.5, -5], look: [-26, 6, -20], dur: 20, tint: 0x9333ea },
+    portal: { from: [3, 2.5, -9], to: [-2, 3.2, -12], look: [-26, 6, -20], dur: 20, tint: 0x9333ea, place: 'portal' },
     // Intermedias: `flash` destella y borra a la exploradora, `vanish` apaga gente, `crowd`/`tarima`/`altar` muestran su grupo
-    touch: { from: [-1, 1.6, 34], to: [-0.6, 1.9, 33], look: [0, 4, 26], dur: 12, tint: 0xffffff, flash: true },
+    touch: { from: [-1, 1.6, 34], to: [-0.6, 1.9, 33], look: [0, 4, 26], dur: 12, tint: 0xffffff, flash: true, place: 'zhyr' },
     vanish: { from: [CITY[0] + 10, 6, CITY[1] + 14], to: [CITY[0] + 6, 4, CITY[1] + 8], look: [CITY[0], 1, CITY[1]], dur: 16, tint: 0x64748b, vanish: true, sky: 0x0a0c12 },
     riotCrowd: { from: [CITY[0] - 3, 3.2, CITY[1] + 16], to: [CITY[0] - 1, 2.6, CITY[1] + 12], look: [CITY[0], 1.2, CITY[1] - 2], dur: 16, tint: 0xef4444, crowd: true, sky: 0x1a0806 },
+    // Cámara de vigilancia: la misma plaza desde arriba
+    surveil: { from: [CITY[0] + 2, 17, CITY[1] + 8], to: [CITY[0] + 1.5, 16.5, CITY[1] + 7], look: [CITY[0], 0, CITY[1]], dur: 14, tint: 0xef4444, crowd: true, sky: 0x1a0806 },
     tarima: { from: [STAGE[0] + 3, 4.5, STAGE[1] + 17], to: [STAGE[0] + 1.5, 3.8, STAGE[1] + 13], look: [STAGE[0], 2, STAGE[1]], dur: 18, tint: 0x9333ea, tarima: true, sky: 0x0e0614 },
-    altar: { from: [ALTAR[0] + 9, 4, ALTAR[1] + 9], to: [ALTAR[0] + 6, 2.5, ALTAR[1] + 6], look: [ALTAR[0], 1, ALTAR[1]], dur: 18, tint: 0xe9d5ff, altar: true, sky: 0x0b0710 },
-    portalOpen: { from: [-12, 3, -4], to: [-16, 4.5, -9], look: [-26, 6, -20], dur: 16, tint: 0x9333ea, opening: true },
+    altar: { from: [ALTAR[0] + 9, 4, ALTAR[1] + 9], to: [ALTAR[0] + 6, 2.5, ALTAR[1] + 6], look: [ALTAR[0], 1, ALTAR[1]], dur: 18, tint: 0xe9d5ff, altar: true, sky: 0x0b0710, place: 'altar' },
+    // Toren: un hombre sale del corro hacia el fragmento; en `torenAsh` destella, la ceniza dibuja cinco trazos y cae
+    toren: { from: [ALTAR[0] + 5.5, 3.6, ALTAR[1] + 6], to: [ALTAR[0] + 4.8, 3.3, ALTAR[1] + 5.2], look: [ALTAR[0] + 1, 1, ALTAR[1]], dur: 14, tint: 0xe9d5ff, altar: true, victim: 'step', sky: 0x0b0710, place: 'altar' },
+    torenAsh: { from: [ALTAR[0] + 4.8, 3.3, ALTAR[1] + 5.2], to: [ALTAR[0] + 4.2, 3, ALTAR[1] + 4.6], look: [ALTAR[0] + 0.6, 1.4, ALTAR[1]], dur: 12, tint: 0xe9d5ff, altar: true, victim: 'ash', sky: 0x0b0710, place: 'altar' },
+    portalOpen: { from: [-2, 3, -12], to: [-6, 3.6, -14], look: [-26, 6, -20], dur: 16, tint: 0x9333ea, opening: true, place: 'portal' },
     // Epílogo: `closing` encoge el portal, `twin` alza el segundo monolito, `queue` muestra la fila,
     // `sky` cambia cielo y niebla; la pradera vive lejos (x = MEADOW) para que la niebla oculte la base.
-    portalClose: { from: [-6, 2.5, 4], to: [-9, 3, -2], look: [-26, 6, -20], dur: 14, tint: 0x22d3ee, closing: true },
+    portalClose: { from: [-6, 2.5, -12], to: [-10, 3, -15], look: [-26, 6, -20], dur: 14, tint: 0x22d3ee, closing: true, place: 'portal' },
     bastion: { from: [16, 20, 22], to: [9, 24, 10], look: [0, 0, 0], dur: 20, tint: 0x9333ea, sky: 0x0d0a14 },
+    // La grabación del geólogo: un solo astronauta ante la piedra; en `kaminTurn` gira la cabeza a cámara
+    kaminTape: { from: [3.6, 1.7, 33.4], to: [3.4, 1.7, 33.2], look: [0, 1.5, 31.5], dur: 20, tint: 0xffe2b0, tape: true, sky: 0x24180c, place: 'tape' },
+    kaminTurn: { from: [3.4, 1.7, 33.2], to: [3.3, 1.7, 33.1], look: [0, 1.6, 31.8], dur: 12, tint: 0xffe2b0, tape: true, turn: true, sky: 0x24180c, place: 'tape' },
     mirror: { from: [4.5, 3, 66], to: [4.5, 4, 60], look: [4.5, 5, 26], dur: 18, tint: 0x22d3ee, twin: true, sky: 0x16303a },
     mirrorVoid: { from: [4.5, 3, 66], to: [4.5, 4, 60], look: [4.5, 5, 26], dur: 18, tint: 0x9333ea, twin: true, sky: 0x3a1450 },
-    meadow: { from: [MEADOW - 6, 3.5, 26], to: [MEADOW - 2, 2.6, 16], look: [MEADOW, 3, -10], dur: 20, tint: 0xfbbf24, sky: 0xd9b46a },
-    meadowClose: { from: [MEADOW + 3, 1.8, 8], to: [MEADOW + 1, 1.5, 4], look: [MEADOW - 1, 1, 0], dur: 20, tint: 0xfbbf24, sky: 0xd9b46a, sink: true },
-    exodus: { from: [14, 7, 24], to: [4, 4, 10], look: [-26, 5, -20], dur: 20, tint: 0x9333ea, queue: true, sky: 0x1a0626 }
+    // Pradera (cap. 16): cada plano cambia una cosa. `rot` 0 paraíso, 1 flores, 2 cielo, 3 carne; `rel` dónde
+    // están los familiares (lejos, andando, delante, fundidos); `still` para la respiración; `tremor` tiembla.
+    meadow: { from: [M, 0.35, 6], to: [M, 1.6, 5.5], look: [M, 1.4, -20], dur: 9, tint: 0xfbbf24, meadow: true, rot: 0, rel: 'far', place: 'meadow' },
+    meadowWalk: { from: [M, 1.6, 5.5], to: [M, 1.6, 5], look: [M, 1.2, -20], dur: 14, tint: 0xfbbf24, meadow: true, rot: 0, rel: 'walk', place: 'meadow' },
+    meadowFace: { from: [M + 0.2, 1.6, 4.4], to: [M, 1.6, 4.1], look: [M, 1.45, 2.6], dur: 20, tint: 0xfbbf24, meadow: true, rot: 0, rel: 'near', darien: true, place: 'meadow' },
+    meadowStill: { from: [M, 1.6, 4.1], to: [M, 1.6, 4.0], look: [M, 1.45, 2.6], dur: 20, tint: 0xfbbf24, meadow: true, rot: 0, rel: 'near', darien: true, still: true, tremor: true, place: 'meadow' },
+    meadowFlowers: { from: [M + 0.3, 1.4, 4], to: [M + 0.4, 1.0, 3.9], look: [M + 2.2, 0, 3.2], dur: 16, tint: 0xfbbf24, meadow: true, rot: 1, rel: 'near', darien: true, still: true, tremor: true, bloom: true, place: 'meadow' },
+    meadowSky: { from: [M, 1.2, 4], to: [M, 1.1, 4.2], look: [M, 40, -12], dur: 20, tint: 0xfbbf24, meadow: true, rot: 2, rel: 'near', darien: true, still: true, bloom: true, pulse: true, place: 'meadow' },
+    meadowFar: { from: [M - 7, 4.5, 15], to: [M - 4, 3.4, 12], look: [M, 0.6, -6], dur: 20, tint: 0xfbbf24, meadow: true, rot: 3, rel: 'merged', still: true, bloom: true, pulse: true, sink: true, place: 'meadow' },
+    meadowSink: { from: [M, 1.6, 4], to: [M, -0.6, 4], look: [M, 1.45, 2.6], dur: 9, tint: 0xfbbf24, meadow: true, rot: 3, rel: 'merged', darien: true, still: true, bloom: true, sink: true, dark: true, place: 'meadow' },
+    // El bucle: el mismo fotograma de la primera página, sin fundido
+    meadowLoop: { from: [M, 0.35, 6], to: [M, 1.6, 5.5], look: [M, 1.4, -20], dur: 9, tint: 0xfbbf24, meadow: true, rot: 0, rel: 'far', cut: true, place: 'meadow' },
+    // La fila entra por detrás de la cámara y se pierde en el portal; la base queda fuera, a la derecha
+    exodus: { from: [-19, 4.2, 9], to: [-21, 3.4, 2], look: [-25, 2.2, -18], dur: 20, tint: 0x9333ea, queue: true, sky: 0x1a0626 }
 };
+// Colores de la pradera por fase de `rot`: hierba, colinas, cielo
+const MEADOW_COLORS = [
+    [0x5d8a3a, 0x4f7d3a, 0x8fb8e8],
+    [0xb8b49a, 0x4f7d3a, 0x8fb8e8],
+    [0xb8b49a, 0x6f7a52, 0x5a5f8c],
+    [0xb8b49a, 0xb98272, 0x5a5f8c]
+];
 
 export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
     const canvasRef = useRef(null);
@@ -134,7 +163,6 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
             twin.position.x += 9;
             scene.add(twin);
 
-            const flesh = new THREE.MeshLambertMaterial({ color: 0xb98272, flatShading: true });
             const fallback = new THREE.Mesh(new THREE.CapsuleGeometry(0.32, 1.1, 2, 6), new THREE.MeshLambertMaterial({ color: 0xc99a7c }));
             fallback.position.y = 0.85;
             const figure = (x, z, i, turn = 0, id = PEOPLE[i % PEOPLE.length], opts) => {
@@ -156,25 +184,53 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
                 });
             };
 
-            // Pradera dorada: colinas de carne y gente fundiéndose en parejas
+            // Pradera (cap. 16): empieza verde y azul; los colores se pudren según el plano (MEADOW_COLORS)
             const meadow = new THREE.Group();
-            const grass = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), new THREE.MeshLambertMaterial({ color: 0xb59a3c }));
+            const grassMat = new THREE.MeshLambertMaterial({ color: MEADOW_COLORS[0][0] });
+            const hillMat = new THREE.MeshLambertMaterial({ color: MEADOW_COLORS[0][1], flatShading: true });
+            const grass = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), grassMat);
             grass.rotation.x = -Math.PI / 2;
             grass.position.y = 0.01;
             meadow.add(grass);
-            [[-20, -24, 10], [6, -30, 13], [26, -22, 9], [-34, -12, 8], [36, -8, 7]].forEach(([x, z, r]) => {
-                const hill = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 1), flesh);
+            const hills = [[-20, -24, 10], [6, -30, 13], [26, -22, 9], [-34, -12, 8], [36, -8, 7]].map(([x, z, r]) => {
+                const hill = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 1), hillMat);
                 hill.scale.y = 0.45;
                 hill.position.set(x, 0, z);
                 meadow.add(hill);
+                return hill;
             });
-            const sinkers = [];
+            // Flores: cerradas son flores; en `bloom` se abren y se cierran cada una a su ritmo
+            const FLOWERS = 420;
+            const flowers = new THREE.InstancedMesh(new THREE.SphereGeometry(0.1, 6, 4), new THREE.MeshLambertMaterial({ color: 0xffffff }), FLOWERS);
+            const flowerData = Array.from({ length: FLOWERS }, (_, i) => {
+                const a = i * 2.39996, r = 0.6 + Math.sqrt(i / FLOWERS) * 13;
+                flowers.setColorAt(i, new THREE.Color(i % 3 ? 0xf5f5f0 : 0xf2d060));
+                return { x: Math.cos(a) * r, z: 2 + Math.sin(a) * r * 0.9, w: 0.002 + (i % 7) * 0.0007, ph: i * 1.7 };
+            });
+            const dummy = new THREE.Object3D();
+            const placeFlowers = (t, open) => {
+                flowerData.forEach((f, i) => {
+                    dummy.position.set(f.x, 0.08, f.z);
+                    const o = open ? 0.25 + 0.9 * Math.abs(Math.sin(t * f.w + f.ph)) : 1;
+                    dummy.scale.set(1, o, 1);
+                    dummy.updateMatrix();
+                    flowers.setMatrixAt(i, dummy.matrix);
+                });
+                flowers.instanceMatrix.needsUpdate = true;
+            };
+            placeFlowers(0, false);
+            meadow.add(flowers);
+            // Parejas: el que llega (a) y el familiar (b) que baja de las colinas
+            const couples = [];
             for (let i = 0; i < 14; i++) {
                 const x = (i % 7) * 3.2 - 10 + (i > 6 ? 1.4 : 0), z = -4 - Math.floor(i / 7) * 5;
                 const a = figure(x, z, i, Math.PI / 2), b = figure(x + 0.55, z, i + 1, -Math.PI / 2);
                 meadow.add(a, b);
-                sinkers.push(a, b);
+                couples.push({ a, b, x, z, fx: x * 1.8, fz: -34 + (i % 4) * 3 });
             }
+            // Darien, a un metro de Leina
+            const darien = figure(0, 2.6, 0, 0, 'commuter-381e7f');
+            meadow.add(darien);
             meadow.position.x = MEADOW;
             scene.add(meadow);
 
@@ -219,6 +275,15 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
             const shardLight = new THREE.PointLight(0xa855f7, 20, 10);
             shardLight.position.y = 1.6;
             shrine.add(shard, shardLight);
+            const victim = figure(3.2, 0.6, 3, -Math.PI / 2);
+            shrine.add(victim);
+            const ash = Array.from({ length: 5 }, (_, i) => {
+                const m = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.8, 0.07), new THREE.MeshBasicMaterial({ color: 0x050505 }));
+                m.rotation.z = 0.45;
+                m.position.set(-0.5 + i * 0.25, 1.5, 0.6);
+                shrine.add(m);
+                return m;
+            });
             shrine.position.set(ALTAR[0], 0, ALTAR[1]);
             scene.add(shrine);
 
@@ -226,7 +291,7 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
             const queue = new THREE.Group();
             const walkers = Array.from({ length: 36 }, (_, i) => { const m = figure(0, 0, i); queue.add(m); return m; });
             scene.add(queue);
-            const QA = [0, 4], QB = [PORTAL[0] + 3, PORTAL[1] + 3];
+            const QA = [-24, 14], QB = [PORTAL[0] + 0.5, PORTAL[1] + 4];
             walkers.forEach(m => { m.rotation.y = Math.atan2(QB[0] - QA[0], QB[1] - QA[1]); });
 
             scene.add(new THREE.HemisphereLight(0x8fa4c4, 0x16120f, 1.4));
@@ -242,13 +307,28 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
                 const w = Math.max(1, Math.round(innerWidth / SCALE)), h = Math.max(1, Math.round(innerHeight / SCALE));
                 renderer.setSize(w, h, false);
                 camera.aspect = w / h;
+                // En vertical (móvil) el encuadre de 42° dejaba fuera a los personajes
+                camera.fov = w < h ? 64 : 42;
                 camera.updateProjectionMatrix();
             };
             resize();
             addEventListener('resize', resize);
             live.current.cleanup = () => removeEventListener('resize', resize);
 
-            let last = 0, angle = 0.6, shotName = null, shotStart = 0;
+            // Vestir a toda la gente al cargar, un grupo por tick: si no, brotaba de golpe en el primer fotograma
+            for (const g of [meadow, plaza, stage, shrine, queue]) {
+                dress(g);
+                await new Promise(r => setTimeout(r, 0));
+                if (dead) return;
+            }
+
+            const UNSET = {};
+            const FADE_OUT = 260, FADE_IN = 420, SLIDE = 900;
+            let last = 0, angle = 0.6, shotName = UNSET, shotStart = 0;
+            let pending = false, lastDark = 0, fadeStart = 0, fadeIn = -1, slideStart = -1, snap = true, lastFilter = '';
+            const slideFrom = new THREE.Vector3(), lookFrom = new THREE.Vector3(), lookNow = new THREE.Vector3();
+            const target = new THREE.Vector3(), aim = new THREE.Vector3(), tmp = new THREE.Color();
+            const lerpColor = (c, hex, k) => (snap ? c.setHex(hex) : c.lerp(tmp.setHex(hex), k));
             const frame = (t) => {
                 raf = requestAnimationFrame(frame);
                 const { dim, sect, shot } = live.current;
@@ -257,27 +337,70 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
                 const dt = t - last;
                 last = t;
 
-                const s = SHOTS[shot];
-                if (shot !== shotName) { shotName = shot; shotStart = t; }
+                // Cambio de plano: funde a negro, cambia con la pantalla negra y vuelve. Mismo sitio: se desliza.
+                if (!pending && shot !== shotName) {
+                    const a = SHOTS[shotName], b = SHOTS[shot];
+                    const near = a && b && a.place && a.place === b.place && !b.cut;
+                    if (shotName === UNSET || b?.cut || near) {
+                        slideStart = near ? t : -1;
+                        slideFrom.copy(camera.position);
+                        lookFrom.copy(lookNow);
+                        shotName = shot; shotStart = t; snap = !near;
+                    } else { pending = true; fadeStart = t; }
+                }
+                let dark = 0;
+                if (pending) {
+                    dark = Math.min(1, (t - fadeStart) / FADE_OUT);
+                    // El primer fotograma del plano nuevo puede tardar (sitio sin dibujar aún): la vuelta empieza después
+                    if (dark >= 1) { pending = false; shotName = shot; shotStart = t; fadeIn = Infinity; slideStart = -1; snap = true; }
+                } else if (fadeIn === Infinity) {
+                    dark = 1; fadeIn = t;
+                } else if (fadeIn >= 0) {
+                    // Con fotogramas lentos (móvil) no se salta de negro a imagen en uno solo
+                    dark = Math.max(0, 1 - (t - fadeIn) / FADE_IN, lastDark - 0.3);
+                    if (!dark) fadeIn = -1;
+                }
+                lastDark = dark;
+                const filter = dark > 0.01 ? `brightness(${(1 - dark).toFixed(2)})` : '';
+                if (filter !== lastFilter) { canvas.style.filter = filter; lastFilter = filter; }
+
+                const s0 = SHOTS[shotName];
+                const s = s0?.tall && innerWidth < innerHeight ? (s0.tallShot ||= { ...s0, ...s0.tall }) : s0;
+                const k = s ? Math.min(1, (t - shotStart) / (s.dur * 1000)) : 0;
                 if (s) {
-                    const k = Math.min(1, (t - shotStart) / (s.dur * 1000));
                     const e = k * k * (3 - 2 * k);
-                    camera.position.set(
+                    target.set(
                         s.from[0] + (s.to[0] - s.from[0]) * e,
-                        s.from[1] + (s.to[1] - s.from[1]) * e + Math.sin(t * 0.0006) * 0.08,
+                        s.from[1] + (s.to[1] - s.from[1]) * e + (s.meadow ? 0 : Math.sin(t * 0.0006) * 0.08),
                         s.from[2] + (s.to[2] - s.from[2]) * e
                     );
-                    camera.lookAt(s.look[0], s.look[1], s.look[2]);
+                    aim.set(s.look[0], s.look[1], s.look[2]);
                 } else {
                     angle += dt * 0.00004;
-                    camera.position.set(Math.sin(angle) * 34, 9 + Math.sin(angle * 3) * 1.5, Math.cos(angle) * 34);
-                    camera.lookAt(0, 4, 0);
+                    target.set(Math.sin(angle) * 34, 9 + Math.sin(angle * 3) * 1.5, Math.cos(angle) * 34);
+                    aim.set(0, 4, 0);
                 }
+                if (slideStart >= 0) {
+                    const b = Math.min(1, (t - slideStart) / SLIDE);
+                    const be = b * b * (3 - 2 * b);
+                    target.lerpVectors(slideFrom, target, be);
+                    aim.lerpVectors(lookFrom, aim, be);
+                    if (b >= 1) slideStart = -1;
+                }
+                if (s?.tremor) target.x += (Math.random() - 0.5) * 0.012, target.y += (Math.random() - 0.5) * 0.012;
+                camera.position.copy(target);
+                camera.lookAt(aim);
+                lookNow.copy(aim);
 
-                const k = s ? Math.min(1, (t - shotStart) / (s.dur * 1000)) : 0;
-                const sky = s?.sky ?? 0x07080c;
-                scene.background.setHex(sky);
-                scene.fog.color.setHex(sky);
+                const beat = Math.max(0, 1 - ((t % 10000) / 600));
+                const colors = s?.meadow ? MEADOW_COLORS[s.rot] : null;
+                const sky = s?.dark ? 0x000000 : (colors ? colors[2] : (s?.sky ?? 0x07080c));
+                lerpColor(scene.background, sky, s?.dark ? 0.03 : 0.06);
+                scene.fog.color.copy(scene.background);
+                if (s?.pulse) scene.fog.color.lerp(tmp.setHex(0xa0485a), beat * 0.5);
+                scene.fog.near = s?.meadow ? 30 - (s.pulse ? beat * 14 : 0) : 22;
+                scene.fog.far = s?.meadow ? 110 : 70;
+
                 ring.scale.setScalar(s?.closing ? Math.max(0.02, 1 - k * 1.2) : 1);
                 voidDisc.scale.copy(ring.scale);
                 ringLight.intensity = s?.closing ? 40 * (1 - k) : 40;
@@ -286,16 +409,45 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
                 fires.forEach((l, i) => { l.visible = !!s?.crowd; l.intensity = 24 + Math.sin(t * 0.02 + i * 3) * 10; });
                 stage.visible = !!s?.tarima;
                 shrine.visible = !!s?.altar;
-                const beat = Math.max(0, 1 - ((t % 10000) / 600));
                 shard.rotation.y += dt * 0.0006;
-                shardLight.intensity = 10 + beat * 50;
-                if (s?.opening) ring.scale.setScalar(0.2 + Math.min(1, k * 1.5) * 0.8);
-                if (crew[0]) crew[0].obj.visible = !(s?.flash && k > 0.35);
-                for (const g of [meadow, plaza, stage, shrine, queue]) if (g.visible && !g.userData.dressed) dress(g);
+                // Toren: avanza hasta el fragmento; en `torenAsh` destella, la ceniza se ordena en cinco trazos y cae
+                const ashK = s?.victim === 'ash' ? k : 0;
+                victim.visible = s?.victim === 'step' || (s?.victim === 'ash' && ashK < 0.14);
+                victim.position.x = s?.victim === 'step' ? 3.2 - 1.7 * Math.min(1, k * 2.2) : 1.5;
+                const flash = ashK > 0.12 && ashK < 0.22;
+                shardLight.intensity = flash ? 320 : 10 + beat * 50;
+                ash.forEach((m, i) => {
+                    m.visible = ashK > 0.18 && ashK < 0.7;
+                    m.position.y = 1.5 - Math.max(0, ashK - 0.42) * 6 * (1 + i * 0.15);
+                });
+                if (s?.opening) { ring.scale.setScalar(0.2 + Math.min(1, k * 1.5) * 0.8); voidDisc.scale.copy(ring.scale); }
+                // La grabación: sólo queda uno ante la piedra
+                crew.forEach(c => { c.obj.visible = s?.tape ? c.i === 1 : true; });
+                if (crew[0] && !s?.tape) crew[0].obj.visible = !(s?.flash && k > 0.35);
                 twin.visible = !!s?.twin;
                 twin.position.y = -6 + 11.5 * Math.min(1, k * 1.4);
-                meadow.visible = !!s?.sky && shot.startsWith('meadow');
-                for (const m of sinkers) m.position.y = s?.sink ? -k * 1.2 : 0;
+
+                meadow.visible = !!s?.meadow;
+                if (meadow.visible) {
+                    lerpColor(grassMat.color, colors[0], 0.03);
+                    lerpColor(hillMat.color, colors[1], 0.02);
+                    hills.forEach((h, i) => { h.scale.y = 0.45 + (s.rot === 3 ? Math.sin(t * 0.0009 + i) * 0.05 : 0); });
+                    placeFlowers(t, !!s.bloom);
+                    darien.visible = !!s.darien;
+                    const walk = s.rel === 'walk' ? Math.min(1, k * 1.25) : (s.rel === 'far' ? 0 : 1);
+                    couples.forEach(({ a, b, x, z, fx, fz }, i) => {
+                        const gap = s.rel === 'merged' ? 0.12 : 0.55;
+                        b.position.set(fx + (x + gap - fx) * walk, 0, fz + (z - fz) * walk);
+                        b.rotation.y = walk < 1 ? Math.atan2(x - fx, z - fz) : -Math.PI / 2;
+                        const sway = s.still ? 0 : Math.sin(t * 0.0018 + i) * 0.025;
+                        const sink = s.sink ? -k * 1.2 : 0;
+                        a.rotation.z = sway; b.rotation.z = -sway;
+                        a.position.y = sink; b.position.y = sink;
+                    });
+                    darien.rotation.z = s.still ? 0 : Math.sin(t * 0.0018) * 0.02;
+                }
+                snap = false;
+
                 queue.visible = !!s?.queue;
                 if (queue.visible) walkers.forEach((m, i) => {
                     const f = ((i / walkers.length) + t * 0.00002) % 1;
@@ -308,8 +460,11 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
                 ring.rotation.z += dt * 0.0003;
                 for (const { bones, i } of crew) {
                     const w = Math.sin(t * 0.0012 + i * 2.1);
-                    if (bones.Spine) bones.Spine.rotation.x = w * 0.03;
-                    if (bones.Head) bones.Head.rotation.y = Math.sin(t * 0.0005 + i * 1.7) * 0.25;
+                    if (bones.Spine) bones.Spine.rotation.x = s?.tape ? 0 : w * 0.03;
+                    if (!bones.Head) continue;
+                    // En la grabación la cabeza se queda quieta y, en `kaminTurn`, gira hacia la cámara sin los hombros
+                    if (s?.tape) bones.Head.rotation.y = s.turn ? -1.9 * Math.min(1, Math.max(0, (k - 0.15) / 0.35)) : 0;
+                    else bones.Head.rotation.y = Math.sin(t * 0.0005 + i * 1.7) * 0.25;
                 }
                 renderer.render(scene, camera);
             };

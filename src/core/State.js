@@ -57,6 +57,7 @@ const initialState = {
     influenceGathered: 0,
     utilidadOculta: 0,
     loreArchive: [], // Lista de información recolectada (Fase 15)
+    missingList: [], // LA LISTA de la partida (MissingList.js); sobrevive a resetState como las marcas narrativas
     activeDialogue: null, // Diálogo activo actual
     stats: {
         innocentsSacrificed: 0,
@@ -113,6 +114,9 @@ const stateManager = {
 
         let newSubject = generateSubject();
         let forcedTech = false;
+        // Recurrentes: gente que vuelve en posiciones fijas de varios pasos (DialogueEngine elige su diálogo)
+        const cameo = stepMeta?.cameos?.find(c => c.pos === nextPos);
+        if (cameo) newSubject.cameo = cameo;
         if (stepMeta?.kaminAppears && nextPos === stepMeta.kaminPosition) {
             applyTraits(newSubject, {
                 id: 'KAMIN',
@@ -175,11 +179,12 @@ const stateManager = {
         const tutorialSeen = this.hasSeenTutorial; // Preservar estado del tutorial
         const maxStep = this.maxStepReached;      // Preservar progreso máximo
         const lore = this.loreArchive;            // El archivo de lore es de jugador, no de partida
+        const missing = this.missingList;
 
         this.startBatch();
         Object.keys(freshState).forEach(key => {
             // No resetear flags persistentes
-            if (key === 'hasSeenTutorial' || key === 'maxStepReached' || key === 'loreArchive') return;
+            if (key === 'hasSeenTutorial' || key === 'maxStepReached' || key === 'loreArchive' || key === 'missingList') return;
             this[key] = freshState[key];
         });
 
@@ -193,6 +198,7 @@ const stateManager = {
         this.hasSeenTutorial = tutorialSeen;
         this.maxStepReached = maxStep;
         this.loreArchive = lore.filter(e => e.loreId);
+        this.missingList = missing;
         this.endBatch();
 
         bus.emit('SYSTEM_LOG', { msg: 'REINICIO_COMPLETO_ESTADO' });

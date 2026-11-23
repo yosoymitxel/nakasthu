@@ -59,8 +59,8 @@ export const PATH_CONFIGS = {
                 fail: '[ALERTA] AUTORIZACIÓN FALLIDA: ENTIDAD CORRUPTA DETECTADA.'
             },
             sacrifice: {
-                success: '[SISTEMA] SACRIFICIO COMPLETADO: ENERGÍA RECUPERADA.',
-                fail: '[ALERTA] SACRIFICIO ERRÓNEO: PÉRDIDA DE ESTABILIDAD DETECTADA.'
+                success: '[SISTEMA] REASIGNACIÓN FIRMADA: ENERGÍA RECUPERADA. RETORNO PREVISTO: —',
+                fail: '[ALERTA] REASIGNACIÓN ERRÓNEA: SUJETO APTO ENVIADO A PRISIAT.'
             }
         },
         operations: {
@@ -72,14 +72,14 @@ export const PATH_CONFIGS = {
             newSubjectMsg: 'NUEVO SUJETO DETECTADO EN CÁMARA.',
             anomalyMsg: '>>> ALERTA: ANOMALÍA EN PROTOCOLO DE DECISIÓN. OVERRIDE DETECTADO.',
             systemSender: 'NAKASTHU_OS',
-            subjectSender: 'BIOMASA',
+            subjectSender: 'SUJETO',
             operatorSender: 'OPERADOR',
             linkClosedMsg: 'ENLACE NEURAL CERRADO.',
             energyErrorMsg: '[ERROR] ENERGÍA INSUFICIENTE PARA ESTABLECER ENLACE.',
-            noSubjectMsg: '[ERROR] NO SE DETECTA BIOMASA EN EL ÁREA DE INTERACCIÓN.',
-            rejectLabel: 'SACRIFICAR',
+            noSubjectMsg: '[ERROR] NO HAY SUJETO EN CÁMARA.',
+            rejectLabel: 'REASIGNAR A PRISIAT',
             authorizeLabel: 'AUTORIZAR',
-            overrideBlockedMsg: '>>> ERROR: PROTOCOLO DE SACRIFICIO BLOQUEADO POR KAMIN.',
+            overrideBlockedMsg: '>>> ERROR: REASIGNACIÓN BLOQUEADA POR KAMIN.',
             overrideLabel: 'ERR: OVERRIDE',
             errorLabel: 'FALLOS',
             quotaLabel: 'CUOTA_DIARIA',
@@ -124,13 +124,13 @@ export const PATH_CONFIGS = {
             manualQuote: '"La eficiencia es el único bastión contra el Caos de Kamin. No dude. No sienta. Solo procese."',
             skipTutorialMsg: '[SISTEMA] INDUCCIÓN ABORTADA. PROCEDIENDO a OPERACIONES ESTÁNDAR.',
             manual: {
-                objective: { label: 'PROTOCOLO:', text: 'Identificar y procesar biomasa. El Motor Polimórfico adapta la interfaz a su perfil técnico.' },
-                sacrifice: { label: 'SACRIFICIO:', text: 'Elimina sujetos con rastro de Kamin (+30 Energía). Error en sujeto puro: -25 Estabilidad.' },
+                objective: { label: 'PROTOCOLO:', text: 'Consola cuatro de reasignación de Talok. Evalúe a cada sujeto: se queda a reconstruir o baja a las galerías de Prisiat.' },
+                sacrifice: { label: 'REASIGNAR A PRISIAT:', text: 'Baja al sujeto a las galerías de Prisiat; su cuota alimenta la consola (+30 Energía). Retorno previsto: ninguno. Reasignar a alguien sano: -25 Estabilidad.' },
                 authorize: { label: 'AUTORIZAR:', text: 'Permite el paso de sujetos puros (+10 Estabilidad, -10 Energía). Error en sujeto corrupto: -30 Estabilidad.' },
                 resonance: { label: 'RESONANCIA:', text: 'Sincronice frecuencia y fase con el Monolito para evitar el colapso del núcleo neural y recuperar estabilidad.' },
                 scanning: { label: 'BIO-SCAN (MOD-01):', text: 'Inspección obligatoria. Use Térmico, Neural, Nakara, Biométrico y Resonancia para detectar anomalías.' },
                 resources: { label: 'SISTEMAS:', text: 'Energía (Combustible), Estabilidad (Integridad del Bastión) y Oxígeno (Soporte Vital). Si uno llega a 0, la misión termina.' },
-                economy: { label: 'ECONOMÍA:', text: 'Los sacrificios generan cristales de Nakasthu. Las autorizaciones consumen energía pero mantienen la paz social.' }
+                economy: { label: 'ECONOMÍA:', text: 'Cada reasignación paga la energía de la consola. Las autorizaciones la consumen pero mantienen la paz social.' }
             }
         },
         layout: {
@@ -231,8 +231,8 @@ export const PATH_CONFIGS = {
                 fail: '[PROFANACIÓN] ALMA IMPURA DETECTADA: EL VELO SE DESGARRA.'
             },
             sacrifice: {
-                success: '[SACRIFICIO] OFRENDA ACEPTADA: LAS ALMAS FLUYEN.',
-                fail: '[BLASFEMIA] SACRIFICIO ERRÓNEO: LA PUERTA NO LO ACEPTA.'
+                success: '[ENTREGA] DIFERENCIA PAGADA: EL ALTAR SE ENCIENDE.',
+                fail: '[BLASFEMIA] ENTREGA ERRÓNEA: LA PUERTA NO LO ACEPTA.'
             }
         },
         operations: {
@@ -249,9 +249,9 @@ export const PATH_CONFIGS = {
             linkClosedMsg: 'COMUNIÓN FINALIZADA.',
             energyErrorMsg: '[ERROR] FE INSUFICIENTE PARA ESTABLECER COMUNIÓN.',
             noSubjectMsg: '[ERROR] EL UMBRAL SE ENCUENTRA VACÍO.',
-            rejectLabel: 'PURGAR',
+            rejectLabel: 'ENTREGAR',
             authorizeLabel: 'CONSAGRAR',
-            overrideBlockedMsg: '>>> ERROR: EL SACRIFICIO HA SIDO INTERCEPTADO POR KAMIN.',
+            overrideBlockedMsg: '>>> ERROR: LA ENTREGA HA SIDO INTERCEPTADA POR KAMIN.',
             overrideLabel: 'VELO: INTERFERENCIA',
             errorLabel: 'PROFANO',
             quotaLabel: 'COSECHA',
@@ -297,12 +297,12 @@ export const PATH_CONFIGS = {
             skipTutorialMsg: '[RITUAL] INDUCCIÓN ABORTADA. PROCEDIENDO A LA COMUNIÓN.',
             manual: {
                 objective: { label: 'DOGMA:', text: 'Separar el trigo de la paja. El nakara revela la verdad a través del Altar de Examen.' },
-                sacrifice: { label: 'PURGAR:', text: 'Libera almas corruptas por Kamin para alimentar el fuego (+30 Energía). Error en devoto: -25 Estabilidad.' },
+                sacrifice: { label: 'ENTREGAR:', text: 'Baja al sujeto a la cámara del hangar: paga la diferencia y alimenta el altar (+30 Energía). Entregar a un devoto puro: -25 Estabilidad.' },
                 authorize: { label: 'CONSAGRAR:', text: 'Permite la ascensión de devotos puros (+10 Estabilidad, -10 Energía). Error en corrupto: -30 Estabilidad.' },
                 resonance: { label: 'ARMONÍA:', text: 'Unifique las almas en disonancia con la vibración del Velo para recuperar la paz espiritual.' },
                 scanning: { label: 'REVELACIÓN (MOD-01):', text: 'Rito de examen obligatorio. Use los cinco ritos para detectar la mancha de Kamin.' },
                 resources: { label: 'ESENCIAS:', text: 'Fe (Energía), Paz (Estabilidad) y Aliento (Oxígeno). El vacío aguarda si alguno se extingue.' },
-                economy: { label: 'OFRENDA:', text: 'El sacrificio de lo impuro alimenta el Altar de Examen. La consagración purifica el Bastión.' }
+                economy: { label: 'OFRENDA:', text: 'Lo que se entrega bajo el hangar alimenta el Altar de Examen. La consagración purifica el Bastión.' }
             }
         },
         layout: {

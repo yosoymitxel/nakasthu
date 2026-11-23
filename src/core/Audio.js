@@ -16,6 +16,8 @@ class AudioManager {
         this.buffers = {};
         this.music = null;
         this.musicId = null;
+        this.musicLevel = 1;
+        this.ambience = null;
     }
 
     async init() {
@@ -44,7 +46,7 @@ class AudioManager {
 
     async updateMusic(s) {
         const id = soundOn() ? this.trackFor(s) : null;
-        const gain = s.isPaused ? MUSIC_VOLUME * 0.4 : MUSIC_VOLUME;
+        const gain = (s.isPaused ? MUSIC_VOLUME * 0.4 : MUSIC_VOLUME) * this.musicLevel;
         if (id === this.musicId) {
             this.music?.gain.gain.setTargetAtTime(gain, this.ctx.currentTime, 0.3);
             return;
@@ -72,6 +74,85 @@ class AudioManager {
         src.connect(g).connect(this.ctx.destination);
         src.start();
         this.music = { src, gain: g };
+    }
+
+    /**
+     * Ambiente de una página de cinemática, sintetizado (sin archivos): pájaros, zumbido grave,
+     * chasquidos húmedos, un latido cada diez segundos o silencio. `level` escala la música (0 la corta).
+     */
+    cue(name, level = 1) {
+        this.ambience?.stop();
+        this.ambience = null;
+        if (level !== this.musicLevel) { this.musicLevel = level; this.updateMusic(state); }
+        if (!name || name === 'silence' || !soundOn() || typeof AudioContext === 'undefined') return;
+        this.ctx ||= new AudioContext();
+        const ctx = this.ctx;
+        const out = ctx.createGain();
+        out.gain.value = 0;
+        out.gain.setTargetAtTime(1, ctx.currentTime, 0.4);
+        out.connect(ctx.destination);
+        const nodes = [];
+        const timers = [];
+        const tone = (type, freq, gain) => {
+            const o = ctx.createOscillator(), g = ctx.createGain();
+            o.type = type; o.frequency.value = freq; g.gain.value = gain;
+            o.connect(g).connect(out); o.start();
+            nodes.push(o);
+            return o;
+        };
+        // Una ráfaga corta: pájaro (barrido agudo), chasquido (ruido filtrado) o golpe de latido (grave)
+        const burst = (kind) => {
+            const now = ctx.currentTime, g = ctx.createGain();
+            g.connect(out);
+            if (kind === 'click') {
+                const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.015), ctx.sampleRate);
+                const d = buf.getChannelData(0);
+                for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+                const src = ctx.createBufferSource(), f = ctx.createBiquadFilter();
+                f.type = 'bandpass'; f.frequency.value = 900 + Math.random() * 900; f.Q.value = 6;
+                src.buffer = buf; g.gain.value = 0.25;
+                src.connect(f).connect(g); src.start(now);
+                return;
+            }
+            const o = ctx.createOscillator();
+            o.connect(g);
+            if (kind === 'bird') {
+                const f0 = 2600 + Math.random() * 900;
+                o.frequency.setValueAtTime(f0, now);
+                o.frequency.exponentialRampToValueAtTime(f0 * 1.35, now + 0.07);
+                g.gain.setValueAtTime(0.0001, now);
+                g.gain.exponentialRampToValueAtTime(0.04, now + 0.015);
+                g.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+                o.start(now); o.stop(now + 0.1);
+            } else {
+                o.frequency.value = 52;
+                g.gain.setValueAtTime(0.0001, now);
+                g.gain.exponentialRampToValueAtTime(0.5, now + 0.02);
+                g.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+                o.start(now); o.stop(now + 0.25);
+            }
+        };
+        const every = (min, max, fn) => {
+            const tick = () => { fn(); timers.push(setTimeout(tick, min + Math.random() * (max - min))); };
+            timers.push(setTimeout(tick, min));
+        };
+        if (name === 'birds') every(500, 2200, () => { burst('bird'); if (Math.random() < 0.5) setTimeout(() => burst('bird'), 110); });
+        if (name === 'drone' || name === 'clicks') { tone('sine', 40, 0.22); tone('sine', 80, 0.05); }
+        if (name === 'clicks') every(80, 420, () => burst('click'));
+        if (name === 'heart') {
+            tone('sine', 38, 0.08);
+            const beat = () => { burst('beat'); setTimeout(() => burst('beat'), 160); };
+            beat();
+            timers.push(setInterval(beat, 10000));
+        }
+        this.ambience = {
+            stop: () => {
+                timers.forEach(id => { clearTimeout(id); clearInterval(id); });
+                out.gain.setTargetAtTime(0, ctx.currentTime, 0.15);
+                nodes.forEach(o => o.stop(ctx.currentTime + 0.6));
+                setTimeout(() => out.disconnect(), 800);
+            }
+        };
     }
 
     play(id) {

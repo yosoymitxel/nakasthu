@@ -20,13 +20,13 @@ export const ResourceB = () => {
     const getObjective = () => {
         if (isSectarian) {
             if (processedCount >= quota) return "OFRENDA COMPLETADA: El vacío aguarda el reporte final.";
-            if (energy < 30) return "ALERTA: Fe agonizante. Purgar almas para alimentar el fuego.";
+            if (energy < 30) return "ALERTA: Fe agonizante. Entregar almas para encender el altar.";
             if (stability < 40) return "ADVERTENCIA: Disonancia espiritual. Consagrar devotos puros.";
             if (resonanceSync < 0.5) return "OBJETIVO: Armonizar la Resonancia para estabilizar la esencia.";
             return "RITUAL: Examinar almas y decidir su destino en el CANAL.";
         }
         if (processedCount >= quota) return "CUOTA ALCANZADA: Esperando reporte final.";
-        if (energy < 30) return "ALERTA: Energía crítica. Sacrificar sujetos para restaurar núcleo.";
+        if (energy < 30) return "ALERTA: Energía crítica. Reasignar sujetos a Prisiat repone el núcleo.";
         if (stability < 40) return "ADVERTENCIA: Inestabilidad neural detectada. Autorizar sujetos puros.";
         if (resonanceSync < 0.5) return "OBJETIVO: Sincronizar Resonancia para estabilizar sujeto.";
         return "OPERACIÓN: Analizar sujetos y decidir su destino en COMMS.";

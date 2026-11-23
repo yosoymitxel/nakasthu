@@ -6,6 +6,9 @@ import { html } from '../utils/html.js';
 import { bus } from '../../core/Bus.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { CONFIG } from '../../data/gameConfig.js';
+import { CROSSING } from '../../data/missingList.js';
+
+const thousands = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
 import { Icon } from '../shared/Icon.js';
 const { useState, useEffect } = React;
@@ -18,6 +21,9 @@ export const PortalMonitor = () => {
     const storyPath = useGameState('storyPath');
     const isSectarian = storyPath === 1;
     const energy = useGameState('energy');
+    // Los que cruzaron desde tu mesa (LA LISTA): la cifra de Serin con tu parte dentro
+    const missing = useGameState('missingList') || [];
+    const fromDesk = missing.filter(e => e.mine && e.struck).length;
     
     useEffect(() => {
         const onUpdate = (data) => {
@@ -65,6 +71,12 @@ export const PortalMonitor = () => {
                 <h4 className=${`text-sm font-black tracking-tighter ${status.color}`}>${combinedStability}%</h4>
                 <div className=${`text-[10px] font-bold ${status.color}`}>${status.label}</div>
             </div>
+
+            <dl className="portal-count relative z-10">
+                <div><dt>Cruzan</dt><dd>${thousands(CROSSING.cross + fromDesk)}</dd></div>
+                <div><dt>Llegan</dt><dd>${thousands(CROSSING.arrive)}</dd></div>
+                <div><dt>Tu mesa</dt><dd>${fromDesk}</dd></div>
+            </dl>
 
             <!-- VISUALIZACIÓN DE ONDA / NÚCLEO -->
             <div className=${`flex-1 relative flex items-center justify-center overflow-hidden border bg-black/60 my-1 min-h-0 ${isSectarian ? 'border-purple-900/30' : 'border-zinc-800/50'}`}>

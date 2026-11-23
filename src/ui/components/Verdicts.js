@@ -28,7 +28,7 @@ const useVerdicts = () => {
     return verdictLog.entries;
 };
 
-const Modal = ({ label, onClose, children }) => {
+export const Modal = ({ label, onClose, children }) => {
     const closeRef = useRef(null);
     useEffect(() => {
         closeRef.current?.focus();
