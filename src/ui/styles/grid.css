@@ -413,6 +413,8 @@ body {
 .cine-corrupt { animation: cine-corrupt 0.9s steps(3) infinite; }
 @keyframes cine-corrupt { 0%, 100% { transform: none; } 33% { transform: translateX(1px); } 66% { transform: translateX(-1px) skewX(-2deg); } }
 .cine-next-gap { height: 34px; }
+.cinematic-screen.cine-clear { background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.45) 100%); }
+.cine-clear .cine-text { font-style: normal; }
 .cinematic-screen::after { content: ''; position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity 0.4s ease-in; }
 .cinematic-screen.cine-leaving::after { opacity: 1; }
 @keyframes cine-bar-in { from { transform: scaleY(0); } to { transform: scaleY(1); } }

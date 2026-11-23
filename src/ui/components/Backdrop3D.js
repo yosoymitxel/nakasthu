@@ -64,8 +64,8 @@ const SHOTS = {
     portalClose: { from: [-6, 2.5, 4], to: [-9, 3, -2], look: [-26, 6, -20], dur: 14, tint: 0x22d3ee, closing: true, place: 'portal' },
     bastion: { from: [16, 20, 22], to: [9, 24, 10], look: [0, 0, 0], dur: 20, tint: 0x9333ea, sky: 0x0d0a14 },
     // La grabación del geólogo: un solo astronauta ante la piedra; en `kaminTurn` gira la cabeza a cámara
-    kaminTape: { from: [3.2, 1.8, 35.5], to: [3, 1.8, 35.2], look: [0, 1.5, 31.5], dur: 20, tint: 0xffe2b0, tape: true, sky: 0x24180c, place: 'tape' },
-    kaminTurn: { from: [3, 1.8, 35.2], to: [2.9, 1.8, 35], look: [0, 1.6, 31.8], dur: 12, tint: 0xffe2b0, tape: true, turn: true, sky: 0x24180c, place: 'tape' },
+    kaminTape: { from: [3.6, 1.7, 33.4], to: [3.4, 1.7, 33.2], look: [0, 1.5, 31.5], dur: 20, tint: 0xffe2b0, tape: true, sky: 0x24180c, place: 'tape' },
+    kaminTurn: { from: [3.4, 1.7, 33.2], to: [3.3, 1.7, 33.1], look: [0, 1.6, 31.8], dur: 12, tint: 0xffe2b0, tape: true, turn: true, sky: 0x24180c, place: 'tape' },
     mirror: { from: [4.5, 3, 66], to: [4.5, 4, 60], look: [4.5, 5, 26], dur: 18, tint: 0x22d3ee, twin: true, sky: 0x16303a },
     mirrorVoid: { from: [4.5, 3, 66], to: [4.5, 4, 60], look: [4.5, 5, 26], dur: 18, tint: 0x9333ea, twin: true, sky: 0x3a1450 },
     // Pradera (cap. 16): cada plano cambia una cosa. `rot` 0 paraíso, 1 flores, 2 cielo, 3 carne; `rel` dónde
@@ -74,7 +74,7 @@ const SHOTS = {
     meadowWalk: { from: [M, 1.6, 5.5], to: [M, 1.6, 5], look: [M, 1.2, -20], dur: 14, tint: 0xfbbf24, meadow: true, rot: 0, rel: 'walk', place: 'meadow' },
     meadowFace: { from: [M + 0.2, 1.6, 4.4], to: [M, 1.6, 4.1], look: [M, 1.45, 2.6], dur: 20, tint: 0xfbbf24, meadow: true, rot: 0, rel: 'near', darien: true, place: 'meadow' },
     meadowStill: { from: [M, 1.6, 4.1], to: [M, 1.6, 4.0], look: [M, 1.45, 2.6], dur: 20, tint: 0xfbbf24, meadow: true, rot: 0, rel: 'near', darien: true, still: true, tremor: true, place: 'meadow' },
-    meadowFlowers: { from: [M, 1.4, 4], to: [M, 1.0, 3.8], look: [M, 0, 2.2], dur: 16, tint: 0xfbbf24, meadow: true, rot: 1, rel: 'near', darien: true, still: true, tremor: true, bloom: true, place: 'meadow' },
+    meadowFlowers: { from: [M + 0.3, 1.4, 4], to: [M + 0.4, 1.0, 3.9], look: [M + 2.2, 0, 3.2], dur: 16, tint: 0xfbbf24, meadow: true, rot: 1, rel: 'near', darien: true, still: true, tremor: true, bloom: true, place: 'meadow' },
     meadowSky: { from: [M, 1.2, 4], to: [M, 1.1, 4.2], look: [M, 40, -12], dur: 20, tint: 0xfbbf24, meadow: true, rot: 2, rel: 'near', darien: true, still: true, bloom: true, pulse: true, place: 'meadow' },
     meadowFar: { from: [M - 7, 4.5, 15], to: [M - 4, 3.4, 12], look: [M, 0.6, -6], dur: 20, tint: 0xfbbf24, meadow: true, rot: 3, rel: 'merged', still: true, bloom: true, pulse: true, sink: true, place: 'meadow' },
     meadowSink: { from: [M, 1.6, 4], to: [M, -0.6, 4], look: [M, 1.45, 2.6], dur: 9, tint: 0xfbbf24, meadow: true, rot: 3, rel: 'merged', darien: true, still: true, bloom: true, sink: true, dark: true, place: 'meadow' },
@@ -199,7 +199,7 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
             });
             // Flores: cerradas son flores; en `bloom` se abren y se cierran cada una a su ritmo
             const FLOWERS = 420;
-            const flowers = new THREE.InstancedMesh(new THREE.SphereGeometry(0.07, 6, 4), new THREE.MeshLambertMaterial({ color: 0xffffff }), FLOWERS);
+            const flowers = new THREE.InstancedMesh(new THREE.SphereGeometry(0.1, 6, 4), new THREE.MeshLambertMaterial({ color: 0xffffff }), FLOWERS);
             const flowerData = Array.from({ length: FLOWERS }, (_, i) => {
                 const a = i * 2.39996, r = 0.6 + Math.sqrt(i / FLOWERS) * 13;
                 flowers.setColorAt(i, new THREE.Color(i % 3 ? 0xf5f5f0 : 0xf2d060));
@@ -305,6 +305,8 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
                 const w = Math.max(1, Math.round(innerWidth / SCALE)), h = Math.max(1, Math.round(innerHeight / SCALE));
                 renderer.setSize(w, h, false);
                 camera.aspect = w / h;
+                // En vertical (móvil) el encuadre de 42° dejaba fuera a los personajes
+                camera.fov = w < h ? 64 : 42;
                 camera.updateProjectionMatrix();
             };
             resize();
@@ -321,7 +323,7 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
             const UNSET = {};
             const FADE_OUT = 260, FADE_IN = 420, SLIDE = 900;
             let last = 0, angle = 0.6, shotName = UNSET, shotStart = 0;
-            let pending = false, fadeStart = 0, fadeIn = -1, slideStart = -1, snap = true, lastFilter = '';
+            let pending = false, lastDark = 0, fadeStart = 0, fadeIn = -1, slideStart = -1, snap = true, lastFilter = '';
             const slideFrom = new THREE.Vector3(), lookFrom = new THREE.Vector3(), lookNow = new THREE.Vector3();
             const target = new THREE.Vector3(), aim = new THREE.Vector3(), tmp = new THREE.Color();
             const lerpColor = (c, hex, k) => (snap ? c.setHex(hex) : c.lerp(tmp.setHex(hex), k));
@@ -347,11 +349,16 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
                 let dark = 0;
                 if (pending) {
                     dark = Math.min(1, (t - fadeStart) / FADE_OUT);
-                    if (dark >= 1) { pending = false; shotName = shot; shotStart = t; fadeIn = t; slideStart = -1; snap = true; }
+                    // El primer fotograma del plano nuevo puede tardar (sitio sin dibujar aún): la vuelta empieza después
+                    if (dark >= 1) { pending = false; shotName = shot; shotStart = t; fadeIn = Infinity; slideStart = -1; snap = true; }
+                } else if (fadeIn === Infinity) {
+                    dark = 1; fadeIn = t;
                 } else if (fadeIn >= 0) {
-                    dark = Math.max(0, 1 - (t - fadeIn) / FADE_IN);
+                    // Con fotogramas lentos (móvil) no se salta de negro a imagen en uno solo
+                    dark = Math.max(0, 1 - (t - fadeIn) / FADE_IN, lastDark - 0.3);
                     if (!dark) fadeIn = -1;
                 }
+                lastDark = dark;
                 const filter = dark > 0.01 ? `brightness(${(1 - dark).toFixed(2)})` : '';
                 if (filter !== lastFilter) { canvas.style.filter = filter; lastFilter = filter; }
 
