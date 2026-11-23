@@ -9,12 +9,16 @@ import { bus } from '../../../core/Bus.js';
 import { gameSequencer } from '../../../systems/GameSequencer.js';
 import { calculateJudgmentRecommendation } from '../../../utils/gameplayUtils.js';
 import { narrativeFlags } from '../../../systems/NarrativeFlags.js';
+import { CinematicScreen } from '../cinematic/CinematicScreen.js';
 
 const { memo, useState, useEffect } = React;
 
 export const MechanicScreen = memo(({ config }) => {
     const currentStep = useGameState('currentStep');
     const [judgmentChoice, setJudgmentChoice] = useState(null);
+    // Preludio (`intro`): páginas de cinemática antes de la mecánica; es el briefing de los pasos 2 y 11
+    const [introDone, setIntroDone] = useState(!config.intro?.length);
+    useEffect(() => setIntroDone(!config.intro?.length), [config.name]);
 
     const handleMonolithComplete = () => {
         gameSequencer.nextStep();
@@ -24,6 +28,8 @@ export const MechanicScreen = memo(({ config }) => {
         gameSequencer.setEnding(faction);
         gameSequencer.nextStep();
     };
+
+    if (!introDone) return html`<${CinematicScreen} config=${config} pages=${config.intro} onDone=${() => setIntroDone(true)} />`;
 
     // Caso 11: Juicio Final (Split Terminal)
     if (config.meta?.dualChoice) {
