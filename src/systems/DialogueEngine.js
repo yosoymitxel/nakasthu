@@ -63,6 +63,9 @@ class DialogueEngine {
 
         bus.on('NEW_SUBJECT_DETECTED', () => this.scheduleArrival());
         bus.on('STORY_MODAL_CLOSE', () => this.scheduleArrival());
+        // Las propuestas de tutorial de módulo van por otro canal y no tocan state.isModalOpen
+        bus.on('UI_MODAL_OPEN', () => { this.uiModal = true; });
+        bus.on('UI_MODAL_CLOSE', () => { this.uiModal = false; this.scheduleArrival(); });
 
         bus.on('SESSION_TERMINATED', () => {
             if (this.currentDialogue) {
@@ -81,7 +84,7 @@ class DialogueEngine {
     openOnArrival() {
         const reserved = this.reserved;
         if (!speaksOnArrival(reserved?.dialogue) || reserved.entityId !== state.currentEntity?.id) return false;
-        if (state.gameStatus !== 'PLAYING' || state.isModalOpen || state.isTutorialActive || state.isPaused) return false;
+        if (state.gameStatus !== 'PLAYING' || state.isModalOpen || this.uiModal || state.isTutorialActive || state.isPaused) return false;
         if (this.currentDialogue || state.activeDialogue) return false;
         this.reserved = null;
         this.startDialogue(reserved.dialogue);
