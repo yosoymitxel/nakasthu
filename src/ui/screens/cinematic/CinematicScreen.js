@@ -98,7 +98,8 @@ export const CinematicScreen = memo(({ config, pages: introPages = null, onDone 
     }, [done, page]);
 
     useEffect(() => {
-        const onKey = (e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); advance(); } };
+        // Con una escena jugable delante, las teclas son suyas (Intro envía, el espacio escribe)
+        const onKey = (e) => { if (Play) return; if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); advance(); } };
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
     }, [done, content, last, page, leaving, !!Play]);

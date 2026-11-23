@@ -94,7 +94,7 @@ export const LeinaConsole = memo(({ config }) => {
                     ${lines.map((l, i) => html`
                         <p key=${i} className=${`text-sm leading-relaxed ${l.who ? WHO_CLASS[l.who] : 'text-zinc-400 italic'}`}
                            style=${{ animation: `fade-in 0.6s ease-out ${l.at === 0 ? i * LINE_GAP : 0}s both` }}>
-                            ${l.who ? `—${l.text}` : l.text}
+                            ${l.who && html`<span className="text-[10px] text-zinc-600 tracking-widest uppercase mr-2">${l.who}</span>`}${l.who ? `—${l.text}` : l.text}
                         </p>
                     `)}
                 </div>

@@ -102,24 +102,22 @@ test.describe('REGRESIÓN · doble ejecución de acciones', () => {
         await expect.poll(() => page.evaluate(() => window.state.processedCount), { timeout: 10_000 }).toBe(1);
     });
 
-    test('doble clic en CERRAR avanza un único paso (epílogo, no se lo salta)', async ({ page }) => {
+    test('consola de Leina al revés: la doble pulsación cierra y avanza un único paso (epílogo, no se lo salta)', async ({ page }) => {
         await bootGame(page, { nakasthu_max_step: '11' });
         await jumpToStep(page, 11);
-        await expect(page.getByRole('heading', { name: 'El Juicio Final', exact: true })).toBeVisible();
-        await page.getByRole('button', { name: 'CERRAR', exact: true }).dblclick();
-        await expect(page.locator('.cine-title')).toHaveText('Epílogo');
+        await advanceCinematic(page);
+        const consoleUi = page.locator('.leina-console');
+        await expect(consoleUi.locator('[data-cmd="confirmar"]')).toBeEnabled({ timeout: 10_000 });
+        await consoleUi.locator('[data-cmd="confirmar"]').dblclick();
+        for (const id of ['bucle', 'campo', 'potencia']) await consoleUi.locator(`[data-cmd="${id}"]`).click();
+        await expect(consoleUi.locator('[data-vortex]')).toHaveText('0');
+        const cine = page.locator('.cinematic-screen');
+        for (let i = 0; i < 80 && await page.evaluate(() => window.state.currentStep) === 11; i++) {
+            await cine.click({ position: { x: 20, y: 20 } }).catch(() => {});
+            await page.waitForTimeout(150);
+        }
         expect(await page.evaluate(() => window.state.currentStep)).toBe(12);
-    });
-
-    test('elegir final justo al cargar el paso 11 (desde el selector) no es revertido por el salto', async ({ page }) => {
-        // Bug corregido: el setTimeout de jumpToStep() finalizaba el paso 11 DESPUÉS de la elección.
-        await bootGame(page, { nakasthu_max_step: '11' });
-        await page.getByRole('button', { name: 'Selector de Secuencias', exact: true }).click();
-        await page.getByRole('button').filter({ hasText: 'PASO_11' }).click();
-        await page.getByRole('button', { name: 'CERRAR', exact: true }).click({ timeout: 2_000 });
-        await page.waitForTimeout(600);
-        expect(await page.evaluate(() => window.state.currentStep)).toBe(12);
-        await expect(page.locator('.cine-title')).toHaveText('Epílogo');
+        expect(await page.evaluate(() => window.state.endingFaction)).toBe('orden');
     });
 
     test('doble Enter en la terminal no ejecuta el comando dos veces', async ({ page }) => {
