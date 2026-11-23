@@ -34,3 +34,29 @@ describe('Doce informes (cinemática 7)', () => {
         expect(reportsVerdict(REPORTS, run)).toBe(REPORTS.timeout);
     });
 });
+
+import { EIDOLON } from '../src/data/interludes.js';
+import { searchEidolon } from '../src/systems/Interludes.js';
+
+describe('Buscador de Eidolon (paso 10)', () => {
+    it('Marek sale en el lote 118; Darien, con el informe sellado por K., L.', () => {
+        const marek = searchEidolon(EIDOLON, 'marek');
+        expect(marek.lines.join(' ')).toMatch(/lote 118/);
+        expect(marek.lot).toBe(true);
+        expect(searchEidolon(EIDOLON, 'Darién Karst').lines.join(' ')).toMatch(/K\., L\./);
+        expect(searchEidolon(EIDOLON, 'Elara Voss').lines).toHaveLength(3);
+    });
+
+    it('cualquier otro nombre da siempre lo mismo, y marca a quien pasó por tu mesa', () => {
+        const a = searchEidolon(EIDOLON, 'Ilse Moreau', ['Ilse Moreau']);
+        expect(a.lines).toEqual(searchEidolon(EIDOLON, 'ilse moreau', ['Ilse Moreau']).lines);
+        expect(a.lines.at(-1)).toBe(EIDOLON.mine);
+        expect(searchEidolon(EIDOLON, 'x')).toBe(null);
+    });
+
+    it('va en el preludio del paso 10, tras Beren y antes del briefing', () => {
+        const intro = STEPS_CONFIG[10].intro;
+        expect(intro.findIndex(p => p.play === 'eidolon')).toBeGreaterThan(intro.findIndex(p => /perro/.test(p.text)));
+        expect(STEPS_CONFIG[10].type).toBe('gameplay');
+    });
+});

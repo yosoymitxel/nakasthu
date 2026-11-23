@@ -44,6 +44,26 @@ describe('Narrative Sequencer Validations (sequencer.test.js)', () => {
         expect(step.config.type).toBe('gameplay');
     });
 
+    it('El paso 10 espera al preludio para abrir el briefing; el paso 4 lo abre al entrar', () => {
+        const briefings = () => bus.emit.mock.calls.filter(([e, d]) => e === 'STORY_MODAL_OPEN' && d?.mode === 'Briefing').length;
+        state.currentStep = 9;
+        gameSequencer.init();
+        gameSequencer.nextStep();
+        expect(state.currentStep).toBe(10);
+        expect(state.stepIntro).toBe(10);
+        expect(state.isModalOpen).toBe(true);
+        expect(briefings()).toBe(0);
+        gameSequencer.openBriefing();
+        expect(state.stepIntro).toBe(null);
+        expect(briefings()).toBe(1);
+
+        state.currentStep = 3;
+        gameSequencer.init();
+        gameSequencer.nextStep();
+        expect(state.stepIntro).toBe(null);
+        expect(briefings()).toBe(2);
+    });
+
     it('Debe cambiar a la ruta religiosa (storyPath 1) al avanzar al Paso 7', () => {
         state.currentStep = 6;
         gameSequencer.init();

@@ -258,15 +258,11 @@ class GameSequencer {
         // Inicializar manager de mecánicas para el nuevo paso
         MechanicManager.init(currentConfig);
 
-        // Mostrar modal de briefing SOLO para gameplay
+        // Mostrar modal de briefing SOLO para gameplay; con preludio, lo abre la vista al terminarlo
         if (stepData.config.type === 'gameplay') {
             state.isModalOpen = true; // Bloqueo preventivo
-            bus.emit('STORY_MODAL_OPEN', {
-                mode: 'Briefing',
-                title: stepData.config.name,
-                content: stepData.config.briefingText,
-                clock: stepData.config.clock317 || null
-            });
+            if (stepData.config.intro?.length) state.stepIntro = this.currentStep;
+            else this.openBriefing();
         }
 
         // Emitir evento de cambio de paso para el ModuleRegistry AL FINAL
@@ -523,6 +519,19 @@ class GameSequencer {
             console.log(`[SEQUENCER] Salto completado.`);
             bus.emit('SYSTEM_LOG', { msg: `SALTO_SECUENCIA: PASO_${stepIndex} ACTIVADO` });
         }, 100);
+    }
+
+    /** Briefing del paso jugable actual (también al terminar su preludio). */
+    openBriefing() {
+        const config = STEPS_CONFIG[this.currentStep];
+        state.stepIntro = null;
+        state.isModalOpen = true;
+        bus.emit('STORY_MODAL_OPEN', {
+            mode: 'Briefing',
+            title: config.name,
+            content: config.briefingText,
+            clock: config.clock317 || null
+        });
     }
 
     /**

@@ -7,9 +7,17 @@ import { html } from '../utils/html.js';
 import { CinematicScreen } from '../screens/cinematic/CinematicScreen.js';
 import { MechanicScreen } from '../screens/mechanic/MechanicScreen.js';
 import { GameplayScreen } from '../screens/gameplay/GameplayScreen.js';
+import { useGameState } from '../hooks/useGameState.js';
+import { gameSequencer } from '../../systems/GameSequencer.js';
 
 export const LevelContainer = ({ stepConfig, getModuleTutorialStatus, unlockedModules }) => {
+    const stepIntro = useGameState('stepIntro');
+    const currentStep = useGameState('currentStep');
     if (!stepConfig) return null;
+    // Preludio de un paso jugable (paso 10: Beren, Eidolon y el buscador) antes del briefing
+    if (stepConfig.type === 'gameplay' && stepIntro && stepIntro === currentStep && stepConfig.intro) {
+        return html`<${CinematicScreen} config=${stepConfig} pages=${stepConfig.intro} onDone=${() => gameSequencer.openBriefing()} />`;
+    }
 
     // Lógica para determinar qué pantalla mostrar
     const renderScreen = () => {

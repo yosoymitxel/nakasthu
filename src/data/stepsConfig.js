@@ -218,6 +218,16 @@ export const STEPS_CONFIG = {
         clock317: 'No abras.',
         bulletin: 'Cerco, semana nueve: bombardeo de saturación sobre las tiendas del perímetro exterior. Seiscientos nueve muertos. Mañana, a la misma hora.',
         subjectCount: 15,
+        // Preludio antes del briefing (cap. 10-11): Beren y su madre, el paquete de Eidolon y su buscador
+        intro: [
+            { title: 'Pasillo cuatro', shot: 'bastion', text: 'Esa noche, un hombre llamado Beren abrazó a su madre en el pasillo cuatro. Había muerto de silicosis catorce años antes. Nadie supo explicar cómo había salido por el portal.' },
+            { title: 'Pasillo cuatro', shot: 'bastion', text: 'Ella le habló de una tarde de infancia: la feria de Kanatsia, el vestido azul, la lluvia al volver.\nSu madre no había salido de Prisiat en su vida. Beren la abrazó más fuerte.' },
+            { title: 'Pasillo cuatro', shot: 'bastion', text: 'Al cuarto día le preguntó cómo se llamaba el perro que tuvieron de pequeños. Contestó sin dudar.\nBeren nunca había tenido perro. A partir de entonces dejó de hacerle preguntas.' },
+            { title: 'Eidolon', black: true, doc: 'Proyecto Pureza', text: 'Un archivista de Eidolon filtra cuatrocientos mil documentos en treinta y cinco minutos. Eidolon no gestionaba reasignaciones. Escribía infancias, hermanos, duelos con su fecha y su aniversario.' },
+            { title: 'Eidolon', black: true, doc: '26 %', text: 'Uno de cada cuatro tiene en la cabeza al menos un familiar que nunca existió. En la carpeta de descartes hay once mil rostros usados más de una vez.' },
+            { title: 'Eidolon', black: true, doc: 'Lote 118', play: 'eidolon', text: 'En Itzinol, un matrimonio buscó a su hijo Marek. Estuvieron veinte minutos sin hablar. Al amanecer decidieron que había existido.\nDoscientos millones tomaron esa decisión aquella semana.' },
+            { title: 'Eidolon', shot: 'bastion', text: '—Lo dijo hace ocho meses y os reíais. ¡Lo dijo!\nLa revelación no golpea la fe de la Orden. La confirma. Aquella semana pasa de seis mil personas a treinta y una mil.' }
+        ],
         meta: {
             massAdmission: true,
             cameos: [

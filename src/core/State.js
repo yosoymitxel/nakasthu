@@ -49,6 +49,7 @@ const initialState = {
     // Totales de la partida: sobreviven al reset de cada nivel y alimentan el informe final
     runStats: { processed: 0, errors: 0 },
     cineShot: null, // plano 3D de la página de cinemática actual
+    stepIntro: null, // paso jugable cuyo preludio (`intro`) se está viendo; el briefing espera a que acabe
     endingFaction: null, // 'orden' | 'caos': el epílogo sigue la elección, no la facción dominante
     unrest: 0,           // 0-100: Nivel de agitación civil
     faith: 0,            // 0-100: Nivel de herejía/devoción (storyPath 1)
