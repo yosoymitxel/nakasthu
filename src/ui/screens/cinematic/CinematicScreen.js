@@ -127,6 +127,7 @@ export const CinematicScreen = memo(({ config, pages: introPages = null, onDone 
                 <p className=${`cine-text ${current.corrupt ? 'cine-corrupt' : ''}`}>
                     ${content.slice(0, shown)}${!done && html`<span className="cine-caret"></span>`}
                 </p>
+                ${current.echo && done && html`<p className="cine-echo">${current.echo}</p>`}
                 ${current.auto ? html`<span className="cine-next-gap"></span>` : html`
                     <button className=${`cine-next ${done ? 'on' : ''}`}>
                         ${done ? html`<span>${last ? 'Continuar' : 'Siguiente'} <${Icon} name="chevron-right" /></span>` : html`<span>Saltar <${Icon} name="next" /></span>`}

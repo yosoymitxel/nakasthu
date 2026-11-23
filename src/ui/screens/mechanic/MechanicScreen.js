@@ -7,15 +7,13 @@ import { SpecialMechanic } from '../../components/SpecialMechanic.js';
 import { useGameState } from '../../hooks/useGameState.js';
 import { bus } from '../../../core/Bus.js';
 import { gameSequencer } from '../../../systems/GameSequencer.js';
-import { calculateJudgmentRecommendation } from '../../../utils/gameplayUtils.js';
-import { narrativeFlags } from '../../../systems/NarrativeFlags.js';
+import { LeinaConsole } from './LeinaConsole.js';
 import { CinematicScreen } from '../cinematic/CinematicScreen.js';
 
 const { memo, useState, useEffect } = React;
 
 export const MechanicScreen = memo(({ config }) => {
     const currentStep = useGameState('currentStep');
-    const [judgmentChoice, setJudgmentChoice] = useState(null);
     // Preludio (`intro`): páginas de cinemática antes de la mecánica; es el briefing de los pasos 2 y 11
     const [introDone, setIntroDone] = useState(!config.intro?.length);
     useEffect(() => setIntroDone(!config.intro?.length), [config.name]);
@@ -24,108 +22,10 @@ export const MechanicScreen = memo(({ config }) => {
         gameSequencer.nextStep();
     };
 
-    const handleFinalJudgment = (faction) => {
-        gameSequencer.setEnding(faction);
-        gameSequencer.nextStep();
-    };
-
     if (!introDone) return html`<${CinematicScreen} config=${config} pages=${config.intro} onDone=${() => setIntroDone(true)} />`;
 
-    // Caso 11: Juicio Final (Split Terminal)
-    if (config.meta?.dualChoice) {
-        const { leftOption, rightOption } = config.meta;
-        const recommendation = calculateJudgmentRecommendation();
-        // Las marcas ya no cambian en el paso 11: leerlas una vez al pintar basta.
-        const echoes = (opt) => (opt.echoes || []).filter(e => narrativeFlags.matches(e.if));
-        const sideText = (opt) => html`
-            <p className="text-xs text-zinc-400 max-w-xs leading-relaxed font-mono">${opt.quote}</p>
-            <p className="text-[11px] text-zinc-500 max-w-xs leading-relaxed font-mono uppercase">${opt.price}</p>
-            ${echoes(opt).map(e => html`<p key=${e.text} className="text-[11px] text-zinc-600 max-w-xs leading-relaxed font-mono">${e.text}</p>`)}
-        `;
-
-        return html`
-            <div className="mechanic-screen fixed inset-0 bg-black/75 flex items-center justify-center z-[450] p-3 sm:p-8 overflow-y-auto">
-                <div className="w-full max-w-6xl flex flex-col items-center gap-4 sm:gap-12 my-auto">
-                    
-                    <div className="text-center space-y-4">
-                        <h2 className="text-zinc-600 text-[10px] tracking-[0.4em] sm:tracking-[1em] uppercase">PASO 11 // EL JUICIO FINAL</h2>
-                        <h1 className="text-3xl font-bold text-zinc-100 uppercase tracking-widest">${config.name}</h1>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-8 w-full" style=${{ minHeight: 'min(46vh, 420px)' }}>
-                        <!-- Lado Izquierdo: cerrar (final 'orden') -->
-                        <div 
-                            className=${`relative border border-cyan-900/40 bg-cyan-950/5 p-4 pt-8 sm:p-8 flex flex-col items-center justify-center gap-4 sm:gap-8 transition-all hover:bg-cyan-950/10 ${judgmentChoice === 'orden' ? 'ring-2 ring-cyan-500' : ''}`}
-                            onClick=${() => setJudgmentChoice('orden')}
-                        >
-                            <div className="absolute top-4 left-4 text-[10px] text-cyan-600 font-bold tracking-widest uppercase">${leftOption.tag}</div>
-                            <div className="text-cyan-500 text-center space-y-4">
-                                <h3 className="text-2xl font-black tracking-widest">${leftOption.name}</h3>
-                                ${sideText(leftOption)}
-                            </div>
-                            
-                            <button 
-                                onClick=${(e) => { e.stopPropagation(); handleFinalJudgment('orden'); }}
-                                className="px-8 py-3 bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 text-xs font-black uppercase tracking-[0.3em] hover:bg-cyan-500 hover:text-black transition-all"
-                            >
-                                ${leftOption.action}
-                            </button>
-                        </div>
-
-                        <!-- Lado Derecho: ampliar (final 'caos') -->
-                        <div 
-                            className=${`relative border border-purple-900/40 bg-purple-950/5 p-4 pt-8 sm:p-8 flex flex-col items-center justify-center gap-4 sm:gap-8 transition-all hover:bg-purple-950/10 ${judgmentChoice === 'caos' ? 'ring-2 ring-purple-500' : ''}`}
-                            onClick=${() => setJudgmentChoice('caos')}
-                        >
-                            <div className="absolute top-4 right-4 text-[10px] text-purple-600 font-bold tracking-widest uppercase text-right">${rightOption.tag}</div>
-                            <div className="text-purple-500 text-center space-y-4">
-                                <h3 className="text-2xl font-black tracking-widest">${rightOption.name}</h3>
-                                ${sideText(rightOption)}
-                            </div>
-
-                            <button 
-                                onClick=${(e) => { e.stopPropagation(); handleFinalJudgment('caos'); }}
-                                className="px-8 py-3 bg-purple-900/20 border border-purple-500/50 text-purple-400 text-xs font-black uppercase tracking-[0.3em] hover:bg-purple-500 hover:text-black transition-all"
-                            >
-                                ${rightOption.action}
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Recomendación del Sistema -->
-                    <div className="w-full max-w-2xl bg-zinc-950/80 border border-zinc-800/50 p-6 font-mono">
-                        <div className="flex justify-between items-center mb-4">
-                            <span className="text-[10px] text-zinc-500 uppercase tracking-widest">ANÁLISIS DE DESEMPEÑO TÉCNICO V/S FE</span>
-                            <span className=${`text-[10px] uppercase font-bold ${recommendation.dominant === 'orden' ? 'text-cyan-400' : 'text-purple-400'}`}>
-                                RECOMENDACIÓN: ${recommendation.recommendation}
-                            </span>
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-12">
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-[10px] text-zinc-500 uppercase">
-                                    <span>Eficacia Técnica</span>
-                                    <span className="text-cyan-600">${recommendation.techPercentage}%</span>
-                                </div>
-                                <div className="h-1 bg-zinc-900 overflow-hidden">
-                                    <div className="h-full bg-cyan-600" style=${{ width: `${recommendation.techPercentage}%` }}></div>
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-[10px] text-zinc-500 uppercase">
-                                    <span>Fervor de la Fe</span>
-                                    <span className="text-purple-600">${recommendation.faithPercentage}%</span>
-                                </div>
-                                <div className="h-1 bg-zinc-900 overflow-hidden">
-                                    <div className="h-full bg-purple-600" style=${{ width: `${recommendation.faithPercentage}%` }}></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
+    // Paso 11: la consola de Leina
+    if (config.meta?.console) return html`<${LeinaConsole} config=${config} />`;
 
     // Por defecto: Casos 2 y 11 (Monolito)
     return html`

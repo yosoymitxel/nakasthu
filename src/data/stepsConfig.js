@@ -10,6 +10,7 @@
  * - `corrupt`: el texto se tuerce al teclearse. `auto`: pasa sola a los N ms, sin botón.
  * - `sound`: ambiente sintetizado (birds, drone, clicks, heart, silence). `music`: volumen de la música (0-1).
  * - `if`: sólo sale si la marca narrativa coincide. `unless`: no sale si coincide.
+ * - `echo`: línea gris bajo el texto, ya tecleado (el monólogo del empuje recuerda dónde lo viste).
  * - `{lista}` en el texto: los nombres de LA LISTA de la partida (MissingList.readout).
  * `clock317`: lo que Kael lleva oído de la frase; cierra la cinemática o encabeza el briefing.
  * `bulletin`: parte de enlace que se lee al cerrar el turno.
@@ -17,11 +18,22 @@
  *   `onDecision`: marcas que deja autorizar o reasignar/entregar a esa persona.
  */
 
-// El empuje: pase lo que pase con la secuencia, la mano en la espalda (cap. 15).
+// El empuje: pase lo que pase con la secuencia, la mano en la espalda; luego lo que pensó, en orden (cap. 15).
+// Lo juega el paso 11 al terminar la consola; los finales empiezan después.
 const PUSH = [
     { title: 'La consola', shot: 'portal', text: '—Ya está —dijo Leina—. Se acabó. No lo toco más.\nSe giró para apartarse de la consola.' },
     { title: 'La consola', shot: 'portal', speed: 45, text: 'Kamin le puso la mano en la espalda. No la agarró. Apoyó la mano abierta entre los omóplatos, como quien acompaña a alguien a través de una puerta.' },
-    { title: '', black: true, speed: 60, text: 'Y empujó.\n\nLe dio tiempo a pensar en todo. No le dio tiempo a girar la cabeza.' }
+    { title: '', black: true, speed: 60, text: 'Y empujó.\n\nLeina no llegó a girarse del todo. Lo que pensó, en el orden en que lo pensó, fue esto:' },
+    { title: '', black: true, text: 'Que ella había firmado la salida de Eidolon con su nombre real.', echo: 'Paso 8 · «Saqué esto de Eidolon»' },
+    { title: '', black: true, text: 'Que había convencido a Rian, y Rian había convencido a otros nueve.', echo: 'Paso 8 · Rian Telles y el cuenco lleno' },
+    { title: '', black: true, text: 'Que había puesto la consola en ese punto exacto del hangar porque él se lo había pedido.' },
+    { title: '', black: true, text: 'Que él le había preguntado, hacía dos meses, cuántas personas cabían por hora.', echo: 'Paso 8 · «Tú sabes de colas»' },
+    { title: '', black: true, text: 'Que le había preguntado también, hacía tres semanas, si el aparato podía funcionar sin ella.\nQue le había dicho que sí.', echo: 'Paso 8 · la hoja de turnos' },
+    { title: '', black: true, text: 'Que la conversación del hermano, la de la voz rota, había sido a los cuatro días de esa pregunta. Que nunca se lo contó a nadie porque él contaba con eso.' },
+    { title: '', black: true, text: 'Que llevaba once meses buscándole la grieta detrás de los ojos, y que la grieta era todo lo demás. La cara era lo único que no lo era.' },
+    { title: '', black: true, text: 'Que en Eidolon había once mil rostros usados más de una vez.', echo: 'Paso 10 · carpeta de descartes' },
+    { title: '', black: true, text: 'Que Darien llevaba ocho años muerto, y que había metido a treinta mil personas por una puerta que abrió ella, por si acaso.', echo: 'Paso 7 · galería siete, sellado sin leer' },
+    { title: '', black: true, speed: 60, text: 'Le dio tiempo a todo eso.\n\nNo le dio tiempo a girar la cabeza.' }
 ];
 
 // Lo que Kael encuentra después, cierre el portal o no (cap. 18).
@@ -168,6 +180,9 @@ export const STEPS_CONFIG = {
             requiredInfluence: 3,
             cameos: [
                 { pos: 2, dialogues: ['DLG_P3_TOREN'] },
+                // Las dos preguntas que Leina recuerda al caer (cap. 15): tienen que haberse oído antes del paso 11
+                { pos: 3, dialogues: ['DLG_P3_KAMIN_POR_HORA'] },
+                { pos: 7, dialogues: ['DLG_P3_KAMIN_SIN_TI'] },
                 { pos: 4, dialogues: ['DLG_P3_RIAN_COMA'], onDecision: { sacrifice: { rian: 'entregado' } } },
                 { pos: 6, dialogues: ['DLG_R_NERA_GALERIA', 'DLG_R_NERA_COLADA'], onDecision: { sacrifice: { nera: 'entregada' } } }
             ],
@@ -231,8 +246,32 @@ export const STEPS_CONFIG = {
             { title: 'La consola', shot: 'portal', text: 'A las doce y diez Kamin está junto a la consola, sin una grieta.\n—Hazla otra vez. Enséñamelo. Por si te pasa algo.\nCuatro comandos amplían la puerta. Al revés, la cierran.' }
         ],
         meta: {
-            dualChoice: true,
-            // quote/price/action los pinta MechanicScreen; cada eco sale sólo si su marca narrativa coincide (`if`).
+            // La consola de Leina (cap. 15): cuatro comandos; en orden amplían (caos), al revés cierran (orden).
+            // `kamin`: lo que se dice antes del primer comando (`at: 0`) y tras cada comando (`at: n`).
+            console: {
+                commands: [
+                    { id: 'potencia', label: 'POTENCIA +2', words: ['potencia', 'pot'] },
+                    { id: 'campo', label: 'CAMPO ABRIR', words: ['campo'] },
+                    { id: 'bucle', label: 'BUCLE RETORNO CERRAR', words: ['bucle', 'retorno'] },
+                    { id: 'confirmar', label: 'CONFIRMAR ×2', words: ['confirmar', 'conf', 'ok'], double: true }
+                ],
+                vortex: { start: 6, caos: [7.5, 9, 10, 11], orden: [4.5, 3, 1.5, 0] },
+                queue: '9.000',
+                note: '11:47. Ampliación a 6 m. Ocho bajas hostiles. Sistema estable.',
+                kamin: [
+                    { at: 0, who: 'KAMIN', text: 'Otra vez.' },
+                    { at: 0, who: 'LEINA', text: '¿Qué?' },
+                    { at: 0, who: 'KAMIN', text: 'La secuencia. Hazla otra vez.' },
+                    { at: 0, who: 'LEINA', text: 'Hay nueve mil personas en la fila y el borde ya está en la pasarela. Si lo abro más, no voy a poder cerrarlo.' },
+                    { at: 1, who: '', text: 'Kamin se pone a su lado, no delante. Mira la pantalla, el teclado, la posición de los dedos.' },
+                    { at: 1, who: 'KAMIN', text: 'Enséñamelo.' },
+                    { at: 2, who: 'LEINA', text: '¿Para qué?' },
+                    { at: 2, who: 'KAMIN', text: 'Por si te pasa algo.' },
+                    { at: 3, who: '', text: 'Sonó razonable. Todo lo que ese hombre había dicho en once meses había sonado razonable.' }
+                ],
+                push: PUSH
+            },
+            // quote/price/echoes: la chuleta de cada sentido en la consola; cada eco sale sólo si su marca coincide (`if`).
             leftOption: {
                 name: 'ESTABILIZAR', faction: 'orden', color: 'cyan', tag: 'SECUENCIA INVERSA',
                 quote: '«No abras. El que abre ya no…» — 03:17',
@@ -270,9 +309,8 @@ export const STEPS_CONFIG = {
                 orden: {
                     summary: 'El portal se cierra con Leina dentro. La fila se queda de este lado. El ciclo no se detiene.',
                     pages: [
-                        { title: 'Secuencia inversa', shot: 'portalClose', text: 'Leina mete los cuatro comandos al revés. El vórtice se pliega sobre sí mismo. La aurora se apaga sobre Prisiat. Los que cruzaron no vuelven.' },
-                        ...PUSH,
-                        { title: 'El precio', black: true, text: 'El portal se cierra con ella dentro. Los treinta mil de la fila se quedan de este lado, con sus familias inventadas y sus galerías.' },
+                        { title: 'El precio', shot: 'portalClose', text: 'El vórtice se pliega con ella dentro. La aurora se apaga sobre Prisiat. Los que cruzaron no vuelven.' },
+                        { title: 'El precio', black: true, text: 'Los treinta mil de la fila se quedan de este lado, con sus familias inventadas y sus galerías.' },
                         { title: 'El precio', black: true, doc: 'Reasignaciones · Talok', text: 'Los traslados a Prisiat se reanudan el lunes. Talok vuelve a firmar.\nRetorno previsto: —' },
                         { title: 'La lista', black: true, doc: 'Pasillo central', text: 'La lista se queda en la pared. Nadie tacha ningún nombre.\n{lista}' },
                         ...AFTER,
@@ -285,8 +323,6 @@ export const STEPS_CONFIG = {
                 caos: {
                     summary: 'El portal sigue abierto. Siguen cruzando. Siguen sonriendo.',
                     pages: [
-                        { title: 'Secuencia', shot: 'portalOpen', text: 'Leina mete los cuatro comandos. Uno pide doble pulsación. El vórtice pasa de seis metros a once. Llega a las pasarelas. La fila no retrocede: avanza.' },
-                        ...PUSH,
                         // La pradera: cada página cambia una sola cosa y la imagen va un paso por detrás del texto (cap. 16).
                         { title: '', shot: 'meadow', sound: 'birds', music: 0.5, text: 'El otro lado era hermoso. Olía a tierra mojada y a miel silvestre.' },
                         { title: '', shot: 'meadowWalk', sound: 'birds', music: 0.5, text: 'Desde las colinas venían figuras. Padres. Hijos. Hermanos. Gente que llevaba meses o años en una foto.' },

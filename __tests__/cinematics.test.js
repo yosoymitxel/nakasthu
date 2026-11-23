@@ -12,7 +12,8 @@ const SHOTS = new Set([...readFileSync('src/ui/components/Backdrop3D.js', 'utf8'
 const visible = (t) => t.split('¦').join('');
 const allPages = () => [
     ...Object.values(STEPS_CONFIG).flatMap(c => [...(c.pages || []), ...(c.intro || [])]),
-    ...Object.values(STEPS_CONFIG[12].meta.endings).flatMap(e => e.pages)
+    ...Object.values(STEPS_CONFIG[12].meta.endings).flatMap(e => e.pages),
+    ...STEPS_CONFIG[11].meta.console.push
 ];
 
 describe('Cinemáticas por páginas (entrega 1)', () => {
@@ -53,11 +54,10 @@ describe('Cinemáticas por páginas (entrega 1)', () => {
         expect(STEPS_CONFIG[8].briefingText).not.toMatch(/sabotaje/i);
     });
 
-    it('los dos finales tienen el empuje, la foto de Elara y la grabación de Kamin; sin Tierra violácea en `orden`', () => {
+    it('los dos finales tienen la foto de Elara y la grabación de Kamin (el empuje lo juega el paso 11); sin Tierra violácea en `orden`', () => {
+        expect(STEPS_CONFIG[11].meta.console.push.map(p => p.text).join(' ')).toMatch(/Y empujó/);
         for (const faction of ['orden', 'caos']) {
             const pages = pagesFor(STEPS_CONFIG[12], faction);
-            const text = pages.map(p => p.text).join(' ');
-            expect(text, faction).toMatch(/Y empujó/);
             expect(pages.some(p => p.photo === 'ELARA'), faction).toBe(true);
             expect(pages.some(p => p.shot === 'kaminTurn' || p.shot === 'kaminTape'), faction).toBe(true);
             expect(pages.at(-1).text).toBe('FIN');

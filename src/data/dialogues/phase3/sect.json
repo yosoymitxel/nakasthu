@@ -330,6 +330,62 @@
             ]
         },
         {
+            "id": "DLG_P3_KAMIN_POR_HORA",
+            "cameo": true,
+            "minStep": 8,
+            "maxStep": 8,
+            "exclusive": false,
+            "npcTraits": {
+                "id": "KAMIN",
+                "type": "SECTARIO"
+            },
+            "text": "*Kamin se para delante de tu mesa con Leina al lado. Mira la cola, no a ella.* 'Tú sabes de colas. ¿Cuántas personas caben por hora?'",
+            "options": [
+                {
+                    "text": "Por esta mesa, unas cuarenta.",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 4,
+                    "consequence": "*Asiente y se vuelve hacia Leina.* '¿Y por la puerta?' *Leina abre el cuaderno de operación.* 'Depende del ancho que le dé'."
+                },
+                {
+                    "text": "¿Para qué lo quiere saber?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 3,
+                    "consequence": "'Para que nadie espere de más'. *Leina apunta la pregunta en el margen del cuaderno y la subraya dos veces.*"
+                }
+            ]
+        },
+        {
+            "id": "DLG_P3_KAMIN_SIN_TI",
+            "cameo": true,
+            "minStep": 8,
+            "maxStep": 8,
+            "exclusive": false,
+            "npcTraits": {
+                "id": "LEINA",
+                "type": "TÉCNICO"
+            },
+            "text": "*Leina firma la hoja de turnos en tu mesa. Kamin, a su lado, le pregunta si el aparato puede funcionar sin ella.* 'Sí'. *No levanta la vista de la hoja.*",
+            "options": [
+                {
+                    "text": "¿De verdad puede?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 3,
+                    "consequence": "*Kamin ya se ha ido.* 'Cuatro comandos. Uno pide doble pulsación. Los mete cualquiera que los haya visto una vez'."
+                },
+                {
+                    "text": "¿Por qué te lo pregunta?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 4,
+                    "consequence": "'No se lo he preguntado'. *Te devuelve el bolígrafo. Cuatro días después, de madrugada, Kamin le hablará de un hermano que perdió en Zhyr, con la voz rota.*"
+                }
+            ]
+        },
+        {
             "id": "DLG_P3_RIAN_COMA",
             "cameo": true,
             "minStep": 8,
