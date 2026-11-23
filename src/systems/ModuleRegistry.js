@@ -92,7 +92,7 @@ export const MODULES = {
         id: 'MOD-11',
         name: 'Monitor de Flujo',
         sectarianName: 'Velo Dimensional',
-        unlockStep: 11,
+        unlockStep: 10, // En el paso 10 ya hay portal: el monitor cuenta quién cruza y quién llega
         tutorial: 'TUTO_PORTAL',
         description: 'Televigilancia de la estabilidad dimensional.'
     }

@@ -303,9 +303,9 @@
         },
         {
             "id": "DLG_P3_TOREN",
+            "cameo": true,
             "minStep": 8,
             "maxStep": 8,
-            "priority": true,
             "exclusive": false,
             "npcTraits": {
                 "id": "TOREN",
@@ -331,6 +331,7 @@
         },
         {
             "id": "DLG_P3_RIAN_COMA",
+            "cameo": true,
             "minStep": 8,
             "maxStep": 8,
             "exclusive": false,

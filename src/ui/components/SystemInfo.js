@@ -48,9 +48,9 @@ export const SystemInfo = () => {
                             </li>
                             <li>
                                 <span className="text-red-500">
-                                    ${isSectarian ? 'SACRIFICAR:' : 'SACRIFICAR:'}
+                                    ${isSectarian ? 'ENTREGAR:' : 'REASIGNAR A PRISIAT:'}
                                 </span> 
-                                ${isSectarian ? 'Consume el alma para alimentar el santuario. Genera esencia. Sacrificar almas puras corrompe su devoción.' : 'Reasigna al sujeto a las galerías de Prisiat. Retorno previsto: ninguno. Genera energía. Reasignar a alguien sano daña la estabilidad.'}
+                                ${isSectarian ? 'Baja el alma a la cámara del hangar: paga la diferencia. Genera esencia. Entregar almas puras corrompe su devoción.' : 'Reasigna al sujeto a las galerías de Prisiat. Retorno previsto: ninguno. Genera energía. Reasignar a alguien sano daña la estabilidad.'}
                             </li>
                         </ul>
                     </section>

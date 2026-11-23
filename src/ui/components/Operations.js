@@ -120,6 +120,10 @@ export const Operations = () => {
                 text: dialogue.text,
                 type: 'SUBJECT'
             });
+            // Mensajes que el personaje lleva en la muñeca (Ovid): entran después de su primera línea
+            (dialogue.inbox || []).forEach((m, i) => setTimeout(() => {
+                bus.emit('DIALOGUE_EMITTED', { sender: m.from, text: m.text, type: 'SYSTEM' });
+            }, 3200 + i * 1400));
         };
 
         const onDialogueOptionSelected = async (data) => {

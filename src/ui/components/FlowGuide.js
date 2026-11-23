@@ -10,8 +10,8 @@ import { Icon } from '../shared/Icon.js';
 export const FlowGuide = ({ isSectarian, hasSubject, scanDone, scanName, estimate, readings = 0 }) => {
     const color = isSectarian ? '#a855f7' : '#f59e0b';
     const words = isSectarian
-        ? { scan: 'Revelar', talk: 'Comulgar', judge: 'Dictamen', scanDone: 'Esencia leída', talkHint: 'Opcional · gasta dogma', judgeWait: 'Falta la revelación', judgeGo: 'Purgar o consagrar', omen: 'Impureza', empty: 'Sin alma en el altar' }
-        : { scan: 'Escanear', talk: 'Interrogar', judge: 'Sentencia', scanDone: 'Validado', talkHint: 'Opcional · gasta energía', judgeWait: 'Falta el escaneo', judgeGo: 'Sacrificar o autorizar', omen: 'Corrupción', empty: 'Cámara vacía' };
+        ? { scan: 'Revelar', talk: 'Comulgar', judge: 'Dictamen', scanDone: 'Esencia leída', talkHint: 'Opcional · gasta dogma', judgeWait: 'Falta la revelación', judgeGo: 'Entregar o consagrar', omen: 'Impureza', empty: 'Sin alma en el altar' }
+        : { scan: 'Escanear', talk: 'Interrogar', judge: 'Sentencia', scanDone: 'Validado', talkHint: 'Opcional · gasta energía', judgeWait: 'Falta el escaneo', judgeGo: 'Reasignar o autorizar', omen: 'Corrupción', empty: 'Cámara vacía' };
 
     const steps = [
         {

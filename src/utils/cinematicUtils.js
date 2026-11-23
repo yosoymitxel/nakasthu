@@ -3,6 +3,7 @@
  * Páginas de cinemática a partir de stepsConfig (sin vista: lo usan CinematicScreen y los tests).
  */
 import { narrativeFlags } from '../systems/NarrativeFlags.js';
+import { missingList } from '../systems/MissingList.js';
 
 // Reparte el texto en tantas páginas como planos, cortando por frases y equilibrando la longitud
 const splitPages = (text, shots = [null]) => {
@@ -31,7 +32,10 @@ export const pagesFor = (config, faction) => {
         pages = splitPages(config.briefingText || '', config.shots).map(([text, shot]) => ({ text, shot }));
         if (!pages.some(p => p.shot)) pages[0] = { ...pages[0], shot: config.shot };
     }
-    pages = pages.filter(p => narrativeFlags.matches(p.if)).map(p => ({ title: config.name, ...p }));
+    pages = pages
+        .filter(p => narrativeFlags.matches(p.if) && !(p.unless && narrativeFlags.matches(p.unless)))
+        // `{lista}`: los nombres de LA LISTA de esta partida, los de tu consola primero
+        .map(p => ({ title: config.name, ...p, text: p.text.replace('{lista}', () => missingList.readout()) }));
     if (config.clock317) pages.push({ title: '', black: true, clock: true, text: config.clock317 });
     return pages;
 };

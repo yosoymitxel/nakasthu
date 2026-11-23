@@ -9,9 +9,12 @@
  * - `speed`: ms por carácter. `¦` en el texto es una pausa de un segundo que no se ve.
  * - `corrupt`: el texto se tuerce al teclearse. `auto`: pasa sola a los N ms, sin botón.
  * - `sound`: ambiente sintetizado (birds, drone, clicks, heart, silence). `music`: volumen de la música (0-1).
- * - `if`: sólo sale si la marca narrativa coincide.
+ * - `if`: sólo sale si la marca narrativa coincide. `unless`: no sale si coincide.
+ * - `{lista}` en el texto: los nombres de LA LISTA de la partida (MissingList.readout).
  * `clock317`: lo que Kael lleva oído de la frase; cierra la cinemática o encabeza el briefing.
  * `bulletin`: parte de enlace que se lee al cerrar el turno.
+ * `meta.cameos`: recurrentes en posiciones fijas de la cola. `dialogues`: el primero cuyas marcas encajan;
+ *   `onDecision`: marcas que deja autorizar o reasignar/entregar a esa persona.
  */
 
 // El empuje: pase lo que pase con la secuencia, la mano en la espalda (cap. 15).
@@ -90,6 +93,10 @@ export const STEPS_CONFIG = {
         subjectCount: 10,
         meta: {
             requiredTechnicians: 2, // Con 1 de cada 4 sujetos técnico, 6 de 10 era casi imposible
+            cameos: [
+                { pos: 3, dialogues: ['DLG_S1_03'], onDecision: { sacrifice: { nera: 'reasignada' } } },
+                { pos: 6, dialogues: ['DLG_R_TOBI_DEUDA'], onDecision: { sacrifice: { tobi: 'reasignado' }, authorize: { tobi: 'se_queda' } } }
+            ],
             hiddenGoal: 'Estabilizar el país con técnicos cualificados',
             coreColorOverride: 'cyan'
         }
@@ -123,6 +130,10 @@ export const STEPS_CONFIG = {
         meta: {
             kaminAppears: true,
             kaminPosition: 7,
+            cameos: [
+                { pos: 2, dialogues: ['DLG_P2_OVID'] },
+                { pos: 4, dialogues: ['DLG_R_TOBI_OBRA', 'DLG_R_TOBI_RAMPA'] }
+            ],
             timeMultiplier: 1.5,
             coreColorOverride: 'orange'
         }
@@ -155,6 +166,11 @@ export const STEPS_CONFIG = {
         subjectCount: 8,
         meta: {
             requiredInfluence: 3,
+            cameos: [
+                { pos: 2, dialogues: ['DLG_P3_TOREN'] },
+                { pos: 4, dialogues: ['DLG_P3_RIAN_COMA'], onDecision: { sacrifice: { rian: 'entregado' } } },
+                { pos: 6, dialogues: ['DLG_R_NERA_GALERIA', 'DLG_R_NERA_COLADA'], onDecision: { sacrifice: { nera: 'entregada' } } }
+            ],
             penaltyOnFail: 'sabotage',
             coreColorOverride: 'red'
         }
@@ -187,6 +203,13 @@ export const STEPS_CONFIG = {
         subjectCount: 15,
         meta: {
             massAdmission: true,
+            cameos: [
+                { pos: 2, dialogues: ['DLG_R_OVID_CAMION'], onDecision: { sacrifice: { ovid: 'entregado' } } },
+                { pos: 4, dialogues: ['DLG_R_NERA_EIDOLON'], onDecision: { sacrifice: { nera: 'entregada' } } },
+                { pos: 6, dialogues: ['DLG_R_TOBI_CONSOLA', 'DLG_P4_TOBI_FILA'], onDecision: { sacrifice: { tobi: 'entregado' } } },
+                { pos: 9, dialogues: ['DLG_P4_SERAFIN'], onDecision: { sacrifice: { serafin: 'entregado' } } },
+                { pos: 12, dialogues: ['DLG_P4_RIAN_PASARELA'] }
+            ],
             coreColorOverride: 'purple'
         }
     },
@@ -251,6 +274,7 @@ export const STEPS_CONFIG = {
                         ...PUSH,
                         { title: 'El precio', black: true, text: 'El portal se cierra con ella dentro. Los treinta mil de la fila se quedan de este lado, con sus familias inventadas y sus galerías.' },
                         { title: 'El precio', black: true, doc: 'Reasignaciones · Talok', text: 'Los traslados a Prisiat se reanudan el lunes. Talok vuelve a firmar.\nRetorno previsto: —' },
+                        { title: 'La lista', black: true, doc: 'Pasillo central', text: 'La lista se queda en la pared. Nadie tacha ningún nombre.\n{lista}' },
                         ...AFTER,
                         { title: 'El ciclo', shot: 'mirror', text: 'Cerrar la puerta no la destruye. En Zhyr emerge un segundo monolito con los símbolos invertidos. Dentro, como en ámbar, Alexia y Leina, con los ojos abiertos.' },
                         { title: 'El ciclo', black: true, doc: 'AITOR', text: 'En Prisiat la palabra sigue apareciendo, grabada en planchas de almacenes cerrados.' },
@@ -281,6 +305,14 @@ export const STEPS_CONFIG = {
                         { title: 'Éxodo', shot: 'exodus', text: 'Doce mil cruzan el primer día. Después dejan de contar, porque el que contaba se pone en la fila. Kamin mira desde el Bastión; bajo el esternón algo late cada diez segundos.' },
                         { title: 'Éxodo', shot: 'exodus', if: { lichesth: 'fue' }, text: 'El hombre de los once créditos con cuarenta cruza con los seis de su turno. Entran de dos en dos, cogidos de la mano.' },
                         { title: 'Éxodo', shot: 'exodus', if: { marek: 'existio' }, text: 'En una cocina de Itzinol, dos personas se ponen de acuerdo en cosas que no ocurrieron. Después se ponen en la fila.' },
+                        { title: 'Éxodo', shot: 'exodus', unless: { ovid: 'entregado' }, text: 'Ovid Ferrer cruza el cuarto día, a las once y veinte. Antes de entrar contesta por fin a su madre:\n«Voy a buscar a Tessa. Cuando la encuentre volvemos las dos.»\nEl terminal marca entregado.' },
+                        { title: 'Éxodo', black: true, unless: { ovid: 'entregado' }, text: 'Su madre lo lee cuatro horas más tarde, en una cocina de Dispay, y sale a la calle a buscar un transporte al norte.' },
+                        { title: 'Éxodo', shot: 'exodus', unless: { tobi: 'entregado' }, text: 'Tobi Arren cruza el sexto día. No busca a nadie: quiere saber quién canta en la galería vacía. Antes de entrar tira la carta de los cuatrocientos seis años. Alguien la recoge creyendo que es una lista de nombres.' },
+                        { title: 'Dispay', black: true, doc: 'Emisora local', text: 'Idrís Manne emite cuatro veces al día. Lee la hora, la temperatura y los nombres que la gente deja escritos en la puerta.' },
+                        { title: 'Dispay', black: true, doc: 'Emisora local · día 21', speed: 40, text: 'El día veintiuno lee la lista entera.\n{lista}\nDice que mañana volverá a la misma hora. Corta.' },
+                        { title: 'Dispay', black: true, text: 'Tres meses después alguien encuentra el equipo encendido, con el micrófono abierto y la silla apartada de la mesa.' },
+                        { title: 'Éxodo', shot: 'exodus', unless: { serafin: 'entregado' }, text: 'Serafín Duq no cruza. La fila pasa seis días por delante de su caja de herramientas. Si ella sale y él no está, no va a saber dónde buscarlo.' },
+                        { title: 'Éxodo', black: true, unless: { serafin: 'entregado' }, text: 'El séptimo día ya no pasa nadie por delante.\nSerafín sigue sentado.' },
                         ...AFTER,
                         { title: 'El ciclo', shot: 'mirrorVoid', text: 'En Zhyr emerge un segundo monolito. Dentro, como en ámbar, Alexia y Leina, con los ojos abiertos. Sonríen. Mucho después, una nave baja a un páramo violáceo marcado con una palabra: AITOR.' },
                         { title: '', black: true, clock: true, text: 'No abras. El que abre ya no…' },

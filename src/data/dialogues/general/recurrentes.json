@@ -1,0 +1,212 @@
+{
+    "dialogues": [
+        {
+            "id": "DLG_R_TOBI_DEUDA",
+            "minStep": 4,
+            "maxStep": 4,
+            "cameo": true,
+            "exclusive": false,
+            "npcTraits": { "id": "TOBI ARREN", "type": "HUMANO" },
+            "text": "*Minero de la galería once, Prisiat. Diecisiete turnos seguidos. Lleva una carta doblada en el bolsillo del pantalón.* 'Tobi Arren. Me han subido para la revisión de deuda'.",
+            "options": [
+                {
+                    "text": "¿Cuánto debes?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 2,
+                    "consequence": "*Desdobla la carta. Por detrás hay cuentas a lápiz.* 'Un turno por crédito. Pero el catre, la comida, el agua y el filtro también se facturan. Lo he hecho tres veces. Me salen cuatrocientos seis años'."
+                },
+                {
+                    "text": "¿Qué sabes hacer?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": 0,
+                    "corruptionImpact": 1,
+                    "consequence": "'Galerías. Sostenimiento, ventilación, achique'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_R_TOBI_OBRA",
+            "minStep": 6,
+            "maxStep": 6,
+            "cameo": true,
+            "exclusive": false,
+            "requires": { "tobi": "se_queda" },
+            "npcTraits": { "id": "TOBI ARREN", "type": "HUMANO" },
+            "text": "*El minero de la galería once, con casco de obra de Talok. La carta sigue en el bolsillo.* 'Me dejaron arriba. Al de detrás de mí lo bajaron en mi turno'.",
+            "options": [
+                {
+                    "text": "¿Lo conocías?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 2,
+                    "consequence": "'De la galería. No sé cómo se llamaba. Cantaba mal'."
+                },
+                {
+                    "text": "¿Qué haces ahora?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": 0,
+                    "corruptionImpact": 1,
+                    "consequence": "'Achique en el sector nueve. El agua sube por donde no debería'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_R_TOBI_RAMPA",
+            "minStep": 6,
+            "maxStep": 6,
+            "cameo": true,
+            "exclusive": false,
+            "npcTraits": { "id": "TOBI ARREN", "type": "HUMANO" },
+            "text": "*Otra vez el minero de la galería once. Lo suben para un examen de pulmón.* 'En la rampa cuatro canta un niño. Esa galería está vacía desde antes de que yo naciera'.",
+            "options": [
+                {
+                    "text": "¿Qué canta?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 3,
+                    "consequence": "'No se entiende. Siempre lo mismo. Cuando bajo a mirar, se calla'."
+                },
+                {
+                    "text": "¿Lo has contado arriba?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 1,
+                    "consequence": "*Se rasca la nuca.* 'Contar cosas en Prisiat es la forma más rápida de que te manden a la siete'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_R_NERA_GALERIA",
+            "minStep": 8,
+            "maxStep": 8,
+            "cameo": true,
+            "exclusive": false,
+            "requires": { "nera": "reasignada" },
+            "npcTraits": { "id": "NERA OKONJO", "type": "HUMANO" },
+            "text": "*Nera Okonjo, de Kanatsia. Le quitaron la cartilla en Prisiat y ha venido andando. Trae el filtro de la galería colgado del cuello.* 'Me dijeron que aquí está la lista'.",
+            "options": [
+                {
+                    "text": "¿A quién buscas?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 2,
+                    "consequence": "'A mi marido. Lo escribí en la puerta de casa antes de bajar. Aquella puerta ya no la lee nadie'."
+                },
+                {
+                    "text": "¿Cómo era la galería?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 1,
+                    "consequence": "'Abajo nadie pregunta por nadie. Se trabaja y se duerme'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_R_NERA_COLADA",
+            "minStep": 8,
+            "maxStep": 8,
+            "cameo": true,
+            "exclusive": false,
+            "npcTraits": { "id": "NERA OKONJO", "type": "HUMANO" },
+            "text": "*Nera Okonjo, de Kanatsia, con un cesto de ropa. Los martes lava la colada del pasillo central.* 'Desde las cuerdas se ve la lista. La leo mientras tiendo'.",
+            "options": [
+                {
+                    "text": "¿Está tu marido en la lista?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 2,
+                    "consequence": "'Lo escribí yo. Cada semana lo tapan dos capas más. Lo vuelvo a escribir encima'."
+                },
+                {
+                    "text": "¿Por qué viniste?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 1,
+                    "consequence": "'En Kanatsia ya no queda nadie a quien preguntar. Aquí por lo menos hay una pared'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_R_NERA_EIDOLON",
+            "minStep": 10,
+            "maxStep": 10,
+            "cameo": true,
+            "exclusive": false,
+            "unless": { "nera": "entregada" },
+            "npcTraits": { "id": "NERA OKONJO", "type": "HUMANO" },
+            "text": "*Nera Okonjo, con una hoja impresa del paquete de Eidolon doblada en cuatro.* 'He buscado a mi marido en las carpetas. No sale en ningún lote'.",
+            "options": [
+                {
+                    "text": "Entonces existió.",
+                    "energyCost": 0.1,
+                    "stabilityImpact": 1,
+                    "corruptionImpact": 0,
+                    "consequence": "'Ya lo sabía. Le hervía el agua todas las mañanas'."
+                },
+                {
+                    "text": "¿Vas a cruzar?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 2,
+                    "consequence": "'Con la vecina. De dos en dos, que es como se entra'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_R_OVID_CAMION",
+            "minStep": 10,
+            "maxStep": 10,
+            "cameo": true,
+            "exclusive": false,
+            "npcTraits": { "id": "OVID FERRER", "type": "HUMANO" },
+            "inbox": [
+                { "from": "MADRE DE OVID", "text": "Vuelve a casa." },
+                { "from": "TERMINAL DE OVID", "text": "Leído. Sin respuesta." }
+            ],
+            "text": "*Llega en un camión de carga con otras sesenta personas. Lleva tres días sin quitarse la bufanda.* 'Ovid Ferrer. Busco a Tessa Ferrer, diecinueve años'.",
+            "options": [
+                {
+                    "text": "¿Has contestado a tu madre?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 2,
+                    "consequence": "*Mira la pantalla de la muñeca. El mensaje sigue arriba del todo.* 'Cuando la encuentre'."
+                },
+                {
+                    "text": "Puede que no esté al otro lado.",
+                    "energyCost": 0.1,
+                    "stabilityImpact": -1,
+                    "corruptionImpact": 1,
+                    "consequence": "'Aquí dicen que están todos. Si no está, seré el primero en saberlo'."
+                }
+            ]
+        },
+        {
+            "id": "DLG_R_TOBI_CONSOLA",
+            "minStep": 10,
+            "maxStep": 10,
+            "cameo": true,
+            "exclusive": false,
+            "requires": { "tobi": "reasignado" },
+            "npcTraits": { "id": "TOBI ARREN", "type": "HUMANO", "scannedData": { "temperature": 36.8, "neuralSync": 14 } },
+            "text": "*Llega a pie desde Prisiat, con un filtro respiratorio que no es suyo y la carta doblada en el bolsillo.* 'Me bajó una consola de Talok. La cuatro. Nunca supe quién estaba sentado'.",
+            "options": [
+                {
+                    "text": "¿Qué sabes hacer?",
+                    "energyCost": 0.1,
+                    "stabilityImpact": 0,
+                    "corruptionImpact": 1,
+                    "consequence": "'Galerías. Sostenimiento, ventilación, achique'."
+                },
+                {
+                    "text": "¿Sigues con la cuenta?",
+                    "energyCost": 0.2,
+                    "stabilityImpact": -2,
+                    "corruptionImpact": 2,
+                    "consequence": "*Toca el bolsillo.* 'Dejó de haber a quién pagársela. La carta no la he tirado. No se me ha ocurrido'."
+                }
+            ]
+        }
+    ]
+}

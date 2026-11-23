@@ -392,7 +392,8 @@
         },
         {
             "id": "DLG_P2_OVID",
-            "priority": true,
+            "cameo": true,
+            "inbox": [{ "from": "MADRE DE OVID", "text": "Vuelve a casa." }, { "from": "TERMINAL DE OVID", "text": "Leído a las 04:02. Sin respuesta." }],
             "minStep": 6,
             "maxStep": 6,
             "npcTraits": {

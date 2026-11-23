@@ -5,11 +5,19 @@
 import { html } from '../utils/html.js';
 import { useGameState } from '../hooks/useGameState.js';
 import { state } from '../../core/State.js';
+import { MissingListPreview, MissingListModal } from './MissingListView.js';
+
+const { useState } = React;
 
 export const LoreArchive = () => {
     const loreArchive = useGameState('loreArchive') || [];
     const storyPath = useGameState('storyPath');
     const isSectarian = storyPath === 1;
+    // LA LISTA comparte panel con el archivo: es lo que crece en cada turno, así que se abre por defecto
+    const missing = useGameState('missingList') || [];
+    const [picked, setPicked] = useState(null);
+    const [listOpen, setListOpen] = useState(false);
+    const view = picked || (missing.length ? 'lista' : 'archivo');
 
     // Orden lógico narrativo basado en lore_database.json
     const NARRATIVE_ORDER = [
@@ -38,8 +46,21 @@ export const LoreArchive = () => {
     };
 
     return html`
+        <div className=${`flex flex-col h-full w-full font-mono overflow-hidden relative ${isSectarian ? 'bg-[#0c0a12]' : 'bg-[#0a0a0b]'}`}>
+        <div className="ml-tabs" role="tablist">
+            <button role="tab" aria-selected=${view === 'lista'} className=${view === 'lista' ? 'on' : ''} onClick=${() => setPicked('lista')}>
+                La lista <span key=${missing.length} className="ml-count feel-pop">${missing.length}</span>
+            </button>
+            <button role="tab" aria-selected=${view === 'archivo'} className=${view === 'archivo' ? 'on' : ''} onClick=${() => setPicked('archivo')}>
+                ${isSectarian ? 'Crónicas' : 'Archivo'} <span className="ml-count">${loreArchive.length}</span>
+            </button>
+        </div>
+        ${listOpen && html`<${MissingListModal} list=${missing} onClose=${() => setListOpen(false)} />`}
+        ${view === 'lista' ? html`
+            <div className="flex-1 min-h-0 p-2"><${MissingListPreview} list=${missing} onOpen=${() => setListOpen(true)} /></div>
+        ` : html`
         <div 
-            className=${`flex flex-col h-full w-full font-mono p-3 overflow-hidden cursor-pointer group/archive relative transition-colors duration-1000 ${isSectarian ? 'bg-[#0c0a12]' : 'bg-[#0a0a0b]'}`}
+            className=${`flex flex-col flex-1 min-h-0 w-full font-mono p-3 overflow-hidden cursor-pointer group/archive relative transition-colors duration-1000 ${isSectarian ? 'bg-[#0c0a12]' : 'bg-[#0a0a0b]'}`}
             onClick=${openLoreScreen}
         >
             ${isSectarian && html`
@@ -123,6 +144,8 @@ export const LoreArchive = () => {
                     <div className=${`w-1.5 h-1.5 ${isSectarian ? 'bg-purple-900/40' : 'bg-zinc-900'}`}></div>
                 </div>
             </div>
+        </div>
+        `}
         </div>
     `;
 };

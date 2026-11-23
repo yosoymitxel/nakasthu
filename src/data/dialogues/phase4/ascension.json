@@ -241,6 +241,7 @@
         },
         {
             "id": "DLG_P4_SERAFIN",
+            "cameo": true,
             "minStep": 10,
             "maxStep": 10,
             "exclusive": false,
@@ -406,6 +407,8 @@
         },
         {
             "id": "DLG_P4_RIAN_PASARELA",
+            "cameo": true,
+            "unless": { "rian": "entregado" },
             "minStep": 10,
             "maxStep": 10,
             "exclusive": false,
@@ -476,6 +479,7 @@
         },
         {
             "id": "DLG_P4_TOBI_FILA",
+            "cameo": true,
             "minStep": 10,
             "maxStep": 10,
             "exclusive": false,

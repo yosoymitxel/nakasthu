@@ -16,6 +16,7 @@ import { MechanicManager } from '../services/MechanicManager.js';
 import { calculateJudgmentRecommendation, checkStepMeta } from '../utils/gameplayUtils.js';
 import { storageSet } from '../utils/storage.js';
 import { persistenceManager } from './PersistenceManager.js';
+import { missingList } from './MissingList.js';
 
 /**
  * Clase GameSequencer - Gestiona la progresión narrativa
@@ -61,6 +62,7 @@ class GameSequencer {
 
             this.registerSubjectResult(subject, action);
             state.endBatch();
+            missingList.record(subject, action);
 
             this.checkGameStatus();
         });
@@ -418,6 +420,9 @@ class GameSequencer {
                     : { energy: -20, text: '[MANDO] Objetivo incumplido: el turno empieza con −20 de energía.' };
                 metaResults.messages.push(metaResults.success ? 'Objetivo cumplido: +1 error tolerado en el próximo turno.' : 'Próximo turno: −20 de energía.');
             }
+
+            const listLine = missingList.turnLine(this.currentStep);
+            if (listLine) metaResults.messages.push(listLine);
 
             if (!metaResults.success) {
                 console.log('%c[SEQUENCER] Cuota completada pero metas no alcanzadas.', 'color: #f59e0b;');

@@ -2,7 +2,8 @@
  * Recorre TODAS las ramas de TODOS los diálogos con el motor real (no con un mock):
  * cada camino de elecciones se reproduce desde cero y se comprueba que no hay callejones sin
  * salida, que siempre se sabe quién habla, que una decisión cierra sus alternativas y que la
- * memoria narrativa (`set` / `requires` / `if`) es coherente: todo lo que se lee se puede fijar
+ * memoria narrativa (`set` / `requires` / `unless` / `if`, más las marcas de los recurrentes de
+ * stepsConfig y las que leen el epílogo y LA LISTA) es coherente: todo lo que se lee se puede fijar
  * antes, y todo lo que se fija alguien lo lee.
  */
 import { describe, it, expect, beforeAll } from 'vitest';
@@ -12,6 +13,8 @@ import { state } from '../src/core/State.js';
 import { bus } from '../src/core/Bus.js';
 import { dialogueEngine, isExclusive } from '../src/systems/DialogueEngine.js';
 import { narrativeFlags } from '../src/systems/NarrativeFlags.js';
+import { STEPS_CONFIG } from '../src/data/stepsConfig.js';
+import { LIST_LAYERS } from '../src/data/missingList.js';
 
 const dir = join(process.cwd(), 'src', 'data', 'dialogues');
 const manifest = JSON.parse(readFileSync(join(dir, 'manifest.json'), 'utf8'));
@@ -125,11 +128,25 @@ describe('Diálogos · recorrido de todas las ramas', () => {
         const readers = []; // { flag, value, minStep, id }
         for (const d of dialogues) {
             const minStep = d.minStep || 1;
-            for (const [flag, value] of Object.entries(d.requires || {})) readers.push({ flag, value, minStep, id: d.id });
+            for (const [flag, value] of Object.entries({ ...d.requires, ...d.unless })) readers.push({ flag, value, minStep, id: d.id });
             for (const o of allOptions(d.options)) {
                 for (const [flag, value] of Object.entries(o.set || {})) setters.push({ flag, value, minStep, id: d.id });
                 for (const [flag, value] of Object.entries(o.if || {})) readers.push({ flag, value, minStep, id: d.id });
             }
+        }
+        // Recurrentes: autorizar o reasignar a esa persona deja marca en su paso
+        for (const [step, c] of Object.entries(STEPS_CONFIG)) {
+            for (const cameo of c.meta?.cameos || []) {
+                for (const flags of Object.values(cameo.onDecision || {})) {
+                    for (const [flag, value] of Object.entries(flags)) setters.push({ flag, value, minStep: Number(step), id: `paso ${step} pos ${cameo.pos}` });
+                }
+            }
+        }
+        // El epílogo y LA LISTA leen al final
+        const endingPages = Object.values(STEPS_CONFIG[12].meta.endings).flatMap(e => e.pages);
+        const listStrikes = Object.values(LIST_LAYERS).flatMap(l => l.entries).map(e => e.strike).filter(Boolean);
+        for (const p of [...endingPages, ...listStrikes]) {
+            for (const [flag, value] of Object.entries({ ...p.if, ...p.unless })) readers.push({ flag, value, minStep: 12, id: 'epílogo/lista' });
         }
         for (const r of [...setters, ...readers]) {
             if (!(declared[r.flag] || []).includes(r.value)) problems.push(`${r.id}: ${r.flag}=${r.value} sin declarar`);
