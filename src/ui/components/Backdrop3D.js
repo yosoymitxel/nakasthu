@@ -46,7 +46,7 @@ const SHOTS = {
     riot: { from: [-20, 1.8, 16], to: [-9, 2.4, 11], look: [0, 4.5, 0], dur: 18, tint: 0xef4444 },
     messenger: { from: [-22, 2.5, 4], to: [-17, 5, -1], look: [-12, 10, -8], dur: 18, tint: 0x9333ea },
     faith: { from: [-24, 1.6, 18], to: [-19, 2.6, 15], look: [-12, 3, 8], dur: 18, tint: 0x9333ea },
-    portal: { from: [-4, 2, 2], to: [-10, 3.5, -5], look: [-26, 6, -20], dur: 20, tint: 0x9333ea, place: 'portal' },
+    portal: { from: [3, 2.5, -9], to: [-2, 3.2, -12], look: [-26, 6, -20], dur: 20, tint: 0x9333ea, place: 'portal' },
     // Intermedias: `flash` destella y borra a la exploradora, `vanish` apaga gente, `crowd`/`tarima`/`altar` muestran su grupo
     touch: { from: [-1, 1.6, 34], to: [-0.6, 1.9, 33], look: [0, 4, 26], dur: 12, tint: 0xffffff, flash: true, place: 'zhyr' },
     vanish: { from: [CITY[0] + 10, 6, CITY[1] + 14], to: [CITY[0] + 6, 4, CITY[1] + 8], look: [CITY[0], 1, CITY[1]], dur: 16, tint: 0x64748b, vanish: true, sky: 0x0a0c12 },
@@ -58,10 +58,10 @@ const SHOTS = {
     // Toren: un hombre sale del corro hacia el fragmento; en `torenAsh` destella, la ceniza dibuja cinco trazos y cae
     toren: { from: [ALTAR[0] + 5.5, 3.6, ALTAR[1] + 6], to: [ALTAR[0] + 4.8, 3.3, ALTAR[1] + 5.2], look: [ALTAR[0] + 1, 1, ALTAR[1]], dur: 14, tint: 0xe9d5ff, altar: true, victim: 'step', sky: 0x0b0710, place: 'altar' },
     torenAsh: { from: [ALTAR[0] + 4.8, 3.3, ALTAR[1] + 5.2], to: [ALTAR[0] + 4.2, 3, ALTAR[1] + 4.6], look: [ALTAR[0] + 0.6, 1.4, ALTAR[1]], dur: 12, tint: 0xe9d5ff, altar: true, victim: 'ash', sky: 0x0b0710, place: 'altar' },
-    portalOpen: { from: [-12, 3, -4], to: [-16, 4.5, -9], look: [-26, 6, -20], dur: 16, tint: 0x9333ea, opening: true, place: 'portal' },
+    portalOpen: { from: [-2, 3, -12], to: [-6, 3.6, -14], look: [-26, 6, -20], dur: 16, tint: 0x9333ea, opening: true, place: 'portal' },
     // Epílogo: `closing` encoge el portal, `twin` alza el segundo monolito, `queue` muestra la fila,
     // `sky` cambia cielo y niebla; la pradera vive lejos (x = MEADOW) para que la niebla oculte la base.
-    portalClose: { from: [-6, 2.5, 4], to: [-9, 3, -2], look: [-26, 6, -20], dur: 14, tint: 0x22d3ee, closing: true, place: 'portal' },
+    portalClose: { from: [-6, 2.5, -12], to: [-10, 3, -15], look: [-26, 6, -20], dur: 14, tint: 0x22d3ee, closing: true, place: 'portal' },
     bastion: { from: [16, 20, 22], to: [9, 24, 10], look: [0, 0, 0], dur: 20, tint: 0x9333ea, sky: 0x0d0a14 },
     // La grabación del geólogo: un solo astronauta ante la piedra; en `kaminTurn` gira la cabeza a cámara
     kaminTape: { from: [3.6, 1.7, 33.4], to: [3.4, 1.7, 33.2], look: [0, 1.5, 31.5], dur: 20, tint: 0xffe2b0, tape: true, sky: 0x24180c, place: 'tape' },
@@ -417,7 +417,7 @@ export const Backdrop3D = ({ dim = false, sect = false, shot = null }) => {
                     m.visible = ashK > 0.18 && ashK < 0.7;
                     m.position.y = 1.5 - Math.max(0, ashK - 0.42) * 6 * (1 + i * 0.15);
                 });
-                if (s?.opening) ring.scale.setScalar(0.2 + Math.min(1, k * 1.5) * 0.8);
+                if (s?.opening) { ring.scale.setScalar(0.2 + Math.min(1, k * 1.5) * 0.8); voidDisc.scale.copy(ring.scale); }
                 // La grabación: sólo queda uno ante la piedra
                 crew.forEach(c => { c.obj.visible = s?.tape ? c.i === 1 : true; });
                 if (crew[0] && !s?.tape) crew[0].obj.visible = !(s?.flash && k > 0.35);
