@@ -30,7 +30,9 @@ export const GameModal = memo(({
     onContinue = null,
     onRestart = null,
     visible = false,
-    isTutorial = false
+    isTutorial = false,
+    clock = null,
+    bulletin = null
 }) => {
     const [animatedText, setAnimatedText] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -153,6 +155,12 @@ export const GameModal = memo(({
                 <div className="p-6 space-y-4">
                     ${mode === 'Briefing' ? html`
                         <${React.Fragment}>
+                            ${clock && !isTutorial && html`
+                                <div className="bg-black border border-zinc-900 px-3 py-2 font-mono flex items-baseline gap-3">
+                                    <span className="text-zinc-600 text-xs tracking-[0.3em]">03:17</span>
+                                    <span className="text-zinc-400 text-sm italic">${clock}</span>
+                                </div>
+                            `}
                             <div className="text-zinc-400 font-mono text-sm leading-relaxed min-h-[80px]">
                                 ${processContent(animatedText)}
                                 ${isTyping && html`<span className="animate-pulse">▌</span>`}
@@ -226,6 +234,13 @@ export const GameModal = memo(({
                                 <div className=${`flex items-center justify-between gap-3 border p-2 font-mono text-[10px] uppercase tracking-widest ${stepObjective.complete ? 'border-emerald-900/40 text-emerald-500' : 'border-amber-900/40 text-amber-500'}`}>
                                     <span className="truncate">Objetivo: ${stepObjective.label}</span>
                                     <span className="flex-none font-black">${stepObjective.complete ? 'CUMPLIDO' : 'NO CUMPLIDO'}</span>
+                                </div>
+                            `}
+
+                            ${bulletin && html`
+                                <div className="border-l-2 border-zinc-700 pl-3 font-mono">
+                                    <div className="text-[9px] uppercase tracking-[0.3em] text-zinc-600">Boletín de enlace · I. Manne</div>
+                                    <p className="mt-1 text-zinc-400 text-xs leading-relaxed">${bulletin}</p>
                                 </div>
                             `}
 
@@ -339,7 +354,9 @@ export const useGameModal = () => {
                 title: data.title || '',
                 content: data.content || '',
                 stats: data.stats || null,
-                isTutorial: data.isTutorial || false
+                isTutorial: data.isTutorial || false,
+                clock: data.clock || null,
+                bulletin: data.bulletin || null
             });
         };
 

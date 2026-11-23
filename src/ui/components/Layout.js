@@ -642,6 +642,8 @@ export const Layout = () => {
                 title=${gameModalState.title}
                 content=${gameModalState.content}
                 isTutorial=${gameModalState.isTutorial}
+                clock=${gameModalState.clock}
+                bulletin=${gameModalState.bulletin}
                 stats=${state}
                 onContinue=${() => {
             // El botón del modal ya emite MODAL_CLOSE y TUTORIAL_CONTINUE

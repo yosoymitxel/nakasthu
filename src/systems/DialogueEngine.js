@@ -16,6 +16,10 @@ export const isExclusive = (dialogue) => dialogue?.exclusive !== false;
 // Opciones visibles según lo que el operador decidió antes (`if`).
 const visibleOptions = (options = []) => options.filter(o => narrativeFlags.matches(o.if));
 
+// Anclas y personajes con nombre hablan nada más llegar, sin pulsar INTERROGAR: si no, casi nadie los oía.
+export const speaksOnArrival = (dialogue) => !!(dialogue && (dialogue.priority || dialogue.forEntity || dialogue.npcTraits));
+const ARRIVAL_DELAY = 900;
+
 // Kamin entra en la cola del paso 6 con su identidad: un diálogo con `npcTraits` de otro personaje
 // lo convertía en ese otro. `forEntity` reserva un diálogo para un sujeto concreto.
 const fitsEntity = (dialogue, entity) => {
@@ -53,15 +57,35 @@ class DialogueEngine {
                 applyTraits(subject, dialogue.npcTraits);
                 subject.traitsFrom = dialogue.id;
             }
+            // Se marca como usado al abrirse (startDialogue): un ancla de un sujeto que se va sin hablar vuelve al pool
             this.reserved = { entityId: subject.id, dialogue };
-            if (!state.usedDialogueIds.includes(dialogue.id)) state.usedDialogueIds = [...state.usedDialogueIds, dialogue.id];
         });
+
+        bus.on('NEW_SUBJECT_DETECTED', () => this.scheduleArrival());
+        bus.on('STORY_MODAL_CLOSE', () => this.scheduleArrival());
 
         bus.on('SESSION_TERMINATED', () => {
             if (this.currentDialogue) {
                 this.closeDialogue();
             }
         });
+    }
+
+    scheduleArrival() {
+        if (!speaksOnArrival(this.reserved?.dialogue)) return;
+        clearTimeout(this.arrivalTimer);
+        this.arrivalTimer = setTimeout(() => this.openOnArrival(), ARRIVAL_DELAY);
+    }
+
+    /** Abre la primera línea del sujeto reservado si sigue en cámara y nada lo tapa (briefing, tutorial, otro diálogo). */
+    openOnArrival() {
+        const reserved = this.reserved;
+        if (!speaksOnArrival(reserved?.dialogue) || reserved.entityId !== state.currentEntity?.id) return false;
+        if (state.gameStatus !== 'PLAYING' || state.isModalOpen || state.isTutorialActive || state.isPaused) return false;
+        if (this.currentDialogue || state.activeDialogue) return false;
+        this.reserved = null;
+        this.startDialogue(reserved.dialogue);
+        return true;
     }
 
     async loadDialogues() {

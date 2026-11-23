@@ -262,7 +262,8 @@ class GameSequencer {
             bus.emit('STORY_MODAL_OPEN', {
                 mode: 'Briefing',
                 title: stepData.config.name,
-                content: stepData.config.briefingText
+                content: stepData.config.briefingText,
+                clock: stepData.config.clock317 || null
             });
         }
 
@@ -436,7 +437,8 @@ class GameSequencer {
                 bus.emit('STORY_MODAL_OPEN', {
                     mode: 'Summary',
                     title: `Turno cerrado: ${config.name}`,
-                    content: metaResults.messages.join(' ')
+                    content: metaResults.messages.join(' '),
+                    bulletin: config.bulletin || null
                 });
             } else {
                 this.nextStep();
