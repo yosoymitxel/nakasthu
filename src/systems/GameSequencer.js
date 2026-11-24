@@ -66,7 +66,8 @@ class GameSequencer {
             this.applySiege();
             state.endBatch();
             missingList.record(subject, action);
-            this.printKaminRegister();
+            // La terminal se limpia con SESSION_TERMINATED, que sale justo después de la decisión
+            setTimeout(() => this.printKaminRegister(), 0);
 
             this.checkGameStatus();
         });
@@ -584,7 +585,8 @@ class GameSequencer {
             quotaTracker.setQuota(state.quota);
         }
         bus.emit('DIALOGUE_EMITTED', { sender: 'PARTE DEL CERCO', text: notice.text, type: 'SYSTEM' });
-        bus.emit('TERMINAL_PRINT', { text: `[CERCO] La fila crece: ${state.quota} en la cola de esta mesa.`, type: 'SYSTEM' });
+        const quota = state.quota;
+        setTimeout(() => bus.emit('TERMINAL_PRINT', { text: `[CERCO] La fila crece: ${quota} en la cola de esta mesa.`, type: 'SYSTEM' }), 0);
     }
 
     /** Registro: Kamin se escribe solo en la terminal (MOD-08 lo guarda entero). */

@@ -35,6 +35,7 @@ export const FactionTracker = memo(() => {
     const siegeNotices = useGameState('siegeNotices') || 0;
     const register = kaminRegister(step, processed, siegeNotices);
     const entries = [...register.entries].reverse();
+    const [open, setOpen] = useState(false);
 
     return html`
         <div className="flex flex-col flex-none w-full bg-black/40 px-3 py-2 font-mono text-[10px] relative overflow-hidden">
@@ -98,13 +99,18 @@ export const FactionTracker = memo(() => {
                         <span className="text-[9px] font-bold tracking-widest text-zinc-500 uppercase">Registro: Kamin</span>
                         <span className="text-[9px] tracking-widest text-zinc-500 uppercase">Fieles <span key=${register.faithful} className="feel-pop text-sm font-black text-purple-300">${register.faithful.toLocaleString('es-ES')}</span></span>
                     </div>
-                    <ol className="mt-1 max-h-28 overflow-y-auto space-y-1 pr-1">
-                        ${entries.map((e, i) => html`
+                    <ol className=${`mt-1 space-y-1 pr-1 ${open ? 'max-h-28 overflow-y-auto' : ''}`}>
+                        ${(open ? entries : entries.slice(0, 1)).map((e, i) => html`
                             <li key=${`${e.step}-${e.technique}`} className=${`leading-snug ${i === 0 ? 'text-zinc-200' : 'text-zinc-500'}`}>
                                 <span className="text-purple-400/80">${e.step} · ${e.technique}.</span> ${e.scene}
                             </li>
                         `)}
                     </ol>
+                    ${entries.length > 1 && html`
+                        <button className="mt-1 text-[9px] tracking-widest uppercase text-zinc-500 hover:text-purple-300" onClick=${() => setOpen(!open)} aria-expanded=${open}>
+                            ${open ? 'Ver sólo el último' : `Ver los ${entries.length} escalones`}
+                        </button>
+                    `}
                 </div>
             `}
         </div>
