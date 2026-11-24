@@ -94,23 +94,20 @@ export const FactionTracker = memo(() => {
             </div>
 
             ${entries.length > 0 && html`
-                <div className="mt-3 pt-2 border-t border-zinc-800/80 relative z-10" aria-label="Registro: Kamin">
-                    <div className="flex justify-between items-baseline">
-                        <span className="text-[9px] font-bold tracking-widest text-zinc-500 uppercase">Registro: Kamin</span>
+                <div className="mt-2 pt-1.5 border-t border-zinc-800/80 relative z-10" aria-label="Registro: Kamin">
+                    <div className="flex justify-between items-baseline gap-2">
+                        <button className="text-[9px] font-bold tracking-widest text-zinc-500 uppercase hover:text-purple-300" onClick=${() => setOpen(!open)} aria-expanded=${open}>
+                            Registro: Kamin · ${open ? 'cerrar' : `${entries.length} escalones`}
+                        </button>
                         <span className="text-[9px] tracking-widest text-zinc-500 uppercase">Fieles <span key=${register.faithful} className="feel-pop text-sm font-black text-purple-300">${register.faithful.toLocaleString('es-ES')}</span></span>
                     </div>
-                    <ol className=${`mt-1 space-y-1 pr-1 ${open ? 'max-h-28 overflow-y-auto' : ''}`}>
+                    <ol className=${`mt-0.5 space-y-1 pr-1 ${open ? 'max-h-28 overflow-y-auto' : ''}`}>
                         ${(open ? entries : entries.slice(0, 1)).map((e, i) => html`
-                            <li key=${`${e.step}-${e.technique}`} className=${`leading-snug ${i === 0 ? 'text-zinc-200' : 'text-zinc-500'}`}>
+                            <li key=${`${e.step}-${e.technique}`} title=${open ? null : e.scene} className=${`leading-snug ${open ? '' : 'truncate'} ${i === 0 ? 'text-zinc-200' : 'text-zinc-500'}`}>
                                 <span className="text-purple-400/80">${e.step} · ${e.technique}.</span> ${e.scene}
                             </li>
                         `)}
                     </ol>
-                    ${entries.length > 1 && html`
-                        <button className="mt-1 text-[9px] tracking-widest uppercase text-zinc-500 hover:text-purple-300" onClick=${() => setOpen(!open)} aria-expanded=${open}>
-                            ${open ? 'Ver sólo el último' : `Ver los ${entries.length} escalones`}
-                        </button>
-                    `}
                 </div>
             `}
         </div>
