@@ -4,7 +4,7 @@
  */
 import {
     test, expect, bootGame, SKIP_TUTORIALS, advanceCinematic, holdMonolith,
-    jumpToStep, startOperations, snap, scanBiometric, openPause, regularSubject,
+    jumpToStep, startOperations, snap, scanBiometric, openPause, regularSubject, playLeinaConsole, silenceArrival,
 } from '../support/fixtures.mjs';
 
 /** Procesa el sujeto actual: escaneo biométrico → decisión. Devuelve el nuevo processedCount. */
@@ -45,6 +45,7 @@ test.describe('E2E · gameplay', () => {
     test('monolito: soltar Espacio antes del 100% no completa la sincronización', async ({ page }) => {
         await bootGame(page, { ...SKIP_TUTORIALS, nakasthu_max_step: '2' });
         await jumpToStep(page, 2);
+        await advanceCinematic(page); // preludio del paso 2
         const mechanic = page.locator('.special-mechanic-container');
         await expect(mechanic).toBeVisible();
         await page.keyboard.down('Space');
@@ -201,6 +202,7 @@ test.describe('E2E · gameplay', () => {
         }
         // Tercer paso: emergencia guiada (en móvil salta sola a la pestaña de sistemas)
         await expect(coach).toContainText('EMERGENCIA');
+        await silenceArrival(page); // el sujeto siguiente no abre su primera línea encima de la emergencia
         for (let i = 0; i < 4; i++) await page.locator('button.em-next').click();
         await expect(coach).toHaveCount(0);
         expect(await page.evaluate(() => localStorage.getItem('nakasthu_coach_done'))).toBe('true');
@@ -219,21 +221,21 @@ test.describe('E2E · gameplay', () => {
 });
 
 test.describe('E2E · finales', () => {
-    for (const [choice, text] of [
-        ['CERRAR', 'Leina mete la secuencia al revés'],
-        ['AMPLIAR', 'Kamin empuja a Leina hacia la grieta'],
+    for (const [choice, faction, text] of [
+        ['CERRAR', 'orden', 'El vórtice se pliega con ella dentro'],
+        ['AMPLIAR', 'caos', 'El otro lado era hermoso'],
     ]) {
         test(`final "${choice}": epílogo propio y vuelta al inicio @responsive`, async ({ page }, testInfo) => {
+            test.setTimeout(120_000);
             await bootGame(page, { nakasthu_max_step: '11' });
             await jumpToStep(page, 11);
-            await expect(page.getByRole('heading', { name: 'El Juicio Final', exact: true })).toBeVisible();
-            await page.getByRole('button', { name: choice, exact: true }).click();
+            await playLeinaConsole(page, choice);
+            expect(await page.evaluate(() => window.state.endingFaction)).toBe(faction);
 
             const epi = page.locator('.cinematic-screen');
-            await expect(epi.locator('.cine-title')).toHaveText('Epílogo');
-            await epi.click();
+            await expect(epi.locator('.cine-seq')).toHaveText('SECUENCIA 12');
             await expect(epi.locator('.cine-text')).toContainText(text);
-            await advanceCinematic(page);
+            await advanceCinematic(page, { maxClicks: 150 });
             await expect(page.getByRole('heading', { name: 'NAKASTHU' })).toBeVisible();
         });
     }

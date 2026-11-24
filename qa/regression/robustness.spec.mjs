@@ -3,7 +3,7 @@
  * Cada prueba fija un bug encontrado (o un riesgo plausible) para que no vuelva.
  */
 import {
-    test, expect, bootGame, SKIP_TUTORIALS, advanceCinematic, jumpToStep, startOperations, snap, scanBiometric, openPause, MENU,
+    test, expect, bootGame, SKIP_TUTORIALS, advanceCinematic, jumpToStep, startOperations, snap, scanBiometric, openPause, MENU, playLeinaConsole,
 } from '../support/fixtures.mjs';
 
 const emit = (page, event, payload) => page.evaluate(async ([e, p]) => {
@@ -331,13 +331,13 @@ test.describe('REGRESIÓN · responsive @responsive', () => {
     });
 
     test('tras el FIN vuelve al inicio en móvil @responsive', async ({ page }, testInfo) => {
+        test.setTimeout(120_000);
         await bootGame(page, { nakasthu_max_step: '11' });
         await jumpToStep(page, 11);
-        await expect(page.getByRole('heading', { name: 'El Juicio Final', exact: true })).toBeVisible();
-        await page.getByRole('button', { name: 'CERRAR', exact: true }).click();
+        await playLeinaConsole(page, 'CERRAR');
         const epi = page.locator('.cinematic-screen');
-        await expect(epi.locator('.cine-title')).toHaveText('Epílogo');
-        await advanceCinematic(page);
+        await expect(epi.locator('.cine-seq')).toHaveText('SECUENCIA 12');
+        await advanceCinematic(page, { maxClicks: 150 });
         await expect(page.getByRole('heading', { name: 'NAKASTHU' })).toBeVisible();
         await snap(page, testInfo, 'resp-final');
     });

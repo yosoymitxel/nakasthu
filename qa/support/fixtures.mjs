@@ -150,6 +150,25 @@ export async function jumpToStep(page, step) {
     await btn.click();
 }
 
+/** Paso 11: preludio, consola de Leina (CERRAR = 4 3 2 1, AMPLIAR = 1 2 3 4) y empuje, hasta el epílogo. */
+export async function playLeinaConsole(page, action) {
+    await advanceCinematic(page);
+    const ui = page.locator('.leina-console');
+    await expect(ui.locator('[data-cmd="confirmar"]')).toBeEnabled({ timeout: 10_000 });
+    const order = ['potencia', 'campo', 'bucle', 'confirmar'];
+    for (const id of action === 'CERRAR' ? order.reverse() : order) {
+        if (id === 'confirmar') await ui.locator(`[data-cmd="${id}"]`).dblclick();
+        else await ui.locator(`[data-cmd="${id}"]`).click();
+    }
+    await expect(ui.locator('[data-vortex]')).toHaveText(action === 'CERRAR' ? '0' : '11');
+    const cine = page.locator('.cinematic-screen');
+    for (let i = 0; i < 80 && await page.evaluate(() => window.state.currentStep) === 11; i++) {
+        await cine.click({ position: { x: 20, y: 20 } }).catch(() => {});
+        await page.waitForTimeout(150);
+    }
+    expect(await page.evaluate(() => window.state.currentStep)).toBe(12);
+}
+
 /** Desde el briefing del paso 4 entra a operaciones. */
 export async function startOperations(page) {
     const briefing = page.locator('.game-modal-overlay');
@@ -168,6 +187,17 @@ export async function regularSubject(page) {
         for (let i = 0; i < 20 && window.state.currentEntity?.isLoreCore; i++) window.state.nextSubject();
         // Las averías espontáneas bloquean el cierre de turno; las pruebas de emergencia las lanzan a mano
         window.state.emergencies = { resonance: false, oxygen: false, energy: false };
+    });
+    await silenceArrival(page);
+}
+
+/** Sin la primera línea automática del sujeto: mientras habla se ocultan guía e inducción y en móvil salta a Mando. */
+export async function silenceArrival(page) {
+    await expect.poll(() => page.evaluate(() => Boolean(window.state.currentEntity && !window.state.currentEntity._processed)), { timeout: 15_000 }).toBe(true);
+    await page.evaluate(() => {
+        const dlg = window.__SYSTEMS__.dialogue;
+        dlg.reserved = null;
+        if (dlg.currentDialogue) dlg.closeDialogue();
     });
 }
 
