@@ -52,7 +52,8 @@ export const CinematicScreen = memo(({ config, pages: introPages = null, onDone 
     useLayoutEffect(() => { setCursor({ page: 0, shown: 0 }); setPlayed(new Set()); }, [config.name, endingFaction]);
     // Antes de pintar: el plano de la página sale a la vez que su texto
     useLayoutEffect(() => { state.cineShot = current.shot || null; }, [current.shot]);
-    useEffect(() => () => { state.cineShot = null; audio.cue(null, 1); }, []);
+    // De capa, no pasivo: si no, al cambiar de paso el desmontaje del anterior borraba el plano del nuevo
+    useLayoutEffect(() => () => { state.cineShot = null; audio.cue(null, 1); }, []);
     useEffect(() => { audio.cue(current.sound || null, current.music ?? 1); }, [page, current.sound, current.music]);
 
     // Tecleo. Si el plano cambia, espera al fundido; `¦` es una pausa de un segundo que no se pinta
