@@ -1,6 +1,0 @@
-Open Lo-Fi (btahir, generado con Suno v5), CC0-1.0 — https://github.com/btahir/open-lofi (release v1.0.0)
-cinematica.mp3    <- "Orbiting in Silence"     20 s -> 110 s
-ruta-operador.mp3 <- "Deep Space Loop"         20 s -> 120 s
-ruta-fe.mp3       <- "Cathedral Hiss"          30 s -> 130 s
-final.mp3         <- "Ghosts on the Hillside"  20 s -> 120 s
-Bucles con fundido cruzado de 1.5 s, ganancia lineal a -20 LUFS, MP3 96k estéreo.
